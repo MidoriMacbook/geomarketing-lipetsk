@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: geomarketing-lipetsk
+    runtime: python
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: python serve.py
+    healthCheckPath: /healthz
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: CACHE_DIR
+        value: /tmp/geomarketing-cache
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"

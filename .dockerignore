@@ -1,0 +1,12 @@
+.git
+.venv
+.idea
+.codex
+.agents
+__pycache__
+cache
+.env*
+*.log
+.playwright-cli
+tests
+PROJECT_ANALYSIS.md
