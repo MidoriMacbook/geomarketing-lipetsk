@@ -1,0 +1,20 @@
+[
+  {
+    "id": "legacy-before-modules:1",
+    "analysis_id": "legacy-before-modules",
+    "business": "cafe",
+    "business_name": "Кофейня",
+    "district": "eleytsky",
+    "district_name": "мкр. Елецкий",
+    "saved_at": "2026-10-12T15:00:00.000Z",
+    "source": "cache",
+    "data_date": "2026-10-11T12:00:00.000Z",
+    "warning": "",
+    "parameters": {"radius_m": 350, "alpha": 1.5},
+    "recommendation": {
+      "rank": 1, "lat": 52.5961, "lng": 39.48729, "score": 1,
+      "residents_in_radius": 7862, "radius_m": 350,
+      "competitors_in_radius": 0, "nearest_competitor_m": 448
+    }
+  }
+]

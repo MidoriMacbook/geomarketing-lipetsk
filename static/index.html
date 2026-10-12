@@ -9,11 +9,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
-<link rel="icon" href="data:,">
+<link rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
-<link rel="stylesheet" href="/static/workspace.css">
+<link rel="stylesheet" href="/static/css/tokens.css">
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/layout.css">
+<link rel="stylesheet" href="/static/css/components.css">
+<link rel="stylesheet" href="/static/css/map.css">
+<link rel="stylesheet" href="/static/css/states.css">
+<link rel="stylesheet" href="/static/css/responsive.css">
 <script src="/static/vendor/leaflet/leaflet.js" defer></script>
-<script src="/static/workspace.js" defer></script>
+<script src="/static/js/app.js" type="module"></script>
 </head>
 <body>
 <a class="skip-link" href="#settings">Перейти к настройкам</a>
@@ -22,7 +28,7 @@
   <nav aria-label="Основная навигация"><a class="active" href="#workspace">Карта и анализ</a><a href="#saved-section">Сохранённые <span id="nav-saved-count">0</span></a><button id="model-button" type="button">Как это работает <span aria-hidden="true">↗</span></button></nav>
 </header>
 <main class="page">
-  <section class="intro" aria-labelledby="page-title"><div><p class="eyebrow">РАБОЧЕЕ ПРОСТРАНСТВО ПРЕДПРИНИМАТЕЛЯ</p><h1 id="page-title">Найдите место для своего бизнеса.</h1><p>Спрос рядом. Конкуренты на карте. Несколько мест, которые стоит проверить.</p></div><button class="button secondary" id="print-report" disabled type="button"><span aria-hidden="true">↗</span> Печатный отчёт</button></section>
+  <section class="intro" aria-labelledby="page-title"><div><p class="eyebrow">Липецк / город, спрос, возможности</p><h1 id="page-title">У каждого бизнеса<br>есть своё место.</h1><p>Узнайте, где живут ваши клиенты и кто работает рядом. Выберите места, которые стоит проверить на местности.</p></div><button class="button secondary" id="print-report" disabled type="button"><span aria-hidden="true">↗</span> Печатный отчёт</button></section>
   <section class="kpis" aria-label="Данные выбранной области"><div><span>Жителей в области <span class="muted">≈</span></span><strong id="kpi-residents">—</strong><small>Оценка по жилым домам</small></div><div><span>Учтено домов</span><strong id="kpi-houses">—</strong><small>Объекты OpenStreetMap</small></div><div><span>Конкурентов в области</span><strong id="kpi-competitors">—</strong><small id="kpi-business">Для выбранной категории</small></div><div><span>Мест для проверки</span><strong id="kpi-places">—</strong><small>До трёх рекомендаций</small></div></section>
   <div id="workspace" class="workspace">
     <aside id="settings" class="card settings" aria-labelledby="settings-title"><div class="section-heading"><span class="step">01</span><h2 id="settings-title">Настройки анализа</h2></div>

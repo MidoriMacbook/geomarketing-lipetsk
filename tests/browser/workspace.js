@@ -255,10 +255,10 @@ async page => {
   const positions = await page.evaluate(() => ['settings', 'map-card', 'recommendations'].map(id => document.getElementById(id).getBoundingClientRect()));
   assert(positions[0].bottom <= positions[1].top && positions[1].bottom <= positions[2].top, 'Mobile blocks overlap');
   await page.waitForTimeout(1200);
-  await page.screenshot({ path: 'tests/workspace-mobile.png', fullPage: true });
+  await page.screenshot({ path: 'tests/artifacts/workspace-mobile.png', fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.waitForTimeout(1200);
-  await page.screenshot({ path: 'tests/workspace-desktop.png', fullPage: true });
+  await page.screenshot({ path: 'tests/artifacts/workspace-desktop.png', fullPage: true });
   assert(errors.length === 0, errors.join('\n'));
   return { passed: ['catalog/retry', 'recommendations', 'canvas reuse', 'two-tab save/delete/sync', 'queued save context', 'refresh retains result', 'save/dedupe/reload/delete/12-limit', 'compare/3-limit', 'CSV/escaping/formulas', 'print', 'modal', 'layers', '5 businesses', 'race', 'custom', 'API error', 'tile retry', 'corrupt/blocked storage/missing locks', 'mobile'], pageErrors: errors };
 }
