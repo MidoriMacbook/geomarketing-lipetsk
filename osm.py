@@ -16,6 +16,7 @@ from pathlib import Path
 
 import numpy as np
 import requests
+from businesses import BUSINESS_CATALOG
 
 OVERPASS_URLS = [
     'https://overpass-api.de/api/interpreter',
@@ -66,10 +67,17 @@ def custom_area(lat, lng, radius):
 
 
 # Теги OSM, по которым ищем конкурентов
-BUSINESS_TAGS = {
-    'cafe': ['"amenity"="cafe"', '"shop"="coffee"', '"shop"="pastry"', '"shop"="confectionery"'],
-    'pharmacy': ['"amenity"="pharmacy"', '"healthcare"="pharmacy"'],
-}
+BUSINESS_TAGS = {key: info['tags'] for key, info in BUSINESS_CATALOG.items()}
+
+
+def competitor_margin(business):
+    return max(COMPETITOR_MARGIN_M, BUSINESS_CATALOG[business]['R'])
+
+
+def competitor_cache_name(business, area):
+    name = f'comp_{business}_{cache_key(area)}'
+    margin = competitor_margin(business)
+    return f'{name}_halo{margin}' if margin > COMPETITOR_MARGIN_M else name
 
 # --- Допущения для оценки числа жителей (калибруйте по данным Росстата / ГИС ЖКХ) ---
 APARTMENT_TYPES = {'apartments', 'residential', 'dormitory'}
@@ -280,7 +288,7 @@ def _load_houses(district):
 
 def _load_competitors(business, district):
     lat0, lng0 = district['center']
-    radius = district['radius'] + COMPETITOR_MARGIN_M
+    radius = district['radius'] + competitor_margin(business)
     box = _bbox(district['center'], radius)
     parts = '\n'.join(f'nwr[{tag}]({box});' for tag in BUSINESS_TAGS[business])
     query = f'[out:json][timeout:8];({parts});out center tags;'
@@ -310,7 +318,7 @@ def get_houses(area, refresh=False):
 
 
 def get_competitors(business, area, refresh=False):
-    data, cached = _cached(f'comp_{business}_{cache_key(area)}', lambda: _load_competitors(business, area),
+    data, cached = _cached(competitor_cache_name(business, area), lambda: _load_competitors(business, area),
                            refresh, allow_empty=True)
     return np.array(data, dtype=float).reshape(-1, 2), cached
 

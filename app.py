@@ -13,6 +13,7 @@ import math
 import os
 from dataclasses import asdict
 from threading import BoundedSemaphore
+from uuid import uuid4
 
 import numpy as np
 from flask import Flask, jsonify, request, send_from_directory
@@ -20,6 +21,7 @@ from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 
 import osm
+from businesses import BUSINESS_CATALOG
 
 app = Flask(__name__, static_folder='static')
 calculation_slots = BoundedSemaphore(2)
@@ -53,16 +55,15 @@ DEMO_COMPETITORS = {
 }
 
 # R — радиус пешей доступности (м), alpha — сила штрафа за конкурентов
-BUSINESS_PARAMS = {
-    'cafe': {'R': 350, 'alpha': 1.5},
-    'pharmacy': {'R': 500, 'alpha': 3.0},
-}
+BUSINESS_PARAMS = BUSINESS_CATALOG
 
 GRID_SIZE = 60
 N_CLUSTERS = 3
 LOW_DATA_RESIDENTS = 3000  # меньше жителей в районе — предупреждаем о неполных данных
 MIN_HOUSES = 5          # меньше — считаем, что в OSM для района мало данных
 DEMO_HALF_SIZE_M = 600  # размер области анализа для демо-данных
+MIN_RECOMMENDATION_DISTANCE_M = 250
+MAX_RECOMMENDATIONS = 3
 
 
 def to_meters(points, lat0, lng0):
@@ -76,11 +77,30 @@ class UserError(Exception):
     """Ошибка, понятная пользователю (неверные параметры, мало данных)."""
 
 
+def validate_data(houses, competitors):
+    """Reject unusable rows before clustering or serializing numeric results."""
+    houses = np.asarray(houses, dtype=float)
+    competitors = np.asarray(competitors, dtype=float)
+    if competitors.shape == (0,):
+        competitors = np.empty((0, 2))
+    if competitors.ndim != 2 or competitors.shape[1] != 2:
+        raise ValueError('Invalid competitor rows')
+    if (houses.ndim != 2 or houses.shape[1] != 3 or not len(houses)
+            or not np.isfinite(houses).all() or not np.isfinite(competitors).all()
+            or np.any(houses[:, 2] <= 0) or not np.isfinite(houses[:, 2].sum())):
+        raise ValueError('Invalid analysis data')
+    for rows in (houses, competitors):
+        if np.any(np.abs(rows[:, 0]) > 90) or np.any(np.abs(rows[:, 1]) > 180):
+            raise ValueError('Invalid analysis coordinates')
+    return houses, competitors
+
+
 def load_data(area, business, refresh):
     """Возвращает (дома, конкуренты, источник, предупреждение)."""
     try:
         houses, h_cached = osm.get_houses(area, refresh)
         competitors, c_cached = osm.get_competitors(business, area, refresh)
+        houses, competitors = validate_data(houses, competitors)
         if len(houses) < MIN_HOUSES:
             raise RuntimeError(f'в OpenStreetMap найдено слишком мало домов ({len(houses)})')
         metadata = {key: asdict(value) for key, value in (
@@ -90,6 +110,10 @@ def load_data(area, business, refresh):
             warnings.append('Сохранённым данным больше 7 дней. Обновите их перед принятием решения.')
         return houses, competitors, ('cache' if h_cached and c_cached else 'osm'), ' '.join(warnings) or None, metadata
     except Exception as exc:  # noqa: BLE001
+        if business not in DEMO_COMPETITORS:
+            raise UserError('Не удалось загрузить пригодные данные домов и конкурентов '
+                            'OpenStreetMap для этого типа бизнеса. '
+                            'Повторите позже или выберите другой район.') from exc
         if area['custom']:   # для произвольной области демо-данных нет
             if isinstance(exc, RuntimeError) and 'мало домов' in str(exc):
                 raise UserError('В этой области в OpenStreetMap почти нет размеченных жилых домов. '
@@ -111,6 +135,17 @@ def index():
 @app.get('/healthz')
 def health():
     return jsonify({'status': 'ok'})
+
+
+@app.get('/api/catalog')
+def catalog():
+    return jsonify({
+        'status': 'success',
+        'businesses': [{'key': key, 'name': item['name'], 'radius_m': item['R'],
+                        'alpha': item['alpha']} for key, item in BUSINESS_CATALOG.items()],
+        'districts': [{'key': key, 'name': item['name'], 'center': list(item['center']),
+                       'radius_m': item['radius']} for key, item in osm.DISTRICTS.items()],
+    })
 
 
 @app.route('/api/calculate')
@@ -155,7 +190,7 @@ def run_calculation():
     business = request.args.get('type', 'cafe')
     refresh = request.args.get('refresh') == '1'
     if business not in BUSINESS_PARAMS:
-        raise UserError('Неизвестный тип бизнеса. Выберите кофейню или аптеку.')
+        raise UserError('Неизвестный тип бизнеса. Выберите тип из списка.')
 
     info = area
     lat0, lng0 = info['center']
@@ -200,11 +235,35 @@ def run_calculation():
     raw[np.linalg.norm(grid, axis=1) > half] = 0
     score = raw / raw.max() if raw.max() > 0 else raw
 
-    # 3. Лучшая точка
-    best_xy = grid[int(np.where(np.linalg.norm(grid, axis=1) <= half, score, -1).argmax())]
-    best_lat, best_lng = to_latlng(best_xy)
-    residents_near = int(pop[np.linalg.norm(h_xy - best_xy, axis=1) <= p['R']].sum())
-    nearest = round(float(np.linalg.norm(c_xy - best_xy, axis=1).min())) if len(c_xy) else None
+    # 3. Прежний максимум первым, затем лучшие разнесённые полезные кандидаты.
+    inside = np.linalg.norm(grid, axis=1) <= half
+    useful = inside & (demand > 0)
+    if not np.isfinite(score).all() or not np.any(useful):
+        raise UserError('В выбранной области недостаточно данных о спросе для рекомендации. '
+                        'Выберите другое место или увеличьте радиус.')
+    best_idx = int(np.where(inside, score, -1).argmax())
+    selected = [best_idx]
+    for idx in np.argsort(-score, kind='stable'):
+        if idx == best_idx or not useful[idx]:
+            continue
+        if np.any(np.linalg.norm(grid[selected] - grid[idx], axis=1)
+                  < MIN_RECOMMENDATION_DISTANCE_M):
+            continue
+        selected.append(int(idx))
+        if len(selected) == MAX_RECOMMENDATIONS:
+            break
+    recommendations = []
+    for rank, idx in enumerate(selected, 1):
+        xy = grid[idx]
+        lat, lng = to_latlng(xy)
+        competitor_distances = np.linalg.norm(c_xy - xy, axis=1)
+        recommendations.append({
+            'rank': rank, 'lat': lat, 'lng': lng, 'score': float(score[idx]),
+            'residents_in_radius': int(pop[np.linalg.norm(h_xy - xy, axis=1) <= p['R']].sum()),
+            'radius_m': p['R'],
+            'competitors_in_radius': int((competitor_distances <= p['R']).sum()),
+            'nearest_competitor_m': round(float(competitor_distances.min())) if len(c_xy) else None,
+        })
 
     lat_min, lng_min = to_latlng(np.array([-half, -half]))
     lat_max, lng_max = to_latlng(np.array([half, half]))
@@ -214,6 +273,10 @@ def run_calculation():
         'district': area['key'],
         'district_name': info['name'],
         'business': business,
+        'business_name': p['name'],
+        'analysis_id': str(uuid4()),
+        'parameters': {'radius_m': p['R'], 'alpha': p['alpha']},
+        'recommendations': recommendations,
         'source': source,          # osm | cache | demo
         'data_meta': metadata,
         'warning': warning,
@@ -225,12 +288,7 @@ def run_calculation():
             'residents': int(pop.sum()),
             'competitors': int(len(competitors)),
         },
-        'best': {
-            'lat': best_lat, 'lng': best_lng,
-            'residents_in_radius': residents_near,
-            'radius_m': p['R'],
-            'nearest_competitor_m': nearest,
-        },
+        'best': recommendations[0],
         'grid': {
             'n': GRID_SIZE,
             'lat_min': lat_min, 'lat_max': lat_max,
