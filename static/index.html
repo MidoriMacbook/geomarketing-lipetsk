@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ГеоМаркетинг Липецк</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;700&display=swap">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
+
+<style>
+:root {
+  --paper: #F4F6F3;
+  --paper-2: #E8ECE6;
+  --ink: #14231D;
+  --ink-2: #4A5A52;
+  --line: #D3DAD1;
+  --leaf-lo: #BFE38A;
+  --leaf-hi: #158A48;
+  --steel: #2D5C8E;
+  --signal: #D93F3F;
+  --amber: #E8A200;
+  --warn-bg: #FFF3D6;
+  --warn-ink: #6B4A00;
+  --font-ui: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Unbounded', 'Onest', system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { font-family: var(--font-ui); color: var(--ink); background: var(--paper-2); }
+#map { position: fixed; inset: 0; background: var(--paper-2); }
+/* приглушаем цвета подложки OSM, чтобы зелёные зоны и маркеры читались лучше */
+.leaflet-tile-pane { filter: grayscale(.8) contrast(.95) brightness(1.05); }
+
+/* ---------- панель управления ---------- */
+.panel {
+  position: fixed; z-index: 1000; top: 16px; left: 16px; bottom: 16px;
+  width: 372px; overflow-y: auto;
+  padding: 24px 22px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(20, 35, 29, .16);
+}
+h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.2; letter-spacing: -.01em; }
+.lead { margin: 10px 0 22px; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+
+.field { margin: 0 0 16px; padding: 0; border: 0; }
+.field > label, .field > legend { display: block; padding: 0; margin-bottom: 7px; font-size: 13px; font-weight: 500; color: var(--ink-2); }
+
+select {
+  width: 100%; padding: 12px 14px; font: 500 14px var(--font-ui); color: var(--ink);
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+}
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--paper-2); border-radius: 12px; }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg span { display: block; padding: 10px 8px; text-align: center; font-size: 14px; font-weight: 500; border-radius: 9px; cursor: pointer; color: var(--ink-2); }
+.seg input:checked + span { background: var(--ink); color: #fff; }
+.seg input:focus-visible + span, select:focus-visible, button:focus-visible, a:focus-visible, input[type=range]:focus-visible { outline: 2px solid var(--leaf-hi); outline-offset: 2px; }
+
+[hidden] { display: none !important; }
+.hint { margin: 8px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
+.map-status { margin: 12px 0; padding: 12px; background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; font-size: 13px; }
+.leaflet-control-attribution { max-width: 90vw; }
+@media (max-width: 760px) { .leaflet-bottom.leaflet-right { bottom: auto; top: 0; max-width: calc(100% - 60px); } }
+
+.primary {
+  width: 100%; margin-top: 4px; padding: 14px; border: 0; border-radius: 10px; cursor: pointer;
+  font: 600 15px var(--font-ui); color: #fff; background: var(--ink);
+}
+.primary:hover { background: #24392F; }
+.primary:disabled { opacity: .65; cursor: progress; }
+
+.error { display: none; margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px; line-height: 1.45; color: #7A1F1F; background: #FBE4E4; }
+
+/* ---------- результат ---------- */
+#result { display: none; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+#result h2 { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.coords { margin: 0 0 12px; font-family: var(--font-display); font-weight: 500; font-size: 17px; letter-spacing: -.02em; }
+.actions { display: flex; gap: 8px; margin-bottom: 18px; }
+.ghost {
+  flex: 1; padding: 9px 10px; text-align: center; text-decoration: none; cursor: pointer;
+  font: 500 13px var(--font-ui); color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 8px;
+}
+.ghost:hover { background: var(--paper-2); }
+
+dl { margin: 0 0 18px; }
+.fact { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.fact:last-child { border-bottom: 0; }
+dt { color: var(--ink-2); }
+dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+
+.threshold { margin-bottom: 18px; }
+.threshold label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: var(--ink-2); }
+.threshold output { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--leaf-hi); }
+
+.source { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-2); }
+.source.warn { padding: 10px 12px; border-radius: 10px; color: var(--warn-ink); background: var(--warn-bg); }
+.linkbtn { padding: 0; border: 0; background: none; font: inherit; color: var(--ink); text-decoration: underline; cursor: pointer; }
+
+/* ---------- легенда ---------- */
+.legend {
+  position: fixed; z-index: 900; right: 16px; bottom: 28px; width: 250px; padding: 14px 16px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(20, 35, 29, .12); font-size: 12.5px; color: var(--ink-2);
+}
+.legend .row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+.legend .row:last-child { margin-bottom: 0; }
+.sw { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.ramp { height: 8px; margin: 4px 0 6px; border-radius: 4px; background: linear-gradient(90deg, var(--leaf-lo), var(--leaf-hi)); }
+.ramp-labels { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 11.5px; }
+
+/* ---------- лучшая точка на карте ---------- */
+.best { position: relative; width: 26px; height: 26px; }
+.best .core { position: absolute; inset: 3px; border-radius: 50%; background: #fff; border: 5px solid var(--ink); box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+.best .pulse { position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--ink); opacity: 0; animation: pulse 1.4s ease-out 2; }
+@keyframes pulse { from { transform: scale(.6); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .best .pulse { animation: none; } }
+
+.leaflet-tooltip { font-family: var(--font-ui); font-size: 12.5px; color: var(--ink); border: 1px solid var(--line); box-shadow: 0 4px 14px rgba(20,35,29,.15); }
+
+/* ---------- телефон ---------- */
+@media (max-width: 760px) {
+  .panel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 56vh; padding: 18px 16px; }
+  .lead { margin-bottom: 16px; }
+  .legend { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<main class="panel">
+  <h1>ГеоМаркетинг Липецк</h1>
+  <p class="lead">Где открыть кофейню или аптеку: ближе к жителям, дальше от конкурентов.</p>
+  <div class="map-status" id="map-status" role="status" hidden>
+    <span id="map-message"></span>
+    <button class="linkbtn" type="button" id="retry-map">Повторить загрузку карты</button>
+  </div>
+
+  <div class="field">
+    <label for="district">Микрорайон</label>
+    <select id="district">
+      <option value="eleytsky">мкр. Елецкий</option>
+      <option value="universitetsky">мкр. Университетский</option>
+      <option value="center">Центр (Быханов сад)</option>
+      <option value="custom">Выбрать на карте…</option>
+    </select>
+  </div>
+
+  <div class="field" id="custom-box" hidden>
+    <label for="radius">Радиус области</label>
+    <select id="radius">
+      <option value="700">700 м</option>
+      <option value="1000" selected>1000 м</option>
+      <option value="1500">1500 м</option>
+    </select>
+    <p class="hint" id="custom-hint">Кликните по карте, чтобы выбрать центр области.</p>
+  </div>
+
+  <fieldset class="field">
+    <legend>Тип бизнеса</legend>
+    <div class="seg">
+      <label><input type="radio" name="business" value="cafe" checked><span>Кофейня</span></label>
+      <label><input type="radio" name="business" value="pharmacy"><span>Аптека</span></label>
+    </div>
+  </fieldset>
+
+  <button class="primary" id="run">Найти лучшее место</button>
+  <div class="error" id="error" role="alert"></div>
+
+  <section id="result" aria-live="polite">
+    <h2>Рекомендуемая точка</h2>
+    <p class="coords" id="coords"></p>
+    <div class="actions">
+      <button class="ghost" id="copy" type="button">Копировать</button>
+      <a class="ghost" id="osm-link" target="_blank" rel="noopener">Открыть в OSM</a>
+    </div>
+
+    <dl>
+      <div class="fact"><dt id="res-label">Жителей рядом</dt><dd id="res-value"></dd></div>
+      <div class="fact"><dt>Ближайший конкурент</dt><dd id="comp-value"></dd></div>
+    </dl>
+
+    <div class="threshold">
+      <label for="thr"><span>Зелёные зоны: оценка не ниже</span><output id="thr-out" for="thr">90%</output></label>
+      <input type="range" id="thr" min="70" max="99" value="90">
+    </div>
+
+    <p class="source" id="source"></p>
+    <p class="hint">Оценка сравнивает места внутри выбранной области. Она не учитывает аренду, пешеходные маршруты и наличие помещений. Перед открытием проверьте место на местности.</p>
+  </section>
+</main>
+
+<aside class="legend" aria-label="Условные обозначения">
+  <div>Оценка места</div>
+  <div class="ramp"></div>
+  <div class="ramp-labels"><span>на пороге зоны</span><span>лучшая</span></div>
+  <div class="row"><span class="sw" style="background:var(--steel)"></span>Дома, размер по числу жителей</div>
+  <div class="row"><span class="sw" style="background:var(--signal)"></span>Конкуренты</div>
+  <div class="row"><span class="sw" style="background:var(--amber)"></span>Центры скоплений жителей</div>
+  <div class="row"><span class="sw" style="background:#fff;border:4px solid var(--ink)"></span>Лучшая точка</div>
+</aside>
+
+<script src="/static/vendor/leaflet/leaflet.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString('ru-RU');
+const isMobile = () => window.matchMedia('(max-width: 760px)').matches;
+
+/* ---------- карта ---------- */
+const map = L.map('map', { zoomControl: false }).setView([52.6088, 39.5992], 12);
+L.control.zoom({ position: 'topright' }).addTo(map);
+const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>', maxZoom: 19
+});
+let tileFailures = 0;
+function mapWarning() {
+  $('map-message').textContent = 'Не удалось полностью загрузить подложку карты. Проверьте соединение. Расчёт по готовым районам доступен. ';
+  $('map-status').hidden = false;
+}
+let tileTimer;
+tiles.on('loading', () => {
+  tileFailures = 0;
+  clearTimeout(tileTimer);
+  tileTimer = setTimeout(mapWarning, 12000);
+});
+tiles.on('tileerror', () => { tileFailures++; mapWarning(); });
+tiles.on('load', () => {
+  clearTimeout(tileTimer);
+  if (!tileFailures) $('map-status').hidden = true;
+});
+tiles.addTo(map);
+$('retry-map').addEventListener('click', () => {
+  $('map-status').hidden = true;
+  tiles.redraw();
+});
+
+map.createPane('zones');  map.getPane('zones').style.zIndex = 405;
+map.createPane('points'); map.getPane('points').style.zIndex = 420;
+const zoneRenderer = L.canvas({ pane: 'zones' });
+const pointRenderer = L.canvas({ pane: 'points', padding: 0.5 });
+
+const zoneLayer = L.layerGroup().addTo(map);
+const pointLayer = L.layerGroup().addTo(map);
+const previewLayer = L.layerGroup().addTo(map);
+let current = null;
+let customPoint = null;
+let activeRequest = null;
+let requestVersion = 0;
+
+function resetSelection() {
+  requestVersion++;
+  if (activeRequest) activeRequest.abort();
+  activeRequest = null;
+  current = null;
+  pointLayer.clearLayers();
+  zoneLayer.clearLayers();
+  $('result').style.display = 'none';
+  $('error').style.display = 'none';
+  $('run').disabled = false;
+  $('run').textContent = 'Найти лучшее место';
+}
+
+function drawPreview() {
+  previewLayer.clearLayers();
+  if ($('district').value !== 'custom' || !customPoint) return;
+  L.circle(customPoint, {
+    radius: +$('radius').value, color: '#14231D', weight: 1.5, dashArray: '5 6',
+    fillColor: '#14231D', fillOpacity: .05, interactive: false
+  }).addTo(previewLayer);
+  L.circleMarker(customPoint, {
+    radius: 5, color: '#fff', weight: 2, fillColor: '#14231D', fillOpacity: 1, interactive: false
+  }).addTo(previewLayer);
+}
+
+function updateCustomUI() {
+  const custom = $('district').value === 'custom';
+  $('custom-box').hidden = !custom;
+  map.getContainer().style.cursor = custom ? 'crosshair' : '';
+  drawPreview();
+}
+
+map.on('click', e => {
+  if ($('district').value !== 'custom') return;
+  resetSelection();
+  customPoint = [e.latlng.lat, e.latlng.lng];
+  $('custom-hint').textContent = 'Центр выбран. Нажмите «Найти лучшее место».';
+  drawPreview();
+});
+
+/* ---------- запрос ---------- */
+async function run(refresh = false) {
+  const btn = $('run');
+  const district = $('district').value;
+  const business = document.querySelector('input[name=business]:checked').value;
+
+  let url = `/api/calculate?district=${district}&type=${business}`;
+  if (district === 'custom') {
+    if (!customPoint) {
+      $('error').textContent = 'Сначала кликните по карте, чтобы выбрать центр области.';
+      $('error').style.display = 'block';
+      return;
+    }
+    url += `&lat=${customPoint[0].toFixed(5)}&lng=${customPoint[1].toFixed(5)}&radius=${$('radius').value}`;
+  }
+  if (refresh) url += '&refresh=1';
+
+  resetSelection();
+  const version = requestVersion;
+  const controller = new AbortController();
+  activeRequest = controller;
+  let timedOut = false;
+  const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 70000);
+
+  btn.disabled = true;
+  btn.textContent = 'Загружаем данные и рассчитываем…';
+  $('error').style.display = 'none';
+
+  try {
+    const resp = await fetch(url, { signal: controller.signal });
+    if (!resp.ok) {
+      let msg = '';
+      try { msg = (await resp.json()).message; } catch { /* ответ не JSON */ }
+      const e = new Error(msg || `Сервер ответил кодом ${resp.status}`);
+      e.user = resp.status === 400 || resp.status === 503;
+      throw e;
+    }
+    const data = await resp.json();
+    if (version !== requestVersion) return;
+    current = data;
+    previewLayer.clearLayers();
+    drawPoints(current);
+    drawZones();
+    showResult(current);
+    fitToDistrict(current);
+  } catch (err) {
+    if (version !== requestVersion) return;
+    const noConnection = err instanceof TypeError && /fetch|network/i.test(err.message);
+    $('error').textContent = timedOut
+      ? 'Загрузка заняла слишком много времени. Повторите попытку или выберите готовый район.'
+      : err.user
+      ? err.message
+      : noConnection
+        ? 'Нет связи с сервером. Проверьте интернет и повторите попытку.'
+        : 'Не удалось выполнить расчёт. Повторите попытку позже.';
+    $('error').style.display = 'block';
+  } finally {
+    clearTimeout(timeout);
+    if (version === requestVersion) {
+      activeRequest = null;
+      btn.disabled = false;
+      btn.textContent = 'Найти лучшее место';
+    }
+  }
+}
+
+/* ---------- отрисовка ---------- */
+const mix = (a, b, t) => {
+  const pa = [1, 3, 5].map(i => parseInt(a.slice(i, i + 2), 16));
+  const pb = [1, 3, 5].map(i => parseInt(b.slice(i, i + 2), 16));
+  return '#' + pa.map((v, i) => Math.round(v + (pb[i] - v) * t).toString(16).padStart(2, '0')).join('');
+};
+
+function drawZones() {
+  zoneLayer.clearLayers();
+  if (!current) return;
+  const thr = $('thr').value / 100;
+  const g = current.grid;
+  const dLat = (g.lat_max - g.lat_min) / (g.n - 1);
+  const dLng = (g.lng_max - g.lng_min) / (g.n - 1);
+
+  g.scores.forEach((s, i) => {
+    if (s < thr) return;
+    const t = (s - thr) / (1 - thr);
+    const lat = g.lat_min + Math.floor(i / g.n) * dLat;
+    const lng = g.lng_min + (i % g.n) * dLng;
+    L.rectangle([[lat - dLat * .52, lng - dLng * .52], [lat + dLat * .52, lng + dLng * .52]], {
+      renderer: zoneRenderer, stroke: false, interactive: false,
+      fillColor: mix('#BFE38A', '#158A48', t), fillOpacity: 0.5 + 0.35 * t
+    }).addTo(zoneLayer);
+  });
+}
+
+function drawPoints(d) {
+  pointLayer.clearLayers();
+
+  L.circle(d.center, {
+    radius: d.half_m, renderer: pointRenderer, interactive: false,
+    color: '#14231D', weight: 1, opacity: .45, dashArray: '4 6', fill: false
+  }).addTo(pointLayer);
+
+  d.houses.forEach(h => {
+    L.circleMarker([h.lat, h.lng], {
+      renderer: pointRenderer, radius: 2.5 + Math.sqrt(h.residents) / 6,
+      color: '#fff', weight: 1, fillColor: '#2D5C8E', fillOpacity: .85
+    }).bindTooltip(`Жителей: ≈ ${fmt(h.residents)}`).addTo(pointLayer);
+  });
+
+  d.competitors.forEach(c => {
+    L.circleMarker([c.lat, c.lng], {
+      renderer: pointRenderer, radius: 7, color: '#fff', weight: 2, fillColor: '#D93F3F', fillOpacity: 1
+    }).bindTooltip('Конкурент').addTo(pointLayer);
+  });
+
+  d.centroids.forEach(c => {
+    L.circleMarker([c.lat, c.lng], {
+      renderer: pointRenderer, radius: 7, color: '#14231D', weight: 2, fillColor: '#E8A200', fillOpacity: 1
+    }).bindTooltip(`Центр скопления: ≈ ${fmt(c.residents)} жителей`).addTo(pointLayer);
+  });
+
+  L.marker([d.best.lat, d.best.lng], {
+    icon: L.divIcon({
+      className: '', iconSize: [26, 26], iconAnchor: [13, 13],
+      html: '<div class="best"><span class="pulse"></span><span class="core"></span></div>'
+    }),
+    keyboard: false
+  }).bindTooltip('Лучшая точка', { direction: 'top', offset: [0, -12] }).addTo(pointLayer);
+}
+
+function fitToDistrict(d) {
+  // считаем рамку вручную: у L.circle метод getBounds() работает только для кружка, уже добавленного на карту
+  const [lat, lng] = d.center;
+  const dLat = d.half_m / 111000;
+  const dLng = d.half_m / (111000 * Math.cos(lat * Math.PI / 180));
+  const bounds = L.latLngBounds([[lat - dLat, lng - dLng], [lat + dLat, lng + dLng]]);
+  map.fitBounds(bounds, isMobile()
+    ? { paddingTopLeft: [16, 16], paddingBottomRight: [16, window.innerHeight * 0.56] }
+    : { paddingTopLeft: [410, 24], paddingBottomRight: [290, 24] });
+}
+
+function showResult(d) {
+  const b = d.best;
+  $('coords').textContent = `${b.lat.toFixed(5)}, ${b.lng.toFixed(5)}`;
+  $('osm-link').href = `https://www.openstreetmap.org/?mlat=${b.lat}&mlon=${b.lng}#map=18/${b.lat}/${b.lng}`;
+  $('res-label').textContent = `Жителей в радиусе ${b.radius_m} м`;
+  $('res-value').textContent = `≈ ${fmt(b.residents_in_radius)}`;
+  $('comp-value').textContent = b.nearest_competitor_m === null ? 'не найдены' : `${fmt(b.nearest_competitor_m)} м`;
+
+  const s = $('source');
+  document.querySelectorAll('#result .notice-extra').forEach(el => el.remove());
+  const stats = `Учтено ${fmt(d.stats.houses)} домов (≈ ${fmt(d.stats.residents)} жителей) и ${fmt(d.stats.competitors)} конкурентов.`;
+  if (d.source === 'demo') {
+    s.className = 'source warn';
+    s.textContent = `Показаны демонстрационные данные: OpenStreetMap недоступен (${d.warning}). ${stats} `;
+    s.appendChild(retryButton('Повторить загрузку'));
+  } else {
+    s.className = 'source';
+    const dates = Object.values(d.data_meta || {}).map(info => info.fetched_at).filter(Number.isFinite);
+    const age = dates.length ? ` Дата самой ранней копии: ${new Date(Math.min(...dates) * 1000).toLocaleDateString('ru-RU')}.` : '';
+    s.textContent = `${stats} Источник: OpenStreetMap${d.source === 'cache' ? ', сохранённая копия' : ''}.${age} Число жителей оценено по площади и этажности домов. `;
+    s.appendChild(retryButton('Обновить данные'));
+  }
+  if (d.notice || (d.warning && d.source !== 'demo')) {
+    const n = document.createElement('p');
+    n.className = 'source warn notice-extra';
+    n.style.marginTop = '10px';
+    n.textContent = [d.notice, d.source !== 'demo' && d.warning].filter(Boolean).join(' ');
+    s.after(n);
+  }
+  $('result').style.display = 'block';
+}
+
+function retryButton(text) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'linkbtn'; b.textContent = text;
+  b.addEventListener('click', () => run(true));
+  return b;
+}
+
+/* ---------- события ---------- */
+$('run').addEventListener('click', () => run(false));
+$('district').addEventListener('change', () => { resetSelection(); updateCustomUI(); });
+$('radius').addEventListener('change', () => { resetSelection(); drawPreview(); });
+document.querySelectorAll('input[name=business]').forEach(input => input.addEventListener('change', resetSelection));
+window.addEventListener('resize', () => {
+  map.invalidateSize();
+  if (current) fitToDistrict(current);
+});
+
+let raf = null;
+$('thr').addEventListener('input', e => {
+  $('thr-out').textContent = `${e.target.value}%`;
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(drawZones);
+});
+
+$('copy').addEventListener('click', async e => {
+  if (!current) return;
+  try {
+    await navigator.clipboard.writeText(`${current.best.lat.toFixed(6)}, ${current.best.lng.toFixed(6)}`);
+    e.target.textContent = 'Скопировано';
+    setTimeout(() => { e.target.textContent = 'Копировать'; }, 1600);
+  } catch {
+    e.target.textContent = 'Не удалось скопировать';
+  }
+});
+</script>
+</body>
+</html>

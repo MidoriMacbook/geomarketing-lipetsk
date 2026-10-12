@@ -152,7 +152,7 @@ activemq-data/
 # Environments
 .env
 .envrc
-.venv
+../.venv
 env/
 venv/
 ENV/
@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local runtime data and tooling
+.venv/
+.idea/
+cache/
+.playwright-cli/
+tests/*.png
+tests/*.osm
+tests/tmp-*/
