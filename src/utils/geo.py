@@ -34,4 +34,3 @@ def _footprint_m2(geom):
     for (x1, y1), (x2, y2) in zip(pts, pts[1:] + pts[:1]):
         area += x1 * y2 - x2 * y1
     return abs(area) / 2
-

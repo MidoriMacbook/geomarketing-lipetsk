@@ -50,4 +50,3 @@ NON_RESIDENTIAL_KEYS = ('shop', 'amenity', 'office', 'tourism', 'craft', 'indust
 YES_MIN_LEVELS_APARTMENTS = 3   # building=yes, 3+ этажей и большая площадь: считаем многоквартирным домом
 YES_MIN_FOOTPRINT_APARTMENTS = 250
 YES_MAX_FOOTPRINT_PRIVATE = 250
-

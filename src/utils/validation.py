@@ -62,4 +62,3 @@ def resolve_area(args: Mapping[str, str]) -> Area:
     if district not in DISTRICTS:
         raise UserError('Неизвестный район. Выберите район из списка.')
     return area_for(district)
-

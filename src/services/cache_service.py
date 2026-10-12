@@ -96,4 +96,3 @@ def _cached(name, loader, refresh=False, allow_empty=False):
     finally:
         if acquired:
             lock.release()
-

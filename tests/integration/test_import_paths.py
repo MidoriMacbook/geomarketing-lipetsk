@@ -11,8 +11,10 @@ from src.config import PROJECT_ROOT
 
 
 class ImportPathTests(unittest.TestCase):
-    def run_python(self, arguments, cwd, cache_dir=None):
+    def run_python(self, arguments, cwd, cache_dir=None, project_pythonpath=True):
         environment = {**os.environ, 'PYTHONPATH': str(PROJECT_ROOT)}
+        if not project_pythonpath:
+            environment.pop('PYTHONPATH', None)
         if cache_dir is None:
             environment.pop('CACHE_DIR', None)
         else:
@@ -55,6 +57,6 @@ class ImportPathTests(unittest.TestCase):
     def test_importer_help_works_when_invoked_directly_from_another_cwd(self):
         with tempfile.TemporaryDirectory(dir=PROJECT_ROOT / 'tests', prefix='tmp-') as folder:
             output = self.run_python([str(PROJECT_ROOT / 'scripts' / 'import_osm_competitors.py'),
-                                      '--help'], folder)
+                                      '--help'], folder, project_pythonpath=False)
         self.assertIn('--district', output)
         self.assertIn('--business', output)

@@ -155,4 +155,3 @@ def get_competitors(business, area, refresh=False):
 def cache_key(area):
     lat, lng = area['center']
     return f'{area["key"]}_{lat:.6f}_{lng:.6f}_{area["radius"]}'
-

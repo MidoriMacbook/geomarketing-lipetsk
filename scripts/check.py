@@ -21,7 +21,7 @@ def main():
             ok_servers += r.status_code == 200
         except Exception as exc:  # noqa: BLE001
             print(f'   {url}: ОШИБКА {type(exc).__name__}: {exc}')
-    
+
     loaded = 0
     print('\n2. Загрузка данных по районам (первый раз может занять несколько минут)')
     for key, info in osm.DISTRICTS.items():
@@ -38,7 +38,7 @@ def main():
                       ' в OSM для этого района размечены неполно, оценка спроса будет заниженной.')
         except Exception as exc:  # noqa: BLE001
             print(f'   {info["name"]}: ОШИБКА {exc}')
-    
+
     print('\n3. Итог')
     total = len(osm.DISTRICTS)
     if loaded == total:
