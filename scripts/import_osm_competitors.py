@@ -12,15 +12,18 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import osm
-from businesses import BUSINESS_CATALOG
+from src.services import osm_service as osm
+from src.services.cache_service import _validate_rows
+from src.config import SNAPSHOT_DIR
+from src.utils.geo import _bbox
+from src.domain.businesses import BUSINESS_CATALOG
 
 
 def extract_competitors(source, business, area):
     root = ET.parse(source).getroot()
     if root.tag != 'osm':
         raise ValueError('Source is not an OSM extract')
-    south, west, north, east = map(float, osm._bbox(area['center'],
+    south, west, north, east = map(float, _bbox(area['center'],
                                   area['radius'] + osm.competitor_margin(business)).split(','))
     bounds = root.find('bounds')
     if bounds is None:
@@ -74,7 +77,7 @@ def extract_competitors(source, business, area):
         if key not in seen:
             seen.add(key)
             rows.append([round(lat, 6), round(lng, 6)])
-    osm._validate_rows(rows, 2, allow_empty=True)
+    _validate_rows(rows, 2, allow_empty=True)
     return rows
 
 
@@ -83,7 +86,7 @@ def main():
     parser.add_argument('--district', choices=osm.DISTRICTS, required=True)
     parser.add_argument('--business', choices=BUSINESS_CATALOG, required=True)
     parser.add_argument('--source', type=Path, required=True)
-    parser.add_argument('--output-dir', type=Path, default=osm.SNAPSHOT_DIR)
+    parser.add_argument('--output-dir', type=Path, default=SNAPSHOT_DIR)
     args = parser.parse_args()
     area = osm.area_for(args.district)
     rows = extract_competitors(args.source, args.business, area)

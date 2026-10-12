@@ -5,14 +5,20 @@ from unittest.mock import patch
 import numpy as np
 
 import app
-import osm
+from src.routes import calculate as calculate_routes
+from src.domain import scoring
+from src.services import analysis_service
+from src.domain.businesses import BUSINESS_CATALOG
+from src.utils.geo import to_meters
+from src.services import osm_service as osm
+from src.services import cache_service
 
 
 class WorkspaceTests(unittest.TestCase):
     def setUp(self):
         self.client = app.app.test_client()
-        self.houses = np.array(app.DEMO_HOUSES['eleytsky'], dtype=float)
-        self.competitors = np.array(app.DEMO_COMPETITORS['cafe']['eleytsky'], dtype=float)
+        self.houses = np.array(analysis_service.DEMO_HOUSES['eleytsky'], dtype=float)
+        self.competitors = np.array(analysis_service.DEMO_COMPETITORS['cafe']['eleytsky'], dtype=float)
 
     def calculate(self, business='cafe', houses=None, competitors=None, **query):
         houses = self.houses if houses is None else houses
@@ -60,12 +66,12 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(recommendations[0]['score'], 1)
         self.assertEqual(sorted([item['score'] for item in recommendations], reverse=True),
                          [item['score'] for item in recommendations])
-        xy = app.to_meters([[item['lat'], item['lng']] for item in recommendations], *data['center'])
+        xy = to_meters([[item['lat'], item['lng']] for item in recommendations], *data['center'])
         self.assertTrue(np.all(np.linalg.norm(xy, axis=1) <= data['half_m'] + 1e-6))
         for idx, item in enumerate(recommendations):
             self.assertTrue(0 <= item['score'] <= 1)
-            house_xy = app.to_meters(self.houses[:, :2], *data['center'])
-            competitor_xy = app.to_meters(self.competitors, *data['center'])
+            house_xy = to_meters(self.houses[:, :2], *data['center'])
+            competitor_xy = to_meters(self.competitors, *data['center'])
             self.assertEqual(item['residents_in_radius'],
                              int(self.houses[np.linalg.norm(house_xy - xy[idx], axis=1) <= 350, 2].sum()))
             distances = np.linalg.norm(competitor_xy - xy[idx], axis=1)
@@ -120,7 +126,7 @@ class WorkspaceTests(unittest.TestCase):
         area = {**osm.area_for('eleytsky'), 'radius': 100}
         lat, lng = area['center']
         houses = np.array([[lat + i / 1000000, lng, 100] for i in range(5)])
-        with patch.object(app, 'resolve_area', return_value=area), patch.object(app, 'GRID_SIZE', 3):
+        with patch.object(calculate_routes, 'resolve_area', return_value=area), patch.object(scoring, 'GRID_SIZE', 3):
             data = self.calculate(houses=houses, competitors=np.empty((0, 2))).get_json()
         self.assertEqual(len(data['recommendations']), 1)
         self.assertEqual(data['best'], data['recommendations'][0])
@@ -129,8 +135,8 @@ class WorkspaceTests(unittest.TestCase):
         area = {**osm.area_for('eleytsky'), 'radius': 1500}
         lat, lng = area['center']
         houses = np.array([[lat, lng, 100]] * 5)
-        with patch.object(app, 'GRID_SIZE', 4), patch.object(app, 'N_CLUSTERS', 1), \
-             patch.object(app, 'resolve_area', return_value=area):
+        with patch.object(scoring, 'GRID_SIZE', 4), patch.object(scoring, 'N_CLUSTERS', 1), \
+             patch.object(calculate_routes, 'resolve_area', return_value=area):
             first = self.calculate(houses=houses, competitors=np.empty((0, 2))).get_json()
             second = self.calculate(houses=houses, competitors=np.empty((0, 2))).get_json()
         self.assertEqual(first['recommendations'], second['recommendations'])
