@@ -16,6 +16,10 @@ healthcheck `/healthz`; созданный через API сервис испо�
 в настройках сервиса для проверки состояния приложения вместо проверки порта.
 
 После изменений выполните `python -m unittest discover -s tests -v`, затем
+`python scripts/validate_project.py` и браузерные сценарии
+`tests/browser/smoke.js`, `tests/browser/workspace.js`. В Docker вместе с
+корневыми входами копируется `src/`; пути снимков вычисляются от корня проекта.
+После проверок
 отправьте коммит в `main`, дождитесь успешных проверок GitHub Actions и запустите
 **Manual Deploy → Deploy latest commit** в панели Render либо через подключение
 Render. Сервис использует публичный Git URL: для автообновления требуется

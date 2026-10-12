@@ -1,5 +1,44 @@
 # Состояние работы
 
+## Активная итерация: архитектура и редакционный редизайн
+
+Промт пользователя от 12 октября 2026 выполнен по
+docs/plans/2026-10-12-architecture-redesign.md и docs/design/redesign-spec.md.
+Стек, API, модель, storage и DOM-контракты сохраняются.
+Ветка codex/architecture-editorial-redesign, база 0ae232c.
+Базовая проверка: 37 unittest, 19 групп старого браузерного сценария.
+Требуемые документы и CHANGELOG созданы до изменения приложения.
+
+Backend завершён: коммиты 96983cb и 6342424.
+51 unittest, compile, foreign cwd и import DAG проходят.
+Независимое серверное ревью: Spec PASS / Quality PASS; 33 ответа API совпали
+с исходными, все 37 исходных test methods/assertions сохранены.
+Прямой CLI-тест очищает PYTHONPATH; замечание ревью устранено.
+
+Frontend завершён: коммит 81db43e; восемь ES-модулей, семь CSS, favicon.
+Старый workspace прошёл после извлечения до редизайна.
+Свежие родительские smoke/workspace/responsive/catalog-matrix/palette PASS,
+pageErrors=[], 15 сочетаний работают. Шесть ширин без переполнения,
+тайлы на снимках загружены полностью, 44×44 targets и клавиатура проверены.
+Независимое frontend-ревью: Spec PASS / Quality APPROVED, существенных замечаний нет.
+
+Root завершил docs/README/audit/CI/validator/fixtures и карту переносов.
+Валидатор PASS: 61 обязательный файл, DAG, assets, id/aria, палитра.
+Все восемь node --check, полный unittest 51, py_compile и stub scan проходят.
+Docker отсутствует; actual build не выполнялся. Print CSS проверен, PDF не создавался.
+Данные OSM не обновлялись в этой итерации, snapshots неизменны.
+
+QA Waitress на 127.0.0.1:5082, helper PID 36960, родитель владеет сервером.
+Именованные QA-браузеры: geomarketing-arch, geomarketing-design.
+Workers не запускают сервисы; сохраняют изменения других участников.
+Следующие шаги: frontend review → финальное review → main/CI → Render → public QA.
+Публикация существующего бесплатного сервиса авторизована ранее.
+Render srv-db65pi8473hc73d7s5vg, workspace tea-db65k0p42hec73b06s6g.
+Публичный Git URL требует ручного deploy после зелёного main.
+Проектные QA-артефакты/сырые XML/ревью не коммитить.
+
+Предыдущая публикация ниже — исторический контекст.
+
 План: docs/plans/2026-10-12-workspace.md. Все задачи 1–6 выполнены.
 Согласован полный этап и новые категории: кофейня, аптека, продукты, пекарня, салон.
 Независимое backend-ревью и итоговое ревью: Spec Pass / Quality Pass.
