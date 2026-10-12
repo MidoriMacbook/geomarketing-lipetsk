@@ -1,6 +1,16 @@
 async page => {
   const base = new URL(page.url()).origin;
   const assert = (ok, message) => { if (!ok) throw new Error(message); };
+  const waitSaved = (tab, count) => tab.waitForFunction(expected => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('geomarketing.saved.v1') || '[]');
+      return stored.length === expected && document.querySelectorAll('[data-testid="saved-card"]').length === expected;
+    } catch { return false; }
+  }, count, { timeout: 10000 });
+  const waitStorageMessage = (tab, message) => tab.waitForFunction(text =>
+    document.getElementById('storage-status').textContent.includes(text), message, { timeout: 10000 });
+  const waitComparison = (tab, count) => tab.waitForFunction(expected =>
+    document.querySelectorAll('#comparison tbody tr').length === expected, count, { timeout: 10000 });
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.route('**/unpkg.com/**', route => route.abort());
@@ -22,17 +32,17 @@ async page => {
     await otherTab.goto(base);
     await otherTab.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
     await Promise.all([page.locator('[data-testid="save-place"]').first().click(), otherTab.locator('[data-testid="save-place"]').first().click()]);
-    await page.waitForTimeout(300);
+    await Promise.all([waitSaved(page, 2), waitSaved(otherTab, 2)]);
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('geomarketing.saved.v1')));
     if (stored.length !== 2) reviewFailures.push('Two-tab additions lost a saved place');
     if (await page.locator('[data-testid="saved-card"]').count() !== 2 || await otherTab.locator('[data-testid="saved-card"]').count() !== 2) reviewFailures.push('Storage events did not synchronize saved lists');
     await page.locator('[data-testid="compare-place"]').first().check();
     await otherTab.locator('[data-testid="saved-card"]').first().getByRole('button', { name: /Удалить/ }).click();
-    await page.waitForTimeout(300);
+    await Promise.all([waitSaved(page, 1), waitSaved(otherTab, 1), waitComparison(page, 0)]);
     if (await page.locator('#comparison tbody tr').count() !== 0) reviewFailures.push('External delete did not clear comparison');
     const deletedId = stored[0].id;
     await page.locator('[data-testid="save-place"]').nth(1).click();
-    await page.waitForTimeout(300);
+    await Promise.all([waitSaved(page, 2), waitSaved(otherTab, 2)]);
     if (await page.evaluate(id => JSON.parse(localStorage.getItem('geomarketing.saved.v1')).some(item => item.id === id), deletedId)) reviewFailures.push('Stale tab resurrected a deleted save');
   } finally { await otherTab.close(); }
   await page.evaluate(() => localStorage.removeItem('geomarketing.saved.v1'));
@@ -59,7 +69,7 @@ async page => {
   assert(/повреждены/.test(await page.locator('#storage-status').innerText()), 'Malformed valid JSON not reported');
   await page.evaluate(() => { Storage.prototype.getItem = () => { throw new DOMException('blocked', 'SecurityError'); }; });
   await page.locator('[data-testid="save-place"]').first().click();
-  await page.waitForTimeout(200);
+  await waitStorageMessage(page, 'недоступно');
   if (await page.locator('[data-testid="saved-card"]').count() !== 0 || !/недоступно/.test(await page.locator('#storage-status').innerText())) reviewFailures.push('Blocked getItem falsely reported successful save');
   assert(reviewFailures.length === 0, reviewFailures.join('; '));
   await page.reload();
@@ -76,6 +86,7 @@ async page => {
   await page.locator('#business').selectOption('pharmacy');
   await page.evaluate(() => window.__releaseSavedLock());
   await page.locator('[data-testid="saved-card"]').first().waitFor();
+  await waitSaved(page, 1);
   assert(/Кофейня/.test(await page.locator('[data-testid="saved-card"]').first().innerText()), 'Queued save captured changed analysis');
   await page.evaluate(() => {
     const items = JSON.parse(localStorage.getItem('geomarketing.saved.v1'));
@@ -90,6 +101,7 @@ async page => {
     Object.defineProperty(navigator, 'locks', { value: undefined, configurable: true });
   });
   await page.locator('[data-testid="save-place"]').first().click();
+  await waitStorageMessage(page, 'недоступно');
   assert(await page.locator('[data-testid="saved-card"]').count() === 0 && /недоступно/.test(await page.locator('#storage-status').innerText()), 'Missing locks falsely reported save');
   await page.reload();
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
@@ -117,8 +129,10 @@ async page => {
   await page.reload();
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
   await page.locator('[data-testid="save-place"]').first().click();
+  await waitSaved(page, 1);
   assert(await page.locator('[data-testid="saved-card"]').count() === 1, 'Save failed');
   await page.locator('[data-testid="save-place"]').first().click();
+  await waitStorageMessage(page, 'уже сохранено');
   assert(await page.locator('[data-testid="saved-card"]').count() === 1, 'Duplicate saved');
   await page.reload();
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
@@ -147,16 +161,18 @@ async page => {
     await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
     assert(await page.locator('#business').inputValue() === business, 'Business select');
   }
-  let started;
+  let started, obsoleteResponseSettled;
   const pending = new Promise(resolve => { started = resolve; });
+  const obsoleteSettled = new Promise(resolve => { obsoleteResponseSettled = resolve; });
   await page.route('**/api/calculate?**', async route => {
     const response = await route.fetch(); started();
     await new Promise(resolve => setTimeout(resolve, 600));
     await route.fulfill({ response }).catch(() => {});
+    obsoleteResponseSettled();
   });
   await page.locator('#run').click(); await pending;
   await page.locator('#district').selectOption('center');
-  await page.waitForTimeout(850);
+  await obsoleteSettled;
   assert(!await page.locator('#result').isVisible(), 'Obsolete response rendered');
   assert(await page.locator('#run').isEnabled(), 'Button stuck after cancellation');
   await page.unroute('**/api/calculate?**');
@@ -185,9 +201,11 @@ async page => {
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
   assert(/повреждены/.test(await page.locator('#storage-status').innerText()), 'Corrupt storage not reported');
   await page.locator('[data-testid="save-place"]').first().click();
+  await waitSaved(page, 1);
   assert(await page.locator('[data-testid="saved-card"]').count() === 1, 'Recovery save failed');
   await page.evaluate(() => { Storage.prototype.setItem = () => { throw new DOMException('blocked', 'SecurityError'); }; });
   await page.locator('[data-testid="save-place"]').nth(1).click();
+  await waitStorageMessage(page, 'недоступно');
   assert(/недоступно/.test(await page.locator('#storage-status').innerText()), 'Blocked storage false success');
   assert(await page.locator('[data-testid="saved-card"]').count() === 1, 'Failed persistence presented as saved');
   // Seed real saved records with distinct analyses to exercise list and comparison limits.
@@ -204,6 +222,7 @@ async page => {
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
   assert(await page.locator('[data-testid="saved-card"]').count() === 12, '12 valid saves not restored');
   await page.locator('[data-testid="save-place"]').first().click();
+  await waitStorageMessage(page, 'до 12 мест');
   assert(await page.locator('[data-testid="saved-card"]').count() === 12, 'Save limit exceeded');
   for (let index = 0; index < 3; index++) await page.locator('[data-testid="compare-place"]').nth(index).check();
   await page.locator('[data-testid="compare-place"]').nth(3).click();
@@ -220,6 +239,7 @@ async page => {
   assert(csv.includes('"\'=SUM(1;2)"'), 'CSV formula injection');
   assert(csv.includes('Район ""с кавычками"";\nвторая строка'), 'CSV quotes/newline escaping');
   await page.locator('[data-testid="saved-card"]').first().getByRole('button', { name: /Удалить/ }).click();
+  await Promise.all([waitSaved(page, 11), waitComparison(page, 2)]);
   assert(await page.locator('[data-testid="saved-card"]').count() === 11, 'Delete failed');
   assert(await page.locator('#comparison tbody tr').count() === 2, 'Deleted comparison persists');
   await page.evaluate(() => localStorage.removeItem('geomarketing.saved.v1'));

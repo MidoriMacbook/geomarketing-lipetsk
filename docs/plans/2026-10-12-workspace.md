@@ -29,7 +29,7 @@
   CDN, тайлов, API, storage и устаревшие ответы.
 - [x] 5. Ревью: независимая проверка correctness/security, исправить существенные
   замечания с регрессионными тестами. Обновить README и data/README.md.
-- [ ] 6. Публикация: коммит, fast-forward main, GitHub Actions, ручной deploy
+- [x] 6. Публикация: коммит, fast-forward main, GitHub Actions, ручной deploy
   существующего `srv-db65pi8473hc73d7s5vg`; дождаться live и проверить публичный
   `/healthz`, 15 сочетаний район/бизнес и браузер. Платные ресурсы не создавать.
 
