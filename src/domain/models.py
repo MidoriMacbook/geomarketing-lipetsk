@@ -37,4 +37,3 @@ class ScoringResult:
     recommendations: list[dict]
     grid: dict
     centroids: list[dict]
-
