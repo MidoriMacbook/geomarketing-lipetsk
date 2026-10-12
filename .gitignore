@@ -226,4 +226,7 @@ cache/
 .playwright-cli/
 tests/*.png
 tests/*.osm
+tests/*.pdf
+tests/*.csv
+docs/reviews/
 tests/tmp-*/
