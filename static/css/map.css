@@ -1,0 +1,17 @@
+#map { width:100%; height:var(--size-map-desktop); background:var(--color-map-canvas); z-index:var(--z-map); }
+.map-heading { padding:var(--space-4) var(--space-5); display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); }
+.map-heading p { font-size:var(--text-xs); color:var(--color-muted); margin-top:var(--space-1); }
+.map-badge { font-size:var(--text-xs); color:var(--color-muted); white-space:nowrap; }
+.map-badge i { display:inline-block; width:var(--space-2); height:var(--space-2); background:var(--color-map-zone-high); border-radius:var(--radius-round); margin-right:var(--space-1); }
+.map-footer { display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); padding:var(--space-3) var(--space-5); font-size:var(--text-xs); color:var(--color-muted); }
+.map-footer>span { display:flex; align-items:center; gap:var(--space-2); }
+.number-dot { width:var(--space-5); height:var(--space-5); display:grid; place-items:center; background:var(--color-primary); color:var(--color-on-primary); border-radius:var(--radius-round); font-style:normal; font-weight:700; }
+.map-ramp i { display:inline-block; width:var(--space-9); height:var(--space-2); background:linear-gradient(90deg,var(--color-map-zone-low),var(--color-map-zone-high)); }
+.map-status { margin:var(--space-3) var(--space-4); }
+.recommendation-pin { width:var(--size-marker); height:var(--size-marker); display:grid; place-items:center; border:var(--line-strong) solid var(--color-map-outline); border-radius:var(--radius-round); background:var(--color-primary); color:var(--color-on-primary); font-family:var(--font-body); font-size:var(--text-sm); font-weight:700; box-shadow:var(--shadow-control); }
+.recommendation-pin.is-selected { background:var(--color-accent); color:var(--color-primary); border-color:var(--color-primary); outline:var(--line-strong) solid var(--color-map-outline); }
+.leaflet-container { font-family:var(--font-body); }
+.leaflet-bar { box-shadow:var(--shadow-control); border:var(--line) solid var(--color-border); border-radius:var(--radius-control); }
+.leaflet-bar a,.leaflet-bar a:first-child,.leaflet-bar a:last-child { width:var(--size-target); height:var(--size-target); line-height:var(--size-target); background:var(--color-surface); color:var(--color-ink); }
+.leaflet-control-attribution { font-size:var(--text-xs); background:var(--color-surface); color:var(--color-muted); }
+.leaflet-control-attribution a { color:var(--color-primary); }

@@ -229,4 +229,7 @@ tests/*.osm
 tests/*.pdf
 tests/*.csv
 docs/reviews/
+tests/artifacts/
+tests/**/tmp-*/
+qa-architecture-*.log
 tests/tmp-*/

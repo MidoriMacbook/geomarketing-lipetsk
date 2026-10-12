@@ -55,10 +55,10 @@ async page => {
   await page.locator('#result').waitFor({ state: 'visible' });
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Mobile horizontal overflow');
   await page.waitForTimeout(1200);
-  await page.screenshot({ path: 'tests/mobile.png' });
+  await page.screenshot({ path: 'tests/artifacts/mobile.png' });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.waitForTimeout(1200);
-  await page.screenshot({ path: 'tests/desktop.png' });
+  await page.screenshot({ path: 'tests/artifacts/desktop.png' });
   assert(errors.length === 0, errors.join('\n'));
   return { passed: ['local Leaflet', 'calculation', 'stale request', 'tile failure/retry', 'API error', 'mobile layout'], pageErrors: errors };
 }
