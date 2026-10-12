@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
     && mkdir /app/cache \
     && chown appuser:appuser /app/cache
 COPY app.py osm.py businesses.py serve.py ./
+COPY src ./src
 COPY static ./static
 COPY data ./data
 USER appuser
