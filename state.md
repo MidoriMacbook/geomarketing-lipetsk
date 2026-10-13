@@ -1,46 +1,51 @@
 # Состояние работы
 
-## Активная итерация: архитектура и редакционный редизайн
+## Завершено: архитектура и редакционный редизайн
 
-Промт пользователя от 12 октября 2026 выполнен по
-docs/plans/2026-10-12-architecture-redesign.md и docs/design/redesign-spec.md.
-Стек, API, модель, storage и DOM-контракты сохраняются.
-Ветка codex/architecture-editorial-redesign, база 0ae232c.
-Базовая проверка: 37 unittest, 19 групп старого браузерного сценария.
-Требуемые документы и CHANGELOG созданы до изменения приложения.
+Промт пользователя от 12 октября 2026 выполнен.
+План docs/plans/2026-10-12-architecture-redesign.md: все задачи закрыты.
+Спецификация docs/design/redesign-spec.md; дерево/переносы — docs/architecture/change-map.md.
+Стек, API, численная модель, geomarketing.saved.v1 и DOM-контракты сохранены.
+Документы/CHANGELOG созданы до изменения приложения и обновлены по этапам.
 
-Backend завершён: коммиты 96983cb и 6342424.
-51 unittest, compile, foreign cwd и import DAG проходят.
-Независимое серверное ревью: Spec PASS / Quality PASS; 33 ответа API совпали
-с исходными, все 37 исходных test methods/assertions сохранены.
-Прямой CLI-тест очищает PYTHONPATH; замечание ревью устранено.
+База 0ae232c; ветка codex/architecture-editorial-redesign включена в main через fast-forward.
+Runtime b82c87b7dc1d56e3bbfdd45fe8115092a16f1940.
+Backend: 96983cb/6342424; frontend:81db43e; docs:a525466; accessibility:b82c87b.
+Последующая итоговая запись меняет только документацию, runtime не меняется.
+Никакого force-push/удаления worktree/ветки не выполнялось.
 
-Frontend завершён: коммит 81db43e; восемь ES-модулей, семь CSS, favicon.
-Старый workspace прошёл после извлечения до редизайна.
-Свежие родительские smoke/workspace/responsive/catalog-matrix/palette PASS,
-pageErrors=[], 15 сочетаний работают. Шесть ширин без переполнения,
-тайлы на снимках загружены полностью, 44×44 targets и клавиатура проверены.
-Независимое frontend-ревью: Spec PASS / Quality APPROVED, существенных замечаний нет.
+Независимые backend/frontend/final reviews: Spec PASS / Quality PASS.
+33 API differential cases совпали с исходной реализацией (кроме UUID);
+AST подтвердил все 37 прежних методов/assertions.
+Два Important CSS-дефекта финального ревью устранены:
+text200 overflow (390→457px) и Save hover contrast1.30→8.04.
+Исходный worker исправил, parent независимо повторил responsive/workspace;
+reviewer перечитал followup и вернул PASS.
 
-Root завершил docs/README/audit/CI/validator/fixtures и карту переносов.
-Валидатор PASS: 61 обязательный файл, DAG, assets, id/aria, палитра.
-Все восемь node --check, полный unittest 51, py_compile и stub scan проходят.
-Docker отсутствует; actual build не выполнялся. Print CSS проверен, PDF не создавался.
-Данные OSM не обновлялись в этой итерации, snapshots неизменны.
+Свежие проверки после fast-forward: 51 unittest, py_compile, validator61 — PASS.
+8 node --check и stub scan — PASS.
+CI branch38344208633 и main38344342448 success, шаги на Linux подтверждены.
+Локально и публично smoke/workspace/responsive/catalog-matrix/palette PASS.
+6 widths360/390/768/1024/1280/1440 без overflow, все тайлы loaded.
+Text200360/390/1024/1280 без overflow/clipping; hover/focus/pressed/saved проверены.
+Две вкладки, storage/WebLocks, failed refresh, custom, CSV/формулы,
+print CSS, API/Leaflet/тайлы/error/retry проверены, pageErrors=[].
 
-Финальное ревью выявило два Important CSS-дефекта: text200 overflow и Save hover.
-Исправлены исходным frontend worker; свежий parent responsive PASS,
-шесть ширин и text200360/390/1024/1280, hover/focus/pressed/saved PASS.
-Ожидается узкое повторное ревью исправлений, затем публикация.
+Публично https://geomarketing-lipetsk.onrender.com.
+Render service srv-db65pi8473hc73d7s5vg, workspace tea-db65k0p42hec73b06s6g.
+Deploy dep-db6qpvij9qps73a5rvr0 live13October2026, commitb82c87b.
+HTTP health200/catalog3districts5businesses/modules8/newHTML/savefixCSS подтверждены.
+15 сочетаний вернули по3 рекомендации sourcecache, без demo.
+Public Git URL требует ручной deploy после зелёного main;
+officialdocs https://render.com/docs/deploys подтверждают отсутствие auto-deploy.
 
-QA Waitress на 127.0.0.1:5082, helper PID 19400, родитель владеет сервером.
-Именованные QA-браузеры: geomarketing-arch, geomarketing-design.
-Workers не запускают сервисы; сохраняют изменения других участников.
-Следующие шаги: frontend review → финальное review → main/CI → Render → public QA.
-Публикация существующего бесплатного сервиса авторизована ранее.
-Render srv-db65pi8473hc73d7s5vg, workspace tea-db65k0p42hec73b06s6g.
-Публичный Git URL требует ручного deploy после зелёного main.
-Проектные QA-артефакты/сырые XML/ревью не коммитить.
+Ограничения: снимки неизменны, OSM неполон/население оценочное;
+новые области и тайлы зависят от сети; модель не учитывает аренду/помещения/маршруты.
+LocalStorage не синхронизируется между устройствами; кэш Render /tmp эфемерный.
+Docker отсутствует — actualbuild unrun; PDFpagination/nativeprint/fullWCAG/
+nativebrowserzoom/Firefox/WebKit/loadtesting не выполнялись.
+QA-скриншоты/сырые XML/ревью игнорируются Git.
+QA localhost5082 helper19400 и именованные browsers закрываются после итоговой записи.
 
 Предыдущая публикация ниже — исторический контекст.
 
