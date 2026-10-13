@@ -81,6 +81,6 @@ Interfaces: consumes завершённые пути backend/frontend; produces 
 Interfaces: consumes весь diff с базой0ae232c; produces проверенную опубликованную версию.
 - [x] Независимые backend/frontend reviews возвращают Spec и Quality verdicts.
 - [x] Полный unittest, compile, node checks, validator, browser smoke/workspace, шесть ширин.
-- [ ] Финальное ревью всего изменения; устранить существенные замечания.
-- [ ] Коммит→main fast-forward→GitHub Actions→ручной Render deploy→публичные проверки.
-- [ ] Подготовить дерево, перемещения/новые/изменённые файлы, обязанности и ограничения.
+- [x] Финальное ревью всего изменения; устранить существенные замечания.
+- [x] Коммит→main fast-forward→GitHub Actions→ручной Render deploy→публичные проверки.
+- [x] Подготовить дерево, перемещения/новые/изменённые файлы, обязанности и ограничения.

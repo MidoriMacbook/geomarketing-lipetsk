@@ -235,3 +235,40 @@
   aria-pressed и видимый focus-outline 3 px; pageErrors=[].
 - Validator PASS (61 файл), node --check browser/responsive.js и git diff --check OK.
 - Проверка root font-size 200% не заменяет полный аудит браузерного zoom или WCAG.
+
+## [2026-10-13] Финальное ревью и публичная публикация
+
+### Что изменено
+- Проверенная ветка перенесена в main через fast-forward, без переписывания истории.
+- Runtime b82c87b7dc1d56e3bbfdd45fe8115092a16f1940 опубликован на прежнем бесплатном Render.
+- Deploy dep-db6qpvij9qps73a5rvr0: live; адрес https://geomarketing-lipetsk.onrender.com.
+- Итоговые документы фиксируют ревью, проверки и ограничения; runtime они не меняют.
+
+### Зачем
+- Новые модули и интерфейс доступны другим посетителям на существующем адресе.
+- Передача включает проверяемую версию приложения и карту ответственности файлов.
+
+### Как работает после изменения
+- Render запускает python serve.py; HTML загружает восемь ES-модулей и семь CSS.
+- Сервис с публичным Git URL требует ручного deploy после зелёного CI.
+  Основание: https://render.com/docs/deploys, раздел Automatic deploys.
+- Снимки работают после перезапуска с пустым временным кэшем.
+
+### Совместимость
+- Финальное whole-branch ревью 0ae232c..b82c87b: Spec PASS / Quality PASS.
+- Оба Important CSS-замечания устранены и проверены отдельными регрессиями.
+- Публичные 15 сочетаний возвращают по три рекомендации, source=cache, не demo.
+
+### Проверка
+- CI ветки: https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/38344208633 — success.
+- CI main: https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/38344342448 — success.
+- Подтверждены все шаги Linux CI: 51 unittest, py_compile, validator и восемь JS syntax checks.
+- После fast-forward локально повторены 51 unittest, py_compile и validator — PASS.
+- Публичные /healthz, /api/catalog, HTML, восемь JS и исправленный save-hover CSS — HTTP 200.
+- Публичные smoke/workspace/responsive/catalog-matrix/palette — PASS.
+- Все шесть ширин: overflow=false, тайлы полностью загружены; text200 на четырёх ширинах PASS.
+- Две вкладки, Web Locks, CSV/формулы, print CSS, layers, custom area и отказ API/Leaflet/тайлов
+  проверены на опубликованном сайте; uncaught pageErrors=[].
+- Docker/PDF pagination/full WCAG/native zoom/Firefox/WebKit/load test не выполнялись.
+- QA-браузеры и локальный тестовый сервер закрываются после записи итогов;
+  публичный сервис остаётся работать.
