@@ -11,6 +11,48 @@ async page => {
   assert(await page.locator('[data-testid="saved-card"]').count() === legacy.length, 'Previous v1 records not restored');
   assert(await page.evaluate(() => JSON.parse(localStorage.getItem('geomarketing.saved.v1'))[0].id) === legacy[0].id, 'Previous v1 record changed');
   await page.locator('[data-testid="compare-place"]').first().check();
+  const save = page.locator('[data-testid="save-place"]').first();
+  const saveAppearance = () => save.evaluate(el => {
+    const styles = getComputedStyle(el);
+    const luminance = color => {
+      const rgb = color.match(/[\d.]+/g).slice(0, 3).map(Number).map(value => {
+        const channel = value / 255;
+        return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
+      });
+      return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
+    };
+    const foreground = luminance(styles.color), background = luminance(styles.backgroundColor);
+    return { contrast:(Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05), foreground:styles.color, background:styles.backgroundColor, transform:styles.transform, focusVisible:el.matches(':focus-visible'), outlineStyle:styles.outlineStyle, outlineWidth:parseFloat(styles.outlineWidth), saved:el.classList.contains('is-saved'), pressed:el.getAttribute('aria-pressed') };
+  });
+  await page.mouse.move(0, 0);
+  await page.keyboard.press('Tab');
+  await save.focus();
+  const unsavedFocus = await saveAppearance();
+  assert(unsavedFocus.contrast >= 4.5 && unsavedFocus.focusVisible && unsavedFocus.outlineStyle !== 'none' && unsavedFocus.outlineWidth >= 3, 'Unsaved focus-visible contrast/outline');
+  await save.hover();
+  await page.waitForTimeout(180);
+  const hoveredSave = await saveAppearance();
+  assert(hoveredSave.contrast >= 4.5, 'Save hover contrast below 4.5: ' + hoveredSave.contrast);
+  await page.mouse.down();
+  try {
+    const pressedSave = await saveAppearance();
+    assert(pressedSave.contrast >= 4.5 && pressedSave.transform !== 'none', 'Save pressed appearance is unclear');
+  } finally { await page.mouse.up(); }
+  await page.waitForFunction(() => document.querySelector('[data-testid="save-place"]').classList.contains('is-saved'));
+  await page.waitForTimeout(180);
+  const savedAppearance = await saveAppearance();
+  assert(savedAppearance.contrast >= 4.5 && savedAppearance.saved && savedAppearance.pressed === 'true', 'Saved action appearance/pressed state');
+  await page.mouse.move(0, 0);
+  await page.keyboard.press('Tab');
+  await save.focus();
+  const savedFocus = await saveAppearance();
+  assert(savedFocus.contrast >= 4.5 && savedFocus.focusVisible && savedFocus.outlineStyle !== 'none' && savedFocus.outlineWidth >= 3, 'Saved focus-visible contrast/outline');
+  await save.hover();
+  await page.mouse.down();
+  try {
+    const savedPressed = await saveAppearance();
+    assert(savedPressed.saved && savedPressed.contrast >= 4.5 && savedPressed.transform !== 'none', 'Saved pressed appearance is unclear');
+  } finally { await page.mouse.up(); }
   const widths = [360, 390, 768, 1024, 1280, 1440];
   const matrix = [];
   for (const width of widths) {
@@ -41,6 +83,26 @@ async page => {
     if (width <= 768) assert(geometry.tableContent > geometry.tableWidth, width + ': comparison scroll missing');
     await page.screenshot({ path:'tests/artifacts/redesign-' + width + '.png', fullPage:true });
     matrix.push({ width, mapHeight:geometry.canvas.height, overflow:false, targets44:true, tiles:geometry.tileState });
+  }
+  const resizedText = [];
+  try {
+    await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+    for (const width of [360, 390, 1024, 1280]) {
+      await page.setViewportSize({ width, height:1000 });
+      const textGeometry = await page.evaluate(() => {
+        const clippedActions = [...document.querySelectorAll('button,.place-actions a,.site-header nav a')]
+          .filter(el => el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden')
+          .filter(el => el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight)
+          .map(el => el.id || el.textContent.trim());
+        return { pageWidth:document.documentElement.scrollWidth, clippedActions };
+      });
+      assert(textGeometry.pageWidth <= width, width + ': 200% text page overflow: ' + textGeometry.pageWidth);
+      assert(!textGeometry.clippedActions.length, width + ': 200% text clipped actions: ' + textGeometry.clippedActions.join(','));
+      await page.screenshot({ path:'tests/artifacts/redesign-text200-' + width + '.png', fullPage:true });
+      resizedText.push({ width, textSize:'200%', overflow:false, actionLabelsFit:true });
+    }
+  } finally {
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
   }
   await page.setViewportSize({ width:360, height:1000 });
   await page.locator('.table-scroll').focus();
@@ -77,5 +139,5 @@ async page => {
   await page.reload();
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout:70000 });
   assert(!errors.length, errors.join('\n'));
-  return { matrix, passed:['legacy-v1','comparison-internal-scroll','44px-targets','keyboard-Escape-focus','reduced-motion','print-CSS','missing-Leaflet-API'], pageErrors:errors };
+  return { matrix, resizedText, saveStates:{ hover:hoveredSave, saved:savedAppearance, unsavedFocus, savedFocus }, passed:['legacy-v1','save-hover-focus-pressed-saved-contrast','comparison-internal-scroll','44px-targets','200%-text-resizing','keyboard-Escape-focus','reduced-motion','print-CSS','missing-Leaflet-API'], pageErrors:errors };
 }

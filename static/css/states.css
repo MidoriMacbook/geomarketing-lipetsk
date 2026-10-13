@@ -1,6 +1,6 @@
 button:disabled,select:disabled { cursor:default; opacity:.55; }
 .primary:hover:not(:disabled),.place-actions .save:hover { background:var(--color-primary-hover); }
-.secondary:hover:not(:disabled),.place-actions a:hover,.saved-card-actions button:hover { background:var(--color-subtle); }
+.secondary:not(.save):hover:not(:disabled),.place-actions a:hover,.saved-card-actions button:hover { background:var(--color-subtle); }
 button:active:not(:disabled),.place-actions a:active { transform:translateY(var(--line)); }
 .site-header nav a:hover,.site-header nav button:hover { color:var(--color-primary-hover); text-decoration:underline; }
 .recommendation.selected { border-color:var(--color-primary); box-shadow:inset var(--space-1) 0 0 var(--color-primary); }

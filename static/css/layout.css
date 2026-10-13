@@ -1,6 +1,7 @@
 .site-header { min-height:var(--size-header); padding:var(--space-4) var(--space-7); display:flex; align-items:center; justify-content:space-between; gap:var(--space-6); border-bottom:var(--line) solid var(--color-border); }
 .page { max-width:var(--size-page); margin:0 auto; padding:var(--space-8) var(--space-7) var(--space-6); }
 .intro { display:flex; align-items:flex-end; justify-content:space-between; gap:var(--space-6); margin-bottom:var(--space-7); }
+.intro>div { min-width:0; max-width:100%; }
 .intro h1 { font-family:var(--font-display); font-size:var(--text-title); line-height:1.05; font-weight:700; letter-spacing:var(--tracking-tight); max-width:var(--size-title-measure); margin:var(--space-3) 0 var(--space-4); }
 .intro p:last-child { max-width:var(--size-copy-measure); color:var(--color-muted); }
 .intro .button { flex-shrink:0; }

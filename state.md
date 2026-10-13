@@ -28,7 +28,12 @@ Root завершил docs/README/audit/CI/validator/fixtures и карту пе
 Docker отсутствует; actual build не выполнялся. Print CSS проверен, PDF не создавался.
 Данные OSM не обновлялись в этой итерации, snapshots неизменны.
 
-QA Waitress на 127.0.0.1:5082, helper PID 36960, родитель владеет сервером.
+Финальное ревью выявило два Important CSS-дефекта: text200 overflow и Save hover.
+Исправлены исходным frontend worker; свежий parent responsive PASS,
+шесть ширин и text200360/390/1024/1280, hover/focus/pressed/saved PASS.
+Ожидается узкое повторное ревью исправлений, затем публикация.
+
+QA Waitress на 127.0.0.1:5082, helper PID 19400, родитель владеет сервером.
 Именованные QA-браузеры: geomarketing-arch, geomarketing-design.
 Workers не запускают сервисы; сохраняют изменения других участников.
 Следующие шаги: frontend review → финальное review → main/CI → Render → public QA.

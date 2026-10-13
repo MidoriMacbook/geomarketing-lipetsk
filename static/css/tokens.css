@@ -22,6 +22,6 @@
  --size-marker-selected:38px; --size-table:760px; --size-dialog:620px; --size-report:180mm;
  --size-page:1720px; --size-settings:230px; --size-settings-min:210px; --size-recommendations:310px;
  --size-recommendations-min:280px; --size-map-desktop:660px; --size-map-tablet:560px; --size-map-mobile:420px;
- --size-header:84px; --size-title-measure:900px; --size-copy-measure:720px; --size-kpi-mobile:110px;
+ --size-header:84px; --size-title-measure:900px; --size-copy-measure:720px; --size-kpi-mobile:110px; --size-kpi-min:8rem;
  --tracking-tight:-.035em; --tracking-label:.075em;
 }
