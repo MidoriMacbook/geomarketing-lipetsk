@@ -68,7 +68,7 @@ QA-артефакты в tests/artifacts и временные ревью игн
 - browser/responsive.js, catalog-matrix.js, palette.js.
 - tests/fixtures/saved-places-v1.json, data/fixtures/example-cache.json.
 - scripts/validate_project.py; scripts/check.py — перенос, а не новая функция.
-- CHANGELOG.md; девять документов architecture/design и текущий план.
+- CHANGELOG.md; восемь документов architecture/design и текущий план.
 - PROJECT_ANALYSIS.md добавлен в Git: обновлён текущий раздел, прежний аудит сохранён.
 
 ## Изменённые существующие файлы
