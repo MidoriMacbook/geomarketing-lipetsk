@@ -1,0 +1,18 @@
+{
+  "name": "geomarketing-lipetsk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "build:material": "rollup --config rollup.config.js",
+    "check:material": "node --check scripts/frontend/material-web-entry.js && rollup --config rollup.config.js"
+  },
+  "dependencies": {
+    "@material/web": "2.5.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "16.0.3",
+    "rollup": "4.64.7"
+  }
+}

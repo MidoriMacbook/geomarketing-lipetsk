@@ -1,78 +1,68 @@
 # Состояние работы
 
-## Завершено: архитектура и редакционный редизайн
+## Current Goal
+Полный cartography/motion редизайн по промту пользователя от 16 октября 2026.
 
-Промт пользователя от 12 октября 2026 выполнен.
-План docs/plans/2026-10-12-architecture-redesign.md: все задачи закрыты.
-Спецификация docs/design/redesign-spec.md; дерево/переносы — docs/architecture/change-map.md.
-Стек, API, численная модель, geomarketing.saved.v1 и DOM-контракты сохранены.
-Документы/CHANGELOG созданы до изменения приложения и обновлены по этапам.
+## Decisions
+- Спецификация docs/specs/2026-10-16-cartography-motion-design.md; пользователь
+  явно поручил исполнить полностью, не останавливаться на плане/согласованиях.
+- Пять требуемых навыков полностью прочитаны parent: frontend-design,
+  redesign-existing-projects, ui-ux-pro-max, taste-skill, soft-skill.
+  Общие defaults React/Tailwind/dark/hero-photo не применяются вопреки брифу.
+- Минеральный фон/графит/терракота/лайм selected; Unbounded+Golos локально,
+  функциональная палитра карты отдельна. Motion только feedback, без бесконечных pulse.
+- Native controls сохраняются; реальный Material md-linear-progress с div fallback;
+  entry будет сокращён до фактически используемого progress. Все старые контракты сохраняются.
+- UI Web Animations cancel-safe; конечный DOM/ARIA сразу, snapshots inert безid/testid;
+  reduced-motion при старте и runtime смене, без зависимостей от animationend.
 
-База 0ae232c; ветка codex/architecture-editorial-redesign включена в main через fast-forward.
-Runtime b82c87b7dc1d56e3bbfdd45fe8115092a16f1940.
-Backend: 96983cb/6342424; frontend:81db43e; docs:a525466; accessibility:b82c87b.
-Последующая итоговая запись меняет только документацию, runtime не меняется.
-Никакого force-push/удаления worktree/ветки не выполнялось.
+## Plan Status
+План docs/plans/2026-10-16-cartography-motion.md.
+Ветка codex/cartography-motion-redesign от main17dc3d8, без worktree.
+Исходные незакоммиченные Material prep файлы сохранены, не откатывать.
+Task1 worker urban_visual: HTML/CSS/assets; hooks готовы, CSS в работе.
+Task3 worker urban_tests: tests/browser/redesign.js/material-web.js; RED получен.
+Task2 worker urban_motion: JS ui/app/map/recommendations/saved, entry/vendor.
+Root owns docs/state/plan/CHANGELOG/README/CI, коммиты, сборку и финальную проверку.
+Ownership disjoint; workers не коммитят и не запускают/останавливают сервер.
 
-Независимые backend/frontend/final reviews: Spec PASS / Quality PASS.
-33 API differential cases совпали с исходной реализацией (кроме UUID);
-AST подтвердил все 37 прежних методов/assertions.
-Два Important CSS-дефекта финального ревью устранены:
-text200 overflow (390→457px) и Save hover contrast1.30→8.04.
-Исходный worker исправил, parent независимо повторил responsive/workspace;
-reviewer перечитал followup и вернул PASS.
+## Evidence
+- Baseline browser390/768/1440 лично просмотрен; overflowfalse, карты420/560/660,
+  material-ready, активных анимаций0. Снимки tests/artifacts/urban-before-*.
+- Skiper UI открыт/просмотрен; screenshot tests/artifacts/skiper-reference.png.
+  Используется визуальный характер, не код/React компоненты.
+- pnpm install --frozen-lockfile: Already up to date, pnpm11.25.0.
+- Context7 official /material-components/material-web: progress props/ARIA/tokens;
+  indeterminate Shadow animations требуют отдельного reduced-motion handling.
+- UIUX focused search reduced-motion verified; focus minimum retry дал AA,
+  Enhanced AAA не объявлять обязательным AA.
+- BrowserRED нового сценария: hooks progress/fallback/status/context/sentinel отсутствовали.
+  ПослеRED запущен workerMotion. HTMLhooks теперь добавлены.
+- Golos/Unbounded Cyrillic+Latin localwoff2+OFL142KB уже получены visualworker.
+- Никаких новых fullunit/browser проходов ещё не было: пользователь просит
+  один итоговый набор после реализации. Не повторять прежние 5матриц безоснования.
 
-Свежие проверки после fast-forward: 51 unittest, py_compile, validator61 — PASS.
-8 node --check и stub scan — PASS.
-CI branch38344208633 и main38344342448 success, шаги на Linux подтверждены.
-Локально и публично smoke/workspace/responsive/catalog-matrix/palette PASS.
-6 widths360/390/768/1024/1280/1440 без overflow, все тайлы loaded.
-Text200360/390/1024/1280 без overflow/clipping; hover/focus/pressed/saved проверены.
-Две вкладки, storage/WebLocks, failed refresh, custom, CSV/формулы,
-print CSS, API/Leaflet/тайлы/error/retry проверены, pageErrors=[].
+## Environment / Next
+QA Waitress localhost5083, root-owned helperPID19132. Логи qa-architecture-*.log ignored.
+Browsers root geomarketing-urban; reference geomarketing-skiper;
+workers geomarketing-visual/geomarketing-test/geomarketing-motion.
+Не taskkill все Python/Chrome; закрыть только свои именованные сеансы и проверенные PID.
+Node C:/Users/Asus/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe.
+CLI C:/Users/Asus/.codex/tools/bin/playwright-cli.cmd; --raw уменьшает вывод.
+Python .venv/Scripts/python.exe; Git/Node/браузер требуют sandbox require_escalated.
+Скилловые task-brief/review-package Bash скрипты нормализовать CRLF в памяти,
+затем pipe GitBash -s -- args. Brief/report paths .superpowers/sdd/2026-10-16-cartography-motion/.
+Subagents allowed by applicable SDD skill; focused no-delegation/no-superpowers prompts.
 
-Публично https://geomarketing-lipetsk.onrender.com.
-Render service srv-db65pi8473hc73d7s5vg, workspace tea-db65k0p42hec73b06s6g.
-Deploy dep-db6qpvij9qps73a5rvr0 live13October2026, commitb82c87b.
-HTTP health200/catalog3districts5businesses/modules8/newHTML/savefixCSS подтверждены.
-15 сочетаний вернули по3 рекомендации sourcecache, без demo.
-Public Git URL требует ручной deploy после зелёного main;
-officialdocs https://render.com/docs/deploys подтверждают отсутствие auto-deploy.
-
-Ограничения: снимки неизменны, OSM неполон/население оценочное;
-новые области и тайлы зависят от сети; модель не учитывает аренду/помещения/маршруты.
-LocalStorage не синхронизируется между устройствами; кэш Render /tmp эфемерный.
-Docker отсутствует — actualbuild unrun; PDFpagination/nativeprint/fullWCAG/
-nativebrowserzoom/Firefox/WebKit/loadtesting не выполнялись.
-QA-скриншоты/сырые XML/ревью игнорируются Git.
-QA localhost5082 helper19400 и именованные browsers закрываются после итоговой записи.
-
-Предыдущая публикация ниже — исторический контекст.
-
-План: docs/plans/2026-10-12-workspace.md. Все задачи 1–6 выполнены.
-Согласован полный этап и новые категории: кофейня, аптека, продукты, пекарня, салон.
-Независимое backend-ревью и итоговое ревью: Spec Pass / Quality Pass.
-Свежие проверки: unittest 37 OK; browser-workspace и browser-smoke OK,
-pageErrors=[]; node --check OK. Проверены сохранения двух вкладок, failed refresh,
-canvas reuse, слои, CSV, print flow, ошибки storage/API/тайлов и мобильный экран.
-Печать визуально проверена через print CSS screenshot; реальный PDF не создавался.
-
-Геоданные: запас конкурентов >=R; pharmacy/beauty обновлены с ключами
-_halo500/_halo450. Импорт отклоняет ошибочные или непокрывающие OSM XML и
-неполную геометрию. Снимки всех 15 сочетаний включены в репозиторий.
-Сырые XML и QA screenshots только в игнорируемых tests/, не публиковать.
-PROJECT_ANALYSIS.md — незакоммиченный файл предыдущего аудита, не изменён.
-
-Приложение опубликовано: код988589c93b015b39a9b475ada0e0f532c1c03fe6,
-deploy dep-db6g2uad0e5s73akcu2g live 12 октября2026. GitHub Actions на
-feature/main — success. Main содержит приложение и итоговый тестовый follow-up.
-Публичные /healthz и /api/catalog OK; все15 сочетаний район/бизнес вернули
-по3 рекомендации без demo. Публичные browser-workspace и browser-smoke OK,
-pageErrors=[]. Сбой мгновенной delete-assertion устранён только в тесте:
-теперь ждём завершения WebLock и обновления storage/DOM/comparison.
-Тестовый follow-up + эти документы не меняют опубликованный runtime.
-Render: существующий бесплатный srv-db65pi8473hc73d7s5vg,
-workspace tea-db65k0p42hec73b06s6g, https://geomarketing-lipetsk.onrender.com.
-Сервис подключён по публичному Git URL и требует ручного deploy после main.
-QA-сервер порт5081 и именованные QA-браузеры закрываются после проверки. Runtime .venv/Scripts/python.exe; Git/runtime в этой среде
-требуют require_escalated. Playwright wrapper C:/Users/Asus/.codex/tools/bin/playwright-cli.cmd.
+Далее: дождаться реализации → один check:material (сам пересобирает bundle),
+51unittest+validator → workspace+redesign в одном QA-сеансе, 3скриншота parentview.
+Отдельные syntax/focused checks допустимы; no broad repeat безновогоfail/changes.
+Valid review packages nonempty ancestor ranges; taskreview Spec+Quality,
+finalwholebranch mostcapable explicitgpt-6-astra. Исправления через оригинального worker.
+Документы обновить фактическими токенами/компонентами/всеми12motion outcomes.
+Послеgreen/review commit→CI→fastforwardmain→manualRender→короткаяpubliccheck.
+Render tea-db65k0p42hec73b06s6g / srv-db65pi8473hc73d7s5vg free, url
+https://geomarketing-lipetsk.onrender.com. PublicGitURL manualdeploy even autoDeployyes
+(official docs verified earlier). Предыдущийruntimeb82c87b/deploydep-db6qpvij9qps73a5rvr0.
+История завершённой архитектуры/51tests/33APIparity в CHANGELOG и Git17dc3d8.
+Docker отсутствует; nativePDF/fullWCAG/crossbrowser не заявлять проверенными.

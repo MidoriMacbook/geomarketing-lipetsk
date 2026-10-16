@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { $, fmt, coords, distance, STORAGE_KEY, node, button, dateText, sourceText, storageStatus, dataDate } from './ui.js';
+import { $, fmt, coords, distance, STORAGE_KEY, node, button, dateText, sourceText, storageStatus, dataDate, reveal, animateUI, exitSnapshot, setRevealed } from './ui.js';
 
 let updateReportAvailability = () => {};
 
@@ -64,7 +64,7 @@ export async function mutateSaved(mutate, allowRepair = false) {
       state.saved = result.next || latest;
       state.repairStorageRaw = null;
       renderSaved();
-      updateSaveButtons();
+      updateSaveButtons(!!result.next);
       storageStatus(result.message);
     });
   }
@@ -111,26 +111,32 @@ export async function savePlace(rec) {
   }, true);
 }
 
-export function updateSaveButtons() {
+export function updateSaveButtons(feedback = false) {
   document.querySelectorAll('[data-testid="save-place"]').forEach(b => {
     const exists = state.saved.some(p => p.id === `${state.current?.analysis_id}:${b.dataset.rank}`);
+    const newlySaved = exists && !b.classList.contains('is-saved');
     b.classList.toggle('is-saved', exists);
     b.setAttribute('aria-pressed', String(exists));
     b.textContent = exists ? 'Сохранено ✓' : 'Сохранить';
     b.setAttribute('aria-label', exists ? `Место ${b.dataset.rank} сохранено` : `Сохранить место ${b.dataset.rank}`);
+    if (feedback && newlySaved) reveal(b, 'save-feedback', { duration: 'fast' });
   });
 }
 
 export function renderSaved() {
+  const previous = new Map([...$('saved-list').children].map(card => [card.dataset.savedId, { card, rect: card.getBoundingClientRect() }]));
+  const nextIds = new Set(state.saved.map(item => item.id));
+  for (const [id, { card }] of previous) if (!nextIds.has(id)) exitSnapshot(card, 'saved-remove');
   state.comparison = new Set([...state.comparison].filter(id => state.saved.some(item => item.id === id)));
   $('saved-list').replaceChildren();
   $('saved-count').textContent = `${state.saved.length} / 12`;
   $('nav-saved-count').textContent = state.saved.length;
-  $('saved-empty').hidden = state.saved.length > 0;
+  setRevealed($('saved-empty'), !state.saved.length, 'empty');
   $('export-csv').disabled = !state.saved.length;
   state.saved.forEach(item => {
     const rec = item.recommendation, card = node('article', 'saved-card');
     card.dataset.testid = 'saved-card';
+    card.dataset.savedId = item.id;
     card.append(node('h3', '', `${item.business_name} · место ${rec.rank}`), node('p', '', item.district_name), node('p', '', coords(rec)), node('p', 'saved-stats', `≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов · радиус ${fmt(rec.radius_m)} м`), node('p', '', `Данные: ${dateText(item.data_date)} · ${sourceText(item.source)}`), node('p', '', `Сохранено: ${dateText(item.saved_at)}`));
     if (item.warning) card.append(node('p', '', item.warning));
     const actions = node('div', 'saved-card-actions'), label = node('label'), checkbox = node('input');
@@ -157,6 +163,14 @@ export function renderSaved() {
     card.append(actions);
     $('saved-list').append(card);
   });
+  for (const card of $('saved-list').children) {
+    const before = previous.get(card.dataset.savedId)?.rect;
+    if (!before) reveal(card, 'saved-enter');
+    else {
+      const after = card.getBoundingClientRect(), x = before.left - after.left, y = before.top - after.top;
+      if (x || y) animateUI(card, [{ transform: `translate(${x}px, ${y}px)` }, { transform: 'translate(0, 0)' }], 'saved-flip');
+    }
+  }
   renderComparison();
   updateReportAvailability();
 }
@@ -177,7 +191,9 @@ export function fillTable(body, items) {
 
 export function renderComparison() {
   const rows = comparisonRows();
-  $('comparison').hidden = !rows.length;
+  const comparison = $('comparison'), wasVisible = !comparison.hidden;
+  setRevealed(comparison, !!rows.length, 'comparison');
   fillTable($('comparison').querySelector('tbody'), rows);
+  if (wasVisible && rows.length) reveal(comparison.querySelector('table'), 'comparison-update', { duration: 'fast' });
   updateReportAvailability();
 }

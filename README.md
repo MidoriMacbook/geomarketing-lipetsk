@@ -33,6 +33,17 @@ python -m venv .venv
 HOST и PORT задаются окружением. `python app.py` — локальный режим
 на http://127.0.0.1:5001 без отладчика по умолчанию.
 
+Готовый Material Web bundle включён в `static/vendor`, поэтому для обычного
+Python-запуска Node.js не нужен. Если меняется список Material-компонентов:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm run check:material
+```
+
+Принятое разделение Material Web и визуального референса Skiper UI описано в
+[docs/design/material-web.md](docs/design/material-web.md).
+
 Сервер и API обслуживаются одним сайтом, адресов localhost в клиенте нет.
 Для новой области без сохранённой копии нужен доступный Overpass;
 для подложки карты нужен интернет.
@@ -41,7 +52,8 @@ HOST и PORT задаются окружением. `python app.py` — лока
 
 `app.py` собирает Flask-приложение, `serve.py` запускает Waitress.
 Внутренние модули: `src/routes → services → domain/utils`, настройки —
-`src/config.py`. Клиент — восемь ES-модулей и семь CSS-файлов без сборщика.
+`src/config.py`. Клиент — восемь ES-модулей и семь CSS-файлов; код приложения
+не требует сборщика, отдельный Material vendor собирается Rollup и хранится в Git.
 Корневые `osm.py` и `businesses.py` сохраняют старые публичные импорты.
 
 - [Архитектура](docs/architecture/overview.md), [сервер](docs/architecture/backend.md),
@@ -73,7 +85,8 @@ node --check static/js/ui.js
 ```
 
 51 серверный тест работает без сети. GitHub Actions запускает Python-тесты,
-компиляцию, структурный валидатор и синтаксические проверки JS на Linux.
+компиляцию, структурный валидатор, синтаксические проверки JS и воспроизводимую
+сборку Material на Linux (Node24, pnpm11.25.0).
 
 Браузерная проверка: установленный playwright-cli, Chrome и запущенный сервер.
 
@@ -91,3 +104,9 @@ responsive проверяет 360/390/768/1024/1280/1440 px, прежние со
 клавиатуру и print CSS. catalog-matrix проверяет все 15 сочетаний.
 Для проверки реальных тайлов нужен интернет. Эти проверки не подтверждают
 полноту геоданных OSM; фактическая сборка Docker и пагинация PDF пока не проверены.
+
+Для итерации cartography/motion достаточно одного итогового QA-сеанса:
+`tests/browser/workspace.js` проверяет прежние сценарии,
+`tests/browser/redesign.js` — новые состояния, движение, reduced-motion,
+контраст, 200% текста и снимки390/768/1440 px. Это разные проверки;
+нет необходимости каждый раз повторять все исторические матрицы.

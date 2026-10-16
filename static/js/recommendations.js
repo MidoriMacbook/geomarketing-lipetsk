@@ -1,23 +1,28 @@
 import { state } from './state.js';
-import { $, fmt, coords, distance, node, button, dateText, sourceText, dataDate } from './ui.js';
+import { $, fmt, coords, distance, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger } from './ui.js';
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker } from './map.js';
 import { updateReportAvailability } from './report.js';
 
+let renderedAnalysisId = null;
 
 export function selectPlace(rank, pan = true) {
+  const changed = state.selectedRank !== rank;
   state.selectedRank = rank;
   document.querySelectorAll('[data-testid="recommendation-card"]').forEach(c => {
     const active = +c.dataset.rank === rank;
     c.classList.toggle('selected', active);
     c.querySelector('.place-select').setAttribute('aria-pressed', active);
+    if (active && changed) reveal(c, 'selection', { duration: 'fast' });
   });
-  selectMarker(rank, pan);
+  selectMarker(rank, pan, changed);
 }
 
 export function showResult(data) {
+  const newAnalysis = renderedAnalysisId !== data.analysis_id;
+  renderedAnalysisId = data.analysis_id;
   $('recommendation-list').replaceChildren();
-  $('result-empty').hidden = data.recommendations.length>0;
+  setRevealed($('result-empty'), !data.recommendations.length, 'empty');
   $('result').hidden = !data.recommendations.length;
   if (!data.recommendations.length) {
     $('result-empty').querySelector('h3').textContent = 'Подходящих мест не найдено';
@@ -60,6 +65,7 @@ export function showResult(data) {
     actions.append(save, copy, osm);
     card.append(heading, coordinate, metrics, node('p', 'nearest', `Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`), actions);
     $('recommendation-list').append(card);
+    if (newAnalysis) reveal(card, 'recommendation', { delay: index * motionStagger(), duration: 'slow', easing: 'emphasized' });
   });
   updateSaveButtons();
   $('kpi-residents').textContent = fmt(data.stats.residents);
@@ -67,11 +73,14 @@ export function showResult(data) {
   $('kpi-competitors').textContent = fmt(data.stats.competitors);
   $('kpi-places').textContent = data.recommendations.length;
   $('kpi-business').textContent = data.business_name;
+  if (newAnalysis) ['residents', 'houses', 'competitors', 'places'].forEach(key => reveal($('kpi-'+key), 'kpi'));
   $('map-context').textContent = `${data.district_name} · ${data.business_name}`;
+  if ($('analysis-context')) $('analysis-context').textContent = `${data.district_name} · ${data.business_name}`;
   $('source').textContent = `Источник: ${sourceText(data.source)}. Дата самой ранней копии: ${dateText(dataDate(data))}. Население оценено по площади и этажности домов.`;
   const warning = [data.source === 'demo'?'Показаны демонстрационные данные: не используйте их для выбора места без проверки.': '', data.warning, data.notice].filter(Boolean).join(' ');
   $('data-warning').textContent = warning;
   $('data-warning').hidden = !warning;
+  if (warning && newAnalysis) reveal($('data-warning'), 'notice');
   $('data-section').hidden = false;
   updateReportAvailability();
 }
