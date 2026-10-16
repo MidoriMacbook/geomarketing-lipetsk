@@ -233,9 +233,25 @@ async page => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.waitForFunction(() => !document.getAnimations().some(animation => animation.id.startsWith('gm:') && animation.playState === 'running'));
   await page.keyboard.press('Escape');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await clearTrace();
   const reducedRequest = holdRequest();
   await page.locator('#refresh-data').click(); await reducedRequest;
+  await page.waitForFunction(() => {
+    const progress = document.querySelector('#analysis-progress md-linear-progress');
+    return progress.indeterminate && progress.shadowRoot?.getAnimations({ subtree: true }).some(animation => animation.playState === 'running');
+  });
+  metrics.motion.materialProgressRunning = await page.locator('#analysis-progress md-linear-progress').evaluate(node =>
+    node.shadowRoot.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length);
+  assert(await page.locator('#analysis-progress md-linear-progress').isVisible(), 'Held refresh has no visible Material indeterminate progress');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.locator('#analysis-progress md-linear-progress').evaluate(async node => {
+    await node.updateComplete;
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  });
+  assert(await page.locator('#analysis-progress md-linear-progress').evaluate(node =>
+    !node.shadowRoot.getAnimations({ subtree: true }).some(animation => animation.playState === 'running')),
+  'Runtime reduced motion leaves Material ShadowRoot animations running');
   assert(await page.locator('#analysis-progress .progress-fallback').isVisible(), 'Reduced motion has no static waiting indicator');
   assert(await page.locator('#analysis-progress .progress-fallback').getAttribute('aria-valuenow') === null, 'Waiting indicator invents a progress percentage');
   assert(await page.locator('#analysis-progress md-linear-progress').isHidden(), 'Reduced motion still shows indeterminate Material motion');
@@ -330,7 +346,16 @@ async page => {
   await nextFrame();
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Mobile 200% text causes page overflow');
   assert(await page.locator('#run').isVisible() && await page.locator('#map').isVisible(), '200% text obscures analysis controls');
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await nextFrame();
+  const metricHelpers = await page.locator('.place-metrics small').evaluateAll(nodes => nodes.map(node => ({
+    text: node.textContent, width: node.clientWidth, scrollWidth: node.scrollWidth,
+  })));
+  assert(metricHelpers.length >= 4, 'Desktop 200% text check has no rendered metric helpers');
+  assert(metricHelpers.every(node => node.scrollWidth <= node.width), `Desktop 200% metric helper text escapes its column: ${JSON.stringify(metricHelpers)}`);
+  metrics.textScale = { mobilePageWidth: 390, desktopPageWidth: 1440, scale: 2, metricHelpers };
   await page.evaluate(size => { document.documentElement.style.fontSize = size; }, originalText);
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => { window.print = () => { window.__urbanPrinted = true; }; });
   await page.locator('#print-report').click();
   await page.evaluate(() => {
