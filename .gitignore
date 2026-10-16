@@ -221,6 +221,7 @@ __marimo__/
 
 # Local runtime data and tooling
 .venv/
+node_modules/
 .idea/
 cache/
 .playwright-cli/

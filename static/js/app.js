@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { $, fmt, STORAGE_KEY, showError, storageStatus } from './ui.js';
+import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog } from './ui.js';
 import { configureSaved, loadSaved, renderSaved, updateSaveButtons } from './saved-places.js';
 import { exportCSV, printReport, updateReportAvailability } from './report.js';
 import { configureMap, initMap, clearAnalysisMap, clearPreview, updateCustomUI, drawPreview, drawMap, drawZones, fitArea, toggleLayer } from './map.js';
@@ -8,13 +8,15 @@ import { cancelRequest, fetchCatalog, fetchCalculation, beginCatalogRequest, beg
 
 
 function bootstrap() {
+  initMotion();
+  initDialogMotion($('model-dialog'));
   function resetSelection() {
     cancelRequest();
     state.current = null;
     state.currentRequestKey = null;
     clearAnalysisMap();
     $('result').hidden = true;
-    $('result-empty').hidden = false;
+    setRevealed($('result-empty'), true, 'empty');
     $('data-section').hidden = true;
     $('error').hidden = true;
     $('loading-hint').hidden = true;
@@ -24,6 +26,8 @@ function bootstrap() {
     $('run').disabled = !state.catalog;
     $('refresh-data').disabled = false;
     $('run').textContent = 'Найти места →';
+    setAnalysisState('initial');
+    if ($('analysis-context') && state.catalog) $('analysis-context').textContent = `${$('district').selectedOptions[0].textContent} · ${$('business').selectedOptions[0].textContent}`;
     ['residents', 'houses', 'competitors', 'places'].forEach(key => $('kpi-'+key).textContent = '—');
     updateReportAvailability();
   }
@@ -55,6 +59,7 @@ function bootstrap() {
     catch {
       $('catalog-status').firstChild.textContent = 'Не удалось загрузить настройки. Проверьте соединение и повторите попытку. ';
       $('retry-catalog').hidden = false;
+      setAnalysisState('error', 'Настройки недоступны · повторите загрузку');
     }
     finally {
       finishCatalogRequest(controller);
@@ -89,6 +94,7 @@ function bootstrap() {
     $('run').textContent = 'Рассчитываем…';
     $('loading-hint').hidden = false;
     $('loading-hint').textContent = preserveResult?'Обновляем расчёт. Пока показан предыдущий успешный результат.': 'Загрузка и расчёт могут занять до минуты.';
+    setAnalysisState(preserveResult ? 'refreshing' : 'calculating');
     if (!preserveResult) {
       $('result-empty').querySelector('h3').textContent = 'Ищем подходящие места';
       $('result-empty').querySelector('p').textContent = 'Сопоставляем жителей и конкурентов в выбранной области.';
@@ -105,11 +111,13 @@ function bootstrap() {
       drawZones();
       showResult(data);
       fitArea(data);
+      setAnalysisState('success', data.recommendations.length ? 'Расчёт готов · выберите место на карте' : 'Расчёт готов · подходящих мест не найдено');
     }
     catch (err) {
       if (version !== state.requestVersion)return;
       const message = request.timedOut?'Загрузка заняла слишком много времени. Повторите попытку или выберите готовый район.': err.user?err.message: err instanceof TypeError?'Нет связи с сервером. Проверьте интернет и повторите попытку.': 'Не удалось выполнить расчёт. Повторите попытку позже.';
       showError((preserveResult?'Обновить расчёт не удалось. Показан предыдущий успешный результат. ': '')+message);
+      setAnalysisState('error', preserveResult ? 'Обновление не удалось · показан предыдущий расчёт' : 'Расчёт недоступен · повторите попытку');
       if (!preserveResult) {
         $('result-empty').querySelector('h3').textContent = 'Расчёт пока недоступен';
         $('result-empty').querySelector('p').textContent = 'Повторите попытку или измените область поиска. Сохранённые места доступны ниже.';
@@ -152,12 +160,12 @@ function bootstrap() {
   });
   $('export-csv').addEventListener('click', exportCSV);
   $('print-report').addEventListener('click', printReport);
-  $('model-button').addEventListener('click', () => $('model-dialog').showModal());
-  $('close-model').addEventListener('click', () => $('model-dialog').close());
+  $('model-button').addEventListener('click', () => openDialog($('model-dialog')));
+  $('close-model').addEventListener('click', () => closeDialog($('model-dialog')));
   $('model-dialog').addEventListener('click', e => {
     if (e.target === $('model-dialog')) {
       const box = e.target.getBoundingClientRect();
-      if (e.clientX<box.left||e.clientX>box.right||e.clientY<box.top||e.clientY>box.bottom)e.target.close();
+      if (e.clientX<box.left||e.clientX>box.right||e.clientY<box.top||e.clientY>box.bottom) closeDialog(e.target);
     }
   });
   window.addEventListener('storage', event => {

@@ -1,5 +1,7 @@
 name: Tests
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -15,6 +17,10 @@ jobs:
       - run: python scripts/validate_project.py
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run check:material
+      - run: git diff --exit-code -- static/vendor/material-web/material-components.js
       - run: |
           for module in static/js/*.js; do node --check "$module"; done
