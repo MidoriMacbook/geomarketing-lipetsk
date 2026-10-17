@@ -27,6 +27,6 @@
   validator/syntax, screenshots desktop/mobile/200%.
 
 ## Task3: Release
-- [ ] Independent whole-branch review, fix concrete issues and document evidence.
-- [ ] Feature CI, main/Render, public browser/asset verification.
-- [ ] Update docs/state/session-log and close own QA processes.
+- [x] Independent whole-branch review, fix concrete issues and document evidence.
+- [x] Feature CI, main/Render, public browser/asset verification.
+- [x] Update docs/state/session-log and close own QA processes.

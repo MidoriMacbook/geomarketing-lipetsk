@@ -1,17 +1,24 @@
 # Состояние работы
 
 ## Current Goal
-Текущий запрос: контраст разделов/карты и печатающийся h1 при первом открытии.
-Feature codex/contrast-and-typed-intro, base c8c14a2; plan
-docs/plans/2026-10-17-contrast-intro.md Task1/2 выполнены, Task3 review/CI/release далее.
+Завершено: контраст разделов/карты и печатающийся h1 при первом открытии.
+Main/runtime10295c9ea65cd74ccf53c824c15fec74970ba264,
+Render dep-db9s2prm8hqs73aqqrj0 live17октября21:42:53Москва.
+Feature codex/contrast-and-typed-intro сохранена, base c8c14a2; plan
+docs/plans/2026-10-17-contrast-intro.md выполнен, verification одноимённый.
 intro.js (10й module) visual aria-hidden chars/full h1label, originalnodes restored,
 sessionguard, reduce/print/hidden/blockedstorage/first+third animation throw GREEN.
 Typed geometry390/768/200% stable67/84/260, no overflow. Map4differentcolors/rings,
 zones maxopacity.42/sharedcanvas2. Settings pink scope +dark text; sections/card outlines.
 Original workspace19groups/counters/dark/selected/palette/redesign GREEN;
 validator63/10JSsyntax/diff. Review Important(controls/selection) fixed RED→GREEN,
-final quality APPROVED working tree. Mobile KPI padding regression RED→GREEN follow-up.
-Own localhost5085 helper23380, browser geomarketing-contrast. Source not yet published.
+final quality APPROVED head10295c9. Mobile KPI padding regression RED→GREEN.
+Feature CI39059131265/main CI39059223848 success (включая51backendtests).
+Public intro scenario/real API/map390/768/1440/save2/compare2/контраст GREEN,
+pageErrors[], mobile all6tiles opacity1,20asset hashes совпали с Git.
+Свои QA browsers geomarketing-contrast/public закрыты, helper23380/child33228
+остановлены после проверки commandline; localhost5085 не слушается.
+Следующий commit только документы [skip render], runtime не меняется.
 Ниже предыдущая завершённая публикация:
 
 Завершено: анимация чисел + палитра с изображения пользователя.

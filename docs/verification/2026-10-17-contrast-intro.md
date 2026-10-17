@@ -32,5 +32,15 @@
 getAnimations: past-end paused эффекты исключаются из этого списка. Это настройка
 QA для детерминированного снимка, production не приостанавливает эффекты.
 
-CI/review/public/Render идентификаторы записываются после фактической публикации.
+Whole-branch review c8c14a2..10295c9: Spec PASS, Quality APPROVED,
+открытых замечаний нет. Source CI39059131265 success, main fast-forward10295c9.
+Main CI39059223848 success. Render dep-db9s2prm8hqs73aqqrj0 live
+17октября21:42:53Москва, runtime10295c9ea65cd74ccf53c824c15fec74970ba264.
+На публичном сайте contrast-intro scenario GREEN (15glyphs/fullAX/geometry,
+surfaces/map/ring/reload/reduce/print/hidden/fallback), pageErrors[].
+Реальный API/health200, карта390/768/1440, сохранение2/сравнение2,
+initial reduce0shadow animations; контрасты controls/selection проверены повторно.
+При первом paint mobile был1готовый tile; целевая проверка после загрузки
+подтвердила6из6, без overflow. Tablet/desktop12/16. Mobile-map screenshot просмотрен.
+SHA-256 всех20CSS/JS/HTML/favicon/Material assets совпадают с Git runtime.
 Проверка Chromium/AX не заменяет полный аудит assistive technologies и других engines.
