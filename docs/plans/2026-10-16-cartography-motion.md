@@ -30,11 +30,11 @@ Ownership: только эти файлы; не менять JS/test/bundle/docs
 Interfaces: consumes прежние DOM contracts; produces hooks/spec из раздела DOM,
 семантические токены прежних имён + motion-fast/base/slow/stagger и ease-standard/emphasized/spring.
 Security flag: none.
-- [ ] Применить согласованную палитру/шрифты/сетки и новую композицию всех разделов.
-- [ ] Добавить hooks analysis-progress/status/context/header-sentinel, md-linear-progress/fallback.
-- [ ] Полная CSS-система состояний, первый экран, reduced-motion/print, targets/contrast/text200.
-- [ ] Шрифты локальные с лицензиями; favicon/знак согласованы; никакой fake data/декоративной карты.
-- [ ] Сделать diff check и визуальный self-review без повторения итогового набора.
+- [x] Применить согласованную палитру/шрифты/сетки и новую композицию всех разделов.
+- [x] Добавить hooks analysis-progress/status/context/header-sentinel, md-linear-progress/fallback.
+- [x] Полная CSS-система состояний, первый экран, reduced-motion/print, targets/contrast/text200.
+- [x] Шрифты локальные с лицензиями; favicon/знак согласованы; никакой fake data/декоративной карты.
+- [x] Сделать diff check и визуальный self-review без повторения итогового набора.
 
 ## Task 2: Motion и Material integration
 
@@ -45,12 +45,12 @@ Interfaces: consumes hooks/tokens Task1; produces animateUI/animation cleanup,
 setAnalysisState, native dialog choreography и поведение по спецификации.
 Security flag: security — сохраняются безопасный DOM и границы записи storage.
 Does NOT cover: backend/newdata/auth; motion не применяется per-point к3600cells.
-- [ ] Начать после RED теста Task3: actual progress отсутствует в прежнем DOM.
-- [ ] Добавить конечные DOM/ARIA состояния и cancel-safe Web Animations helpers.
-- [ ] Связать 12 типов motion с реальными событиями, new analysis_id и успешной записью.
-- [ ] Настроить reduced-motion runtime change, native controls/focus и vendor fallback.
-- [ ] Оставить в Material entry фактически используемый progress, без новых зависимостей.
-- [ ] Syntax/diff self-check; сборку и общий браузерный набор выполняет parent один раз.
+- [x] Начать после RED теста Task3: actual progress отсутствует в прежнем DOM.
+- [x] Добавить конечные DOM/ARIA состояния и cancel-safe Web Animations helpers.
+- [x] Связать 12 типов motion с реальными событиями, new analysis_id и успешной записью.
+- [x] Настроить reduced-motion runtime change, native controls/focus и vendor fallback.
+- [x] Оставить в Material entry фактически используемый progress, без новых зависимостей.
+- [x] Syntax/diff self-check; сборку и общий браузерный набор выполняет parent один раз.
 
 ## Task 3: Браузерные проверки и итоговая передача
 
@@ -59,12 +59,12 @@ Ownership: только эти тесты. Документы/CI/коммиты/
 Interfaces: consumes hooks/Animation.id gm:* /public functions из Task1/2;
 produces один прицельный браузерный сценарий и actual Material DOM-check.
 Security flag: none.
-- [ ] Написать новый тест до production motion; запустить до первой проверки, увидеть RED.
-- [ ] Проверить busy/refresh/error/stagger/selection/save/compare/dialog/notices/custom/print.
-- [ ] Проверить rapid changes и runtime reduced-motion, bundle fallback, 200% текста.
-- [ ] Итоговый прогон parent: workspace + redesign в одном QA-сеансе, screenshots390/768/1440.
-- [ ] Итоговый набор parent: check:material,51 unittest,validator; независимое ревью.
-- [ ] Обновить design-system/redesign-spec/material-web/frontend/CHANGELOG/state.
+- [x] Написать новый тест до production motion; запустить до первой проверки, увидеть RED.
+- [x] Проверить busy/refresh/error/stagger/selection/save/compare/dialog/notices/custom/print.
+- [x] Проверить rapid changes и runtime reduced-motion, bundle fallback, 200% текста.
+- [x] Итоговый прогон parent: workspace + redesign в одном QA-сеансе, screenshots390/768/1440.
+- [x] Итоговый набор parent: check:material,51 unittest,validator; независимое ревью.
+- [x] Обновить design-system/redesign-spec/material-web/frontend/CHANGELOG/state.
 - [ ] После CI опубликовать на прежнем Render, проверить публичную новую версию.
 
 Preflight: Task2 consumes ровно hooks/tokens Task1; Task3 tests их и поведение Task2.

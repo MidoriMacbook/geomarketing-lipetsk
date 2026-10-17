@@ -1,68 +1,67 @@
 # Состояние работы
 
 ## Current Goal
-Полный cartography/motion редизайн по промту пользователя от 16 октября 2026.
+Завершить публикацию cartography/motion редизайна в GitHub main и Render.
+Пользователь 17 октября явно ждёт изменения в репозитории и на Render.
 
 ## Decisions
-- Спецификация docs/specs/2026-10-16-cartography-motion-design.md; пользователь
-  явно поручил исполнить полностью, не останавливаться на плане/согласованиях.
-- Пять требуемых навыков полностью прочитаны parent: frontend-design,
-  redesign-existing-projects, ui-ux-pro-max, taste-skill, soft-skill.
-  Общие defaults React/Tailwind/dark/hero-photo не применяются вопреки брифу.
-- Минеральный фон/графит/терракота/лайм selected; Unbounded+Golos локально,
-  функциональная палитра карты отдельна. Motion только feedback, без бесконечных pulse.
-- Native controls сохраняются; реальный Material md-linear-progress с div fallback;
-  entry будет сокращён до фактически используемого progress. Все старые контракты сохраняются.
-- UI Web Animations cancel-safe; конечный DOM/ARIA сразу, snapshots inert безid/testid;
-  reduced-motion при старте и runtime смене, без зависимостей от animationend.
+- Согласованный brief16октября: docs/specs/2026-10-16-cartography-motion-design.md.
+- Пять обязательных дизайн-навыков применены; стек Flask/HTML/CSS/JS/Leaflet сохранён.
+- Mineral/graphite/terracotta, lime selected; локальные Unbounded/Golos+OFL.
+- Native controls сохранены, реальный Material md-linear-progress; div fallback.
+- CSS/WAAPI cancel-safe, конечные DOM/ARIA/focus сразу; runtime reduced-motion.
+- API/модель/storagev1/WebLocks/CSV/print прежние. Никаких fake data на public.
+- Полная реализация уже авторизована, как и обновление прежнего бесплатного Render.
+- Не повторять одинаковые полные suites без новой ошибки/изменения.
 
 ## Plan Status
-План docs/plans/2026-10-16-cartography-motion.md.
-Ветка codex/cartography-motion-redesign от main17dc3d8, без worktree.
-Исходные незакоммиченные Material prep файлы сохранены, не откатывать.
-Task1 worker urban_visual: HTML/CSS/assets; hooks готовы, CSS в работе.
-Task3 worker urban_tests: tests/browser/redesign.js/material-web.js; RED получен.
-Task2 worker urban_motion: JS ui/app/map/recommendations/saved, entry/vendor.
-Root owns docs/state/plan/CHANGELOG/README/CI, коммиты, сборку и финальную проверку.
-Ownership disjoint; workers не коммитят и не запускают/останавливают сервер.
+Ветка codex/cartography-motion-redesign от17dc3d8, безworktree.
+Коммиты92053e9,7db9c3f,2caac11; HEAD2caac1140175eef94aa1c1b6728212fcf71675cb.
+Ветка уже отправлена origin. Main пока17dc3d8.
+Task1 completed, повторное независимое review PASS/APPROVED17октября.
+Task2 review PASS/APPROVED. Task3 PASS/APPROVED с minor test-harness followups.
+Финальный whole-branch/security review publication_review (gpt-6-astra):
+Spec PASS / Quality APPROVED, нет Critical/Important, нет новых security defects.
+Minor: persistent test initializer; weak any-pane/FLIP assertions. Parent recorded
+в docs/verification/2026-10-17-publication.md; продукт не затронут.
+Трасса фактически подтверждает оба pane и saved-flip. QAпорядок workspace→redesign.
+Root owns docs/CI/коммиты/публикацию; исходная пользовательская Material prep сохранена.
 
 ## Evidence
-- Baseline browser390/768/1440 лично просмотрен; overflowfalse, карты420/560/660,
-  material-ready, активных анимаций0. Снимки tests/artifacts/urban-before-*.
-- Skiper UI открыт/просмотрен; screenshot tests/artifacts/skiper-reference.png.
-  Используется визуальный характер, не код/React компоненты.
-- pnpm install --frozen-lockfile: Already up to date, pnpm11.25.0.
-- Context7 official /material-components/material-web: progress props/ARIA/tokens;
-  indeterminate Shadow animations требуют отдельного reduced-motion handling.
-- UIUX focused search reduced-motion verified; focus minimum retry дал AA,
-  Enhanced AAA не объявлять обязательным AA.
-- BrowserRED нового сценария: hooks progress/fallback/status/context/sentinel отсутствовали.
-  ПослеRED запущен workerMotion. HTMLhooks теперь добавлены.
-- Golos/Unbounded Cyrillic+Latin localwoff2+OFL142KB уже получены visualworker.
-- Никаких новых fullunit/browser проходов ещё не было: пользователь просит
-  один итоговый набор после реализации. Не повторять прежние 5матриц безоснования.
+- pnpm install --frozen-lockfile: Already up to date, pnpm11.25.
+- check:material: PASS, локальныйprogressbundle38866bytes, безNodeвproduction.
+-51unittest OK; validatorPASS61files;8JSsyntaxPASS; gitdiffcheckPASS; stubsnone.
+- workspace.js19groups PASS/pageErrors[] безизменениястарыхassertions.
+- redesign.js PASS/pageErrors[]: busy/refresh/error/stagger/save/locks/dialog/custom/
+  cancellation/print/Materialmissingbundle/runtimeShadowreduced.
+-390/768/1440: scrollWidthсоответствуетviewport; карты420/560/660;tiles6/12/16allloaded.
+- Textcontrast4.99–15.68, meaningfulselectborder3.78; targets>=44includingpressed.
+-200%mobile/desktopPASS, metrichelpers122/122. KPIwrap/metricwrap/pressscale исправлены.
+- Реальныеgm:*effects;stagger0/75/150;MaterialShadow4running→runtimeReduce0running.
+- Parent лично просмотрел финальные3screens tests/artifacts/urban-final-*.
+- GitHubCI39014252941 completed/success для полногоHEAD2caac1140175eef94aa1c1b6728212fcf71675cb.
+  https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/39014252941
+- Baseline/Skiper/Context7/UIUXresearch описаныспеком/CHANGELOG, не повторять.
 
-## Environment / Next
-QA Waitress localhost5083, root-owned helperPID19132. Логи qa-architecture-*.log ignored.
-Browsers root geomarketing-urban; reference geomarketing-skiper;
-workers geomarketing-visual/geomarketing-test/geomarketing-motion.
-Не taskkill все Python/Chrome; закрыть только свои именованные сеансы и проверенные PID.
-Node C:/Users/Asus/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe.
-CLI C:/Users/Asus/.codex/tools/bin/playwright-cli.cmd; --raw уменьшает вывод.
-Python .venv/Scripts/python.exe; Git/Node/браузер требуют sandbox require_escalated.
-Скилловые task-brief/review-package Bash скрипты нормализовать CRLF в памяти,
-затем pipe GitBash -s -- args. Brief/report paths .superpowers/sdd/2026-10-16-cartography-motion/.
-Subagents allowed by applicable SDD skill; focused no-delegation/no-superpowers prompts.
+## Next
+Finalreview закрыт; minor test-harness followups записаны. Далее fastforwardmain/push → mainCI →
+Rendermanualdeploy → shortpublichealth/API/newassets+visualcheck → auditdocscommit.
+Не останавливаться после плана; no redundant permission questions.
 
-Далее: дождаться реализации → один check:material (сам пересобирает bundle),
-51unittest+validator → workspace+redesign в одном QA-сеансе, 3скриншота parentview.
-Отдельные syntax/focused checks допустимы; no broad repeat безновогоfail/changes.
-Valid review packages nonempty ancestor ranges; taskreview Spec+Quality,
-finalwholebranch mostcapable explicitgpt-6-astra. Исправления через оригинального worker.
-Документы обновить фактическими токенами/компонентами/всеми12motion outcomes.
-Послеgreen/review commit→CI→fastforwardmain→manualRender→короткаяpubliccheck.
-Render tea-db65k0p42hec73b06s6g / srv-db65pi8473hc73d7s5vg free, url
-https://geomarketing-lipetsk.onrender.com. PublicGitURL manualdeploy even autoDeployyes
-(official docs verified earlier). Предыдущийruntimeb82c87b/deploydep-db6qpvij9qps73a5rvr0.
-История завершённой архитектуры/51tests/33APIparity в CHANGELOG и Git17dc3d8.
-Docker отсутствует; nativePDF/fullWCAG/crossbrowser не заявлять проверенными.
+## Environment
+cwd C:/Users/Asus/Desktop/lpskmrkt; PowerShell.
+Git/Node/браузер require_escalated. Gitidentity percommand MidoriMacbook /
+257091193+MidoriMacbook@users.noreply.github.com. No forcepush.
+Python .venv/Scripts/python.exe; pnpm11.25; Nodecacheprimaryruntime.
+CLI C:/Users/Asus/.codex/tools/bin/playwright-cli.cmd --raw -s=NAME.
+17октября CLIlist no browsers; старогоhelperPID19132 нет. Локальный сервер
+5083 не запускать безнадобности; дляпубликации нужен толькоfreshpublicbrowser.
+Нельзя taskkill все Python/Chrome. Закрытьтолько собственныйименованныйbrowser.
+Reviewpackages .superpowers/sdd/2026-10-16-cartography-motion/ (ignored).
+Renderworkspace tea-db65k0p42hec73b06s6g,service srv-db65pi8473hc73d7s5vg,free.
+https://geomarketing-lipetsk.onrender.com
+Previouslivecommitb82c87b/deploydep-db6qpvij9qps73a5rvr0.
+PublicGitURL: manualdeploy нужен несмотряgenericautoDeployyes (официальныедокументы
+проверены, историческиruntimeнеобновлялсяпоследокументальногопуша17dc).
+Проверитьlistdeploysпослемainpush: еслиновыйdeployужеесть, неtriggerдубликат.
+Docker/nativePDF/fullWCAG/другиедвижки/полнотаOSM непроверены.
