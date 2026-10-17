@@ -10,6 +10,8 @@
   доступен сразу, reduce/print/hidden/error раскрывают его без ожидания.
 - Новый изолированный intro.js без зависимостей, без изменений модели/API/storagev1.
 - Проверки и сведения о публикации: docs/verification/2026-10-17-contrast-intro.md.
+- Runtime10295c9 опубликован на Render, deploy dep-db9s2prm8hqs73aqqrj0 live;
+  public карта/intro/сохранение/сравнение/контраст и20asset hashes проверены.
 
 ## [2026-10-17] Счётчики чисел
 
