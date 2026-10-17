@@ -10,8 +10,8 @@ async original => {
     await page.emulateMedia({reducedMotion:'no-preference'});
     const response=await page.request.get(base+'/api/calculate?district=eleytsky&type=cafe');
     const payload=await response.json();
-    let target=payload.stats.residents,sequence=0;
-    await page.route('**/api/calculate?**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...payload,analysis_id:`counter-${++sequence}`,stats:{...payload.stats,residents:target}})}));
+    let target=payload.stats.residents,sequence=0,cardResidents=payload.recommendations[0].residents_in_radius;
+    await page.route('**/api/calculate?**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...payload,analysis_id:`counter-${++sequence}`,stats:{...payload.stats,residents:target},recommendations:payload.recommendations.map((rec,index)=>index?rec:{...rec,residents_in_radius:cardResidents})})}));
     await page.goto(base);
     await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
     const counter=page.locator('#kpi-residents');
@@ -24,6 +24,11 @@ async original => {
       return n>0&&n<Number(document.getElementById('kpi-residents').dataset.counterTarget);
     });
     const middle=await counter.locator('.counter-visual').getAttribute('data-display');
+    const typography=await counter.evaluate(node=>{
+      const parent=getComputedStyle(node);
+      return [...node.children].every(child=>{const style=getComputedStyle(child);return style.fontSize===parent.fontSize&&style.color===parent.color;});
+    });
+    assert(typography,'Counter children override the large KPI typography');
     assert(await counter.textContent()===final,'Intermediate frames mutate the exact accessible result');
     const accessibility=await counter.ariaSnapshot();
     assert(accessibility.replace(/\D/g,'')===String(payload.stats.residents),'Accessibility tree exposes intermediate/duplicate numbers');
@@ -38,6 +43,7 @@ async original => {
     await page.waitForFunction(()=>document.querySelector('.recommendation .score').classList.contains('is-counting'));
     const cardFinal=await cardNumber.textContent();
     assert(cardFinal==='100%','Animated percentage changed exact score text');
+    await page.waitForFunction(()=>!document.querySelector('.recommendation .score').classList.contains('is-counting'));
     await page.setViewportSize({width:1440,height:1000});
     await counter.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>!document.getElementById('kpi-residents').classList.contains('is-counting'));
@@ -48,16 +54,29 @@ async original => {
     await page.waitForFunction(()=>document.getElementById('kpi-residents').classList.contains('is-counting'));
     const refreshFrom=await counter.getAttribute('data-counter-from');
     assert(Number(refreshFrom)===payload.stats.residents,'Refresh restarted from0 instead of prior result');
+    assert(await cardNumber.getAttribute('data-counter-from')==='100','Unchanged refreshed score restarted from zero');
+    assert(!await cardNumber.evaluate(node=>node.classList.contains('is-counting')),'Unchanged refreshed score replays count-up');
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.waitForFunction(()=>!document.querySelector('.is-counting'));
     assert(await counter.textContent()===target.toLocaleString('ru-RU'),'Runtime reduce did not settle to target');
     await page.emulateMedia({reducedMotion:'no-preference'});
     target=37;
+    cardResidents=37;
     phase='refresh downwards';
     await page.locator('#run').click();
     await counter.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>document.getElementById('kpi-residents').classList.contains('is-counting'));
     assert(Number(await counter.getAttribute('data-counter-from'))>37,'Descending update did not retain previous value');
+    const refreshedPeople=page.locator('.recommendation .place-metrics strong').first();
+    assert(Number(await refreshedPeople.getAttribute('data-counter-from'))===Math.round(payload.recommendations[0].residents_in_radius),'Card refresh lost previous displayed value');
+    await refreshedPeople.scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>document.querySelector('.recommendation .place-metrics strong').classList.contains('is-counting'));
+    cardResidents=10000;
+    phase='interrupted card refresh';
+    await page.locator('#run').click();
+    await page.waitForFunction(()=>document.querySelector('.recommendation .place-metrics strong')?.dataset.counterTarget==='10000');
+    const interruptedFrom=Number(await refreshedPeople.getAttribute('data-counter-from'));
+    assert(interruptedFrom>37&&interruptedFrom<Math.round(payload.recommendations[0].residents_in_radius),'Interrupted card refresh did not retain displayed intermediate value');
     await page.locator('#district').selectOption('center');
     assert(await counter.textContent()==='—','Filter reset retained old counter markup');
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -83,7 +102,7 @@ async original => {
     await page.emulateMedia({media:'print'});
     assert(await page.locator('.counter-visual').evaluateAll(nodes=>nodes.every(node=>!node.getClientRects().length)),'Print includes visual counter overlay');
     assert(errors.length===0,errors.join(';'));
-    return {final,middle,accessibility,cardFinal,refreshFrom,pageErrors:errors};
+    return {final,middle,accessibility,cardFinal,refreshFrom,interruptedFrom,pageErrors:errors};
   }catch(error){throw new Error(`${phase}: ${error.message}`);}
   finally{await page.close();}
 }

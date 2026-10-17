@@ -16,14 +16,16 @@
 3. Доступный текст не меняется на каждом кадре; overlay не влияет на layout.
 
 ## Task 1: RED
-- [ ] Disposable browser scenario: count-up, final text, reset/refresh/reduced/viewport.
-- [ ] Подтвердить отсутствие новой функции до production изменений.
+- [x] Disposable browser scenario: count-up, final text, reset/refresh/reduced/viewport.
+- [x] Подтвердить отсутствие новой функции до production изменений.
 
 ## Task 2: Реализация
-- [ ] counters.js: countTo/resetCounters, один RAF, observer и cleanup.
-- [ ] Интеграция KPI/метрик/score, CSS и доступность/печать.
-- [ ] GREEN и прицельный workspace/dark regression, syntax/validator.
+- [x] counters.js: countTo/resetCounters, один RAF, observer и cleanup.
+- [x] Интеграция KPI/метрик/score, CSS и доступность/печать.
+- [x] GREEN и прицельный workspace/dark regression, syntax/validator.
 
 ## Task 3: Публикация
+- [x] Уточнение пользователя: палитра с изображения, scoped KPI typography;
+      RED/GREEN, контраст, карта, desktop/mobile screenshots.
 - [ ] Независимое whole-branch review и документы.
 - [ ] CI/main/Render/public проверка.

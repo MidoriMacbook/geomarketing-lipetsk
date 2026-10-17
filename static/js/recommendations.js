@@ -3,7 +3,7 @@ import { $, fmt, coords, distance, node, button, dateText, sourceText, dataDate,
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker } from './map.js';
 import { updateReportAvailability } from './report.js';
-import { countTo, resetCounters } from './counters.js';
+import { countTo, counterValue, resetCounters } from './counters.js';
 
 let renderedAnalysisId = null;
 
@@ -22,6 +22,9 @@ export function selectPlace(rank, pan = true) {
 export function showResult(data) {
   const newAnalysis = renderedAnalysisId !== data.analysis_id;
   renderedAnalysisId = data.analysis_id;
+  const previousValues = new Map([...$('recommendation-list').children].map(card => [
+    card.dataset.counterKey, [...card.querySelectorAll('.score,.place-metrics strong')].map(counterValue)
+  ]));
   cancelRevealsWithin($('recommendation-list'));
   resetCounters($('recommendation-list'));
   $('recommendation-list').replaceChildren();
@@ -35,6 +38,8 @@ export function showResult(data) {
     const card = node('article', `recommendation${rec.rank===state.selectedRank?' selected':''}`);
     card.dataset.testid = 'recommendation-card';
     card.dataset.rank = rec.rank;
+    card.dataset.counterKey = `${rec.lat}:${rec.lng}:${rec.radius_m}`;
+    const previous = previousValues.get(card.dataset.counterKey) || [];
     const heading = node('div', 'place-title'), select = button(`Место ${rec.rank}`, 'place-select', () => selectPlace(rec.rank));
     select.setAttribute('aria-pressed', rec.rank === state.selectedRank);
     select.setAttribute('aria-label', `Показать место ${rec.rank} на карте`);
@@ -68,9 +73,9 @@ export function showResult(data) {
     actions.append(save, copy, osm);
     card.append(heading, coordinate, metrics, node('p', 'nearest', `Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`), actions);
     $('recommendation-list').append(card);
-    countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: '%' });
-    countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ' });
-    countTo(competition.querySelector('strong'), rec.competitors_in_radius, { animate: newAnalysis });
+    countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: '%', from: previous[0] });
+    countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ', from: previous[1] });
+    countTo(competition.querySelector('strong'), rec.competitors_in_radius, { animate: newAnalysis, from: previous[2] });
     if (newAnalysis) reveal(card, 'recommendation', { delay: index * motionStagger(), duration: 'slow', easing: 'emphasized' });
   });
   updateSaveButtons();

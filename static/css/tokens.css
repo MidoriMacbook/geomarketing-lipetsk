@@ -1,20 +1,21 @@
 /* Single source for UI, Material Web and functional map colours. */
 :root {
- --color-page:#080f18; --color-surface:#111d2b; --color-surface-muted:#192b3b;
- --color-settings:#101b29; --color-saved:#0e1c2a; --color-ink:#edf5ff;
- --color-muted:#a5b8cd; --color-ink-soft:var(--color-muted); --color-border:#6e8299;
- --color-line:rgb(188 214 241 / .16); --color-subtle:#22364b;
- --color-panel-dark:#0c1927; --color-on-dark:#edf5ff; --color-muted-on-dark:#aec4d8;
- --color-line-on-dark:#6e8299; --color-primary:#53e3ce; --color-primary-hover:#83f1e1;
- --color-on-primary:#06251e; --color-accent:#62e7dc; --color-signal:var(--color-accent);
- --color-featured:#132f3c; --color-selected:#143c45;
- --color-error:#ffb5a6; --color-error-bg:#382121; --color-notice-bg:#252b27;
- --color-map-canvas:#101a23; --color-map-primary:#86b8d5; --color-map-house:#83a9c0;
- --color-map-competitor:#f2ae8a; --color-map-centroid:#c5b0ff;
- --color-map-zone-low:#183c3c; --color-map-zone-high:#5bd99e;
- --color-map-outline:#101a23; --color-overlay:rgb(0 4 12 / .76);
- --color-glow:rgb(83 227 206 / .12); --color-glow-blue:rgb(80 129 226 / .12);
- --color-grid:rgb(165 184 205 / .06); --color-header:rgb(8 15 24 / .88);
+ --color-page:#16131f; --color-surface:#231e2c; --color-surface-muted:#342b3a;
+ --color-settings:#211c29; --color-saved:#241e2b; --color-ink:#f0d9e4;
+ --color-muted:#c1a0ac; --color-ink-soft:var(--color-muted); --color-border:#a48c9a;
+ --color-line:rgb(193 160 172 / .20); --color-subtle:#4a3f4b;
+ --color-panel-dark:#1b1724; --color-on-dark:#f0d9e4; --color-muted-on-dark:#c1a0ac;
+ --color-line-on-dark:#a48c9a; --color-primary:#f0d9e4; --color-primary-hover:#fff0f6;
+ --color-on-primary:#16131f; --color-accent:#f0d9e4; --color-signal:var(--color-accent);
+ --color-featured:#352936; --color-selected:#3d3340;
+ --color-error:#ffc2ae; --color-error-bg:#38242d; --color-notice-bg:#322834;
+ --color-map-canvas:#211c29; --color-map-primary:#c1a0ac; --color-map-house:#c1a0ac;
+ --color-map-competitor:#ffc2ae; --color-map-centroid:#c7c0ed;
+ --color-map-zone-low:#4a3f4b; --color-map-zone-high:#f0d9e4;
+ --color-map-outline:#16131f; --color-overlay:rgb(22 19 31 / .80);
+ --color-glow:rgb(240 217 228 / .12); --color-glow-blue:rgb(128 108 121 / .18);
+ --color-grid:rgb(193 160 172 / .07); --color-header:rgb(22 19 31 / .90);
+ --color-moonscape:#806c79;
  --color-print-page:#ffffff; --color-print-ink:#15191c; --color-print-muted:#49545f;
  --color-print-settings:#f0f3f5; --color-print-line:#ced6dc;
  --map-tile-filter:grayscale(1) invert(.94) contrast(.85) brightness(1.15);
