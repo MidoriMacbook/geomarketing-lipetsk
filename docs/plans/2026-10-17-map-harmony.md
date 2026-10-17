@@ -11,6 +11,8 @@
   responsive recommendation padding16, phone buttons/select12/tooltip8x12.
 - [x] GREEN360/390/430/768,200% и actual map canvas/contrast/screenshots;
   selected contrast/palette regression, validator/syntax.
+- [x] Уточнение пользователя: RED letter typing still enabled → удалить intro.js,
+  использовать CSS whole-heading intro; сохранить map/geometry/AX/reduce/print тесты.
 - [ ] Whole-branch review, CI/main/Render/public, docs and cleanup.
 
 Review focus: narrow phones/wrapped long labels, hit targets, visible distinction
