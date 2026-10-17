@@ -45,11 +45,15 @@ function start(element) {
 
 // Only generated visual content changes each frame. Exact text, accessibility,
 // copied values and the reserved final-value layout remain stable throughout.
-export function countTo(element, target, { animate = true, prefix = '', suffix = '' } = {}) {
+export function counterValue(element) {
+  return records.get(element)?.current ?? values.get(element);
+}
+
+export function countTo(element, target, { animate = true, prefix = '', suffix = '', from: initial } = {}) {
   if (!element) return;
   const previous = records.get(element);
   if (previous && previous.target === target && previous.prefix === prefix && previous.suffix === suffix && animate) return;
-  const from = previous?.current ?? values.get(element) ?? 0;
+  const from = counterValue(element) ?? (Number.isSafeInteger(initial) && initial >= 0 ? initial : 0);
   settle(element);
   for (const queued of records.keys()) if (!queued.isConnected) settle(queued);
   if (!Number.isSafeInteger(target) || target < 0) {

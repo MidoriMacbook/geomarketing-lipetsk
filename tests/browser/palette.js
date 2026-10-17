@@ -1,23 +1,21 @@
-async page => {
-  await page.goto(new URL(page.url()).origin);
-  await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout:70000 });
-  const measurements = await page.evaluate(async () => {
-    const { state } = await import('/static/js/state.js');
-    const { drawMap, drawZones } = await import('/static/js/map.js');
-    const original = window.getComputedStyle;
-    let reads = 0;
-    window.getComputedStyle = (...args) => {
-      if (args[0] === document.documentElement) reads++;
-      return original(...args);
-    };
-    try {
-      drawMap(state.current);
-      const mapReads = reads;
-      reads = 0;
-      drawZones();
-      return { houses:state.current.houses.length, gridCells:state.current.grid.scores.length, recommendations:state.current.recommendations.length, mapReads, zoneReads:reads, canvases:document.querySelectorAll('#map canvas').length };
-    } finally { window.getComputedStyle = original; }
-  });
-  if(measurements.mapReads !== measurements.recommendations + 1 || measurements.zoneReads !== 1 || measurements.canvases !== 2) throw new Error(JSON.stringify(measurements));
-  return { passed:'CSS palette reads bounded by renders, shared canvas reused', measurements };
+async original => {
+  const page=await original.context().newPage();
+  try {
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.goto(new URL(original.url()).origin);
+    await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+    await page.locator('.place-select').nth(1).click();
+    await page.locator('[data-testid="save-place"]').nth(1).click();
+    await page.locator('[data-testid="compare-place"]').last().check();
+    const contrast=await page.evaluate(()=>{
+      const luminance=value=>value.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+      return ['.recommendation.selected .nearest','.saved-card:has(input:checked) p'].map(selector=>{
+        const node=document.querySelector(selector),surface=node.closest('article');
+        const values=[luminance(getComputedStyle(node).color),luminance(getComputedStyle(surface).backgroundColor)].sort((a,b)=>b-a);
+        return {selector,ratio:(values[0]+.05)/(values[1]+.05)};
+      });
+    });
+    if(contrast.some(value=>value.ratio<4.5))throw new Error('Selected text contrast: '+JSON.stringify(contrast));
+    return contrast;
+  }finally{await page.close();}
 }

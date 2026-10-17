@@ -1,13 +1,18 @@
 # Состояние работы
 
 ## Current Goal
-Новый запрос: анимация загрузки чисел. Ветка codex/animated-number-counters,
+Новый запрос: анимация загрузки чисел + палитра с изображения пользователя.
+Ветка codex/animated-number-counters,
 plan docs/plans/2026-10-17-number-counters.md, spec одноимённый counters-design.
 Task1 RED получен (нет overlay). Task2 implemented: counters.js одинRAF/viewport,
 финальный DOM + aria-hidden visual; reset/reduce/print/hidden; KPI/метрики/score.
 Browser counters GREEN: middle4865, final12344, refreshFrom12344, вверх/вниз/reset,
 offscreen/percent/noObserver; workspace19groups PASS. Далее focused QA/review/CI/public.
-Own localhost5085 helper25288, browser geomarketing-counters. Ниже прежняя история.
+Палитра #16131F/#F0D9E4/#C1A0AC/#4A3F4B/#806C79, выбранный фон #3D3340
+для контраста5.092. Исправлены вложенные span KPI (12px→52px) и перенос текущих
+чисел карточек по lat/lng/radius при refresh. RED/GREEN всех трёх дефектов получены.
+Own localhost5085 helper2312, browser geomarketing-counters. Review/CI/public далее.
+Ниже прежняя история.
 
 ## Decisions
 - Пользователь отверг светлый фон и незаметное движение, явно согласовал графит/бирюзу.
