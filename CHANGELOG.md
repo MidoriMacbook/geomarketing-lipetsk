@@ -25,7 +25,8 @@
 - Counters RED→GREEN: intermediate3827/4049, final12344, ARIA «strong:12 344».
 - Refresh вверх/вниз, reset/reduce/offscreen/noObserver/print PASS.
 - Workspace19groups, dark-motion, redesign PASS/pageErrors[];9JS syntax/validator/diff PASS.
-- Подробности: docs/verification/2026-10-17-number-counters.md; публикация продолжается.
+- Опубликовано на Render: runtime d4a9ba5, deploy dep-db9ol5p124ks73e0gqg0 live.
+- Подробности: docs/verification/2026-10-17-number-counters.md.
 
 ## [2026-10-17] Тёмная версия и входы при просмотре
 

@@ -27,5 +27,5 @@
 ## Task 3: Публикация
 - [x] Уточнение пользователя: палитра с изображения, scoped KPI typography;
       RED/GREEN, контраст, карта, desktop/mobile screenshots.
-- [ ] Независимое whole-branch review и документы.
-- [ ] CI/main/Render/public проверка.
+- [x] Независимое whole-branch review и документы.
+- [x] CI/main/Render/public проверка.

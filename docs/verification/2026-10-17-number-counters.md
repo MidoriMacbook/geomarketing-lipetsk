@@ -38,8 +38,19 @@ Palette/dark-motion GREEN, selection contrast13.73; redesign390/768/1440 GREEN:
 Overlay aria-hidden и CSS-generated visual text, final span сохраняет layout/доступность.
 API/model/state/storage/report/CSV не зависят от display values.
 
-Независимое ревью/CI/main/Render/public выполняются после локальной приёмки;
-фактические идентификаторы будут внесены после публикации.
+Независимое whole-branch ревью f402439: Spec PASS, Quality APPROVED,
+неустранённых замечаний нет. Feature CI39042114494 success; main fast-forward.
+Микро-уточнение d4a9ba5 согласует meta theme-color с новым фоном;
+его main CI39042268029 success (51 backend tests, validator, JS syntax, Material rebuild).
+Публичный counters scenario: final12344/middle8060/refreshFrom12344,
+прерывание карточки from139, exact ARIA snapshot, pageErrors[].
+Реальный public API/health/map390/768/1440 (tiles6/12/16), сохранение2 и сравнение2
+прошли. Initial reduced-motion: ноль работающих progress animations, статический
+fallback; selected contrast5.092; screenshots desktop/mobile просмотрены.
+Render dep-db9ol5p124ks73e0gqg0: live17октября17:49:11Москва,
+runtime d4a9ba5effd016a95522a611ede99875ad85372e, trigger new_commit.
+SHA-256 опубликованных tokens/layout/counters/recommendations/favicon совпадают
+с Git blobs runtime; корневой HTML также byte-for-byte совпал, theme-color #16131f.
 
 Проверка Chrome/ARIA snapshot не заменяет полный аудит assistive technologies,
 всех browser engines и native PDF. Прежние ограничения OSM/storage сохраняются.

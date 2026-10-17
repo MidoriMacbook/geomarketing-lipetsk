@@ -1,18 +1,22 @@
 # Состояние работы
 
 ## Current Goal
-Новый запрос: анимация загрузки чисел + палитра с изображения пользователя.
-Ветка codex/animated-number-counters,
-plan docs/plans/2026-10-17-number-counters.md, spec одноимённый counters-design.
-Task1 RED получен (нет overlay). Task2 implemented: counters.js одинRAF/viewport,
-финальный DOM + aria-hidden visual; reset/reduce/print/hidden; KPI/метрики/score.
-Browser counters GREEN: middle4865, final12344, refreshFrom12344, вверх/вниз/reset,
-offscreen/percent/noObserver; workspace19groups PASS. Далее focused QA/review/CI/public.
+Завершено: анимация чисел + палитра с изображения пользователя.
+Main/runtime d4a9ba5effd016a95522a611ede99875ad85372e,
+Render dep-db9ol5p124ks73e0gqg0 live17октября17:49:11Москва.
+Plan docs/plans/2026-10-17-number-counters.md закрыт; spec и verification рядом.
+Counters одинRAF/viewport, финальный DOM/ARIA сразу; refresh/reset/reduce/print/hidden.
+Public GREEN: middle8060/final12344, refreshFrom12344, interruptedFrom139,
+карта390/768/1440, saved2/compare2, health200, pageErrors[].
+Whole-branch review f402439 APPROVED, все Important/Minor закрыты.
+Source CI39042114494/main runtime CI39042268029 success, включая51backendtests.
+Публичные static assets и HTML сверены с Git runtime.
 Палитра #16131F/#F0D9E4/#C1A0AC/#4A3F4B/#806C79, выбранный фон #3D3340
 для контраста5.092. Исправлены вложенные span KPI (12px→52px) и перенос текущих
 чисел карточек по lat/lng/radius при refresh. RED/GREEN всех трёх дефектов получены.
-Own localhost5085 helper2312, browser geomarketing-counters. Review/CI/public далее.
-Ниже прежняя история.
+Feature ветка codex/animated-number-counters сохранена; свои QA браузеры и сервер закрыты,
+localhost5085 больше не слушается. Чужие процессы не затронуты.
+Следующий commit только документация [skip render]; ниже прежняя история.
 
 ## Decisions
 - Пользователь отверг светлый фон и незаметное движение, явно согласовал графит/бирюзу.
