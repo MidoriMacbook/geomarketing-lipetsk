@@ -175,11 +175,11 @@ export function drawMap(data) {
   }).bindTooltip('Конкурент').addTo(layers.competitors));
   data.centroids.forEach(c => L.circleMarker([c.lat, c.lng], {
     renderer,
-    radius: 6,
-    color: palette.primary,
-    weight: 1.5,
-    fillColor: palette.centroid,
-    fillOpacity: 1
+    radius: 9,
+    color: palette.centroid,
+    weight: 3,
+    fill: false,
+    dashArray: '3 2'
   }).bindTooltip(`Скопление: ≈ ${fmt(c.residents)} жителей`).addTo(layers.centroids));
   data.recommendations.forEach(r => {
     const marker = L.marker([r.lat, r.lng], {
@@ -213,7 +213,7 @@ export function drawZones() {
       stroke: false,
       interactive: false,
       fillColor: mix(palette['zone-low'], palette['zone-high'], t),
-      fillOpacity: .5+.3*t
+      fillOpacity: .18+.24*t
     }).addTo(layers.zones);
   });
   animateUI(map.getPane('zones'), [{ opacity: .25 }, { opacity: 1 }], 'map-zones');

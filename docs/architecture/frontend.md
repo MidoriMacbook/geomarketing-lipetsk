@@ -21,6 +21,7 @@
 | `static/js/report.js` | CSV с защитой формул и печатный DOM-отчёт |
 | `static/js/ui.js` | DOM-утилиты, форматирование, cancel-safe motion, progress и native dialog |
 | `static/js/counters.js` | Визуальный count-up, один RAF, viewport, reset/reduce/print cleanup |
+| `static/js/intro.js` | Первое появление h1 по буквам, session guard и восстановление исходного DOM |
 
 Состояние хранится в JS, сохранённые копии — в localStorage. Другие модули
 не ведут собственную скрытую копию списка. DOM строится через textContent;

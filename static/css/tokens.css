@@ -1,17 +1,24 @@
 /* Single source for UI, Material Web and functional map colours. */
 :root {
  --color-page:#16131f; --color-surface:#231e2c; --color-surface-muted:#342b3a;
- --color-settings:#211c29; --color-saved:#241e2b; --color-ink:#f0d9e4;
- --color-muted:#c1a0ac; --color-ink-soft:var(--color-muted); --color-border:#a48c9a;
- --color-line:rgb(193 160 172 / .20); --color-subtle:#4a3f4b;
+ --color-settings:#211c29; --color-saved:#302838; --color-ink:#f8f1f6;
+ --color-settings-panel:#f0d9e4;
+ --color-muted:#cfb9c7; --color-ink-soft:var(--color-muted); --color-border:#a48c9a;
+ --color-line:rgb(193 160 172 / .32); --color-subtle:#4a3f4b;
+ --color-results:#2c2334; --color-kpi:#231e2c;
+ --color-settings-ink:#281d2d; --color-settings-muted:#654a5e;
+ --color-settings-field:#f9edf3; --color-settings-line:#c1a0ac;
+ --color-settings-border:#806c79; --color-settings-notice:#e2c9d7;
+ --color-settings-error:#7a291d; --color-settings-error-bg:#f9e5de;
  --color-panel-dark:#1b1724; --color-on-dark:#f0d9e4; --color-muted-on-dark:#c1a0ac;
  --color-line-on-dark:#a48c9a; --color-primary:#f0d9e4; --color-primary-hover:#fff0f6;
  --color-on-primary:#16131f; --color-accent:#f0d9e4; --color-signal:var(--color-accent);
+ --color-selection-bg:#f0d9e4; --color-selection-ink:#16131f;
  --color-featured:#352936; --color-selected:#3d3340;
  --color-error:#ffc2ae; --color-error-bg:#38242d; --color-notice-bg:#322834;
- --color-map-canvas:#211c29; --color-map-primary:#c1a0ac; --color-map-house:#c1a0ac;
- --color-map-competitor:#ffc2ae; --color-map-centroid:#c7c0ed;
- --color-map-zone-low:#4a3f4b; --color-map-zone-high:#f0d9e4;
+ --color-map-canvas:#211c29; --color-map-primary:#f0d9e4; --color-map-house:#66c7ed;
+ --color-map-competitor:#ff895e; --color-map-centroid:#f4ce63;
+ --color-map-zone-low:#584268; --color-map-zone-high:#b796d0;
  --color-map-outline:#16131f; --color-overlay:rgb(22 19 31 / .80);
  --color-glow:rgb(240 217 228 / .12); --color-glow-blue:rgb(128 108 121 / .18);
  --color-grid:rgb(193 160 172 / .07); --color-header:rgb(22 19 31 / .90);
@@ -33,6 +40,7 @@
  --shadow-panel:0 20px 60px rgb(0 4 12 / .22); --shadow-dialog:0 28px 90px rgb(0 4 12 / .65);
  --motion-fast:220ms; --motion-base:360ms; --motion-slow:700ms; --motion-intro:900ms; --motion-stagger:75ms;
  --motion-counter:1100ms;
+ --motion-type-step:38ms;
  --duration-fast:var(--motion-fast); --ease-standard:cubic-bezier(.2,0,.2,1);
  --ease-emphasized:cubic-bezier(.2,.8,.2,1); --ease-spring:cubic-bezier(.2,1.35,.4,1);
  --motion-distance:24px; --motion-distance-small:6px; --motion-hover-lift:-3px;
@@ -40,10 +48,10 @@
  --motion-progress-start:-40%; --motion-progress-end:70%; --motion-progress-scale-start:.4;
  --motion-progress-scale-end:.6; --motion-progress-static:.45;
  --z-skip:2000; --z-header:1000; --z-map:0; --z-zones:405; --z-points:420; --z-ghost:1500;
- --size-target:44px; --size-logo:40px; --size-switch:20px; --size-swatch:9px; --size-marker:44px;
+ --size-target:44px; --size-logo:40px; --size-switch:20px; --size-swatch:12px; --size-marker:44px;
  --size-marker-selected:44px; --size-table:760px; --size-dialog:620px; --size-report:180mm;
  --size-page:1720px; --size-settings:220px; --size-settings-min:210px;
- --size-recommendations:290px; --size-recommendations-min:280px;
+ --size-recommendations:330px; --size-recommendations-min:280px;
  --size-map-desktop:660px; --size-map-tablet:560px; --size-map-mobile:420px;
  --size-header:76px; --size-title-measure:1000px; --size-copy-measure:660px;
  --size-kpi-mobile:110px; --size-kpi-min:8rem; --size-progress:4px;

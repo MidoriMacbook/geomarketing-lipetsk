@@ -31,7 +31,7 @@ async originalPage => {
     assert(dark.scheme==='dark' && dark.bg!=='rgb(241, 238, 230)','Dark theme was not applied');
     assert(dark.bg==='rgb(22, 19, 31)','Reference palette Back in Black background missing');
     const palette=await page.evaluate(()=>{const style=getComputedStyle(document.documentElement);return ['primary','muted','subtle','moonscape'].map(role=>style.getPropertyValue('--color-'+role).trim().toLowerCase());});
-    assert(palette.join(',')==='#f0d9e4,#c1a0ac,#4a3f4b,#806c79','Reference pink/mauve palette missing');
+    assert(palette.join(',')==='#f0d9e4,#cfb9c7,#4a3f4b,#806c79','Reference pink/mauve palette missing');
     assert(dark.tileFilter!=='none'&&dark.canvasFilter==='none','Map processing must affect only tiles');
     const selectionContrast=await page.evaluate(()=>{
       const style=getComputedStyle(document.body,'::selection');

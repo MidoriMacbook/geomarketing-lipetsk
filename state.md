@@ -1,6 +1,19 @@
 # Состояние работы
 
 ## Current Goal
+Текущий запрос: контраст разделов/карты и печатающийся h1 при первом открытии.
+Feature codex/contrast-and-typed-intro, base c8c14a2; plan
+docs/plans/2026-10-17-contrast-intro.md Task1/2 выполнены, Task3 review/CI/release далее.
+intro.js (10й module) visual aria-hidden chars/full h1label, originalnodes restored,
+sessionguard, reduce/print/hidden/blockedstorage/first+third animation throw GREEN.
+Typed geometry390/768/200% stable67/84/260, no overflow. Map4differentcolors/rings,
+zones maxopacity.42/sharedcanvas2. Settings pink scope +dark text; sections/card outlines.
+Original workspace19groups/counters/dark/selected/palette/redesign GREEN;
+validator63/10JSsyntax/diff. Review Important(controls/selection) fixed RED→GREEN,
+final quality APPROVED working tree. Mobile KPI padding regression RED→GREEN follow-up.
+Own localhost5085 helper23380, browser geomarketing-contrast. Source not yet published.
+Ниже предыдущая завершённая публикация:
+
 Завершено: анимация чисел + палитра с изображения пользователя.
 Main/runtime d4a9ba5effd016a95522a611ede99875ad85372e,
 Render dep-db9ol5p124ks73e0gqg0 live17октября17:49:11Москва.

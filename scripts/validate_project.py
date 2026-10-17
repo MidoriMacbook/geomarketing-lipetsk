@@ -25,7 +25,7 @@ REQUIRED = [
     *[f'static/css/{name}.css' for name in
       ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive')],
     *[f'static/js/{name}.js' for name in
-      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui')],
+      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'intro')],
     'tests/unit/__init__.py', 'tests/integration/__init__.py',
     'tests/browser/smoke.js', 'tests/browser/workspace.js',
     'tests/fixtures/saved-places-v1.json', 'data/fixtures/example-cache.json',
