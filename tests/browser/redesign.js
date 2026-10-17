@@ -97,6 +97,11 @@ async page => {
   assert(await page.locator('#analysis-progress').isHidden(), 'Progress remained after successful calculation');
   assert(await page.locator('#map').getAttribute('aria-busy') === 'false', 'Busy state remained after success');
   assert(await page.locator('#kpi-residents').innerText() !== '—', 'Final KPI values are delayed behind motion');
+  // Entrances now wait until the user can see their content.
+  await page.locator('#recommendation-list').scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => window.__urbanMotion.filter(item => item.observerVersion === 2 && item.id === 'gm:recommendation').length === document.querySelectorAll('[data-testid="recommendation-card"]').length);
+  await page.locator('#data-warning').scrollIntoViewIfNeeded();
+  await nextFrame();
   const initialTrace = await trace();
   metrics.motion.initial = initialTrace;
   assert(await page.evaluate(() => window.__urbanIntro.length > 0), 'First-screen CSS reveal did not run');

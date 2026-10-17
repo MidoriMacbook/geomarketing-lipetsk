@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog } from './ui.js';
+import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog, cancelRevealsWithin } from './ui.js';
 import { configureSaved, loadSaved, renderSaved, updateSaveButtons } from './saved-places.js';
 import { exportCSV, printReport, updateReportAvailability } from './report.js';
 import { configureMap, initMap, clearAnalysisMap, clearPreview, updateCustomUI, drawPreview, drawMap, drawZones, fitArea, toggleLayer } from './map.js';
@@ -15,6 +15,7 @@ function bootstrap() {
     state.current = null;
     state.currentRequestKey = null;
     clearAnalysisMap();
+    cancelRevealsWithin($('result'));
     $('result').hidden = true;
     setRevealed($('result-empty'), true, 'empty');
     $('data-section').hidden = true;

@@ -1,8 +1,16 @@
 # Состояние работы
 
 ## Current Goal
-Редизайн опубликован в GitHub main и на Render, публичная проверка пройдена.
-Пользователь 17 октября просил довести изменения до репозитория и Render.
+Новая коррекция17октября: пользователь отверг светлый фон и незаметный motion;
+явно согласовал графит/бирюзу («попробуем твой вариант»). Ветка codex/dark-motion-redesign.
+План docs/plans/2026-10-17-dark-motion.md, spec одноимённый dark-motion-design.
+Task1 RED: mobile effects запускались на y2324/2604/2883. Task2 implemented:
+viewport-aware reveal, cancel/prune, dark tokens/tile-only filter/white print.
+Dark-motion GREEN включая reduced/print/noObserver/overflow. Workspace19groups PASS;
+redesign PASS, pageErrors[],3widths/tiles/44targets/200%/contrast/shadow. Полировка
+проверена: text8.37–17.50, selectborder4.31. Далее wholebranchreview/CI/publish.
+Own localhost5084 helper27776; browser geomarketing-dark. Не останавливать чужие процессы.
+Ниже история предыдущей завершённой итерации (ещё текущая public версия c438cc2).
 
 ## Completed
 - Код: 92053e9, 7db9c3f, 2caac11; публикация c438cc21c0b62cbe7042dfa9f0e8fc0e60827c6e.

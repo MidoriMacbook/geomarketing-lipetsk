@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f1eee6">
+<meta name="theme-color" content="#080f18">
 <meta name="description" content="Карта спроса и конкуренции в Липецке. Сравните места для кофейни, аптеки, магазина, пекарни и салона красоты.">
 <title>ГеоМаркетинг — места для бизнеса в Липецке</title>
 <link rel="preload" href="/static/assets/fonts/golos-text-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
@@ -29,7 +29,7 @@
   <nav aria-label="Основная навигация"><a class="active" href="#workspace">Карта и анализ</a><a href="#saved-section">Сохранённые <span id="nav-saved-count">0</span></a><button id="model-button" type="button">Как это работает <span aria-hidden="true">↗</span></button></nav>
 </header>
 <main class="page">
-  <section class="intro" aria-labelledby="page-title"><div><p class="eyebrow"><span class="city-indicator" aria-hidden="true"></span> Липецк / город, спрос, возможности</p><h1 id="page-title">У каждого бизнеса<br>есть своё место.</h1><p>Узнайте, где живут ваши клиенты и кто работает рядом. Выберите места, которые стоит проверить на местности.</p></div><div class="intro-actions"><span class="intro-coordinate" aria-hidden="true">52°36′ N &nbsp; 39°36′ E</span><button class="button secondary" id="print-report" disabled type="button"><span aria-hidden="true">↗</span> Печатный отчёт</button></div></section>
+<section class="intro" aria-labelledby="page-title"><div><p class="eyebrow"><span class="city-indicator" aria-hidden="true"></span> Липецк / город, спрос, возможности</p><h1 id="page-title">У каждого бизнеса<br><span class="title-accent">есть своё место.</span></h1><p>Узнайте, где живут ваши клиенты и кто работает рядом. Выберите места, которые стоит проверить на местности.</p></div><div class="intro-actions"><span class="intro-coordinate" aria-hidden="true">52°36′ N &nbsp; 39°36′ E</span><a class="button primary" href="#workspace">Перейти к карте <span aria-hidden="true">↘</span></a><button class="button secondary" id="print-report" disabled type="button"><span aria-hidden="true">↗</span> Печатный отчёт</button></div></section>
   <div class="analysis-context-row"><span class="eyebrow">Область в цифрах</span><p id="analysis-context">Выберите район и категорию бизнеса</p></div>
   <section class="kpis" aria-label="Данные выбранной области"><div><span>Жителей в области <span class="muted">≈</span></span><strong id="kpi-residents">—</strong><small>Оценка по жилым домам</small></div><div><span>Учтено домов</span><strong id="kpi-houses">—</strong><small>Объекты OpenStreetMap</small></div><div><span>Конкурентов в области</span><strong id="kpi-competitors">—</strong><small id="kpi-business">Для выбранной категории</small></div><div><span>Мест для проверки</span><strong id="kpi-places">—</strong><small>До трёх рекомендаций</small></div></section>
   <div id="workspace" class="workspace">

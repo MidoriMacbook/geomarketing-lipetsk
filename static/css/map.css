@@ -1,4 +1,5 @@
 #map { width:100%; height:var(--size-map-desktop); background:var(--color-map-canvas); z-index:var(--z-map); }
+#map .leaflet-tile-pane { filter:var(--map-tile-filter); }
 .map-heading { padding:var(--space-4) var(--space-5); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--space-3); border-radius:var(--radius-panel) var(--radius-panel) 0 0; }
 .map-heading p { font-size:var(--text-xs); color:var(--color-muted); margin-top:var(--space-1); }
 .map-badge { font-family:var(--font-mono); font-size:var(--text-xs); color:var(--color-muted); white-space:nowrap; }
@@ -17,10 +18,11 @@ md-linear-progress:defined + .progress-fallback { display:none; }
 .map-ramp i { display:inline-block; width:var(--space-9); height:var(--space-2); background:linear-gradient(90deg,var(--color-map-zone-low),var(--color-map-zone-high)); }
 .map-status { margin:var(--space-3) var(--space-4); }
 .recommendation-pin { width:var(--size-marker); height:var(--size-marker); display:grid; place-items:center; border:var(--line-strong) solid var(--color-map-outline); border-radius:var(--radius-round); background:var(--color-panel-dark); color:var(--color-on-dark); font-family:var(--font-body); font-size:var(--text-sm); font-weight:700; box-shadow:var(--shadow-control); }
-.recommendation-pin.is-selected { background:var(--color-accent); color:var(--color-ink); border-color:var(--color-ink); outline:var(--line-strong) solid var(--color-map-outline); }
+.recommendation-pin.is-selected { background:var(--color-accent); color:var(--color-on-primary); border-color:var(--color-on-primary); outline:var(--line-strong) solid var(--color-map-outline); box-shadow:0 0 24px var(--color-glow),var(--shadow-control); }
 .leaflet-container { font-family:var(--font-body); }
 .leaflet-bar { box-shadow:var(--shadow-control); border:var(--line) solid var(--color-border); border-radius:var(--radius-control); }
 .leaflet-bar a,.leaflet-bar a:first-child,.leaflet-bar a:last-child { width:var(--size-target); height:var(--size-target); line-height:var(--size-target); background:var(--color-surface); color:var(--color-ink); }
-.leaflet-control-attribution { font-size:var(--text-xs); background:var(--color-surface); color:var(--color-muted); }
+.leaflet-bar a:hover,.leaflet-bar a:focus { background:var(--color-subtle); color:var(--color-ink); }
+.leaflet-container .leaflet-control-attribution { font-size:var(--text-xs); background:var(--color-surface); color:var(--color-muted); }
 .leaflet-control-attribution a { color:var(--color-primary); }
 .leaflet-tooltip { font-family:var(--font-body); color:var(--color-ink); background:var(--color-surface); border-color:var(--color-border); box-shadow:var(--shadow-control); }

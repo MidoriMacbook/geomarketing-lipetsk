@@ -39,7 +39,8 @@ export function dataDate(data) {
 // Motion never owns visibility, focus or application state. A cancelled animation
 // simply exposes the final DOM, and every temporary snapshot has its own cleanup.
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const effects = new Map(), snapshots = new Map();
+const effects = new Map(), snapshots = new Map(), pendingReveals = new Map();
+let revealObserver;
 let motionTokens, progressRevision = 0, motionReady = false;
 function tokens() {
   if (motionTokens) return motionTokens;
@@ -61,6 +62,9 @@ export const motionReduced = () => reducedMotion.matches || matchMedia('print').
 export const motionStagger = () => tokens().stagger;
 
 export function cancelUI(element) {
+  if (!element) return;
+  pendingReveals.delete(element);
+  revealObserver?.unobserve(element);
   const effect = effects.get(element);
   if (effect) {
     effects.delete(element);
@@ -100,8 +104,39 @@ export function animateUI(element, frames, purpose, options = {}) {
   }
 }
 
-export function reveal(element, purpose, options) {
-  return animateUI(element, [{ opacity: 0, transform: 'translateY(var(--motion-distance))' }, { opacity: 1, transform: 'translateY(0)' }], purpose, options);
+export function reveal(element, purpose, options = {}) {
+  if (!element) return null;
+  const frames = [{ opacity: 0, transform: 'translateY(var(--motion-distance))' }, { opacity: 1, transform: 'translateY(0)' }];
+  cancelUI(element);
+  if (motionReduced() || !element.isConnected) return null;
+  // Do not spend an entrance while its content is several screens below the user.
+  // Pending content remains readable/focusable: only the eventual effect is deferred.
+  for (const queued of pendingReveals.keys()) {
+    if (!queued.isConnected || queued.closest('[hidden]')) cancelUI(queued);
+  }
+  const rect = element.getBoundingClientRect();
+  const visible = rect.bottom > 0 && rect.top < innerHeight && rect.right > 0 && rect.left < innerWidth;
+  if (!visible && typeof IntersectionObserver !== 'undefined') {
+    if (!revealObserver) revealObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        const queued = pendingReveals.get(entry.target);
+        if (!entry.target.isConnected || entry.target.closest('[hidden]')) cancelUI(entry.target);
+        else if (queued && entry.isIntersecting && entry.intersectionRect.height > 0) {
+          animateUI(entry.target, frames, queued.purpose, queued.options);
+        }
+      }
+    });
+    pendingReveals.set(element, { purpose, options });
+    revealObserver.observe(element);
+    return null;
+  }
+  return animateUI(element, frames, purpose, options);
+}
+
+export function cancelRevealsWithin(container) {
+  for (const element of [...pendingReveals.keys(), ...effects.keys()]) {
+    if (container?.contains(element)) cancelUI(element);
+  }
 }
 
 export function clearSnapshot(element) {
@@ -199,6 +234,7 @@ export function initMotion() {
   motionReady = true;
   tokens();
   const cancelAll = () => {
+    [...pendingReveals.keys()].forEach(cancelUI);
     [...effects.keys()].forEach(cancelUI);
     [...snapshots.keys()].forEach(clearSnapshot);
     document.getAnimations?.().filter(animation => animation.id.startsWith('gm:')).forEach(animation => animation.cancel());
@@ -216,6 +252,7 @@ export function initMotion() {
     new IntersectionObserver(([entry]) => header.classList.toggle('is-scrolled', !entry.isIntersecting)).observe(sentinel);
   }
   setAnalysisState('initial');
+  ['settings', 'map-card', 'saved-section'].forEach(id => reveal($(id), 'section', { duration: 'slow', easing: 'emphasized' }));
 }
 
 const dialogBounds = new WeakMap();
