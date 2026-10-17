@@ -63,8 +63,27 @@ Security review не нашло новых actionable дефектов. Блок
 Ветка отправлена в GitHub. Linux CI для полного source SHA выше:
 [39014252941](https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/39014252941),
 completed/success. Frozen install, Material rebuild/diff, Python и JS checks прошли.
-Перенос в main и обновление существующего бесплатного Render выполняются;
-идентификаторы публичной проверки будут внесены после развёртывания.
+В main опубликован `c438cc21c0b62cbe7042dfa9f0e8fc0e60827c6e` (source тот же,
+добавлен журнал приёмки). Main CI:
+[39014382031](https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/39014382031),
+completed/success. Render автоматически создал `dep-db9ibsflk1mc73bvimng`,
+trigger `new_commit`, live 17 октября в 07:39:39 UTC (10:39:39 Москвы).
+Ручной повторный deploy не запускался; существующий тариф free сохранён.
+
+Публичная проверка без фиктивного ответа API:
+- `/healthz`: HTTP200/status ok; настоящий расчёт выдал три рекомендации.
+- Начальная настройка reduced-motion до навигации: fallback видим, Material
+  скрыт, indeterminate=false, shadow running=0.
+- Сохранены два места и построено сравнение двух строк; pageErrors=[].
+-390/768/1440: page width совпадает с viewport, карта420/560/660, tiles6/12/16.
+- CSS tokens, ui.js, Material bundle и два Cyrillic WOFF2: HTTP200,
+  SHA-256 совпали с Git blobs runtime-коммита (учтены CRLF рабочей Windows-копии).
+- Сняты и лично просмотрены public-final-390/768/1440.png; ещё один снимок
+  public-final-desktop-top.png показывает первый экран. Файлы в tests/artifacts/.
+
+Автообновление подтверждено реальным событием; старые инструкции о безусловном
+manual deploy исправлены в README/DEPLOYMENT. Заключительный doc-only commit
+использует `[skip render]`; runtime остаётся проверенной версией c438cc2.
 
 ## Границы проверки
 
