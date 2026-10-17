@@ -13,7 +13,7 @@
   selected contrast/palette regression, validator/syntax.
 - [x] Уточнение пользователя: RED letter typing still enabled → удалить intro.js,
   использовать CSS whole-heading intro; сохранить map/geometry/AX/reduce/print тесты.
-- [ ] Whole-branch review, CI/main/Render/public, docs and cleanup.
+- [x] Whole-branch review, CI/main/Render/public, docs and cleanup.
 
 Review focus: narrow phones/wrapped long labels, hit targets, visible distinction
 between related marker colours and translucent zones; preserve shared canvas2.
