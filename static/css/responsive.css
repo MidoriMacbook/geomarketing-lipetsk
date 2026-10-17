@@ -1,6 +1,6 @@
 @media (max-width:1200px) {
  .workspace { grid-template-columns:var(--size-settings) minmax(0,1fr); }
- .recommendations { grid-column:1/-1; padding:var(--space-5) 0 0; }
+ .recommendations { grid-column:1/-1; padding:var(--space-4); }
  #recommendation-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-4); }
  .recommendation { margin-bottom:0; }
  #map { height:var(--size-map-tablet); }
@@ -41,12 +41,9 @@
  .intro p:last-child { font-size:var(--text-sm); }
  .analysis-context-row { gap:var(--space-2); }
  .kpis { grid-template-columns:repeat(2,minmax(0,1fr)); margin-bottom:var(--space-6); }
- .kpis>div { min-height:var(--size-kpi-mobile); padding:var(--space-4); border-left:0; border-bottom:var(--line) solid var(--color-line); }
- .kpis>div:first-child { padding-left:0; }
- .kpis>div:nth-child(2) { border-left:var(--line) solid var(--color-line); }
- .kpis>div:nth-child(3) { padding-left:0; border-bottom:0; }
- .kpis>div:last-child { border-radius:var(--radius-control); border-bottom:0; }
+ .kpis>div { min-height:var(--size-kpi-mobile); padding:var(--space-4); }
  .kpis strong { font-size:var(--text-kpi); }
+ .kpis>div:first-child strong { font-size:var(--text-kpi); }
  .settings { display:block; padding:var(--space-5); }
  .settings>.settings-group { margin-top:var(--space-5); }
  select { font-size:var(--text-base); }.field-label { font-size:var(--text-sm); }

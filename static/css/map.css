@@ -1,6 +1,6 @@
 #map { width:100%; height:var(--size-map-desktop); background:var(--color-map-canvas); z-index:var(--z-map); }
 #map .leaflet-tile-pane { filter:var(--map-tile-filter); }
-.map-heading { padding:var(--space-4) var(--space-5); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--space-3); border-radius:var(--radius-panel) var(--radius-panel) 0 0; }
+.map-heading { padding:var(--space-4) var(--space-5); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--space-3); border-radius:var(--radius-panel) var(--radius-panel) 0 0; background:var(--color-saved); border-bottom:var(--line) solid var(--color-line); }
 .map-heading p { font-size:var(--text-xs); color:var(--color-muted); margin-top:var(--space-1); }
 .map-badge { font-family:var(--font-mono); font-size:var(--text-xs); color:var(--color-muted); white-space:nowrap; }
 .map-badge i { display:inline-block; width:var(--space-2); height:var(--space-2); background:var(--color-map-zone-high); border-radius:var(--radius-round); margin-right:var(--space-1); }

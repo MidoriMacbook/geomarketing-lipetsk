@@ -28,14 +28,12 @@ button:active:not(:disabled),.place-actions a:active { transform:translateY(var(
 html[data-analysis-state=calculating] #result-empty::after { content:""; display:block; height:var(--space-9); margin-top:var(--space-5); border-radius:var(--radius-control); background:linear-gradient(var(--color-subtle),var(--color-subtle)) 0 0 / 80% var(--space-3) no-repeat,linear-gradient(var(--color-subtle),var(--color-subtle)) 0 50% / 100% var(--space-3) no-repeat,linear-gradient(var(--color-subtle),var(--color-subtle)) 0 100% / 60% var(--space-3) no-repeat; }
 html[data-analysis-state=calculating] .analysis-bar,html[data-analysis-state=refreshing] .analysis-bar { color:var(--color-accent); }
 html[data-analysis-state=error] .status-dot { background:var(--color-on-dark); }
-.intro .eyebrow,.intro h1,.intro>div>p:last-child,.intro-actions { animation:intro-reveal var(--motion-intro) var(--ease-emphasized) both; }
-.intro h1 .title-accent { display:inline-block; animation:title-reveal calc(var(--motion-intro) + var(--motion-base)) var(--ease-emphasized) both; }
+.intro .eyebrow,.intro>div>p:last-child,.intro-actions { animation:intro-reveal var(--motion-intro) var(--ease-emphasized) both; }
+.intro h1 .title-accent { display:inline-block; }
 .primary:not(:disabled):hover { box-shadow:0 0 28px var(--color-glow); transform:translateY(-2px); }
 .primary:not(:disabled):active { transform:translateY(var(--line)); }
-.intro h1 { animation-delay:var(--motion-stagger); }
 .intro>div>p:last-child { animation-delay:calc(var(--motion-stagger) * 2); }
 .intro-actions { animation-delay:var(--motion-stagger); }
 .motion-snapshot { pointer-events:none; z-index:var(--z-ghost); }
 @keyframes intro-reveal { from { opacity:0; transform:translateY(var(--motion-distance)); } to { opacity:1; transform:translateY(0); } }
-@keyframes title-reveal { from { opacity:0; transform:translateY(var(--motion-distance)); } to { opacity:1; transform:translateY(0); } }
 @keyframes progress-travel { from { transform:translateX(var(--motion-progress-start)) scaleX(var(--motion-progress-scale-start)); } to { transform:translateX(var(--motion-progress-end)) scaleX(var(--motion-progress-scale-end)); } }
