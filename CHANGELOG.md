@@ -28,6 +28,9 @@
 - Workspace19groups и redesign PASS, pageErrors=[];390/768/1440 безoverflow,
   tiles6/12/16, всеtargets>=44,200%mobile/desktop. Текст8.37–17.50:1,
   границыselect4.31:1. Dark-motion также проверил noObserver и runtimecancel.
+- Ревью: Spec PASS/Quality APPROVED. Исправлено выделение текста1.366→10.83:1
+  с RED/GREEN. Дополнительно проверены reduce→no-preference и новый расчёт без
+  воскрешения старых входов. Подробности: docs/verification/2026-10-17-dark-motion.md.
 
 ## [2026-10-17] Публикация cartography/motion редизайна
 

@@ -22,4 +22,4 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[t
 .muted,.hint,.section-note { color:var(--color-muted); }
 .skip-link { position:absolute; z-index:var(--z-skip); left:var(--space-4); top:calc(-1 * var(--size-header)); min-height:var(--size-target); padding:var(--space-3); background:var(--color-surface); border-radius:var(--radius-control); }
 .skip-link:focus { top:var(--space-3); }
-::selection { background:var(--color-accent); color:var(--color-ink); }
+::selection { background:var(--color-accent); color:var(--color-on-primary); }
