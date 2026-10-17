@@ -9,10 +9,11 @@
 - Запуск: `python serve.py`, Waitress слушает порт из `PORT`.
 - Проверка приложения: `GET /healthz` → HTTP 200, `{"status":"ok"}`.
 
-Последняя проверенная публикация: 17 октября 2026, runtime `c438cc2`,
-deploy `dep-db9ibsflk1mc73bvimng` в статусе live, trigger `new_commit`.
-Main CI success: run39014382031. Публично проверены health, реальный расчёт,
-карта390/768/1440, сохранение и сравнение, initial reduced-motion; pageErrors=[].
+Последняя проверенная публикация: 17 октября 2026, runtime `1966a1b`,
+deploy `dep-db9im8rm8hqs73ahhjfg` в статусе live, trigger `new_commit`.
+Main CI success: run39015746356. Публично проверены тёмная тема, health, расчёт,
+карта390/768/1440, сохранение/сравнение, viewport motion и initial reduced-motion;
+pageErrors=[]. Подробности: docs/verification/2026-10-17-dark-motion.md.
 SHA-256 CSS/JS/vendor и шрифтов совпали с Git blobs опубликованного коммита.
 Итоговая запись аудита меняет только документы; runtime повторно не собирается.
 

@@ -36,4 +36,4 @@ Interfaces: preserves reveal(element,purpose,options); produces viewport-aware e
 Files: docs/design/**, CHANGELOG, state/session-log, CI evidence.
 - [x] Workspace regression и прицельные новые проверки, contrast/text/print/reduced.
 - [x] Независимое ревью, обновление документов и CI.
-- [ ] Main/Render/public проверка и скриншоты.
+- [x] Main/Render/public проверка и скриншоты.
