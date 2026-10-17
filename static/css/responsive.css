@@ -67,6 +67,7 @@
  dialog { padding:var(--space-5); }
 }
 @media (prefers-reduced-motion:reduce) {
+ .counter-visual { display:none !important; }.counter-final { opacity:1 !important; }
  html { scroll-behavior:auto; }*,*::before,*::after { animation:none !important; transition:none !important; }
  #analysis-progress md-linear-progress { display:none !important; }
  #analysis-progress .progress-fallback { display:block; }
@@ -74,6 +75,7 @@
  .motion-snapshot { display:none !important; }
 }
 @media print {
+ .counter-visual { display:none !important; }.counter-final { opacity:1 !important; }
  :root { color-scheme:light; --color-surface:var(--color-print-page); --color-ink:var(--color-print-ink); --color-muted:var(--color-print-muted); --color-settings:var(--color-print-settings); --color-line:var(--color-print-line); }
  *,*::before,*::after { animation:none !important; transition:none !important; }
  .motion-snapshot { display:none !important; }

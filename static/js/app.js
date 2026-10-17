@@ -4,6 +4,7 @@ import { configureSaved, loadSaved, renderSaved, updateSaveButtons } from './sav
 import { exportCSV, printReport, updateReportAvailability } from './report.js';
 import { configureMap, initMap, clearAnalysisMap, clearPreview, updateCustomUI, drawPreview, drawMap, drawZones, fitArea, toggleLayer } from './map.js';
 import { selectPlace, showResult } from './recommendations.js';
+import { resetCounters } from './counters.js';
 import { cancelRequest, fetchCatalog, fetchCalculation, beginCatalogRequest, beginCalculationRequest, finishCatalogRequest, finishCalculationRequest } from './api.js';
 
 
@@ -16,6 +17,8 @@ function bootstrap() {
     state.currentRequestKey = null;
     clearAnalysisMap();
     cancelRevealsWithin($('result'));
+    resetCounters($('recommendation-list'));
+    resetCounters(document.querySelector('.kpis'));
     $('result').hidden = true;
     setRevealed($('result-empty'), true, 'empty');
     $('data-section').hidden = true;

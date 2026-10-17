@@ -74,3 +74,8 @@ dialog::backdrop { background:var(--color-overlay); }
 .icon-button { min-width:var(--size-target); min-height:var(--size-target); background:var(--color-settings); border:var(--line) solid var(--color-border); border-radius:var(--radius-control); font-size:var(--text-xl); }
 dialog p { margin-top:var(--space-3); font-size:var(--text-sm); line-height:1.65; }
 #print-report-content { display:none; }
+.counter-number { position:relative; font-variant-numeric:tabular-nums; }
+.counter-visual { display:none; position:absolute; inset:0; pointer-events:none; color:inherit; }
+.counter-visual::after { content:attr(data-display); }
+.is-counting>.counter-final { opacity:0; }
+.is-counting>.counter-visual { display:block; }

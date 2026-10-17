@@ -1,5 +1,30 @@
 # Журнал изменений
 
+## [2026-10-17] Счётчики чисел
+
+### Что изменено
+- Добавлен counters.js: count-up для KPI, метрик жителей/конкурентов и score.
+- Первый вход0→результат1100ms, refresh от текущего значения; вход ждёт viewport.
+- CSS overlay рисует промежуточные цифры, точный текст остаётся в DOM и ARIA.
+
+### Зачем
+- По запросу пользователя сделать загрузку результатов более наглядной и плавной.
+
+### Как работает после изменения
+- Один RAF на все счётчики, кешированный formatter, без layout reads в tick.
+- Reset/rebuild очищает старые callbacks; reduce/print/hidden сразу завершают счётчики.
+- Координаты/ранги/радиусы/даты не анимируются, ширина числа зарезервирована итогом.
+
+### Совместимость
+- Новый девятый ES-модуль без пакетов; API/storage/model/CSV/print unchanged.
+- Accessibility snapshot во время count-up содержит только итоговое число.
+
+### Проверка
+- Counters RED→GREEN: intermediate3827/4049, final12344, ARIA «strong:12 344».
+- Refresh вверх/вниз, reset/reduce/offscreen/noObserver/print PASS.
+- Workspace19groups, dark-motion, redesign PASS/pageErrors[];9JS syntax/validator/diff PASS.
+- Подробности: docs/verification/2026-10-17-number-counters.md; публикация продолжается.
+
 ## [2026-10-17] Тёмная версия и входы при просмотре
 
 ### Что изменено

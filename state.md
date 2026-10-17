@@ -1,8 +1,13 @@
 # Состояние работы
 
 ## Current Goal
-Тёмная версия по последнему отзыву пользователя реализована, опубликована,
-проверена в GitHub main и на Render. Обязательных работ по этому запросу не осталось.
+Новый запрос: анимация загрузки чисел. Ветка codex/animated-number-counters,
+plan docs/plans/2026-10-17-number-counters.md, spec одноимённый counters-design.
+Task1 RED получен (нет overlay). Task2 implemented: counters.js одинRAF/viewport,
+финальный DOM + aria-hidden visual; reset/reduce/print/hidden; KPI/метрики/score.
+Browser counters GREEN: middle4865, final12344, refreshFrom12344, вверх/вниз/reset,
+offscreen/percent/noObserver; workspace19groups PASS. Далее focused QA/review/CI/public.
+Own localhost5085 helper25288, browser geomarketing-counters. Ниже прежняя история.
 
 ## Decisions
 - Пользователь отверг светлый фон и незаметное движение, явно согласовал графит/бирюзу.
