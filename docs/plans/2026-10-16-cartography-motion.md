@@ -65,7 +65,7 @@ Security flag: none.
 - [x] Итоговый прогон parent: workspace + redesign в одном QA-сеансе, screenshots390/768/1440.
 - [x] Итоговый набор parent: check:material,51 unittest,validator; независимое ревью.
 - [x] Обновить design-system/redesign-spec/material-web/frontend/CHANGELOG/state.
-- [ ] После CI опубликовать на прежнем Render, проверить публичную новую версию.
+- [x] После CI опубликовать на прежнем Render, проверить публичную новую версию.
 
 Preflight: Task2 consumes ровно hooks/tokens Task1; Task3 tests их и поведение Task2.
 Первая волна: Task1 и написание RED Task3; вторая: Task2 параллельно завершению Task1.
