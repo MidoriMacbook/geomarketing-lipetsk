@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { $, fmt, coords, distance, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger } from './ui.js';
+import { $, fmt, coords, distance, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin } from './ui.js';
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker } from './map.js';
 import { updateReportAvailability } from './report.js';
@@ -21,6 +21,7 @@ export function selectPlace(rank, pan = true) {
 export function showResult(data) {
   const newAnalysis = renderedAnalysisId !== data.analysis_id;
   renderedAnalysisId = data.analysis_id;
+  cancelRevealsWithin($('recommendation-list'));
   $('recommendation-list').replaceChildren();
   setRevealed($('result-empty'), !data.recommendations.length, 'empty');
   $('result').hidden = !data.recommendations.length;

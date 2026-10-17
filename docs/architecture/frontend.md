@@ -51,6 +51,14 @@
 
 ## Состояния и движение
 
+Коррекция17октября: `reveal` откладывает вход offscreen-элементов до видимости
+через IntersectionObserver; контент при этом не скрывается и доступен без JS motion.
+`cancelRevealsWithin` очищает очередь и активные эффекты перед перестроением
+рекомендаций и reset. Отсоединённые/hidden элементы удаляются из очереди;
+runtime reduced-motion и печать отменяют ожидающие входы. Без Observer эффект
+выполняется сразу. Статические настройки/карта/shortlist используют тот же helper.
+CSS-палитра теперь тёмная, tile-only filter не затрагивает canvas и геометрию.
+
 `app` вызывает `setAnalysisState`: initial/calculating/refreshing/success/error.
 Только актуальный requestVersion изменяет результат и busy. `#map[aria-busy]`,
 `#analysis-status` и полоса ожидания согласованы; refresh сохраняет прошлый результат.
@@ -83,3 +91,7 @@ runtime reduced-motion, fallback без bundle, контраст, targets, 200% 
 print и три финальных снимка. `material-web.js` — точечная проверка upgraded DOM.
 В этой итерации итоговый QA объединяет workspace+redesign; исторические матрицы
 без нового основания повторно не запускаются.
+
+`dark-motion.js` — disposable-page regression: вход не расходуется ниже viewport,
+запускается после прокрутки, отменяется при reduced-motion, работает без Observer;
+тёмная карта фильтрует только tiles, печать остаётся светлой.

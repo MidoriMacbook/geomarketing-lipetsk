@@ -74,9 +74,10 @@
  .motion-snapshot { display:none !important; }
 }
 @media print {
+ :root { color-scheme:light; --color-surface:var(--color-print-page); --color-ink:var(--color-print-ink); --color-muted:var(--color-print-muted); --color-settings:var(--color-print-settings); --color-line:var(--color-print-line); }
  *,*::before,*::after { animation:none !important; transition:none !important; }
  .motion-snapshot { display:none !important; }
- body { background:var(--color-surface); }
+ body { background:var(--color-print-page); }
  body > :not(#print-report-content) { display:none !important; }
  #print-report-content { display:block !important; max-width:var(--size-report); margin:0 auto; font-size:var(--text-sm); color:var(--color-ink); }
  #print-report-content h1 { font-size:var(--text-kpi); }#print-report-content h2 { margin:var(--space-6) 0 var(--space-3); }
