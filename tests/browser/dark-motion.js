@@ -11,7 +11,7 @@ async originalPage => {
       const animate=Element.prototype.animate;
       Element.prototype.animate=function(...args){
         const effect=animate.apply(this,args);
-        queueMicrotask(()=>{if(effect.id.startsWith('gm:'))window.__darkEffects.push({id:effect.id,rank:this.dataset.rank,duration:effect.effect.getTiming().duration,delay:effect.effect.getTiming().delay,top:this.getBoundingClientRect().top});});
+        queueMicrotask(()=>{if(effect.id.startsWith('gm:'))window.__darkEffects.push({id:effect.id,rank:this.dataset.rank,stale:window.__darkOldCards?.includes(this)||false,duration:effect.effect.getTiming().duration,delay:effect.effect.getTiming().delay,top:this.getBoundingClientRect().top});});
         return effect;
       };
     });
@@ -30,13 +30,30 @@ async originalPage => {
     const dark=await page.evaluate(()=>({scheme:getComputedStyle(document.documentElement).colorScheme,bg:getComputedStyle(document.body).backgroundColor,tileFilter:getComputedStyle(document.querySelector('.leaflet-tile-pane')).filter,canvasFilter:getComputedStyle(document.querySelector('.leaflet-points-pane')).filter}));
     assert(dark.scheme==='dark' && dark.bg!=='rgb(241, 238, 230)','Dark theme was not applied');
     assert(dark.tileFilter!=='none'&&dark.canvasFilter==='none','Map processing must affect only tiles');
+    const selectionContrast=await page.evaluate(()=>{
+      const style=getComputedStyle(document.body,'::selection');
+      const luminance=value=>(value.match(/[\d.]+/g)||[]).slice(0,3).map(Number).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
+      const values=[luminance(style.color),luminance(style.backgroundColor)].sort((a,b)=>b-a);
+      return (values[0]+.05)/(values[1]+.05);
+    });
+    assert(selectionContrast>=4.5,`Selected text contrast is too low: ${selectionContrast}`);
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Decorative background causes mobile horizontal overflow');
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.waitForFunction(()=>!document.getAnimations().some(a=>a.id.startsWith('gm:')&&a.playState==='running'));
     const cancelledCount=await page.evaluate(()=>window.__darkEffects.length);
+    await page.emulateMedia({reducedMotion:'no-preference'});
     await cards.nth(2).scrollIntoViewIfNeeded();
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     assert(await cards.nth(2).isVisible(),'Reduced motion hid final content');
     assert(await page.evaluate(()=>window.__darkEffects.length)===cancelledCount,'Reduced motion did not clear deferred entrances');
+    await page.locator('#run').click();
+    await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+    await page.evaluate(()=>{window.__darkOldCards=[...document.querySelectorAll('[data-testid="recommendation-card"]')];});
+    await page.locator('#run').click();
+    await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+    await cards.first().scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>document.getAnimations().some(a=>a.id==='gm:recommendation'&&a.playState==='running'));
+    assert(await page.evaluate(()=>window.__darkEffects.every(effect=>!effect.stale)),'A replaced recommendation received a stale entrance');
     await page.emulateMedia({media:'print'});
     const print=await page.evaluate(()=>({bg:getComputedStyle(document.body).backgroundColor,ink:getComputedStyle(document.getElementById('print-report-content')).color}));
     assert(print.bg==='rgb(255, 255, 255)'&&print.ink==='rgb(21, 25, 28)','Dark theme must not create a dark printed report');
@@ -50,6 +67,6 @@ async originalPage => {
       assert(await fallback.locator('#run').isEnabled(),'No IntersectionObserver blocked native controls');
     }finally{await fallback.close();}
     assert(errors.length===0,errors.join(';'));
-    return {before,entered,dark,print,pageErrors:errors};
+    return {before,entered,dark,selectionContrast,print,pageErrors:errors};
   }finally{await page.close();}
 }
