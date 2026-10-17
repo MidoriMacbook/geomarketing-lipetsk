@@ -5,13 +5,11 @@ import { exportCSV, printReport, updateReportAvailability } from './report.js';
 import { configureMap, initMap, clearAnalysisMap, clearPreview, updateCustomUI, drawPreview, drawMap, drawZones, fitArea, toggleLayer } from './map.js';
 import { selectPlace, showResult } from './recommendations.js';
 import { resetCounters } from './counters.js';
-import { initHeadline } from './intro.js';
 import { cancelRequest, fetchCatalog, fetchCalculation, beginCatalogRequest, beginCalculationRequest, finishCatalogRequest, finishCalculationRequest } from './api.js';
 
 
 function bootstrap() {
   initMotion();
-  initHeadline();
   initDialogMotion($('model-dialog'));
   function resetSelection() {
     cancelRequest();

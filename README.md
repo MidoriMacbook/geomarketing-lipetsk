@@ -53,7 +53,7 @@ pnpm run check:material
 
 `app.py` собирает Flask-приложение, `serve.py` запускает Waitress.
 Внутренние модули: `src/routes → services → domain/utils`, настройки —
-`src/config.py`. Клиент — десять ES-модулей и семь CSS-файлов; код приложения
+`src/config.py`. Клиент — девять ES-модулей и семь CSS-файлов; код приложения
 не требует сборщика, отдельный Material vendor собирается Rollup и хранится в Git.
 Корневые `osm.py` и `businesses.py` сохраняют старые публичные импорты.
 
@@ -85,7 +85,6 @@ node --check static/js/saved-places.js
 node --check static/js/report.js
 node --check static/js/ui.js
 node --check static/js/counters.js
-node --check static/js/intro.js
 ```
 
 51 серверный тест работает без сети. GitHub Actions запускает Python-тесты,

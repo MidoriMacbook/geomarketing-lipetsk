@@ -8,7 +8,11 @@ lightoutline/centroid#E4D2EE/zones#8C709A. Recommendations max900padding0 при
 тесных строк: RED→GREEN16px, noteinset17, phonecontrols12px/min44,200%nowrapoverflow.
 map-harmony/palette/selected/redesign GREEN, validator63/mapJSsyntax/diff,
 desktop/mobile screenshots лично просмотрены. Independent review APPROVED.
-Task1–3 выполнены; далее CI/main/Render/public. Own helper22252/browsergeomarketing-harmony.
+Уточнение: убрать typewriter, оставить CSS heading intro900ms. intro.js/import/token
+удалены,9modules/validator62. RED typing still enabled→GREEN contrast-intro .946opacity,
+fullAX/DOM/geometry67/84/260/reduce/print/fallback. Newfeature CIe7033d2 success39060479809,
+но ещё не main/Render; auto-review quota восстановилась после22:39Москва.
+Далее follow-up review/CI/main/Render/public. Own helper22252/browsergeomarketing-harmony.
 Ниже прошлая завершённая задача:
 
 Завершено: контраст разделов/карты и печатающийся h1 при первом открытии.

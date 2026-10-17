@@ -28,7 +28,7 @@ button:active:not(:disabled),.place-actions a:active { transform:translateY(var(
 html[data-analysis-state=calculating] #result-empty::after { content:""; display:block; height:var(--space-9); margin-top:var(--space-5); border-radius:var(--radius-control); background:linear-gradient(var(--color-subtle),var(--color-subtle)) 0 0 / 80% var(--space-3) no-repeat,linear-gradient(var(--color-subtle),var(--color-subtle)) 0 50% / 100% var(--space-3) no-repeat,linear-gradient(var(--color-subtle),var(--color-subtle)) 0 100% / 60% var(--space-3) no-repeat; }
 html[data-analysis-state=calculating] .analysis-bar,html[data-analysis-state=refreshing] .analysis-bar { color:var(--color-accent); }
 html[data-analysis-state=error] .status-dot { background:var(--color-on-dark); }
-.intro .eyebrow,.intro>div>p:last-child,.intro-actions { animation:intro-reveal var(--motion-intro) var(--ease-emphasized) both; }
+.intro .eyebrow,.intro h1,.intro>div>p:last-child,.intro-actions { animation:intro-reveal var(--motion-intro) var(--ease-emphasized) both; }
 .intro h1 .title-accent { display:inline-block; }
 .primary:not(:disabled):hover { box-shadow:0 0 28px var(--color-glow); transform:translateY(-2px); }
 .primary:not(:disabled):active { transform:translateY(var(--line)); }
