@@ -24,6 +24,18 @@ still enabled»; удалён intro.js/import/session guard/unused token, доб
 полный AX/DOM, geometry390/768/200%67/84/260, reduce/print/static fallback,
 pageErrors[]. Map/legend/shared canvas и section contrast coverage сохранены
 в обновлённом contrast-intro.js; module count9/validator62.
+Счётчики после удаления intro повторно GREEN: final12344/middle7613,
+refreshFrom12344/interrupted137, pageErrors[]. Follow-up review APPROVED,
+неустранённых замечаний нет. Source661ea50, предыдущий palette CI39060479809 success.
 
-Source CI/main/Render/public идентификаторы будут записаны после публикации.
+Source CI39063741455 и main CI39063830953 success для661ea50,
+включая51backendtests/validator/9JSsyntax/Material rebuild.
+Render dep-db9t0n67bikc73e3bo1g live17октября22:46:45Москва,
+runtime661ea50f8e3e2ad807d8ed214dd2f7c248662cb4, trigger new_commit.
+Public contrast-intro GREEN (wholeheading.946opacity/fullAX/geometry/reduce/print),
+map-harmony GREEN360/390/430/768/200% (inset17/controls12/min44, nooverflow),
+palette/ring/outline/legend совпадают; pageErrors[].
+Реальный API/health200, карта390/768/1440 и save2/compare2 прошли.
+Mobile first paint5tiles; после загрузки подтверждены6/6 иopacity1. Tablet12/desktop16.
+Все19CSS/JS/HTML/favicon/vendor hashes совпали с Git runtime.
 Chromium screenshots не заменяют аудит всех native controls и видов цветового зрения.

@@ -1,18 +1,23 @@
 # Состояние работы
 
 ## Current Goal
-Текущая задача: rose/mauve map polish + phone inset, base9504400,
-feature codex/harmonious-map-mobile-spacing; plan docs/plans/2026-10-17-map-harmony.md.
-Source4files: tokens/map/components/responsive; palettehouse#C58CA6/competitor#B94F7B
+Завершено: rose/mauve map polish + phone inset + удаление typewriter, base9504400,
+runtime/main661ea50f8e3e2ad807d8ed214dd2f7c248662cb4. Render
+dep-db9t0n67bikc73e3bo1g live17октября22:46:45Москва. Feature
+codex/harmonious-map-mobile-spacing сохранена; plan docs/plans/2026-10-17-map-harmony.md закрыт.
+Карта/отступы: tokens/map/components/responsive; palettehouse#C58CA6/competitor#B94F7B
 lightoutline/centroid#E4D2EE/zones#8C709A. Recommendations max900padding0 причина
 тесных строк: RED→GREEN16px, noteinset17, phonecontrols12px/min44,200%nowrapoverflow.
-map-harmony/palette/selected/redesign GREEN, validator63/mapJSsyntax/diff,
+map-harmony/palette/selected/redesign GREEN, validator62/9JSsyntax/diff,
 desktop/mobile screenshots лично просмотрены. Independent review APPROVED.
 Уточнение: убрать typewriter, оставить CSS heading intro900ms. intro.js/import/token
 удалены,9modules/validator62. RED typing still enabled→GREEN contrast-intro .946opacity,
-fullAX/DOM/geometry67/84/260/reduce/print/fallback. Newfeature CIe7033d2 success39060479809,
-но ещё не main/Render; auto-review quota восстановилась после22:39Москва.
-Далее follow-up review/CI/main/Render/public. Own helper22252/browsergeomarketing-harmony.
+fullAX/DOM/geometry67/84/260/reduce/print/fallback. Промежуточный palette CI39060479809 success.
+Follow-up review APPROVED; sourceCI39063741455/mainCI39063830953 success.
+Public wholeheading/map-harmony/mobile360–430/768/200%/save2/compare2 GREEN,
+pageErrors[], health200,19asset hashes matchGit. Свои QA браузеры закрыты;
+helper22252/child1772 остановлены после проверки commandline, localhost5085 не слушается.
+Финальный документальный commit [skip render], runtime остаётся661ea50.
 Ниже прошлая завершённая задача:
 
 Завершено: контраст разделов/карты и печатающийся h1 при первом открытии.
