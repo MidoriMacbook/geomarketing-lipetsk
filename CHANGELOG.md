@@ -42,7 +42,9 @@
 - Все ожидаемые эффекты наблюдались как реальные gm:* animations; stagger0/75/150.
   Во время запроса проверено4 активных Material shadow animations, затем
   runtime reduced-motion остановил их. Missing-bundle/native/API fallback: PASS.
-- Итоговые снимки обновлены; независимое ревью и публикация продолжаются.
+- Итоговые три снимка лично просмотрены; Task1/2/3 и whole-branch review одобрены.
+  Записаны два Minor follow-ups тестового harness; блокирующих замечаний нет.
+- GitHub Linux CI source2caac11: success, run39014252941; публикация продолжается.
 
 ## [2026-10-16] Аудит и направление cartography/motion редизайна
 
