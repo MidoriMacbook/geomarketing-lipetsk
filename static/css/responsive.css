@@ -21,7 +21,7 @@
  .layers h3 { grid-column:1/-1; }
  .threshold { margin-top:var(--space-2); }
  #run { margin-top:0; justify-content:center; }
- .recommendations { grid-column:auto; padding:0; }
+ .recommendations { grid-column:auto; padding:var(--space-4); }
  #recommendation-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
  .recommendation:first-child { grid-column:1/-1; }
  .saved-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
@@ -46,7 +46,7 @@
  .kpis>div:first-child strong { font-size:var(--text-kpi); }
  .settings { display:block; padding:var(--space-5); }
  .settings>.settings-group { margin-top:var(--space-5); }
- select { font-size:var(--text-base); }.field-label { font-size:var(--text-sm); }
+ select { font-size:var(--text-base); padding-inline:var(--space-3); }.field-label { font-size:var(--text-sm); }
  #run { margin-top:var(--space-5); justify-content:space-between; }
  .settings .layers { display:block; }
  .layers label { font-size:var(--text-sm); }
@@ -56,6 +56,8 @@
  #map { height:var(--size-map-mobile); }
  .map-footer { padding:var(--space-3); gap:var(--space-2); }
  #recommendation-list { display:block; }.recommendation { margin-bottom:var(--space-3); }
+ .place-actions .button { padding:var(--space-3); }
+ .leaflet-tooltip { padding:var(--space-2) var(--space-3); }
  .data-section,.saved-heading,.page-footer { flex-direction:column; align-items:flex-start; gap:var(--space-4); }
  .saved-section { padding:var(--space-4); margin-top:var(--space-7); }.saved-list { grid-template-columns:minmax(0,1fr); }
  .saved-heading h2 { font-size:var(--text-lg); }.saved-card { padding:var(--space-4); }
