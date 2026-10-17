@@ -221,6 +221,8 @@ async page => {
   mode = 'empty'; await clearTrace();
   await page.locator('#run').click(); await ready();
   assert(await page.locator('#result').isHidden() && await page.locator('#result-empty').isVisible(), 'Empty result is not immediately readable');
+  await page.locator('#result-empty').scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => window.__urbanMotion.some(item => item.observerVersion === 2 && /empty/.test(item.id)));
   assert((await trace()).some(item => /empty/.test(item.id)), 'Empty/result transition has no feedback');
   mode = 'success';
   const obsolete = holdRequest();

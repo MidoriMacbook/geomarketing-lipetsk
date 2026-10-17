@@ -20,6 +20,7 @@
 | `static/js/saved-places.js` | Проверка старых записей, latest-read под Web Lock, storage sync, лимиты и сравнение |
 | `static/js/report.js` | CSV с защитой формул и печатный DOM-отчёт |
 | `static/js/ui.js` | DOM-утилиты, форматирование, cancel-safe motion, progress и native dialog |
+| `static/js/counters.js` | Визуальный count-up, один RAF, viewport, reset/reduce/print cleanup |
 
 Состояние хранится в JS, сохранённые копии — в localStorage. Другие модули
 не ведут собственную скрытую копию списка. DOM строится через textContent;
@@ -63,6 +64,14 @@ CSS-палитра теперь тёмная, tile-only filter не затраг
 Только актуальный requestVersion изменяет результат и busy. `#map[aria-busy]`,
 `#analysis-status` и полоса ожидания согласованы; refresh сохраняет прошлый результат.
 Значения KPI/hidden/ARIA обновляются до эффектов.
+
+Числовой эффект изолирован в `counters.js`: `countTo` сразу записывает точный
+текст в `.counter-final`; aria-hidden overlay выводит промежуточное число через
+CSS generated content. В accessibility tree/копировании остаётся финальный текст.
+Один RAF и кешированный Intl formatter обслуживают все видимые счётчики, без
+измерений layout в tick. Refresh начинается от текущего визуального значения,
+reset удаляет history. Observer откладывает вход до viewport; reduce/print/hidden
+завершают счётчики сразу. Перед заменой карточек/фильтра вызывается resetCounters.
 
 `ui.animateUI` хранит WAAPI по элементу, отменяет предыдущий эффект,
 обрабатывает обе ветки finished и выполняет cleanup. Идентификаторы `gm:*`

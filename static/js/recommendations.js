@@ -3,6 +3,7 @@ import { $, fmt, coords, distance, node, button, dateText, sourceText, dataDate,
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker } from './map.js';
 import { updateReportAvailability } from './report.js';
+import { countTo, resetCounters } from './counters.js';
 
 let renderedAnalysisId = null;
 
@@ -22,6 +23,7 @@ export function showResult(data) {
   const newAnalysis = renderedAnalysisId !== data.analysis_id;
   renderedAnalysisId = data.analysis_id;
   cancelRevealsWithin($('recommendation-list'));
+  resetCounters($('recommendation-list'));
   $('recommendation-list').replaceChildren();
   setRevealed($('result-empty'), !data.recommendations.length, 'empty');
   $('result').hidden = !data.recommendations.length;
@@ -66,13 +68,16 @@ export function showResult(data) {
     actions.append(save, copy, osm);
     card.append(heading, coordinate, metrics, node('p', 'nearest', `Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`), actions);
     $('recommendation-list').append(card);
+    countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: '%' });
+    countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ' });
+    countTo(competition.querySelector('strong'), rec.competitors_in_radius, { animate: newAnalysis });
     if (newAnalysis) reveal(card, 'recommendation', { delay: index * motionStagger(), duration: 'slow', easing: 'emphasized' });
   });
   updateSaveButtons();
-  $('kpi-residents').textContent = fmt(data.stats.residents);
-  $('kpi-houses').textContent = fmt(data.stats.houses);
-  $('kpi-competitors').textContent = fmt(data.stats.competitors);
-  $('kpi-places').textContent = data.recommendations.length;
+  countTo($('kpi-residents'), Math.round(data.stats.residents), { animate: newAnalysis });
+  countTo($('kpi-houses'), data.stats.houses, { animate: newAnalysis });
+  countTo($('kpi-competitors'), data.stats.competitors, { animate: newAnalysis });
+  countTo($('kpi-places'), data.recommendations.length, { animate: newAnalysis });
   $('kpi-business').textContent = data.business_name;
   if (newAnalysis) ['residents', 'houses', 'competitors', 'places'].forEach(key => reveal($('kpi-'+key), 'kpi'));
   $('map-context').textContent = `${data.district_name} · ${data.business_name}`;

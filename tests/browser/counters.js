@@ -1,0 +1,89 @@
+async original => {
+  const page=await original.context().newPage();
+  const errors=[];
+  const assert=(ok,message)=>{if(!ok)throw new Error(message);};
+  page.on('pageerror',error=>errors.push(error.message));
+  const base=new URL(original.url()).origin;
+  let phase='initial';
+  try {
+    await page.setViewportSize({width:1440,height:1000});
+    await page.emulateMedia({reducedMotion:'no-preference'});
+    const response=await page.request.get(base+'/api/calculate?district=eleytsky&type=cafe');
+    const payload=await response.json();
+    let target=payload.stats.residents,sequence=0;
+    await page.route('**/api/calculate?**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...payload,analysis_id:`counter-${++sequence}`,stats:{...payload.stats,residents:target}})}));
+    await page.goto(base);
+    await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+    const counter=page.locator('#kpi-residents');
+    assert(await counter.locator('.counter-visual[aria-hidden="true"]').count()===1,'KPI has no accessible animated number overlay');
+    const final=await counter.textContent();
+    phase='initial interpolation';
+    await page.waitForFunction(()=>{
+      const node=document.querySelector('#kpi-residents .counter-visual');
+      const n=Number(node?.dataset.display?.replace(/\D/g,''));
+      return n>0&&n<Number(document.getElementById('kpi-residents').dataset.counterTarget);
+    });
+    const middle=await counter.locator('.counter-visual').getAttribute('data-display');
+    assert(await counter.textContent()===final,'Intermediate frames mutate the exact accessible result');
+    const accessibility=await counter.ariaSnapshot();
+    assert(accessibility.replace(/\D/g,'')===String(payload.stats.residents),'Accessibility tree exposes intermediate/duplicate numbers');
+    await page.waitForFunction(()=>!document.getElementById('kpi-residents').classList.contains('is-counting'));
+    assert(await counter.textContent()===final,'Count-up final value differs from API');
+    await page.setViewportSize({width:390,height:844});
+    await page.goto(base);
+    await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+    const cardNumber=page.locator('[data-testid="recommendation-card"]').first().locator('.score');
+    assert(!await cardNumber.evaluate(node=>node.classList.contains('is-counting')),'Offscreen card count started before viewing');
+    await cardNumber.scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>document.querySelector('.recommendation .score').classList.contains('is-counting'));
+    const cardFinal=await cardNumber.textContent();
+    assert(cardFinal==='100%','Animated percentage changed exact score text');
+    await page.setViewportSize({width:1440,height:1000});
+    await counter.scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>!document.getElementById('kpi-residents').classList.contains('is-counting'));
+    target=Math.round(payload.stats.residents*1.6);
+    phase='refresh upwards';
+    await page.locator('#run').click();
+    await counter.scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>document.getElementById('kpi-residents').classList.contains('is-counting'));
+    const refreshFrom=await counter.getAttribute('data-counter-from');
+    assert(Number(refreshFrom)===payload.stats.residents,'Refresh restarted from0 instead of prior result');
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.waitForFunction(()=>!document.querySelector('.is-counting'));
+    assert(await counter.textContent()===target.toLocaleString('ru-RU'),'Runtime reduce did not settle to target');
+    await page.emulateMedia({reducedMotion:'no-preference'});
+    target=37;
+    phase='refresh downwards';
+    await page.locator('#run').click();
+    await counter.scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>document.getElementById('kpi-residents').classList.contains('is-counting'));
+    assert(Number(await counter.getAttribute('data-counter-from'))>37,'Descending update did not retain previous value');
+    await page.locator('#district').selectOption('center');
+    assert(await counter.textContent()==='—','Filter reset retained old counter markup');
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    assert(await counter.textContent()==='—','Cancelled counter overwrote filter reset');
+    await page.locator('#run').click();
+    await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+    assert(Number(await counter.getAttribute('data-counter-from'))===0,'New area continued old analysis number');
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.waitForFunction(()=>!document.querySelector('.is-counting'));
+    assert(await counter.textContent()==='37','Reduced motion result is not exact');
+    const fallback=await original.context().newPage();
+    try {
+      await fallback.addInitScript(()=>{window.IntersectionObserver=undefined;});
+      await fallback.goto(base);
+      await fallback.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+      await fallback.waitForFunction(()=>!document.querySelector('.is-counting'));
+      assert(await fallback.locator('#kpi-residents').textContent()===payload.stats.residents.toLocaleString('ru-RU'),'No observer broke exact count result');
+      await fallback.emulateMedia({reducedMotion:'reduce'});
+      await fallback.reload();
+      await fallback.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+      assert(await fallback.locator('.is-counting').count()===0,'Initial reduced motion created an animated counter');
+    }finally{await fallback.close();}
+    await page.emulateMedia({media:'print'});
+    assert(await page.locator('.counter-visual').evaluateAll(nodes=>nodes.every(node=>!node.getClientRects().length)),'Print includes visual counter overlay');
+    assert(errors.length===0,errors.join(';'));
+    return {final,middle,accessibility,cardFinal,refreshFrom,pageErrors:errors};
+  }catch(error){throw new Error(`${phase}: ${error.message}`);}
+  finally{await page.close();}
+}
