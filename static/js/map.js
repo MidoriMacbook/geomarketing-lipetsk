@@ -146,7 +146,7 @@ export function drawMap(data) {
   });
   markers.clear();
   const renderer = pointsRenderer;
-  const palette = readPalette(['primary', 'outline', 'house', 'competitor', 'centroid']);
+  const palette = readPalette(['primary', 'outline', 'house', 'competitor', 'competitor-outline', 'centroid']);
   L.circle(data.center, {
     radius: data.half_m,
     renderer,
@@ -163,12 +163,12 @@ export function drawMap(data) {
     color: palette.outline,
     weight: 1,
     fillColor: palette.house,
-    fillOpacity: .85
+    fillOpacity: .95
   }).bindTooltip(`Жителей: ≈ ${fmt(h.residents)}`).addTo(layers.houses));
   data.competitors.forEach(c => L.circleMarker([c.lat, c.lng], {
     renderer,
     radius: 6,
-    color: palette.outline,
+    color: palette['competitor-outline'],
     weight: 2,
     fillColor: palette.competitor,
     fillOpacity: 1

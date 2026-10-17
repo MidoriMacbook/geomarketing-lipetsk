@@ -1,6 +1,16 @@
 # Состояние работы
 
 ## Current Goal
+Текущая задача: rose/mauve map polish + phone inset, base9504400,
+feature codex/harmonious-map-mobile-spacing; plan docs/plans/2026-10-17-map-harmony.md.
+Source4files: tokens/map/components/responsive; palettehouse#C58CA6/competitor#B94F7B
+lightoutline/centroid#E4D2EE/zones#8C709A. Recommendations max900padding0 причина
+тесных строк: RED→GREEN16px, noteinset17, phonecontrols12px/min44,200%nowrapoverflow.
+map-harmony/palette/selected/redesign GREEN, validator63/mapJSsyntax/diff,
+desktop/mobile screenshots лично просмотрены. Independent review APPROVED.
+Task1–3 выполнены; далее CI/main/Render/public. Own helper22252/browsergeomarketing-harmony.
+Ниже прошлая завершённая задача:
+
 Завершено: контраст разделов/карты и печатающийся h1 при первом открытии.
 Main/runtime10295c9ea65cd74ccf53c824c15fec74970ba264,
 Render dep-db9s2prm8hqs73aqqrj0 live17октября21:42:53Москва.
