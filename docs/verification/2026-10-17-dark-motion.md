@@ -37,8 +37,24 @@ gpt-6-astra: Spec PASS / Quality APPROVED, включая исправление
 
 ## Публикация
 
-После CI — main/Render, actual public fingerprints и smoke; фактические
-идентификаторы и результаты будут внесены после развёртывания.
+Source CI39015667858: success для1966a1be1cfa314f77d2daf35e2139ff4d368ab7.
+Ветка объединена fast-forward в main. Render автоматически начал
+dep-db9im8rm8hqs73ahhjfg с trigger new_commit, тариф не менялся.
+Main CI39015746356: completed/success. Render live17октября08:02:19 UTC
+(11:02:19 Москвы), runtime1966a1be1cfa314f77d2daf35e2139ff4d368ab7.
+
+Публичный smoke: health200/statusok, три реальных рекомендации, два сохранения
+и две строки сравнения; pageErrors=[]. Initial reduced-motion: background8/15/24,
+fallback visible, Material hidden/indeterminatefalse/shadow running0.
+390/768/1440: безoverflow, карта420/560/660, tiles6/12/16 loaded.
+SHA-256 public tokens.css/base.css/ui.js совпали с Git blobs runtime1966a1b;
+vendor/fonts HTTP200 и совпали с прежними проверенными assets.
+
+Новый dark-motion сценарий отдельно пройден на public: offscreen trace[],
+видимый entrance700ms, reduce→no-preference безстарого входа, два новых расчёта
+без stale entrance, noObserver fallback, selectedtext10.83:1 и белая печать.
+Три public-dark-{390,768,1440}.png лично просмотрены, desktop-top также сохранён.
+Последний документальный коммит использует skip render, без повторной сборки.
 
 ## Границы
 

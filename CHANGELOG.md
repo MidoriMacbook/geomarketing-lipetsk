@@ -31,6 +31,9 @@
 - Ревью: Spec PASS/Quality APPROVED. Исправлено выделение текста1.366→10.83:1
   с RED/GREEN. Дополнительно проверены reduce→no-preference и новый расчёт без
   воскрешения старых входов. Подробности: docs/verification/2026-10-17-dark-motion.md.
+- Source/Main CI39015667858/39015746356 success; Render1966a1b,
+  dep-db9im8rm8hqs73ahhjfg live. Public health/map/save/compare/viewport-motion
+  и три ширины PASS/pageErrors[], assets SHA совпали с Git blobs.
 
 ## [2026-10-17] Публикация cartography/motion редизайна
 
