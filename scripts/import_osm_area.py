@@ -8,6 +8,7 @@ import hashlib
 import io
 import json
 import math
+import re
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
@@ -31,7 +32,13 @@ SOURCE_ATTRIBUTION = 'OpenStreetMap API 0.6 XML extract; ODbL 1.0'
 
 def _tags(element):
     try:
-        return {tag.attrib['k']: tag.attrib['v'] for tag in element.findall('tag')}
+        tags = {}
+        for tag in element.findall('tag'):
+            key = tag.attrib['k']
+            if key in tags:
+                raise ValueError('Duplicate OSM tag key')
+            tags[key] = tag.attrib['v']
+        return tags
     except KeyError as exc:
         raise ValueError('Malformed OSM tags') from exc
 
@@ -65,17 +72,42 @@ def _read_source(source):
         raw = stream.read(MAX_SOURCE_BYTES + 1)
     if len(raw) > MAX_SOURCE_BYTES:
         raise ValueError('OSM source exceeds 64 MiB limit')
-    if b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper():
+    # Decode before inspecting declarations: UTF-16's interleaved NUL bytes
+    # can otherwise hide a DTD from an ASCII byte scan while ET accepts it.
+    try:
+        decoded = raw.decode('utf-8-sig')
+    except UnicodeDecodeError as exc:
+        raise ValueError('OSM source must be UTF-8') from exc
+    if '\x00' in decoded:
+        raise ValueError('OSM source must be UTF-8 without NUL bytes')
+    declaration = re.match(r'<\?xml\b([^?]*)\?>', decoded)
+    if declaration:
+        encoding = re.search(r"encoding\s*=\s*(['\"])(.*?)\1", declaration.group(1))
+        if encoding and encoding.group(2).lower() not in ('utf-8', 'utf8'):
+            raise ValueError('OSM XML declaration must specify UTF-8')
+    if '<!DOCTYPE' in decoded.upper() or '<!ENTITY' in decoded.upper():
         raise ValueError('OSM source must not declare DTDs or entities')
+    allowed_children = {
+        'osm': {'note', 'meta', 'bounds', 'node', 'way', 'relation'},
+        'node': {'tag'}, 'way': {'nd', 'tag'}, 'relation': {'member', 'tag'},
+        'note': set(), 'meta': set(), 'bounds': set(),
+        'nd': set(), 'member': set(), 'tag': set(),
+    }
     try:
         depth, count = 0, 0
+        parents = []
         parser = ET.iterparse(io.BytesIO(raw), events=('start', 'end'))
         for event, element in parser:
             if event == 'start':
                 depth += 1
+                if parents and element.tag not in allowed_children.get(parents[-1], set()):
+                    raise ValueError('Unsupported OSM element placement or wrapper')
+                parents.append(element.tag)
                 if depth > MAX_XML_DEPTH:
                     raise ValueError('OSM XML nesting limit exceeded')
                 if element.tag in ('node', 'way', 'relation'):
+                    if depth != 2:
+                        raise ValueError('OSM primitives must be direct children of osm')
                     count += 1
                     if count > MAX_PRIMITIVES:
                         raise ValueError('OSM primitive limit exceeded')
@@ -83,6 +115,7 @@ def _read_source(source):
                     raise ValueError('OSM response contains an error or remark')
             else:
                 depth -= 1
+                parents.pop()
         root = parser.root
         if root.tag != 'osm':
             raise ValueError('Source is not an OSM extract')

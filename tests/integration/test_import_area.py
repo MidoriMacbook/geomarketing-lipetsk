@@ -138,6 +138,46 @@ class AreaImportTests(unittest.TestCase):
                 self.assertEqual(previous.read_text(), 'previous')
                 self.assertEqual(list(self.output.iterdir()), [previous])
 
+    def assert_rejected_without_snapshot_changes(self, raw):
+        self.source.write_bytes(raw)
+        self.output.mkdir(exist_ok=True)
+        for name in [f'houses_{osm.cache_key(self.area)}.json',
+                     f'{osm.competitor_cache_name("bakery", self.area)}.json']:
+            (self.output / name).write_bytes(b'previous verified snapshot')
+        before = {path.name: path.read_bytes() for path in self.output.iterdir()}
+        with self.assertRaises(ValueError):
+            self.importer().generate_snapshots(self.source, self.area, self.output,
+                                               ['bakery'], fetched_at=FETCHED_AT)
+        self.assertEqual({path.name: path.read_bytes() for path in self.output.iterdir()}, before)
+
+    def test_duplicate_tag_keys_cannot_hide_matching_competitors(self):
+        for second_value in ['pet', 'bakery']:
+            with self.subTest(second_value=second_value):
+                raw = (f'<osm>{BOUNDS}<node id="1" lat="52.593" lon="39.48">'
+                       '<tag k="shop" v="bakery"/>'
+                       f'<tag k="shop" v="{second_value}"/></node></osm>').encode('utf-8')
+                self.assert_rejected_without_snapshot_changes(raw)
+
+    def test_wrappers_and_nested_primitives_cannot_become_empty_success(self):
+        node = '<node id="1" lat="52.593" lon="39.48"><tag k="shop" v="bakery"/></node>'
+        for content in [f'<data>{node}</data>', f'<way id="2">{node}</way>',
+                        '<unsupported/>', '<data/>']:
+            with self.subTest(content=content):
+                self.assert_rejected_without_snapshot_changes(f'<osm>{BOUNDS}{content}</osm>'.encode('utf-8'))
+
+    def test_utf16_and_non_utf8_declarations_cannot_bypass_dtd_guard(self):
+        node = '<node id="1" lat="52.593" lon="39.48"><tag k="shop" v="bakery"/></node>'
+        for encoding in ['utf-16-le', 'utf-16-be']:
+            for declaration in ['', '<!DOCTYPE osm [<!ENTITY ignored "value">]>']:
+                with self.subTest(encoding=encoding, declaration=declaration):
+                    content = ('<?xml version="1.0" encoding="UTF-16"?>'
+                               f'{declaration}<osm>{BOUNDS}{node}</osm>')
+                    self.assert_rejected_without_snapshot_changes(content.encode(encoding))
+        for encoding in ['ISO-8859-1', 'UTF-16']:
+            with self.subTest(declared_encoding=encoding):
+                content = f'<?xml version="1.0" encoding="{encoding}"?><osm>{BOUNDS}{node}</osm>'
+                self.assert_rejected_without_snapshot_changes(content.encode('utf-8'))
+
     def test_unrelated_incomplete_administrative_and_route_relations_are_ignored(self):
         self.write('<relation id="1"><member type="way" ref="999"/>'
                    '<tag k="boundary" v="administrative"/></relation>'
