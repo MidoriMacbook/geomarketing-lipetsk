@@ -17,7 +17,10 @@ async page => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(base);
   await page.locator('[data-testid="business-select"]').waitFor({ state: 'visible', timeout: 8000 });
-  await page.waitForFunction(() => document.querySelector('#business').options.length === 5);
+  await page.waitForFunction(async () => {
+    const { state } = await import('/static/js/state.js');
+    return state.catalog && document.querySelector('#business').options.length === state.catalog.businesses.length;
+  });
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
   const initial = await page.evaluate(() => fetch('/api/calculate?district=eleytsky&type=cafe').then(r => r.json()));
   assert(initial.recommendations.length >= 1 && initial.recommendations.length <= 3, 'Recommendation count');
@@ -260,5 +263,5 @@ async page => {
   await page.waitForTimeout(1200);
   await page.screenshot({ path: 'tests/artifacts/workspace-desktop.png', fullPage: true });
   assert(errors.length === 0, errors.join('\n'));
-  return { passed: ['catalog/retry', 'recommendations', 'canvas reuse', 'two-tab save/delete/sync', 'queued save context', 'refresh retains result', 'save/dedupe/reload/delete/12-limit', 'compare/3-limit', 'CSV/escaping/formulas', 'print', 'modal', 'layers', '5 businesses', 'race', 'custom', 'API error', 'tile retry', 'corrupt/blocked storage/missing locks', 'mobile'], pageErrors: errors };
+  return { passed: ['catalog/retry', 'recommendations', 'canvas reuse', 'two-tab save/delete/sync', 'queued save context', 'refresh retains result', 'save/dedupe/reload/delete/12-limit', 'compare/3-limit', 'CSV/escaping/formulas', 'print', 'modal', 'layers', 'catalog businesses', 'race', 'custom', 'API error', 'tile retry', 'corrupt/blocked storage/missing locks', 'mobile'], pageErrors: errors };
 }

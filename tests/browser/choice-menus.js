@@ -11,30 +11,36 @@ async original=>{
   assert(await page.locator('#business-trigger').isDisabled(),'Loading catalog leaves menu enabled');
   release();
   await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+  const catalog=await page.evaluate(async()=>{const {state}=await import('/static/js/state.js');return state.catalog;});
   const business=page.locator('#business-trigger'),district=page.locator('#district-trigger');
   assert(await page.locator('#business').isHidden(),'Native browser menu remains exposed');
   assert(await business.getAttribute('role')==='combobox','Choice trigger lacks combobox semantics');
   await page.evaluate(()=>{window.__choiceChanges=0;document.getElementById('business').addEventListener('change',()=>window.__choiceChanges++);});
   await business.click();
   assert(await page.getByRole('listbox').count()===1,'Popup list is not accessible');
-  assert(await page.getByRole('option').count()===5,'Business options differ from catalog');
+  assert(await page.getByRole('option').count()===catalog.businesses.length,'Business options differ from catalog');
   await business.press('ArrowDown');
   assert(await page.locator('#business').inputValue()==='cafe','Arrow navigation prematurely commits');
   await business.press('Escape');
   assert(await business.getAttribute('aria-expanded')==='false'&&await page.locator('#business').inputValue()==='cafe','Escape failed to cancel');
   await business.press('End');await business.press('Enter');
-  assert(await page.locator('#business').inputValue()==='beauty','End/Enter did not choose final option');
+  assert(await page.locator('#business').inputValue()===catalog.businesses.at(-1).key,'End/Enter did not choose final option');
   assert(await page.evaluate(()=>window.__choiceChanges)===1,'Selection dispatches change more than once');
   await business.dispatchEvent('keydown',{key:'п',code:'KeyG'});await business.press('Tab');
   assert(await page.locator('#business').inputValue()==='grocery','Cyrillic typeahead/Tab failed');
   assert(await page.evaluate(()=>document.activeElement.id)!=='business-trigger','Tab traps focus');
   const choices=await page.locator('#business').evaluate(n=>[...n.options].map(o=>({value:o.value,label:o.textContent})));
+  assert(choices.every((option,index)=>option.value===catalog.businesses[index].key&&option.label===catalog.businesses[index].name),'Business menu differs from API catalog order/labels');
   for(const option of choices){
    await business.click();await page.getByRole('option',{name:option.label,exact:true}).click();
    assert(await page.locator('#business').inputValue()===option.value,'Pointer selection disagrees with native value');
   }
   await business.click();await district.click();
   assert(await page.getByRole('listbox').count()===1&&await business.getAttribute('aria-expanded')==='false','Two menus remain open');
+  assert(await page.getByRole('option').count()===catalog.districts.length+1,'District options differ from catalog plus custom area');
+  await district.press('End');await district.press('ArrowUp');await district.press('Enter');
+  assert(await page.locator('#district').inputValue()===catalog.districts.at(-1).key,'District keyboard navigation cannot reach final catalog item');
+  await district.click();
   await page.getByRole('option',{name:'Своя область на карте',exact:true}).click();
   assert(await page.locator('#custom-box').isVisible(),'Custom area no longer expands');
   const radius=page.locator('#radius-trigger');await radius.click();await radius.press('End');await radius.press('Enter');
@@ -51,18 +57,21 @@ async original=>{
   await page.evaluate(()=>{document.getElementById('business').disabled=false;});
   await page.waitForFunction(()=>!document.getElementById('business-trigger').disabled);
   const geometry=[];
-  for(const [width,scale] of [[360,1],[390,1],[390,2]]){
+  for(const [width,scale] of [[360,1],[390,1],[768,1],[1440,1],[390,2]]){
    await page.setViewportSize({width,height:640});await page.evaluate(scale=>{document.documentElement.style.fontSize=scale*100+'%';},scale);
-   await business.scrollIntoViewIfNeeded();await business.click();
-   const menu=await page.getByRole('listbox').boundingBox();
-   assert(menu.x>=12&&menu.x+menu.width<=width-12&&menu.y>=8&&menu.y+menu.height<=640-8,'Popup escapes mobile viewport');
-   await business.press('End');
-   await page.waitForFunction(()=>!document.getAnimations().some(a=>a.id.startsWith('gm:choice')&&a.playState==='running'));
-   const active=await business.getAttribute('aria-activedescendant');
-   assert(await page.locator('#'+active).evaluate(row=>{const r=row.getBoundingClientRect(),m=row.parentElement.getBoundingClientRect();return r.top>=m.top&&r.bottom<=m.bottom;}),'Active option not scrolled into popup');
-   await business.press('Escape');
-   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Menu creates horizontal overflow');
-   geometry.push({width,scale,menu});
+   for(const [control,trigger] of [['business',business],['district',district]]){
+    await trigger.scrollIntoViewIfNeeded();await trigger.click();
+    await page.waitForFunction(()=>!document.getAnimations().some(a=>a.id.startsWith('gm:choice')&&a.playState==='running'));
+    const menu=await page.getByRole('listbox').boundingBox();
+    assert(menu.x>=12&&menu.x+menu.width<=width-12&&menu.y>=8&&menu.y+menu.height<=640-8,'Popup escapes viewport: '+JSON.stringify({control,width,scale,menu}));
+    await trigger.press('End');
+    await page.waitForFunction(()=>!document.getAnimations().some(a=>a.id.startsWith('gm:choice')&&a.playState==='running'));
+    const active=await trigger.getAttribute('aria-activedescendant');
+    assert(await page.locator('#'+active).evaluate(row=>{const r=row.getBoundingClientRect(),m=row.parentElement.getBoundingClientRect();return r.top>=m.top&&r.bottom<=m.bottom;}),'Active option not scrolled into popup');
+    await trigger.press('Escape');
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Menu creates horizontal overflow');
+    geometry.push({control,width,scale,menu});
+   }
   }
   await page.emulateMedia({reducedMotion:'reduce'});await business.click();
   assert(await page.getByRole('listbox').evaluate(n=>!n.getAnimations({subtree:true}).some(a=>a.playState==='running')),'Reduced motion still animates menu');
@@ -98,9 +107,10 @@ async original=>{
    const after=await phone.getByRole('listbox').evaluate(n=>n.scrollTop);
    assert(await phone.locator('#business').inputValue()==='pharmacy','Swipe accidentally selects business');
    assert(await trigger.getAttribute('aria-expanded')==='true','Swipe closes popup');
-   await phone.getByRole('option',{name:'Салон красоты',exact:true}).tap();
-   assert(await phone.locator('#business').inputValue()==='beauty','Tap after swipe fails');
-   touch={hasTouch:true,textScale:2,scrollBefore:before,scrollAfter:after,selected:'beauty'};
+   const lastBusiness=catalog.businesses.at(-1);
+   await phone.getByRole('option',{name:lastBusiness.name,exact:true}).tap();
+   assert(await phone.locator('#business').inputValue()===lastBusiness.key,'Tap final option after swipe fails');
+   touch={hasTouch:true,textScale:2,scrollBefore:before,scrollAfter:after,selected:lastBusiness.key};
   }finally{await touchContext.close();}
   const motion=await page.evaluate(()=>window.__choiceMotion);
   assert(motion.includes('gm:choice-open')&&motion.includes('gm:choice-row')&&motion.includes('gm:choice-value'),'Menus lack opening/option/value feedback');

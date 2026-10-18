@@ -92,7 +92,7 @@ function bootstrap() {
   function updateParams() {
     if (!state.catalog) return;
     const b = state.catalog.businesses.find(b => b.key === $('business').value);
-    $('business-parameters').textContent = `Радиус доступности ${fmt(b.radius_m)} м · коэффициент конкуренции ${b.alpha}. Параметры модели.`;
+    $('business-parameters').textContent = `Радиус доступности ${fmt(b.radius_m)} м · коэффициент конкуренции ${b.alpha}. Стартовые эвристики модели, не прогноз выручки.`;
     $('kpi-business').textContent = b.name;
   }
   async function loadCatalog() {
