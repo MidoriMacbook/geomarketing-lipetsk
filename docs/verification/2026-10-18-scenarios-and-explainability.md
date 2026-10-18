@@ -34,6 +34,15 @@
 - Родитель лично просмотрел desktop/mobile сценарии; spacing count-label исправлен.
 - Validator70,14JSsyntax,diff-check и source stub scan пройдены. Новых пакетов нет.
 - Node storage suite добавлен в GitHub Actions; Material rebuild остаётся обязательным.
+- Whole-branch review нашло Important: необязательные повреждённые quality/explanation
+  старого saved.v1 могли блокировать CSV/print. Read нормализует только непригодные
+  дополнительные сведения в памяти, сохраняя базовые места и исходный raw до записи;
+  presentation helpers проверяют формы/строки/массивы. legacy-enrichment RED→GREEN,
+  включая object вместо status, null/reasons object/explanation arrays. CSV/print работают,
+  «не оценено» вместо ложного статуса, raw не переписывается при чтении.
+- Minor review: ноль конкурентов в радиусе больше не описывает всю выборку.
+  Zero-local/nonempty halo regression RED→GREEN; workspace/UI повторно GREEN.
+  Choice-menus5options/touch/200%/fallback также GREEN после нового пакета.
 
 Подагентский последний Chrome rerun первоначально не выполнился из-за лимита
 автоматического review разрешений. После возобновления основной поток выполнил

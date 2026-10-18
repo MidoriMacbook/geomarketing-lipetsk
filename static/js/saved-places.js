@@ -1,5 +1,6 @@
 import { state } from './state.js';
 import { $, fmt, coords, distance, STORAGE_KEY, node, button, dateText, sourceText, storageStatus, dataDate, reveal, animateUI, exitSnapshot, setRevealed } from './ui.js';
+import { checkedQuality, checkedExplanation } from './data-quality.js';
 
 let updateReportAvailability = () => {};
 
@@ -19,7 +20,12 @@ export function readSaved() {
   try {
     const values = JSON.parse(raw);
     if (!Array.isArray(values) || values.length > 12 || !values.every(validSaved) || new Set(values.map(i => i.id)).size !== values.length) throw new Error('invalid');
-    return values;
+    return values.map(item=>{
+      const clean={...item,recommendation:{...item.recommendation}};
+      if ('data_quality' in clean&&!checkedQuality(clean.data_quality))delete clean.data_quality;
+      if ('explanation' in clean.recommendation&&!checkedExplanation(clean.recommendation.explanation))delete clean.recommendation.explanation;
+      return clean;
+    });
   }
   catch {
     const error = new Error('invalid');

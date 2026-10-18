@@ -5,8 +5,27 @@ const completenessLabels = { limited: 'Ограниченные данные', n
 const osmLimitation = 'Разметка OpenStreetMap добровольная: полнота и актуальность объектов не гарантированы.';
 const dateLabel = value => new Date(value).toLocaleString('ru-RU');
 
+// Optional enrichment may come from older or damaged saved-place records.
+// Keep their usable base facts, but never interpret malformed details as assessed.
+const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+const strings = value => Array.isArray(value) && value.length <= 64 && value.every(text => typeof text === 'string' && text.length <= 2000);
+export function checkedQuality(value) {
+  return object(value) && value.version === 1 && object(value.completeness)
+    && typeof value.completeness.status==='string' && Object.hasOwn(completenessLabels,value.completeness.status)
+    && Array.isArray(value.completeness.reasons) && value.completeness.reasons.length <= 64
+    && value.completeness.reasons.every(reason=>object(reason)&&typeof reason.code==='string'&&typeof reason.text==='string'&&reason.text.length<=2000) ? value : null;
+}
+export function checkedExplanation(value) {
+  const metrics=value?.metrics;
+  return object(value) && value.version===1 && ['higher','similar','lower','unknown'].includes(value.demand_level)
+    && ['low','moderate','high'].includes(value.competition_level) && object(metrics)
+    && ['houses_in_radius','houses_per_km2','model_demand','competition_pressure','competition_multiplier'].every(key=>Number.isFinite(metrics[key])&&metrics[key]>=0)
+    && (metrics.nearest_demand_center_m===null||Number.isFinite(metrics.nearest_demand_center_m)&&metrics.nearest_demand_center_m>=0)
+    && ['strengths','risks','field_checks'].every(key=>strings(value[key])) ? value : null;
+}
+
 export function qualitySummary(data, now = Date.now()) {
-  const quality = data?.data_quality;
+  const quality = checkedQuality(data?.data_quality);
   const metadata = data?.data_meta || {};
   const timestamps = ['houses', 'competitors'].map(key => metadata[key]?.fetched_at);
   const valid = timestamps.every(value => Number.isFinite(value) && value > 0 && value * 1000 <= now + 300000);
@@ -41,7 +60,7 @@ export function qualityBlock(data, compact = false) {
 }
 
 export function explanationBlock(rec) {
-  const block = node('div', 'explanation-block'), explanation = rec?.explanation;
+  const block = node('div', 'explanation-block'), explanation = checkedExplanation(rec?.explanation);
   block.dataset.testid = 'explanation-block';
   if (!explanation) { block.append(node('p', 'hint', 'Объяснение для этого сохранённого расчёта не оценено.')); return block; }
   if (explanation.strengths?.length) block.append(node('p', 'explanation-strength', explanation.strengths[0]));
@@ -53,7 +72,7 @@ export function explanationBlock(rec) {
   details.append(node('h4', '', 'Спрос'), node('p', '', `${demand[explanation.demand_level] || 'Не оценен'}. Это сравнение предложенных точек, а не норма города.`), node('p', '', `Учтено домов в радиусе: ${number(metrics.houses_in_radius)}; плотность учтённых домов: ${number(metrics.houses_per_km2, ' на км²', 1)}; ближайший центр спроса: ${number(metrics.nearest_demand_center_m, ' м')}. Взвешенный спрос модели: ${number(metrics.model_demand)}.`));
   const pressure = metrics.competition_pressure > 0 && metrics.competition_pressure < .005 ? '<0,01' : number(metrics.competition_pressure);
   details.append(node('h4', '', 'Конкуренция'), node('p', '', `${competition[explanation.competition_level] || 'Не оценена'}. Давление: ${pressure}; делитель спроса: ${Number.isFinite(metrics.competition_multiplier) ? metrics.competition_multiplier.toLocaleString('ru-RU', { maximumFractionDigits: 2 }) : 'не оценено'}. Это параметр модели, а не вероятность убытка.`));
-  if (rec.competitors_in_radius === 0) details.append(node('p', '', 'В выборке OSM конкуренты не отмечены; это не означает их отсутствия.'));
+  if (rec.competitors_in_radius === 0) details.append(node('p', '', 'В радиусе этой точки в данных OSM конкуренты не отмечены; это не означает их отсутствия. За пределами радиуса могут быть учтённые конкуренты.'));
   for (const [key, title] of [['strengths', 'Сильные стороны'], ['risks', 'Риски'], ['field_checks', 'Проверить на месте']]) {
     details.append(node('h4', '', title));
     const list = node('ul');
