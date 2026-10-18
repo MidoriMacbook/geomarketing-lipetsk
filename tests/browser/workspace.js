@@ -173,8 +173,9 @@ async page => {
   await page.locator('#run').click(); await pending;
   await page.locator('#district').selectOption('center', {force:true});
   await obsoleteSettled;
-  assert(!await page.locator('#result').isVisible(), 'Obsolete response rendered');
-  assert(await page.locator('#run').isEnabled(), 'Button stuck after cancellation');
+  await page.waitForFunction(() => document.documentElement.dataset.analysisState === 'success' && !document.getElementById('run').disabled);
+  assert(await page.evaluate(async () => { const { state } = await import('/static/js/state.js'); return state.current?.district; }) === 'center', 'Obsolete response replaced selected district');
+  assert(await page.locator('#run').isEnabled(), 'Button stuck after automatic district calculation');
   await page.unroute('**/api/calculate?**');
   await page.locator('#district').selectOption('custom', {force:true});
   await page.locator('#radius').selectOption('1500', {force:true});
@@ -184,9 +185,8 @@ async page => {
   const map = await page.locator('#map').boundingBox();
   await page.mouse.click(map.x + map.width / 2, map.y + map.height / 2);
   assert(/выбран/.test(await page.locator('#custom-hint').innerText()), 'Custom map click missing');
-  await page.locator('#district').selectOption('eleytsky', {force:true});
   await page.route('**/api/calculate?**', route => route.abort());
-  await page.locator('#run').click();
+  await page.locator('#district').selectOption('eleytsky', {force:true});
   await page.locator('#error').waitFor({ state: 'visible' });
   assert(!/python|F12/.test(await page.locator('#error').innerText()), 'Hosted error instructions');
   await page.unroute('**/api/calculate?**');
