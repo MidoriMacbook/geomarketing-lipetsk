@@ -1,10 +1,13 @@
 """Load usable data, apply the existing demo fallback, and assemble analyses."""
 import logging
+from datetime import datetime, timezone
 import numpy as np
 
 from src.config import MIN_HOUSES, DEMO_HALF_SIZE_M, LOW_DATA_RESIDENTS
 from src.domain.businesses import BUSINESS_CATALOG
 from src.domain.models import Area, LoadedData
+from src.domain.data_quality import assess_data_quality
+from src.domain.explanations import explain_recommendations
 from src.domain.scoring import score_locations
 from src.services import osm_service as osm
 from src.utils.formatting import cache_metadata, analysis_payload
@@ -83,4 +86,13 @@ def analyze(area: Area, business: str, refresh: bool = False) -> dict:
         notice = ('В OpenStreetMap для этого района мало размеченных жилых домов, '
                   'поэтому спрос может быть занижен, а результат неточен.')
     scored = score_locations(loaded.houses, loaded.competitors, area['center'], half, parameters)
-    return analysis_payload(area, business, parameters, loaded, scored, half, notice)
+    calculated_at = datetime.now(timezone.utc)
+    explanations = explain_recommendations(loaded.houses, loaded.competitors, area['center'],
+                                           half, parameters, scored.recommendations, scored.centroids)
+    quality = assess_data_quality(
+        source=loaded.source, metadata=loaded.metadata, house_count=len(loaded.houses),
+        residents=int(loaded.houses[:, 2].sum()), competitor_count=len(loaded.competitors),
+        warning=loaded.warning, notice=notice, now=calculated_at)
+    return analysis_payload(area, business, parameters, loaded, scored, half, notice,
+                            calculated_at=quality['assessed_at'], quality=quality,
+                            explanations=explanations)

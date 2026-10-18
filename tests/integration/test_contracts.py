@@ -31,12 +31,13 @@ class ContractTests(unittest.TestCase):
             'analysis_id', 'parameters', 'recommendations', 'source', 'data_meta',
             'warning', 'notice', 'center', 'half_m', 'stats', 'best', 'grid',
             'centroids', 'houses', 'competitors',
+            'calculated_at', 'analysis_context', 'data_quality',
         })
         self.assertEqual(set(data['parameters']), {'radius_m', 'alpha'})
         self.assertEqual(set(data['stats']), {'houses', 'residents', 'competitors'})
         self.assertEqual(set(data['grid']), {'n', 'lat_min', 'lat_max', 'lng_min', 'lng_max', 'scores'})
         recommendation_keys = {'rank', 'lat', 'lng', 'score', 'residents_in_radius',
-                               'radius_m', 'competitors_in_radius', 'nearest_competitor_m'}
+                               'radius_m', 'competitors_in_radius', 'nearest_competitor_m', 'explanation'}
         for item in data['recommendations'] + [data['best']]:
             self.assertEqual(set(item), recommendation_keys)
         for item in data['centroids'] + data['houses']:
