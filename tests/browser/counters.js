@@ -77,7 +77,7 @@ async original => {
     await page.waitForFunction(()=>document.querySelector('.recommendation .place-metrics strong')?.dataset.counterTarget==='10000');
     const interruptedFrom=Number(await refreshedPeople.getAttribute('data-counter-from'));
     assert(interruptedFrom>37&&interruptedFrom<Math.round(payload.recommendations[0].residents_in_radius),'Interrupted card refresh did not retain displayed intermediate value');
-    await page.locator('#district').selectOption('center');
+    await page.locator('#district').selectOption('center', {force:true});
     assert(await counter.textContent()==='—','Filter reset retained old counter markup');
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     assert(await counter.textContent()==='—','Cancelled counter overwrote filter reset');

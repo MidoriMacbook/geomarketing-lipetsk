@@ -6,8 +6,8 @@ async page => {
   const matrix = [];
   for (const district of catalog.districts) {
     for (const business of catalog.businesses) {
-      await page.locator('#district').selectOption(district.key);
-      await page.locator('#business').selectOption(business.key);
+      await page.locator('#district').selectOption(district.key, {force:true});
+      await page.locator('#business').selectOption(business.key, {force:true});
       const reply = page.waitForResponse(response => {
         const url = new URL(response.url());
         return url.pathname === '/api/calculate' && url.searchParams.get('district') === district.key && url.searchParams.get('type') === business.key;

@@ -10,6 +10,7 @@ import { cancelRequest, fetchCatalog, fetchCalculation, beginCatalogRequest, beg
 
 function bootstrap() {
   initMotion();
+  import('./choices.js').then(({initChoiceMenus})=>initChoiceMenus()).catch(()=>{});
   initDialogMotion($('model-dialog'));
   function resetSelection() {
     cancelRequest();

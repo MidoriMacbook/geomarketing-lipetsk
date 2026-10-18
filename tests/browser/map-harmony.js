@@ -13,7 +13,7 @@ async original=>{
     const panel=document.getElementById('recommendations'),style=getComputedStyle(panel),rect=panel.getBoundingClientRect();
     const notes=[...panel.querySelectorAll('.section-note,.score-note')].map(n=>n.getBoundingClientRect().left-rect.left);
     const buttons=[...document.querySelectorAll('.place-actions .button')].map(n=>({padding:parseFloat(getComputedStyle(n).paddingLeft),height:n.getBoundingClientRect().height}));
-    const selectPadding=parseFloat(getComputedStyle(document.getElementById('business')).paddingLeft);
+    const selectPadding=parseFloat(getComputedStyle(document.getElementById('business-trigger')||document.getElementById('business')).paddingLeft);
     return {width:innerWidth,scale:parseFloat(document.documentElement.style.fontSize)/100,padding:parseFloat(style.paddingLeft),notes,buttons,selectPadding,overflow:document.documentElement.scrollWidth>innerWidth};
    });
    assert(geometry.padding>=16&&geometry.notes.every(n=>n>=16),'Recommendation text touches its panel border');

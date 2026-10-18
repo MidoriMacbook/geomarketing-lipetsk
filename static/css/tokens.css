@@ -9,6 +9,7 @@
  --color-settings-ink:#281d2d; --color-settings-muted:#654a5e;
  --color-settings-field:#f9edf3; --color-settings-line:#c1a0ac;
  --color-settings-border:#806c79; --color-settings-notice:#e2c9d7;
+ --color-choice-active:#e2c9d7; --color-choice-selected:#d7b7ca; --color-choice-accent:#7b3f5c;
  --color-settings-error:#7a291d; --color-settings-error-bg:#f9e5de;
  --color-panel-dark:#1b1724; --color-on-dark:#f0d9e4; --color-muted-on-dark:#c1a0ac;
  --color-line-on-dark:#a48c9a; --color-primary:#f0d9e4; --color-primary-hover:#fff0f6;
@@ -39,6 +40,7 @@
  --line:1px; --line-strong:2px; --focus-width:3px; --focus-offset:3px;
  --shadow-control:0 8px 24px rgb(0 4 12 / .32);
  --shadow-panel:0 20px 60px rgb(0 4 12 / .22); --shadow-dialog:0 28px 90px rgb(0 4 12 / .65);
+ --shadow-choice:0 12px 28px rgb(22 19 31 / .23); --size-choice-menu:256px;
  --motion-fast:220ms; --motion-base:360ms; --motion-slow:700ms; --motion-intro:900ms; --motion-stagger:75ms;
  --motion-counter:1100ms;
  --duration-fast:var(--motion-fast); --ease-standard:cubic-bezier(.2,0,.2,1);
@@ -48,6 +50,7 @@
  --motion-progress-start:-40%; --motion-progress-end:70%; --motion-progress-scale-start:.4;
  --motion-progress-scale-end:.6; --motion-progress-static:.45;
  --z-skip:2000; --z-header:1000; --z-map:0; --z-zones:405; --z-points:420; --z-ghost:1500;
+ --z-choice:1200;
  --size-target:44px; --size-logo:40px; --size-switch:20px; --size-swatch:12px; --size-marker:44px;
  --size-marker-selected:44px; --size-table:760px; --size-dialog:620px; --size-report:180mm;
  --size-page:1720px; --size-settings:220px; --size-settings-min:210px;

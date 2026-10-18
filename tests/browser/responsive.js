@@ -14,14 +14,18 @@ async page => {
   const save = page.locator('[data-testid="save-place"]').first();
   const saveAppearance = () => save.evaluate(el => {
     const styles = getComputedStyle(el);
+    const rgb = color => color.match(/[\d.]+/g).map(Number);
+    const blend = (front, back) => front.slice(0,3).map((v,i)=>v*(front[3]??1)+back[i]*(1-(front[3]??1)));
+    const chain=[];for(let current=el;current;current=current.parentElement)chain.unshift(current);
+    const surface=chain.reduce((color,current)=>blend(rgb(getComputedStyle(current).backgroundColor),color),[255,255,255]);
     const luminance = color => {
-      const rgb = color.match(/[\d.]+/g).slice(0, 3).map(Number).map(value => {
+      const channels = color.map(value => {
         const channel = value / 255;
         return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
       });
-      return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
+      return channels[0] * .2126 + channels[1] * .7152 + channels[2] * .0722;
     };
-    const foreground = luminance(styles.color), background = luminance(styles.backgroundColor);
+    const foreground = luminance(blend(rgb(styles.color),surface)), background = luminance(surface);
     return { contrast:(Math.max(foreground, background) + .05) / (Math.min(foreground, background) + .05), foreground:styles.color, background:styles.backgroundColor, transform:styles.transform, focusVisible:el.matches(':focus-visible'), outlineStyle:styles.outlineStyle, outlineWidth:parseFloat(styles.outlineWidth), saved:el.classList.contains('is-saved'), pressed:el.getAttribute('aria-pressed') };
   });
   await page.mouse.move(0, 0);
@@ -66,7 +70,7 @@ async page => {
     }, null, { timeout:12000 }).catch(() => {});
     const geometry = await page.evaluate(() => {
       const box = id => { const r = document.getElementById(id).getBoundingClientRect(); return { top:r.top, bottom:r.bottom, width:r.width, height:r.height }; };
-      const selectors = '.button,.place-select,.place-actions a,.icon-button,.linkbtn,.saved-card-actions button,.saved-card-actions label,.layers label,.site-header nav a,.site-header nav button,select,.leaflet-control-zoom a,.recommendation-pin';
+      const selectors = '.button,.choice-trigger,.place-select,.place-actions a,.icon-button,.linkbtn,.saved-card-actions button,.saved-card-actions label,.layers label,.site-header nav a,.site-header nav button,select,.leaflet-control-zoom a,.recommendation-pin';
       const smallTargets = [...document.querySelectorAll(selectors)].filter(el => el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden').filter(el => el.getBoundingClientRect().height < 43.9 || el.getBoundingClientRect().width < 43.9).map(el => el.id || el.className);
       const scroll = document.querySelector('.table-scroll');
       const clippedActions = [...document.querySelectorAll('.place-actions button')].filter(el => el.scrollWidth > el.clientWidth).map(el => el.textContent);

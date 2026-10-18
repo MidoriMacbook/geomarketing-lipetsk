@@ -47,6 +47,7 @@
  .settings { display:block; padding:var(--space-5); }
  .settings>.settings-group { margin-top:var(--space-5); }
  select { font-size:var(--text-base); padding-inline:var(--space-3); }.field-label { font-size:var(--text-sm); }
+ .choice-trigger,.choice-menu { font-size:var(--text-base); }
  #run { margin-top:var(--space-5); justify-content:space-between; }
  .settings .layers { display:block; }
  .layers label { font-size:var(--text-sm); }

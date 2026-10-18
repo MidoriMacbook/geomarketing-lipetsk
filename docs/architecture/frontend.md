@@ -21,6 +21,7 @@
 | `static/js/report.js` | CSV с защитой формул и печатный DOM-отчёт |
 | `static/js/ui.js` | DOM-утилиты, форматирование, cancel-safe motion, progress и native dialog |
 | `static/js/counters.js` | Визуальный count-up, один RAF, viewport, reset/reduce/print cleanup |
+| `static/js/choices.js` | Необязательное улучшение select: combobox/listbox, клавиатура, каталог и motion |
 
 Состояние хранится в JS, сохранённые копии — в localStorage. Другие модули
 не ведут собственную скрытую копию списка. DOM строится через textContent;

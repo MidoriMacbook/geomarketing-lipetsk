@@ -196,11 +196,11 @@ async page => {
   await page.keyboard.press('Escape');
 
   await clearTrace();
-  await page.locator('#district').selectOption('custom');
+  await page.locator('#district').selectOption('custom', {force:true});
   assert(await page.locator('#custom-box').isVisible(), 'Custom expansion delays visibility');
   assert(await page.locator('#district').getAttribute('aria-expanded') === 'true', 'Custom expansion lacks ARIA state');
   assert((await trace()).some(item => /custom.*(open|enter|expand)/.test(item.id)), 'Custom area has no expansion feedback');
-  await page.locator('#district').selectOption('eleytsky');
+  await page.locator('#district').selectOption('eleytsky', {force:true});
   assert(await page.locator('#custom-box').isHidden(), 'Custom collapse delays hidden state');
   assert(await page.locator('#district').getAttribute('aria-expanded') === 'false', 'Custom collapse leaves ARIA expanded');
   assert((await trace()).some(item => /custom.*(close|exit|collapse)/.test(item.id)), 'Custom area has no collapse feedback');
@@ -227,11 +227,11 @@ async page => {
   mode = 'success';
   const obsolete = holdRequest();
   await page.locator('#run').click(); await obsolete;
-  await page.locator('#district').selectOption('center');
+  await page.locator('#district').selectOption('center', {force:true});
   release(); await nextFrame();
   assert(await page.locator('#analysis-progress').isHidden() && await page.locator('#run').isEnabled(), 'Cancelled request left loading active');
   assert(await page.locator('#result').isHidden(), 'Obsolete result reappeared after a filter change');
-  await page.locator('#district').selectOption('eleytsky');
+  await page.locator('#district').selectOption('eleytsky', {force:true});
   await page.locator('#run').click(); await ready();
 
   // Runtime preference changes cancel effects that are already running.
@@ -285,7 +285,7 @@ async page => {
       const values = [luminance(blend(rgb(style.color), bg)), luminance(bg)].sort((a, b) => b - a);
       return { selector, kind: 'text', minimum: 4.5, ratio: (values[0] + .05) / (values[1] + .05) };
     });
-    const borders = ['#business', '#district'].map(selector => {
+    const borders = ['#business-trigger', '#district-trigger'].map(selector => {
       const node = document.querySelector(selector), style = getComputedStyle(node), bg = background(node);
       const values = [luminance(blend(rgb(style.borderTopColor), bg)), luminance(bg)].sort((a, b) => b - a);
       return { selector, kind: 'control-boundary', minimum: 3, ratio: (values[0] + .05) / (values[1] + .05) };
