@@ -1,6 +1,25 @@
 # Состояние работы
 
 ## Current Goal
+Активная задача: пользовательский пакет «Сценарии открытия и объяснимость».
+Прочитан полный запрос из attachment a5d23f07…/Вставленный текст.txt, необходимые
+семь skills и документы проекта; изучены текущие domain/service/API и frontend flows.
+Продуктовый аудит/roadmap/конкретный design записаны в
+docs/specs/2026-10-18-scenarios-and-explainability.md. PROJECT_ANALYSIS.md обновлён.
+Ветка подготовки: codex/scenarios-and-explainability. Базовые51unittest OK;
+diff-check и self-review spec без незаполненных разделов пройдены.
+Дизайн ещё не согласован: обязательный review gate brainstorming перед реализацией.
+Следующий шаг после ответа пользователя: writing-plans → исполнимый TDD-план,
+затем выполнение трёх связанных частей (снимки, объяснения/качество, сравнение).
+Production code/tests/публичный Render в этой подготовке не менялись.
+Предложены6локальных сценариев/fullsnapshot/отдельный scenarios.v1,
+аддитивные API поля, без аккаунтов и новых внешних API. Это пока проект решения.
+Важные риски: late-response/catalog race при restore; quota/corrupt/two-tab;
+ложная свежесть архива/score между расчётами/halo competitors. Решения и тесты в spec.
+Сохранить все исходные id/testid/ARIA/saved.v1/CSV/print/Leaflet/модель/5типов/3района.
+
+Ниже последняя завершённая публикация:
+
 Завершено: оформленные меню области/бизнеса/радиуса, runtime
 5a85c3f50f3f4a98eec2f425395d992bc7674ec2. Feature codex/styled-select-menus сохранена.
 Source CI39104675122/mainCI39104732797 success, включая51backendtests.
