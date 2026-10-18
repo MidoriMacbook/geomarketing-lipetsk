@@ -5,6 +5,8 @@ import { exportCSV, printReport, updateReportAvailability } from './report.js';
 import { configureMap, initMap, clearAnalysisMap, clearPreview, updateCustomUI, drawPreview, drawMap, drawZones, fitArea, toggleLayer } from './map.js';
 import { selectPlace, showResult } from './recommendations.js';
 import { resetCounters } from './counters.js';
+import { configureScenarios, initScenarios, updateScenarioAvailability } from './scenarios.js';
+import { validateScenario } from './scenario-storage.js';
 import { cancelRequest, fetchCatalog, fetchCalculation, beginCatalogRequest, beginCalculationRequest, finishCatalogRequest, finishCalculationRequest } from './api.js';
 
 
@@ -16,6 +18,7 @@ function bootstrap() {
     cancelRequest();
     state.current = null;
     state.currentRequestKey = null;
+    state.openedScenarioId = null;
     clearAnalysisMap();
     cancelRevealsWithin($('result'));
     resetCounters($('recommendation-list'));
@@ -35,6 +38,56 @@ function bootstrap() {
     if ($('analysis-context') && state.catalog) $('analysis-context').textContent = `${$('district').selectedOptions[0].textContent} · ${$('business').selectedOptions[0].textContent}`;
     ['residents', 'houses', 'competitors', 'places'].forEach(key => $('kpi-'+key).textContent = '—');
     updateReportAvailability();
+    updateScenarioAvailability();
+  }
+  function captureCurrent() {
+    if (!state.current || !state.catalog) return null;
+    const data=state.current,custom=data.analysis_context?.custom===true||data.district.startsWith('custom_')||data.district==='custom';
+    return structuredClone({
+      selection:{district:custom?'custom':data.district,business:data.business,
+        custom_point:custom?(data.analysis_context?.center||data.center):null,
+        area_radius_m:data.analysis_context?.requested_radius_m || (custom?+$('radius').value:state.catalog.districts.find(d=>d.key===data.district)?.radius_m||data.half_m)},
+      view:{threshold:+$('thr').value,selected_rank:state.selectedRank,
+        layers:Object.fromEntries(['houses','competitors','centroids','zones'].map(key=>[key,$('layer-'+key).checked]))},
+      analysis:data
+    });
+  }
+  function requestParams() {
+    const params=new URLSearchParams({district:$('district').value,type:$('business').value});
+    if ($('district').value==='custom') {
+      params.set('lat',state.customPoint[0].toFixed(5));
+      params.set('lng',state.customPoint[1].toFixed(5));
+      params.set('radius',$('radius').value);
+    }
+    return params;
+  }
+  function restoreScenario(record) {
+    if (!validateScenario(record)) throw new Error('Сценарий повреждён. Открытие отменено.');
+    const selection=record.selection;
+    if (!state.catalog || !state.catalog.businesses.some(b=>b.key===selection.business)
+      || (selection.district!=='custom'&&!state.catalog.districts.some(d=>d.key===selection.district))
+      || (selection.district==='custom'&&![...$('radius').options].some(o=>+o.value===selection.area_radius_m))) {
+      throw new Error('Область или категория этого сценария недоступна в текущем каталоге. Снимок можно сравнить или выгрузить.');
+    }
+    const item=structuredClone(record);
+    resetSelection();
+    $('district').value=item.selection.district;
+    $('business').value=item.selection.business;
+    state.customPoint=item.selection.custom_point;
+    if(item.selection.district==='custom')$('radius').value=String(item.selection.area_radius_m);
+    for(const id of ['district','business','radius'])$(id).dispatchEvent(new Event('input',{bubbles:true}));
+    $('thr').value=String(item.view.threshold);$('thr-out').textContent=`${item.view.threshold}%`;
+    updateParams();updateCustomUI();clearPreview();
+    state.current=item.analysis;state.selectedRank=item.view.selected_rank;
+    state.currentRequestKey=requestParams().toString();state.openedScenarioId=item.id;
+    drawMap(state.current);drawZones();
+    for(const [key,enabled] of Object.entries(item.view.layers)){
+      $('layer-'+key).checked=enabled;toggleLayer(key,enabled);
+    }
+    showResult(state.current);selectPlace(state.selectedRank,false);fitArea(state.current);
+    setAnalysisState('success','Открыт сохранённый расчёт · обновите данные перед выбором помещения');
+    updateReportAvailability();updateScenarioAvailability();
+    $('map-title').tabIndex=-1;$('map-title').focus({preventScroll:true});
   }
   function updateParams() {
     if (!state.catalog) return;
@@ -72,20 +125,12 @@ function bootstrap() {
   }
   async function run(refresh = false) {
     if (!state.catalog) return;
-    const district = $('district').value, business = $('business').value;
+    const district = $('district').value;
     if (district === 'custom'&&!state.customPoint) {
       showError('Сначала кликните по карте, чтобы выбрать центр области.');
       return;
     }
-    const params = new URLSearchParams({
-      district,
-      type: business
-    });
-    if (district === 'custom') {
-      params.set('lat', state.customPoint[0].toFixed(5));
-      params.set('lng', state.customPoint[1].toFixed(5));
-      params.set('radius', $('radius').value);
-    }
+    const params = requestParams();
     const requestKey = params.toString(), preserveResult = !!state.current && state.currentRequestKey === requestKey;
     if (refresh) params.set('refresh', '1');
     if (preserveResult) {
@@ -109,6 +154,7 @@ function bootstrap() {
       if (version !== state.requestVersion) return;
       if (data.status !== 'success'||!Array.isArray(data.recommendations)||!data.analysis_id) throw new Error('Invalid calculation response');
       state.current = data;
+      state.openedScenarioId = null;
       state.currentRequestKey = requestKey;
       state.selectedRank = data.recommendations[0]?.rank||1;
       clearPreview();
@@ -137,6 +183,7 @@ function bootstrap() {
         $('run').textContent = 'Найти места →';
         $('loading-hint').hidden = true;
         updateReportAvailability();
+        updateScenarioAvailability();
       }
     }
   }
@@ -183,6 +230,8 @@ function bootstrap() {
   configureSaved({
     updateReportAvailability
   });
+  configureScenarios({captureCurrent,restoreScenario});
+  initScenarios();
   configureMap({
     resetSelection,
     selectPlace

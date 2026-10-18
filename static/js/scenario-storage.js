@@ -63,8 +63,14 @@ function validRecommendation(value, radius, rank) {
 }
 
 function validAnalysis(value, selection, view) {
-  if (!object(value) || value.status !== 'success' || !label(value.analysis_id, 128) || !label(value.district, 128) || !label(value.district_name, 512) || !label(value.business, 128) || !label(value.business_name, 512) || value.district !== selection.district || value.business !== selection.business || !source(value.source) || !validMetadata(value.data_meta) || !nullableText(value.warning) || !nullableText(value.notice)) return false;
+  if (!object(value) || value.status !== 'success' || !label(value.analysis_id, 128) || !label(value.district, 128) || !label(value.district_name, 512) || !label(value.business, 128) || !label(value.business_name, 512) || value.business !== selection.business || !source(value.source) || !validMetadata(value.data_meta) || !nullableText(value.warning) || !nullableText(value.notice)) return false;
   if (!object(value.parameters) || !number(value.parameters.radius_m, 1, 100000) || !number(value.parameters.alpha, Number.MIN_VALUE, 100000) || !point(value.center) || !integer(value.half_m, 500, 1500)) return false;
+  // The custom control is named "custom", while the API preserves its rounded
+  // center and requested radius in an encoded area/cache key. Retain that key.
+  if (selection.district === 'custom') {
+    const encoded = `custom_${value.center[0].toFixed(4)}_${value.center[1].toFixed(4)}_${selection.area_radius_m}`;
+    if (value.district !== 'custom' && (value.district !== encoded || !value.center.every(coordinate => coordinate === Number(coordinate.toFixed(4))))) return false;
+  } else if (value.district !== selection.district) return false;
   if (!list(value.houses, 10000, house => location(house) && integer(house.residents)) || !list(value.competitors, 10000, location) || !list(value.centroids, 3, center => location(center) && integer(center.residents))) return false;
   if (!object(value.stats) || !integer(value.stats.houses) || value.stats.houses !== value.houses.length || !integer(value.stats.competitors) || value.stats.competitors !== value.competitors.length || !integer(value.stats.residents) || value.stats.residents !== value.houses.reduce((sum, house) => sum + house.residents, 0)) return false;
   if (!Array.isArray(value.recommendations) || value.recommendations.length < 1 || value.recommendations.length > 3 || !value.recommendations.every((entry, index) => validRecommendation(entry, value.parameters.radius_m, index + 1) && entry.competitors_in_radius <= value.stats.competitors && entry.residents_in_radius <= value.stats.residents && (value.stats.competitors > 0 || entry.nearest_competitor_m === null)) || !equal(value.best, value.recommendations[0]) || !value.recommendations.some(entry => entry.rank === view.selected_rank)) return false;

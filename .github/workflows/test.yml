@@ -24,3 +24,4 @@ jobs:
       - run: git diff --exit-code -- static/vendor/material-web/material-components.js
       - run: |
           for module in static/js/*.js; do node --check "$module"; done
+      - run: node --test tests/unit/scenario-storage.test.js

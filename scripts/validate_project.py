@@ -17,15 +17,15 @@ REQUIRED = [
     'src/__init__.py', 'src/config.py',
     *[f'src/{name}/__init__.py' for name in ('routes', 'domain', 'services', 'utils')],
     *[f'src/routes/{name}.py' for name in ('health', 'catalog', 'calculate')],
-    *[f'src/domain/{name}.py' for name in ('businesses', 'models', 'scoring')],
+    *[f'src/domain/{name}.py' for name in ('businesses', 'models', 'scoring', 'explanations', 'data_quality')],
     *[f'src/services/{name}.py' for name in
       ('analysis_service', 'catalog_service', 'cache_service', 'osm_service')],
     *[f'src/utils/{name}.py' for name in ('geo', 'formatting', 'validation')],
     'static/index.html', 'static/assets/favicon.svg',
     *[f'static/css/{name}.css' for name in
-      ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive')],
+      ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios')],
     *[f'static/js/{name}.js' for name in
-      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices')],
+      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality')],
     'tests/unit/__init__.py', 'tests/integration/__init__.py',
     'tests/browser/smoke.js', 'tests/browser/workspace.js',
     'tests/fixtures/saved-places-v1.json', 'data/fixtures/example-cache.json',
@@ -45,6 +45,7 @@ REQUIRED_IDS = {
     'saved-empty', 'storage-status', 'comparison', 'comparison-notice',
     'export-csv', 'model-dialog', 'model-button', 'close-model',
     'settings-title', 'area-hint', 'custom-box', 'custom-hint',
+    'scenarios-section', 'scenario-save', 'scenario-status', 'scenario-list', 'scenario-comparison', 'data-quality',
     'business-parameters', 'map-title', 'recommendations-title', 'data-title',
     'saved-title', 'comparison-title', 'model-title', 'print-report-content',
 }

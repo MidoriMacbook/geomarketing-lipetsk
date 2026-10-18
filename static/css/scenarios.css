@@ -1,0 +1,47 @@
+.scenarios-section { min-width:0; margin-top:var(--space-9); padding:var(--space-7); border:var(--line) solid var(--color-line); border-radius:var(--radius-panel); background:var(--color-saved); }
+.scenarios-heading { display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--space-5); align-items:flex-start; }
+.scenarios-heading h2 { margin:var(--space-2) 0; }
+.scenarios-heading p { max-width:var(--size-copy-measure); font-size:var(--text-sm); color:var(--color-muted); line-height:1.6; }
+#scenario-count { margin-inline-start:var(--space-2); font-family:var(--font-body); font-size:var(--text-sm); color:var(--color-muted); white-space:nowrap; }
+.scenario-toolbar,.scenario-actions { display:flex; flex-wrap:wrap; gap:var(--space-2); }
+.scenario-toolbar { margin-top:var(--space-4); }
+.scenario-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-4); margin-top:var(--space-5); min-width:0; }
+.scenario-card { min-width:0; padding:var(--space-5); border:var(--line) solid var(--color-border); border-radius:var(--radius-control); background:var(--color-surface); overflow-wrap:anywhere; }
+.scenario-card h3 { font-size:var(--text-base); line-height:1.55; }
+.scenario-card p { font-size:var(--text-xs); line-height:1.65; margin-top:var(--space-2); }
+.scenario-card.is-compared { box-shadow:inset var(--space-1) 0 var(--color-accent); border-color:var(--color-accent); }
+.scenario-actions { padding-top:var(--space-4); margin-top:var(--space-4); border-top:var(--line) solid var(--color-line); }
+.scenario-actions .button { font-size:var(--text-xs); min-height:var(--size-target); padding:var(--space-2) var(--space-3); }
+.scenario-actions [aria-pressed=true] { background:var(--color-primary); color:var(--color-on-primary); }
+.scenario-note { white-space:pre-wrap; }
+.quality-block { margin-top:var(--space-3); font-size:var(--text-xs); line-height:1.65; overflow-wrap:anywhere; }
+.quality-summary { font-weight:600; }
+.quality-details ul,.explanation-block ul { margin:var(--space-2) 0; padding-left:var(--space-5); }
+.quality-details p { margin-top:var(--space-1); }
+.quality-details summary,.explanation-block summary { cursor:pointer; min-height:var(--size-target); display:list-item; align-content:center; padding:var(--space-2) 0; font-weight:600; }
+.explanation-block { font-size:var(--text-xs); line-height:1.65; margin-top:var(--space-3); }
+.explanation-block h4 { margin-top:var(--space-3); font-size:var(--text-xs); }
+.explanation-strength { font-weight:600; }
+.scenario-comparison { margin-top:var(--space-6); min-width:0; }
+.scenario-comparison th[scope=row] { position:static; background:var(--color-surface-muted); color:var(--color-ink); width:25%; }
+.scenario-comparison td { width:37.5%; overflow-wrap:anywhere; }
+.scenario-comparison table { table-layout:fixed; }
+.scenario-dialog label { display:block; margin:var(--space-4) 0 var(--space-2); font-size:var(--text-sm); font-weight:600; }
+.scenario-dialog input,.scenario-dialog textarea { display:block; box-sizing:border-box; width:100%; min-height:var(--size-target); padding:var(--space-3); border:var(--line) solid var(--color-border); border-radius:var(--radius-control); font:inherit; color:var(--color-ink); background:var(--color-settings); }
+.scenario-dialog textarea { min-height:120px; resize:vertical; }
+.scenario-dialog-actions { display:flex; flex-wrap:wrap; gap:var(--space-3); margin-top:var(--space-5); }
+#scenario-repair { margin-top:var(--space-3); }
+@media (max-width:768px) {
+ .scenarios-section { padding:var(--space-4); margin-top:var(--space-7); }
+ .scenario-list { grid-template-columns:minmax(0,1fr); }
+ .scenarios-heading,.scenarios-heading>div,.scenario-toolbar { min-width:0; width:100%; }
+ .scenario-toolbar .button { flex:1 1 160px; }
+ .scenario-actions .button { flex:1 1 110px; }
+}
+@media print {
+ .scenarios-section,#scenario-snapshot-notice { display:none!important; }
+ #print-report-content .quality-block,#print-report-content .explanation-block { color:var(--color-print-ink); }
+ #print-report-content .explanation-block details>* { display:block!important; }
+ #print-report-content details::details-content { content-visibility:visible; }
+ .scenario-print-context { break-inside:auto; }
+}

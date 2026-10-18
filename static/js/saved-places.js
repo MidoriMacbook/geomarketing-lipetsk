@@ -87,6 +87,8 @@ export async function savePlace(rec) {
     saved_at: new Date().toISOString(),
     source: state.current.source,
     data_date: dataDate(state.current),
+    ...(state.current.data_quality?{data_quality:structuredClone(state.current.data_quality),data_meta:structuredClone(state.current.data_meta||{})}:{}),
+    ...(state.current.calculated_at?{calculated_at:state.current.calculated_at}:{}),
     warning: [state.current.notice,
     state.current.warning].filter(Boolean).join(' '),
     parameters: {

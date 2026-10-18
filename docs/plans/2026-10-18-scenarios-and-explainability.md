@@ -41,9 +41,9 @@ Scenario report exports exportScenariosCSV(records),printScenarios(records).
 utils/formatting.py; tests/unit/test_explanations.py,test_data_quality.py;
 tests/integration/test_contracts.py,test_explainability.py. Не трогать scoring.py.
 **Security:** none; функции получают уже проверенные данные.
-- [ ] RED unit/API: формулы/пороги/граница/zero/unknown/demo/mixed/time и old numeric fixtures.
-- [ ] Наблюдать ожидаемый FAIL; реализовать pure domain functions и additive enrichment.
-- [ ] GREEN focused suites и все unittest; сохранить evidence в ignored task report.
+- [x] RED unit/API: формулы/пороги/граница/zero/unknown/demo/mixed/time и old numeric fixtures.
+- [x] Наблюдать ожидаемый FAIL; реализовать pure domain functions и additive enrichment.
+- [x] GREEN focused suites и все unittest; сохранить evidence в ignored task report.
 Команда: `.venv/Scripts/python.exe -m unittest discover -s tests -v`.
 
 ### Task 2: Изолированное хранилище сценариев
@@ -54,9 +54,9 @@ tests/integration/test_contracts.py,test_explainability.py. Не трогать 
 лимиты до parse/глубокого обхода, text не исполняется, failed write не меняет список.
 **Preflight root:** проверены пути XSS/нечисла/гигантские массивы/version/quota/races;
 тесты должны покрыть каждый, repair только exact damaged raw под lock.
-- [ ] RED Node native test runner: roundtrip/duplicate/limit/deep invalid/quota/corrupt/no-lock/two writers/repair conflict.
-- [ ] Реализовать функции; никакой автоочистки/перезаписи invalid и unknown version.
-- [ ] GREEN `node --test tests/unit/scenario-storage.test.js`.
+- [x] RED Node native test runner: roundtrip/duplicate/limit/deep invalid/quota/corrupt/no-lock/two writers/repair conflict.
+- [x] Реализовать функции; никакой автоочистки/перезаписи invalid и unknown version.
+- [x] GREEN `node --test tests/unit/scenario-storage.test.js`.
 **Does NOT cover:** аккаунты/межустройственное хранение/импорт чужих файлов.
 
 ### Task 3: UI сценариев, quality и отчёты
@@ -66,24 +66,24 @@ static/css/scenarios.css; static/index.html; tests/browser/scenarios-ui.js.
 **Produces:** UI/Quality/report interfaces выше; #scenario-save, #scenario-status,
 #scenarios-section,#scenario-list,#scenario-comparison,#data-quality,#scenario-snapshot-notice.
 **Security:** security — textContent/csvCell, modal confirmation, no raw HTML from records.
-- [ ] RED isolated browser: new section/form/save/reload/duplicate/delete/edit/compare/export/print/mobile/reduce.
-- [ ] UI callbacks only, без прямых map/app imports; capture до lock, pending/save status;
+- [x] RED isolated browser: new section/form/save/reload/duplicate/delete/edit/compare/export/print/mobile/reduce.
+- [x] UI callbacks only, без прямых map/app imports; capture до lock, pending/save status;
   invalid raw download и exact reset confirmation; no-lock read-only explanation.
-- [ ] Quality age relative now, dates both datasets, legacy unknown; structured details.
-- [ ] Отдельные scenario CSV/print, use existing csvCell/reportPlace, no circular imports.
-- [ ] GREEN focused browser после интеграции root; screenshots.
+- [x] Quality age relative now, dates both datasets, legacy unknown; structured details.
+- [x] Отдельные scenario CSV/print, use existing csvCell/reportPlace, no circular imports.
+- [x] GREEN focused browser после интеграции root; screenshots.
 **Does NOT cover:** новые районы/категории/финансы и редизайн принятой палитры.
 
 ### Task 4: Интеграция текущего анализа и восстановления (root)
 **Ownership:** app.js,state.js,recommendations.js,report.js,saved-places.js;
 scripts/validate_project.py; tests/browser/scenarios.js.
-- [ ] RED save/capture/restore selected rank/threshold/layers, no-network custom restore,
+- [x] RED save/capture/restore selected rank/threshold/layers, no-network custom restore,
   late API/catalog race, new filter resets archive, selected missing category keeps current.
-- [ ] capture immutable analysis; restore validated record/catalog then cancel/version/reset;
+- [x] capture immutable analysis; restore validated record/catalog then cancel/version/reset;
   canonical request key; sync native controls without triggering reset after result.
-- [ ] Current result quality/details; quality in old CSV appended after17columns/print;
+- [x] Current result quality/details; quality in old CSV appended after17columns/print;
   optional metadata in new saved places, old records still valid.
-- [ ] GREEN new browser + workspace/choices/redesign relevant regressions; validator/syntax.
+- [x] GREEN new browser + workspace/choices/redesign relevant regressions; validator/syntax.
 
 ### Task 5: Приёмка, документация и review
 - [ ] Все unit/Node tests, complete scenarios browser incl storage/two-tab/CSV/print.

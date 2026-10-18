@@ -1,5 +1,6 @@
 import test, { beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { SCENARIO_KEY, SCENARIO_LIMIT, validateScenario, readScenarios, mutateScenarios, clearDamagedScenarios, duplicateScenario } from '../../static/js/scenario-storage.js';
 
 const clone = value => structuredClone(value);
@@ -128,6 +129,30 @@ test('custom selection must agree with analysis center/context and supported bou
   assert.equal(validateScenario(value), true);
   value.selection.custom_point[0] = 53;
   assert.equal(validateScenario(value), false);
+});
+
+test('actual custom Flask serialization preserves encoded area key with normalized control selection', async () => {
+  const value = fixture();
+  value.analysis = JSON.parse(readFileSync(new URL('../fixtures/scenario-custom-api-v1.json', import.meta.url), 'utf8'));
+  value.selection = { district: 'custom', business: value.analysis.business, custom_point: [...value.analysis.center], area_radius_m: value.analysis.analysis_context.requested_radius_m };
+  value.view.selected_rank = 3;
+  assert.equal(value.analysis.district, 'custom_52.6000_39.5000_1000');
+  assert.deepEqual(value.selection.custom_point, [52.6, 39.5]);
+  assert.equal(validateScenario(value), true);
+  await mutateScenarios(() => [value]);
+  assert.deepEqual(readScenarios(), [value]);
+  const oldApi = clone(value); delete oldApi.analysis.analysis_context;
+  assert.equal(validateScenario(oldApi), true);
+  oldApi.analysis.district = 'custom';
+  assert.equal(validateScenario(oldApi), true);
+  for (const invalidKey of ['custom_52.6100_39.5000_1000', 'custom_52.6000_39.5000_500', 'custom_52.6000_39.5100_1000', 'custom_52.6000_39.5000_1000_extra']) {
+    const invalid = clone(value); invalid.analysis.district = invalidKey;
+    assert.equal(validateScenario(invalid), false, invalidKey);
+  }
+  const falseContext = clone(value); falseContext.analysis.analysis_context.custom = false;
+  assert.equal(validateScenario(falseContext), false);
+  const wrongSelection = clone(value); wrongSelection.selection.district = 'eleytsky'; wrongSelection.selection.custom_point = null;
+  assert.equal(validateScenario(wrongSelection), false);
 });
 
 test('ISO timestamps retain Python microseconds and reject calendar/time rollovers', () => {
