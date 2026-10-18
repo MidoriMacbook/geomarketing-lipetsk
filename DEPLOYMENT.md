@@ -9,13 +9,14 @@
 - Запуск: `python serve.py`, Waitress слушает порт из `PORT`.
 - Проверка приложения: `GET /healthz` → HTTP 200, `{"status":"ok"}`.
 
-Последняя публикация: 18 октября 2026, runtime `01dced1`,
-deploy `dep-dbab4njm8hqs73b72osg` live с14:51:08 по Москве, trigger `new_commit`.
-Source/main CI success: run39124731935/run39124808905 (67Python/62Node, Material rebuild).
-Полные локальные сценарии, объяснения/качество, сравнение/CSV/печать прошли public QA;
-карта и прежние сохранения работают.25статических файлов совпали с Git runtime.
-Подробности: docs/verification/2026-10-18-scenarios-and-explainability.md.
-SHA-256 CSS/JS/vendor и шрифтов совпали с Git blobs опубликованного коммита.
+Последняя публикация: 18 октября 2026, runtime `0be19ea`,
+deploy `dep-dbabhtdg1s2s73b5c9h0` live с15:19:06 по Москве, trigger `new_commit`.
+Source/main CI success: run39126577310/run39126700421 (67Python/62Node, Material rebuild).
+При выборе готового района цифры, карта и рекомендации рассчитываются автоматически.
+Public QA: все три района, точные KPI/API, один запрос на смену, 390 px/count-up,
+pageErrors[]. Все25статических файлов совпали с Git runtime.
+Подробности: docs/verification/2026-10-18-district-auto.md.
+Предыдущий пакет: docs/verification/2026-10-18-scenarios-and-explainability.md.
 Итоговая запись аудита меняет только документы; runtime повторно не собирается.
 
 Сервис создан через подключение Render; исходная конфигурация для повторного
