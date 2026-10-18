@@ -13,6 +13,8 @@
 - Отдельный scenarios.v1 со схемой/лимитами/lock, отказами/quota/repair confirmation.
 - Модель,5категорий/3района, карта и прежние сохранённые места сохранены.
 - Проверки и выпуск: docs/verification/2026-10-18-scenarios-and-explainability.md.
+- Опубликовано: runtime01dced1, Render dep-dbab4njm8hqs73b72osg live18октября14:51:08Москва.
+  Source/main CI и публичные CRUD/restore/touch/CSV/print/legacy/API/map прошли.
 
 ## [2026-10-18] Меню выбора области и бизнеса
 

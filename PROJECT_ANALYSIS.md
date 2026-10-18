@@ -10,9 +10,10 @@
 Подготовлены аудит, roadmap из трёх этапов и конкретный проект первого пакета:
 [Сценарии открытия и объяснимость](docs/specs/2026-10-18-scenarios-and-explainability.md).
 Дизайн согласован: реализованы локальные сценарии, объяснения/качество и сравнение;
-идёт финальная приёмка перед публикацией. Добавления API аддитивны, scoring прежний.
+пакет опубликован на Render в runtime01dced1. Добавления API аддитивны, scoring прежний.
 67серверных и62storage-теста прошли; browser CRUD/restore/races/touch/export/print
-и прежний workspace/redesign прошли. Публикация фиксируется в DEPLOYMENT.md после live QA.
+и прежний workspace/redesign прошли. Публичные UI/restore/touch/legacy/API/map прошли,
+pageErrors[],25asset hashes совпали с Git. Публикация зафиксирована в DEPLOYMENT.md.
 
 ## Актуальная итерация: архитектура и редизайн
 

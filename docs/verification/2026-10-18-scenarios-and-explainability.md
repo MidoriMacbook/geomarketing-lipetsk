@@ -56,4 +56,26 @@ OSM добровольный и неполный, население оцено�
 CSV не импортирует полную карту. Физические телефоны/Safari/Firefox/VoiceOver/TalkBack
 и нативная пагинация PDF не проверены; Chromium touch/print CSS не заменяют их.
 
-Whole-branch review/CI/Render/public evidence добавляется по завершении выпуска.
+## Публикация
+
+Whole-branch review после исправлений: Spec PASS / Quality+Security APPROVED,
+неустранённых замечаний нет. Runtime01dced1a5669738b1ab9600c04387ed56830c1dc.
+Source CI39124731935/mainCI39124808905 success; предыдущий283472b CI39124260289 тоже success.
+Render dep-dbab4njm8hqs73b72osg live18октября2026 14:51:08Москва, trigger new_commit.
+
+Public HTTPS:
+- scenarios-ui17groups GREEN; root restore11groups GREEN. Custom использует
+  настоящий сериализованный Flask fixture через browser route, не live Overpass.
+  Готовые районы/API/карта/сохранение сценариев обращаются к реальному серверу.
+- hasTouch cafe/pharmacy с разными R,360/390/768/1440 и200%, nooverflow/targets>=44,
+  internal table scroll/motion/reduce GREEN; public screenshots лично просмотрены.
+- legacy-enrichment GREEN: base/raw preserved, CSV/print работают, halo wording local.
+- Реальный /healthz200; /api/calculate cache/recent/3recs, новые поля version1.
+  Карта390/768/1440 высоты420/560/660, tiles6/12/16, old saved2/compare2;
+  initial reduce Material static fallback/running0. Все suites pageErrors[].
+-25HTML/CSS/JS/vendor/favicon и2font SHA-256 совпали с Git runtime, HTTP200.
+
+Собственные QA браузеры закрыты; helper37612/child28108 остановлены после проверки
+commandlines, порт5085 не слушается. Worker session/PID26120 отсутствуют.
+
+Финальный audit commit только документы [skip render], runtime остаётся01dced1.
