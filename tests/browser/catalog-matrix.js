@@ -27,6 +27,6 @@ async page => {
       matrix.push(district.key + '/' + business.key);
     }
   }
-  assert(matrix.length === 15, 'Expected fifteen catalog combinations');
+  assert(matrix.length === catalog.districts.length * catalog.businesses.length, 'Expected every catalog combination');
   return { passed:matrix };
 }

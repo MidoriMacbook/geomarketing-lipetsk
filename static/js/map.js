@@ -163,7 +163,7 @@ export function drawMap(data) {
     color: palette.outline,
     weight: 1,
     fillColor: palette.house,
-    fillOpacity: .95
+    fillOpacity: .78
   }).bindTooltip(`Жителей: ≈ ${fmt(h.residents)}`).addTo(layers.houses));
   data.competitors.forEach(c => L.circleMarker([c.lat, c.lng], {
     renderer,
