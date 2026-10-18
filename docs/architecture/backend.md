@@ -8,7 +8,7 @@
 | `src/routes/health.py` | `/healthz` | Flask |
 | `src/routes/catalog.py` | `/api/catalog`, JSON | Flask, catalog_service |
 | `src/routes/calculate.py` | `/api/calculate`, семафор2, ошибки, параметры | Flask, analysis_service, validation |
-| `src/domain/businesses.py` | Пять категорий, R, alpha, OSM-теги | Константы |
+| `src/domain/businesses.py` | Десять категорий, R, alpha, OSM-теги | Константы |
 | `src/domain/models.py` | Данные области и результатов загрузки/вычислений | Типы и dataclasses |
 | `src/domain/scoring.py` | Взвешенный K-means, спрос, конкуренция, сетка, рекомендации | NumPy, SciPy, sklearn, geo, config |
 | `src/domain/explanations.py` | Факты за рекомендацией, ядра модели, центры, риск у края круга | NumPy, geo |
@@ -46,7 +46,8 @@ missing/future — unknown, demo не получает реальную свеж
 Серверные маршруты сценариев не добавляются: снимки принадлежат браузеру.
 
 Ближайший конкурент может находиться за границей круга анализа: запас выборки
-равен max(400м,R). Ключи pharmacy/beauty включают _halo500/_halo450.
+равен max(400м,R). Ключи категорий с R>400 включают _haloR:
+например pharmacy_halo500, beauty_halo450 и fitness_halo900.
 Снимки и пользовательский кэш остаются в прежнем формате и под прежними именами.
 
 ## Риски переноса

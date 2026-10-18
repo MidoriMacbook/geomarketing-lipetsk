@@ -113,7 +113,8 @@ Runtime reduced-motion отменяет эффекты; статический f
 Проверки: `smoke.js` — основные сценарии и отказ тайлов/API;
 `workspace.js` — полный пользовательский сценарий, гонки и хранилище;
 `responsive.js` — шесть ширин, старые записи, клавиатура и print CSS;
-`catalog-matrix.js` — все 15 сочетаний; `palette.js` — чтение токенов и canvas.
+`catalog-matrix.js` — все 100 сочетаний; `palette.js` — чтение токенов и canvas.
+`catalog-expansion.js` — новые области/типы, точные KPI, сценарии, отчёты и меню.
 Снимки и выгрузки браузерных проверок игнорируются Git.
 
 Сценарии проверяются отдельно: scenarios-ui.js — CRUD/quality/export/repair;
