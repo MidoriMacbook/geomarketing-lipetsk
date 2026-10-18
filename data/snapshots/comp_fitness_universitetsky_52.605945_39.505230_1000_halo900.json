@@ -1,0 +1,1 @@
+{"fetched_at": 1792349881.0365744, "bounds": {"minlat": 52.5888189, "minlon": 39.4770293, "maxlat": 52.6230711, "maxlon": 39.5334307}, "source_sha256": "c734d05c86fe719aac89bc75469718bd0636cada81317dce41b028cd3107d5e3", "source": "OpenStreetMap API 0.6 XML extract; ODbL 1.0", "data": [[52.589948, 39.521446]], "coverage_margin_m": 900}
