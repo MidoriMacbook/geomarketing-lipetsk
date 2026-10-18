@@ -1,6 +1,22 @@
 # Состояние работы
 
 ## Current Goal
+Подготовка нового пакета «каталог и цвета карты», branch codex/catalog-and-map-colors.
+Пользователь просит менее насыщенные синие дома и больше областей/типов бизнеса.
+Проект spec docs/specs/2026-10-18-catalog-and-map-colors.md, commit02bf554:
+серо-синий house#91A5B8/opacity.78, сохранить rose competitors; 10областей/10типов,
+все100пар с настоящими OSM-снимками и покрытием halo; старый scoring не менять.
+Список: +Победа/Европейский/Сокол/НЛМК/Тракторный/Матырский/Сырский Рудник;
++fast_food/florist/pet/fitness/dentist. Brainstorming требует явное согласование spec;
+async-вопрос отправлен, ответа ещё нет, production-код НЕ менялся.
+Разведка docs/research/2026-10-18-catalog-data-discovery.md: обаOverpass failed,
+Nominatim доступен. Найдены OSM place Европейский/Тракторный/Матырский; первые
+результаты НЛМК=завод и Победа=магазин нельзя брать как центр жилья. Центры остальных
+ещё проверить; нельзя подставлять вымышленные координаты или нулевых конкурентов.
+После согласования writing-plans → TDD, снимки/матрица100, browser/review/CI/main/Render.
+Предыдущий публичный runtime всё ещё0be19ea, auditmainc8b09a2, auditCI39126943501 success.
+
+Предыдущее завершённое исправление:
 Завершено исправление пропавших KPI при выборе другого готового района.
 Runtime0be19ea3a067bb7c170394fdf6ed932470007ba7, feature
 codex/district-auto-calculation сохранена, main fast-forward. Render
