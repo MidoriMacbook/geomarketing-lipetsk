@@ -1,6 +1,21 @@
 # Состояние работы
 
 ## Current Goal
+Завершено исправление пропавших KPI при выборе другого готового района.
+Runtime0be19ea3a067bb7c170394fdf6ed932470007ba7, feature
+codex/district-auto-calculation сохранена, main fast-forward. Render
+dep-dbabhtdg1s2s73b5c9h0 live18октября2026 15:19:06Москва.
+SourceCI39126577310/mainCI39126700421 success; independent review PASS/APPROVED.
+RED→GREEN browser district-auto7, scenarios11, choice menus/touch200%, workspace19,
+67Python/validator70/syntax/diff. Public3района×grocery realAPI/KPI/map/recs,
+390px и окончание видимого count-up, pageErrors[],25asset hashes matchGit.
+Готовый район вызывает существующий run(false) автоматически; custom/бизнес/радиус
+и API-free открытие сценария сохраняют прежнее поведение. Модель/палитра не менялись.
+Подробности docs/verification/2026-10-18-district-auto.md.
+QA-браузеры district-auto/district-public закрыты, свой serve.py/helper остановлен,
+порт5085 свободен. Публичный /healthz HTTP200/statusok после уборки.
+
+Предыдущий пакет:
 Завершён пакет «Сценарии открытия и объяснимость», spec/plan согласованы и закрыты.
 Runtime01dced1a5669738b1ab9600c04387ed56830c1dc, Render dep-dbab4njm8hqs73b72osg
 live18октября2026 14:51:08Москва. SourceCI39124731935/mainCI39124808905 success,
