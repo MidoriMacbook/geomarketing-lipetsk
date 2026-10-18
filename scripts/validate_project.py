@@ -25,7 +25,7 @@ REQUIRED = [
     *[f'static/css/{name}.css' for name in
       ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive')],
     *[f'static/js/{name}.js' for name in
-      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters')],
+      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices')],
     'tests/unit/__init__.py', 'tests/integration/__init__.py',
     'tests/browser/smoke.js', 'tests/browser/workspace.js',
     'tests/fixtures/saved-places-v1.json', 'data/fixtures/example-cache.json',
@@ -135,7 +135,7 @@ def static_imports(issues: list[str]) -> None:
     for path in (ROOT / 'static/js').glob('*.js'):
         source = path.read_text(encoding='utf-8')
         graph[path.name] = set()
-        for target in re.findall(r'(?:from\s*|import\s*)["\'](\.[^"\']+)["\']', source):
+        for target in re.findall(r'(?:from\s*|import\s*(?:\(\s*)?)["\'](\.[^"\']+)["\']', source):
             resolved = (path.parent / target).resolve()
             if not resolved.is_file() or not resolved.is_relative_to(ROOT / 'static/js'):
                 issues.append(f'{path.name}: missing or external local module {target}')

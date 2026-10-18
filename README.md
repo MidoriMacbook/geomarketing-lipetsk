@@ -53,7 +53,7 @@ pnpm run check:material
 
 `app.py` собирает Flask-приложение, `serve.py` запускает Waitress.
 Внутренние модули: `src/routes → services → domain/utils`, настройки —
-`src/config.py`. Клиент — девять ES-модулей и семь CSS-файлов; код приложения
+`src/config.py`. Клиент — десять ES-модулей и семь CSS-файлов; код приложения
 не требует сборщика, отдельный Material vendor собирается Rollup и хранится в Git.
 Корневые `osm.py` и `businesses.py` сохраняют старые публичные импорты.
 
@@ -85,6 +85,7 @@ node --check static/js/saved-places.js
 node --check static/js/report.js
 node --check static/js/ui.js
 node --check static/js/counters.js
+node --check static/js/choices.js
 ```
 
 51 серверный тест работает без сети. GitHub Actions запускает Python-тесты,
@@ -99,6 +100,7 @@ playwright-cli -s=geomarket run-code --filename=tests/browser/smoke.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/workspace.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/responsive.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/catalog-matrix.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/choice-menus.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/palette.js
 playwright-cli -s=geomarket close
 ```
@@ -113,3 +115,8 @@ responsive проверяет 360/390/768/1024/1280/1440 px, прежние со
 `tests/browser/redesign.js` — новые состояния, движение, reduced-motion,
 контраст, 200% текста и снимки390/768/1440 px. Это разные проверки;
 нет необходимости каждый раз повторять все исторические матрицы.
+
+`choice-menus.js` проверяет настоящие оформленные меню, клавиатуру, touch/swipe,
+200% текста, reduced-motion и нативный fallback в отдельных чистых контекстах.
+Старые сценарии с routes/storage/instrumentation запускайте в свежем сеансе,
+чтобы перехваты и состояние предыдущего сценария не влияли на результаты.

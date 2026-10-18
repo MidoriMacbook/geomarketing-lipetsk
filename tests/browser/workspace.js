@@ -83,7 +83,7 @@ async page => {
   });
   await page.waitForFunction(() => typeof window.__releaseSavedLock === 'function');
   await page.locator('[data-testid="save-place"]').first().click();
-  await page.locator('#business').selectOption('pharmacy');
+  await page.locator('#business').selectOption('pharmacy', {force:true});
   await page.evaluate(() => window.__releaseSavedLock());
   await page.locator('[data-testid="saved-card"]').first().waitFor();
   await waitSaved(page, 1);
@@ -156,7 +156,7 @@ async page => {
     await page.locator('#layer-' + layer).check();
   }
   for (const business of ['pharmacy', 'grocery', 'bakery', 'beauty']) {
-    await page.locator('#business').selectOption(business);
+    await page.locator('#business').selectOption(business, {force:true});
     await page.locator('#run').click();
     await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
     assert(await page.locator('#business').inputValue() === business, 'Business select');
@@ -171,20 +171,20 @@ async page => {
     obsoleteResponseSettled();
   });
   await page.locator('#run').click(); await pending;
-  await page.locator('#district').selectOption('center');
+  await page.locator('#district').selectOption('center', {force:true});
   await obsoleteSettled;
   assert(!await page.locator('#result').isVisible(), 'Obsolete response rendered');
   assert(await page.locator('#run').isEnabled(), 'Button stuck after cancellation');
   await page.unroute('**/api/calculate?**');
-  await page.locator('#district').selectOption('custom');
-  await page.locator('#radius').selectOption('1500');
+  await page.locator('#district').selectOption('custom', {force:true});
+  await page.locator('#radius').selectOption('1500', {force:true});
   await page.locator('#run').click();
   assert(/центр/.test(await page.locator('#error').innerText()), 'Custom area validation');
   await page.locator('#map').scrollIntoViewIfNeeded();
   const map = await page.locator('#map').boundingBox();
   await page.mouse.click(map.x + map.width / 2, map.y + map.height / 2);
   assert(/выбран/.test(await page.locator('#custom-hint').innerText()), 'Custom map click missing');
-  await page.locator('#district').selectOption('eleytsky');
+  await page.locator('#district').selectOption('eleytsky', {force:true});
   await page.route('**/api/calculate?**', route => route.abort());
   await page.locator('#run').click();
   await page.locator('#error').waitFor({ state: 'visible' });

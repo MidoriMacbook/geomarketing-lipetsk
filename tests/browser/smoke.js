@@ -23,7 +23,7 @@ async page => {
   });
   await page.locator('#run').click();
   await requestStarted;
-  await page.locator('#district').selectOption('center');
+  await page.locator('#district').selectOption('center', {force:true});
   await page.waitForTimeout(700);
   assert(!await page.locator('#result').isVisible(), 'Old request rendered after selection changed');
   assert(await page.locator('#run').isEnabled(), 'Calculate button remains disabled');
