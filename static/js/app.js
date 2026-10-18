@@ -192,7 +192,8 @@ function bootstrap() {
   $('district').addEventListener('change', () => {
     resetSelection();
     updateCustomUI();
-    $('map-context').textContent = 'Область изменена — выполните расчёт';
+    if ($('district').value !== 'custom') run(false);
+    else $('map-context').textContent = 'Выберите центр своей области на карте';
   });
   $('business').addEventListener('change', () => {
     resetSelection();
