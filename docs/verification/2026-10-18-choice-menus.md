@@ -30,7 +30,19 @@ select остаются контрактом данных; отдельный op
 - Родитель лично просмотрел desktop/mobile screenshots; popup расширен до256px
   для длинных названий, ограничен viewport; тень уменьшена отдельным token.
 - Независимое whole-branch review и финальные deltas: Spec PASS, Quality APPROVED,
-  нерешённых замечаний нет. CI/Render/public evidence дописывается после публикации.
+  нерешённых замечаний нет.
+
+Source/main5a85c3f50f3f4a98eec2f425395d992bc7674ec2. CI39104675122 и39104732797
+success, включая51backend tests, validator,10JS syntax и воспроизводимую Material build.
+Render dep-dba6iiu1egvs73dclas0 live18октября2026 09:39:12Москва, trigger new_commit.
+Public choice-menus GREEN: те же5options/keyboard/typeahead/viewport/reduce/fallback,
+touch390/200% scroll0→123 и tap beauty, pageErrors[]. Public smoke: health200,
+реальный API3recs,2saved/2compare; карта390/768/1440 tiles6/12/16, nooverflow.
+Начальный reduced-motion Material static fallback, running0. Все20HTML/CSS/JS/vendor/
+favicon и2font hashes совпадают с Git runtime. Публичные desktop/mobile screenshots
+лично просмотрены. Свои QA браузеры закрыты, helper37208/child30756 остановлены
+после проверки commandlines, localhost5085 не слушается. Финальный audit commit
+только документы [skip render].
 
 Пределы: Chromium touch не заменяет проверку на физическом телефоне;
 VoiceOver/TalkBack, Safari/Firefox и полный аудит доступности не выполнялись.
