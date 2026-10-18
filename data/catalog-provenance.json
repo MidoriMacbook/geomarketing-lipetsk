@@ -1,0 +1,1890 @@
+{
+  "schema_version": 1,
+  "license": {
+    "identifier": "ODbL-1.0",
+    "attribution": "© OpenStreetMap contributors",
+    "url": "https://www.openstreetmap.org/copyright",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/"
+  },
+  "description": "1000m analysis circles around verified residential centers; not administrative boundaries. OSM completeness does not establish absence of real competitors.",
+  "areas": {
+    "eleytsky": {
+      "name": "мкр. Елецкий",
+      "center": [
+        52.5935,
+        39.48
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "preserved_preset",
+        "url": "https://www.openstreetmap.org/#map=16/52.5935/39.48",
+        "verified_at": "2026-10-18T18:57:57.929090+00:00",
+        "method": "Original application center preserved exactly; not newly geocoded. Residential presence verified in fresh extract."
+      }
+    },
+    "universitetsky": {
+      "name": "мкр. Университетский",
+      "center": [
+        52.605945,
+        39.50523
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "preserved_preset",
+        "url": "https://www.openstreetmap.org/relation/17717422",
+        "verified_at": "2026-10-18T18:58:01.036574+00:00",
+        "method": "Original application center preserved exactly; not newly geocoded. Residential presence verified in fresh extract."
+      }
+    },
+    "center": {
+      "name": "Центр (Быханов сад)",
+      "center": [
+        52.6122,
+        39.5843
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "preserved_preset",
+        "url": "https://www.openstreetmap.org/#map=16/52.6122/39.5843",
+        "verified_at": "2026-10-18T18:59:07.222578+00:00",
+        "method": "Original application center preserved exactly; not newly geocoded. Residential presence verified in fresh extract."
+      }
+    },
+    "pobeda": {
+      "name": "мкр. Победа",
+      "center": [
+        52.5745635,
+        39.5190712
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "place",
+        "url": "https://www.openstreetmap.org/relation/17712914",
+        "osm_type": "relation",
+        "osm_id": 17712914,
+        "osm_version": 1,
+        "osm_tags": {
+          "name": "Микрорайон \"Победа\"",
+          "place": "neighbourhood",
+          "type": "multipolygon"
+        },
+        "verified_at": "2026-10-18T18:59:12.649677+00:00",
+        "coordinate_source": {
+          "url": "https://nominatim.openstreetmap.org/search?q=%D0%BC%D0%B8%D0%BA%D1%80%D0%BE%D1%80%D0%B0%D0%B9%D0%BE%D0%BD+%D0%9F%D0%BE%D0%B1%D0%B5%D0%B4%D0%B0%2C+%D0%9B%D0%B8%D0%BF%D0%B5%D1%86%D0%BA&format=jsonv2&limit=5&viewbox=39.35%2C52.72%2C39.90%2C52.50&bounded=1",
+          "fetched_at": 1792349805.5930748,
+          "verification_record_sha256": "e0d2dd0165b97a31ad87fdc6180f2cc07eb01654d6072316be1866be33581aa0",
+          "latitude": 52.5745635,
+          "longitude": 39.5190712
+        },
+        "method": "Exact Nominatim place/address centroid; object tags checked in downloaded OSM API extract."
+      }
+    },
+    "evropeysky": {
+      "name": "мкр. Европейский",
+      "center": [
+        52.5773187,
+        39.5035733
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "place",
+        "url": "https://www.openstreetmap.org/relation/17713552",
+        "osm_type": "relation",
+        "osm_id": 17713552,
+        "osm_version": 1,
+        "osm_tags": {
+          "name": "Микрорайон \"Европейский\"",
+          "place": "quarter",
+          "type": "multipolygon"
+        },
+        "verified_at": "2026-10-18T18:59:16.548664+00:00",
+        "coordinate_source": {
+          "url": "https://nominatim.openstreetmap.org/lookup?osm_ids=R17713552,W448904735,R1669013,R17717422&format=jsonv2&addressdetails=1",
+          "fetched_at": 1792350015.506615,
+          "verification_record_sha256": "64896f3dbe5142d3566bcd30fcd0c9c1aaaf0d89e52281ae2a5afa1ad9e4e841",
+          "latitude": 52.5773187,
+          "longitude": 39.5035733
+        },
+        "method": "Exact Nominatim place/address centroid; object tags checked in downloaded OSM API extract."
+      }
+    },
+    "sokol": {
+      "name": "Сокол",
+      "center": [
+        52.6397328,
+        39.6531076
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "residential_address",
+        "url": "https://www.openstreetmap.org/way/123877420",
+        "osm_type": "way",
+        "osm_id": 123877420,
+        "osm_version": 3,
+        "osm_tags": {
+          "addr:housenumber": "10А",
+          "addr:street": "улица 40 лет Октября",
+          "building": "apartments"
+        },
+        "verified_at": "2026-10-18T18:59:21.093514+00:00",
+        "coordinate_source": {
+          "url": "https://nominatim.openstreetmap.org/search?q=40+%D0%BB%D0%B5%D1%82+%D0%9E%D0%BA%D1%82%D1%8F%D0%B1%D1%80%D1%8F+10%2C+%D0%9B%D0%B8%D0%BF%D0%B5%D1%86%D0%BA&format=jsonv2&addressdetails=1&limit=3&viewbox=39.35%2C52.72%2C39.90%2C52.50&bounded=1",
+          "fetched_at": 1792349821.1870694,
+          "verification_record_sha256": "982f1427003b029f697bc04c1cf203769cf5ce5ff012c03c66238fd4236b86a2",
+          "latitude": 52.6397328,
+          "longitude": 39.6531076
+        },
+        "method": "Exact Nominatim place/address centroid; object tags checked in downloaded OSM API extract."
+      }
+    },
+    "nlmk": {
+      "name": "НЛМК",
+      "center": [
+        52.5817828,
+        39.6193687
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "residential_address",
+        "url": "https://www.openstreetmap.org/way/89973482",
+        "osm_type": "way",
+        "osm_id": 89973482,
+        "osm_version": 4,
+        "osm_tags": {
+          "addr:housenumber": "15",
+          "addr:street": "проспект Мира",
+          "building": "yes",
+          "building:levels": "4"
+        },
+        "verified_at": "2026-10-18T18:59:24.753022+00:00",
+        "coordinate_source": {
+          "url": "https://nominatim.openstreetmap.org/search?q=%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82+%D0%9C%D0%B8%D1%80%D0%B0+15%2C+%D0%9B%D0%B8%D0%BF%D0%B5%D1%86%D0%BA&format=jsonv2&addressdetails=1&limit=3&viewbox=39.35%2C52.72%2C39.90%2C52.50&bounded=1",
+          "fetched_at": 1792349819.3204863,
+          "verification_record_sha256": "982f1427003b029f697bc04c1cf203769cf5ce5ff012c03c66238fd4236b86a2",
+          "latitude": 52.5817828,
+          "longitude": 39.6193687
+        },
+        "method": "Exact Nominatim place/address centroid; object tags checked in downloaded OSM API extract."
+      }
+    },
+    "traktorny": {
+      "name": "Тракторный",
+      "center": [
+        52.5358289,
+        39.5896508
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "place",
+        "url": "https://www.openstreetmap.org/way/448904735",
+        "osm_type": "way",
+        "osm_id": 448904735,
+        "osm_version": 4,
+        "osm_tags": {
+          "name": "Тракторный",
+          "name:en": "Traktornyj",
+          "place": "neighbourhood",
+          "wikidata": "Q4461838",
+          "wikipedia": "ru:Тракторный (микрорайон)"
+        },
+        "verified_at": "2026-10-18T18:59:27.827335+00:00",
+        "coordinate_source": {
+          "url": "https://nominatim.openstreetmap.org/lookup?osm_ids=R17713552,W448904735,R1669013,R17717422&format=jsonv2&addressdetails=1",
+          "fetched_at": 1792350015.506615,
+          "verification_record_sha256": "64896f3dbe5142d3566bcd30fcd0c9c1aaaf0d89e52281ae2a5afa1ad9e4e841",
+          "latitude": 52.5358289,
+          "longitude": 39.5896508
+        },
+        "method": "Exact Nominatim place/address centroid; object tags checked in downloaded OSM API extract."
+      }
+    },
+    "matyrsky": {
+      "name": "Матырский",
+      "center": [
+        52.5350695,
+        39.7960791
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "place",
+        "url": "https://www.openstreetmap.org/relation/1669013",
+        "osm_type": "relation",
+        "osm_id": 1669013,
+        "osm_version": 14,
+        "osm_tags": {
+          "addr:country": "RU",
+          "addr:postcode": "398908",
+          "name": "Матырский",
+          "place": "suburb",
+          "type": "multipolygon",
+          "wikidata": "Q4285408",
+          "wikipedia": "ru:Матырский"
+        },
+        "verified_at": "2026-10-18T18:59:31.165323+00:00",
+        "coordinate_source": {
+          "url": "https://nominatim.openstreetmap.org/lookup?osm_ids=R17713552,W448904735,R1669013,R17717422&format=jsonv2&addressdetails=1",
+          "fetched_at": 1792350015.506615,
+          "verification_record_sha256": "64896f3dbe5142d3566bcd30fcd0c9c1aaaf0d89e52281ae2a5afa1ad9e4e841",
+          "latitude": 52.5350695,
+          "longitude": 39.7960791
+        },
+        "method": "Exact Nominatim place/address centroid; object tags checked in downloaded OSM API extract."
+      }
+    },
+    "syrsky_rudnik": {
+      "name": "Сырский Рудник",
+      "center": [
+        52.579216,
+        39.48349
+      ],
+      "radius_m": 1000,
+      "center_source": {
+        "basis": "place",
+        "url": "https://www.openstreetmap.org/node/763523564",
+        "osm_type": "node",
+        "osm_id": 763523564,
+        "osm_version": 6,
+        "osm_tags": {
+          "name": "Сырский рудник",
+          "place": "suburb",
+          "wikidata": "Q4448121",
+          "wikipedia": "ru:Сырский Рудник"
+        },
+        "verified_at": "2026-10-18T18:59:34.315001+00:00",
+        "coordinate_source": {
+          "url": "https://nominatim.openstreetmap.org/search?q=%D0%A1%D1%8B%D1%80%D1%81%D0%BA%D0%B8%D0%B9+%D0%A0%D1%83%D0%B4%D0%BD%D0%B8%D0%BA%2C+%D0%9B%D0%B8%D0%BF%D0%B5%D1%86%D0%BA&format=jsonv2&limit=5&viewbox=39.35%2C52.72%2C39.90%2C52.50&bounded=1",
+          "fetched_at": 1792349803.5828915,
+          "verification_record_sha256": "e0d2dd0165b97a31ad87fdc6180f2cc07eb01654d6072316be1866be33581aa0",
+          "latitude": 52.579216,
+          "longitude": 39.48349
+        },
+        "method": "Exact Nominatim place/address centroid; object tags checked in downloaded OSM API extract."
+      }
+    }
+  },
+  "sources": {
+    "osm_2026_10_18_eleytsky": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.451807266,52.576373873,39.508192734,52.610626127",
+      "fetched_at": 1792349877.9290898,
+      "sha256": "44120d5c6ef3b5bad550e907df85cb319e11e386440b5b88fe6dcf2ba55c3096",
+      "bbox": [
+        39.4518073,
+        52.5763739,
+        39.5081927,
+        52.6106261
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-eleytsky.osm",
+      "counts": {
+        "node": 22546,
+        "way": 4056,
+        "relation": 161
+      },
+      "requested_bbox": [
+        39.451807266,
+        52.576373873,
+        39.508192734,
+        52.610626127
+      ],
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.451807266,52.576373873,39.508192734,52.610626127",
+          "fetched_at": 1792349877.9290898,
+          "sha256": "44120d5c6ef3b5bad550e907df85cb319e11e386440b5b88fe6dcf2ba55c3096",
+          "file": "tests\\artifacts\\scenarios\\catalog-eleytsky.osm",
+          "bbox": [
+            39.4518073,
+            52.5763739,
+            39.5081927,
+            52.6106261
+          ]
+        }
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    },
+    "osm_2026_10_18_universitetsky": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.477029255,52.588818873,39.533430745,52.623071127",
+      "fetched_at": 1792349881.0365744,
+      "sha256": "c734d05c86fe719aac89bc75469718bd0636cada81317dce41b028cd3107d5e3",
+      "bbox": [
+        39.4770293,
+        52.5888189,
+        39.5334307,
+        52.6230711
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-universitetsky.osm",
+      "counts": {
+        "node": 22008,
+        "way": 3546,
+        "relation": 297
+      },
+      "requested_bbox": [
+        39.477029255,
+        52.588818873,
+        39.533430745,
+        52.623071127
+      ],
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.477029255,52.588818873,39.533430745,52.623071127",
+          "fetched_at": 1792349881.0365744,
+          "sha256": "c734d05c86fe719aac89bc75469718bd0636cada81317dce41b028cd3107d5e3",
+          "file": "tests\\artifacts\\scenarios\\catalog-universitetsky.osm",
+          "bbox": [
+            39.4770293,
+            52.5888189,
+            39.5334307,
+            52.6230711
+          ]
+        }
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    },
+    "osm_2026_10_18_center": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.556095227,52.595073873,39.584300000,52.629326127",
+      "fetched_at": 1792349947.2225783,
+      "sha256": "ffdd8de7a3a9a9655f30afe75d97f5861012dd5c2660d62de099489791dc02fe",
+      "bbox": [
+        39.556095227,
+        52.595073873,
+        39.612504773,
+        52.629326127
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-center.osm",
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.556095227,52.595073873,39.584300000,52.629326127",
+          "fetched_at": 1792349942.691464,
+          "sha256": "3f797f9b170a97b40e1011d7d067eba8e9106d158e772aaa17c66d0824658ead",
+          "file": "tests\\artifacts\\scenarios\\catalog-centera-base.osm",
+          "bbox": [
+            39.5560952,
+            52.5950739,
+            39.5843,
+            52.6293261
+          ],
+          "requested_bbox": [
+            39.556095227,
+            52.595073873,
+            39.5843,
+            52.629326127
+          ]
+        },
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.584300000,52.595073873,39.612504773,52.629326127",
+          "fetched_at": 1792349947.2225783,
+          "sha256": "8b4c71f59400db930bfd54580d0475c4f9ccec3c81b0cf409bf7276866fbea63",
+          "file": "tests\\artifacts\\scenarios\\catalog-centerb-base.osm",
+          "bbox": [
+            39.5843,
+            52.5950739,
+            39.6125048,
+            52.6293261
+          ],
+          "requested_bbox": [
+            39.5843,
+            52.595073873,
+            39.612504773,
+            52.629326127
+          ]
+        }
+      ],
+      "counts": {
+        "node": 54286,
+        "way": 10929,
+        "relation": 746
+      },
+      "requested_bbox": [
+        39.556095227,
+        52.595073873,
+        39.612504773,
+        52.629326127
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    },
+    "osm_2026_10_18_pobeda": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.490890643,52.557437373,39.547251757,52.591689627",
+      "fetched_at": 1792349952.6496768,
+      "sha256": "41d58beb04dafe13fb5179598789b618984cba3ddd884465dd69a89e97144acc",
+      "bbox": [
+        39.4908906,
+        52.5574374,
+        39.5472518,
+        52.5916896
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-pobeda.osm",
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.490890643,52.557437373,39.547251757,52.591689627",
+          "fetched_at": 1792349952.6496768,
+          "sha256": "402026f7d7e5b5d4c4b2f49f446e6fe1e0aebcfcd14ffa2ee98f41c32511fe3f",
+          "file": "tests\\artifacts\\scenarios\\catalog-pobeda-base.osm",
+          "bbox": [
+            39.4908906,
+            52.5574374,
+            39.5472518,
+            52.5916896
+          ],
+          "requested_bbox": [
+            39.490890643,
+            52.557437373,
+            39.547251757,
+            52.591689627
+          ]
+        }
+      ],
+      "counts": {
+        "node": 44400,
+        "way": 7620,
+        "relation": 282
+      },
+      "requested_bbox": [
+        39.490890643,
+        52.557437373,
+        39.547251757,
+        52.591689627
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    },
+    "osm_2026_10_18_evropeysky": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.475390972,52.560192573,39.531755628,52.594444827",
+      "fetched_at": 1792349956.548664,
+      "sha256": "35fe847e3986cab5d9d2f613605c1382157152a0bf3cfd20133c936e15ed40a6",
+      "bbox": [
+        39.475391,
+        52.5601926,
+        39.5317556,
+        52.5944448
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-evropeysky.osm",
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.475390972,52.560192573,39.531755628,52.594444827",
+          "fetched_at": 1792349956.548664,
+          "sha256": "46c4e3fb3e30ffebdfb7786999226ed16727803e7edb0757ba702d8db12ab3d1",
+          "file": "tests\\artifacts\\scenarios\\catalog-evropeysky-base.osm",
+          "bbox": [
+            39.475391,
+            52.5601926,
+            39.5317556,
+            52.5944448
+          ],
+          "requested_bbox": [
+            39.475390972,
+            52.560192573,
+            39.531755628,
+            52.594444827
+          ]
+        }
+      ],
+      "counts": {
+        "node": 39067,
+        "way": 7075,
+        "relation": 220
+      },
+      "requested_bbox": [
+        39.475390972,
+        52.560192573,
+        39.531755628,
+        52.594444827
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    },
+    "osm_2026_10_18_sokol": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.624885077,52.622606673,39.681330123,52.656858927",
+      "fetched_at": 1792349961.0935137,
+      "sha256": "9a6be3897bf3f922b122f4ef1ef476fee10a0e2481db67dc4d00db3fbcb8cccd",
+      "bbox": [
+        39.6248851,
+        52.6226067,
+        39.6813301,
+        52.6568589
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-sokol.osm",
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.624885077,52.622606673,39.681330123,52.656858927",
+          "fetched_at": 1792349961.0935137,
+          "sha256": "a23c37eeec3a1fc3aff19a9540ee085ea04a94729bc82d96c6c7ef769351570e",
+          "file": "tests\\artifacts\\scenarios\\catalog-sokol-base.osm",
+          "bbox": [
+            39.6248851,
+            52.6226067,
+            39.6813301,
+            52.6568589
+          ],
+          "requested_bbox": [
+            39.624885077,
+            52.622606673,
+            39.681330123,
+            52.656858927
+          ]
+        }
+      ],
+      "counts": {
+        "node": 26355,
+        "way": 5299,
+        "relation": 138
+      },
+      "requested_bbox": [
+        39.624885077,
+        52.622606673,
+        39.681330123,
+        52.656858927
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    },
+    "osm_2026_10_18_nlmk": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.591183502,52.564656673,39.647553898,52.598908927",
+      "fetched_at": 1792349964.7530224,
+      "sha256": "a5a7ebe89957b8f1d7511a8ae9be57cf782fc1b5a7bdca973ce2371531125d24",
+      "bbox": [
+        39.5911835,
+        52.5646567,
+        39.6475539,
+        52.5989089
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-nlmk.osm",
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.591183502,52.564656673,39.647553898,52.598908927",
+          "fetched_at": 1792349964.7530224,
+          "sha256": "a1246feb1ac2de470c5972c1a3b0dbede9b7f45ea113d751ce4e67b587e43e4f",
+          "file": "tests\\artifacts\\scenarios\\catalog-nlmk-base.osm",
+          "bbox": [
+            39.5911835,
+            52.5646567,
+            39.6475539,
+            52.5989089
+          ],
+          "requested_bbox": [
+            39.591183502,
+            52.564656673,
+            39.647553898,
+            52.598908927
+          ]
+        }
+      ],
+      "counts": {
+        "node": 18274,
+        "way": 3233,
+        "relation": 195
+      },
+      "requested_bbox": [
+        39.591183502,
+        52.564656673,
+        39.647553898,
+        52.598908927
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    },
+    "osm_2026_10_18_traktorny": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.561495110,52.518702773,39.617806490,52.552955027",
+      "fetched_at": 1792349967.827335,
+      "sha256": "7fb0dcf4a6fafabb88a587a56ffbdafb449eb6b37512e011a003bb3a7d0c67eb",
+      "bbox": [
+        39.5614951,
+        52.5187028,
+        39.6178065,
+        52.552955
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-traktorny.osm",
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.561495110,52.518702773,39.617806490,52.552955027",
+          "fetched_at": 1792349967.827335,
+          "sha256": "bb939c9e76205f48ad35ff60e2b2a146346b037c811d5599b36ef770cd9ae89c",
+          "file": "tests\\artifacts\\scenarios\\catalog-traktorny-base.osm",
+          "bbox": [
+            39.5614951,
+            52.5187028,
+            39.6178065,
+            52.552955
+          ],
+          "requested_bbox": [
+            39.56149511,
+            52.518702773,
+            39.61780649,
+            52.552955027
+          ]
+        }
+      ],
+      "counts": {
+        "node": 19463,
+        "way": 3803,
+        "relation": 60
+      },
+      "requested_bbox": [
+        39.56149511,
+        52.518702773,
+        39.61780649,
+        52.552955027
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    },
+    "osm_2026_10_18_matyrsky": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.767923897,52.517943373,39.824234303,52.552195627",
+      "fetched_at": 1792349971.165323,
+      "sha256": "a30baeea4072a5b8a518dd1ad83db2ea6b5aed64e37610124732f9fffb4fd41d",
+      "bbox": [
+        39.7679239,
+        52.5179434,
+        39.8242343,
+        52.5521956
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-matyrsky.osm",
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.767923897,52.517943373,39.824234303,52.552195627",
+          "fetched_at": 1792349971.165323,
+          "sha256": "e00699a7bf0628f3ad5b152cdc225211cb5515447e9cf9253fb1f41d346ae147",
+          "file": "tests\\artifacts\\scenarios\\catalog-matyrsky-base.osm",
+          "bbox": [
+            39.7679239,
+            52.5179434,
+            39.8242343,
+            52.5521956
+          ],
+          "requested_bbox": [
+            39.767923897,
+            52.517943373,
+            39.824234303,
+            52.552195627
+          ]
+        }
+      ],
+      "counts": {
+        "node": 9045,
+        "way": 1379,
+        "relation": 130
+      },
+      "requested_bbox": [
+        39.767923897,
+        52.517943373,
+        39.824234303,
+        52.552195627
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    },
+    "osm_2026_10_18_syrsky_rudnik": {
+      "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.455306453,52.562089873,39.511673547,52.596342127",
+      "fetched_at": 1792349974.3150005,
+      "sha256": "d16f14a28a455bcaeefb2bdfe9e071b6ed4f82efd688d7b52f76fcfe124d5b87",
+      "bbox": [
+        39.4553065,
+        52.5620899,
+        39.5116735,
+        52.5963421
+      ],
+      "file": "tests\\artifacts\\scenarios\\catalog-syrsky_rudnik.osm",
+      "parts": [
+        {
+          "url": "https://api.openstreetmap.org/api/0.6/map?bbox=39.455306453,52.562089873,39.511673547,52.596342127",
+          "fetched_at": 1792349974.3150005,
+          "sha256": "d84ca9932f4e54a857e91786ca02d7dbd9c436dfbe0f46f3c45085b4c0e1a09e",
+          "file": "tests\\artifacts\\scenarios\\catalog-syrsky_rudnik-base.osm",
+          "bbox": [
+            39.4553065,
+            52.5620899,
+            39.5116735,
+            52.5963421
+          ],
+          "requested_bbox": [
+            39.455306453,
+            52.562089873,
+            39.511673547,
+            52.596342127
+          ]
+        }
+      ],
+      "counts": {
+        "node": 30692,
+        "way": 5589,
+        "relation": 132
+      },
+      "requested_bbox": [
+        39.455306453,
+        52.562089873,
+        39.511673547,
+        52.596342127
+      ],
+      "supplements": [],
+      "license": "ODbL-1.0",
+      "coverage_radius_m": 1901,
+      "geometry_validation": {
+        "missing_relevant_references": 0,
+        "policy": "All house candidate ways and matching competitor node/way/relation closures validated; unrelated administrative and route relations do not require closure."
+      }
+    }
+  },
+  "outputs": {
+    "comp_bakery_center_52.612200_39.584300_1000.json": {
+      "area": "center",
+      "cache_key": "comp_bakery_center_52.612200_39.584300_1000",
+      "sha256": "d63a145e97125f230f1cf544fd9a508c86cec94aad96f61fb3e173675e780d69",
+      "fetched_at": 1791817844.2068279,
+      "rows": 18,
+      "business": "bakery",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_bakery_eleytsky_52.593500_39.480000_1000.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_bakery_eleytsky_52.593500_39.480000_1000",
+      "sha256": "f50482ab91a20558ad06983f8b73a5c6ca3cd1293f6e376297d76fe295135d82",
+      "fetched_at": 1791817819.2054913,
+      "rows": 0,
+      "business": "bakery",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_bakery_evropeysky_52.577319_39.503573_1000.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_bakery_evropeysky_52.577319_39.503573_1000",
+      "sha256": "e0c744256edc4661357752f23674798ff3f17f4625f46531f9560f2bbb41ed49",
+      "fetched_at": 1792349956.548664,
+      "rows": 0,
+      "business": "bakery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_bakery_matyrsky_52.535069_39.796079_1000.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_bakery_matyrsky_52.535069_39.796079_1000",
+      "sha256": "3bb64b306c345cd5c6a3aaaa4c5d07f90674a2eb6d529b253f37b5f381add7d8",
+      "fetched_at": 1792349971.165323,
+      "rows": 0,
+      "business": "bakery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_bakery_nlmk_52.581783_39.619369_1000.json": {
+      "area": "nlmk",
+      "cache_key": "comp_bakery_nlmk_52.581783_39.619369_1000",
+      "sha256": "e3f1e8d025eeba8407f9e374d475505166c4ebd89f2526c9ef79bfdf4e17b966",
+      "fetched_at": 1792349964.7530224,
+      "rows": 1,
+      "business": "bakery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_bakery_pobeda_52.574563_39.519071_1000.json": {
+      "area": "pobeda",
+      "cache_key": "comp_bakery_pobeda_52.574563_39.519071_1000",
+      "sha256": "969f9f0d2cc181616466c9b65c8ee14a6026cf8ffe6a8857332b8e1e03c05adf",
+      "fetched_at": 1792349952.6496768,
+      "rows": 1,
+      "business": "bakery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_bakery_sokol_52.639733_39.653108_1000.json": {
+      "area": "sokol",
+      "cache_key": "comp_bakery_sokol_52.639733_39.653108_1000",
+      "sha256": "00b2f9d0a33c8a4ea09a9a18132698408013b0cc908ce6a06396add2bcb2c654",
+      "fetched_at": 1792349961.0935137,
+      "rows": 1,
+      "business": "bakery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_bakery_syrsky_rudnik_52.579216_39.483490_1000.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_bakery_syrsky_rudnik_52.579216_39.483490_1000",
+      "sha256": "558a1bb92da3c0c417686cd0f8ad5f95420fac537760322c7dc892abb3399e3a",
+      "fetched_at": 1792349974.3150005,
+      "rows": 0,
+      "business": "bakery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_bakery_traktorny_52.535829_39.589651_1000.json": {
+      "area": "traktorny",
+      "cache_key": "comp_bakery_traktorny_52.535829_39.589651_1000",
+      "sha256": "31f361b15b8ea82c356af04a84e5506085cf7c84a8dc835bcd6fac46260845cb",
+      "fetched_at": 1792349967.827335,
+      "rows": 0,
+      "business": "bakery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_bakery_universitetsky_52.605945_39.505230_1000.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_bakery_universitetsky_52.605945_39.505230_1000",
+      "sha256": "138811986aeb9eec0cec0d1f65c7ed38c7feb98d722b45c9289691162a4e3488",
+      "fetched_at": 1791745342.987577,
+      "rows": 0,
+      "business": "bakery",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_beauty_center_52.612200_39.584300_1000_halo450.json": {
+      "area": "center",
+      "cache_key": "comp_beauty_center_52.612200_39.584300_1000_halo450",
+      "sha256": "973465d88aad3549a09741a2e8672fe9965cf3ec7d64f2a496dce5e71d6d5289",
+      "fetched_at": 1791818676.5358493,
+      "rows": 97,
+      "business": "beauty",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_beauty_eleytsky_52.593500_39.480000_1000_halo450.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_beauty_eleytsky_52.593500_39.480000_1000_halo450",
+      "sha256": "54071118a601c3beb39dc7303e3e43097e405925123c5143dd6f63e2ee709f92",
+      "fetched_at": 1791818671.0706675,
+      "rows": 1,
+      "business": "beauty",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_beauty_evropeysky_52.577319_39.503573_1000_halo450.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_beauty_evropeysky_52.577319_39.503573_1000_halo450",
+      "sha256": "d1dc5ecb57f85a767517485b63857689e614d6d4af01becca1fa81cf5d596d3c",
+      "fetched_at": 1792349956.548664,
+      "rows": 16,
+      "business": "beauty",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_beauty_matyrsky_52.535069_39.796079_1000_halo450.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_beauty_matyrsky_52.535069_39.796079_1000_halo450",
+      "sha256": "f61f47f0e729c1b2b6c24ea704c298da2f0d9f67dca1785cd5aec7c8da3dd9e7",
+      "fetched_at": 1792349971.165323,
+      "rows": 0,
+      "business": "beauty",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_beauty_nlmk_52.581783_39.619369_1000_halo450.json": {
+      "area": "nlmk",
+      "cache_key": "comp_beauty_nlmk_52.581783_39.619369_1000_halo450",
+      "sha256": "73f70974b7fce7edd8a758422fa7103dfdb0de8d9621c9a5c4d32a3d82c81744",
+      "fetched_at": 1792349964.7530224,
+      "rows": 0,
+      "business": "beauty",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_beauty_pobeda_52.574563_39.519071_1000_halo450.json": {
+      "area": "pobeda",
+      "cache_key": "comp_beauty_pobeda_52.574563_39.519071_1000_halo450",
+      "sha256": "f550d45ec33ba97dca352cc87c3feaff42c4025b55a56252586a3c0e967e6346",
+      "fetched_at": 1792349952.6496768,
+      "rows": 21,
+      "business": "beauty",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_beauty_sokol_52.639733_39.653108_1000_halo450.json": {
+      "area": "sokol",
+      "cache_key": "comp_beauty_sokol_52.639733_39.653108_1000_halo450",
+      "sha256": "d7c12f4f5083e14e8dfe64a07c2c0ee1629fae8338bc0d2fc1863e0d433b57f9",
+      "fetched_at": 1792349961.0935137,
+      "rows": 0,
+      "business": "beauty",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_beauty_syrsky_rudnik_52.579216_39.483490_1000_halo450.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_beauty_syrsky_rudnik_52.579216_39.483490_1000_halo450",
+      "sha256": "d13243f6aec20519c1d4e7f95480b0c0a61b16b30b6e260c4e0bd6f85bb1d4e5",
+      "fetched_at": 1792349974.3150005,
+      "rows": 2,
+      "business": "beauty",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_beauty_traktorny_52.535829_39.589651_1000_halo450.json": {
+      "area": "traktorny",
+      "cache_key": "comp_beauty_traktorny_52.535829_39.589651_1000_halo450",
+      "sha256": "c9f5e0ec056d64e257bdfe9d735d3ae04f10e82aff63e69040ee7a556edda395",
+      "fetched_at": 1792349967.827335,
+      "rows": 0,
+      "business": "beauty",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_beauty_universitetsky_52.605945_39.505230_1000_halo450.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_beauty_universitetsky_52.605945_39.505230_1000_halo450",
+      "sha256": "e4bde94ee7486723088e5df6cc3c5a0192059ef5a4f3081a70466471526b7904",
+      "fetched_at": 1791818672.4660912,
+      "rows": 1,
+      "business": "beauty",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_cafe_center_52.612200_39.584300_1000.json": {
+      "area": "center",
+      "cache_key": "comp_cafe_center_52.612200_39.584300_1000",
+      "sha256": "9a5b47ed7d8779395177cca5c8aabdae5cce8745e35e196303984c55be8c34ea",
+      "fetched_at": 1791731410.2208483,
+      "rows": 87,
+      "business": "cafe",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_cafe_eleytsky_52.593500_39.480000_1000.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_cafe_eleytsky_52.593500_39.480000_1000",
+      "sha256": "2ed4ef9429f918d6400d3b645b65344ccd446d5fdc8fa68ad8ae548f8a3d8cf5",
+      "fetched_at": 1791731344.5504992,
+      "rows": 2,
+      "business": "cafe",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_cafe_evropeysky_52.577319_39.503573_1000.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_cafe_evropeysky_52.577319_39.503573_1000",
+      "sha256": "541f18e8ff66f0167dec47e384d96bc7db81f801864fde609198d5bc62e4ebd2",
+      "fetched_at": 1792349956.548664,
+      "rows": 11,
+      "business": "cafe",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_cafe_matyrsky_52.535069_39.796079_1000.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_cafe_matyrsky_52.535069_39.796079_1000",
+      "sha256": "3bb64b306c345cd5c6a3aaaa4c5d07f90674a2eb6d529b253f37b5f381add7d8",
+      "fetched_at": 1792349971.165323,
+      "rows": 0,
+      "business": "cafe",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_cafe_nlmk_52.581783_39.619369_1000.json": {
+      "area": "nlmk",
+      "cache_key": "comp_cafe_nlmk_52.581783_39.619369_1000",
+      "sha256": "494ffe140cd032643f2a7326a0591de991563951edd289d031c242b26ab9acc8",
+      "fetched_at": 1792349964.7530224,
+      "rows": 1,
+      "business": "cafe",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_cafe_pobeda_52.574563_39.519071_1000.json": {
+      "area": "pobeda",
+      "cache_key": "comp_cafe_pobeda_52.574563_39.519071_1000",
+      "sha256": "a1a99d96ae352d054779d0defe89573ed90ec1087c0d06aab6c4e0f0659dc013",
+      "fetched_at": 1792349952.6496768,
+      "rows": 12,
+      "business": "cafe",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_cafe_sokol_52.639733_39.653108_1000.json": {
+      "area": "sokol",
+      "cache_key": "comp_cafe_sokol_52.639733_39.653108_1000",
+      "sha256": "2b3aea3f3c11a3c8dd925107b8ff6db53c541bf8360f9a4b2e3952d644196809",
+      "fetched_at": 1792349961.0935137,
+      "rows": 1,
+      "business": "cafe",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_cafe_syrsky_rudnik_52.579216_39.483490_1000.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_cafe_syrsky_rudnik_52.579216_39.483490_1000",
+      "sha256": "60c2643a76c6c0046457a74406bd92be1ed62865afaae2e0c57c5ec8d21896bb",
+      "fetched_at": 1792349974.3150005,
+      "rows": 2,
+      "business": "cafe",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_cafe_traktorny_52.535829_39.589651_1000.json": {
+      "area": "traktorny",
+      "cache_key": "comp_cafe_traktorny_52.535829_39.589651_1000",
+      "sha256": "31f361b15b8ea82c356af04a84e5506085cf7c84a8dc835bcd6fac46260845cb",
+      "fetched_at": 1792349967.827335,
+      "rows": 0,
+      "business": "cafe",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_cafe_universitetsky_52.605945_39.505230_1000.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_cafe_universitetsky_52.605945_39.505230_1000",
+      "sha256": "41d0c0d7df2f307b53c5a0b191a201967dc9a09a511ec897761d59cf49fb8ac1",
+      "fetched_at": 1791745402.368312,
+      "rows": 1,
+      "business": "cafe",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_dentist_center_52.612200_39.584300_1000_halo800.json": {
+      "area": "center",
+      "cache_key": "comp_dentist_center_52.612200_39.584300_1000_halo800",
+      "sha256": "3a93f602015fd5110d9c54e529c0e45c97afb125810308a51d4537928236806f",
+      "fetched_at": 1792349947.2225783,
+      "rows": 27,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_center"
+    },
+    "comp_dentist_eleytsky_52.593500_39.480000_1000_halo800.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_dentist_eleytsky_52.593500_39.480000_1000_halo800",
+      "sha256": "1b06356898f5e7f3c65de4f3ea478c015d1caa41299a3d08a0419086cd8c459c",
+      "fetched_at": 1792349877.9290898,
+      "rows": 0,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_eleytsky"
+    },
+    "comp_dentist_evropeysky_52.577319_39.503573_1000_halo800.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_dentist_evropeysky_52.577319_39.503573_1000_halo800",
+      "sha256": "d411a366e376914cd6185b4a95f4697c5518e30820ae95e2230d5cd8395993a3",
+      "fetched_at": 1792349956.548664,
+      "rows": 6,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_dentist_matyrsky_52.535069_39.796079_1000_halo800.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_dentist_matyrsky_52.535069_39.796079_1000_halo800",
+      "sha256": "7420904115e9172f1c2a58f938b4126a1697464439461f55bc24f2d6613ea116",
+      "fetched_at": 1792349971.165323,
+      "rows": 0,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_dentist_nlmk_52.581783_39.619369_1000_halo800.json": {
+      "area": "nlmk",
+      "cache_key": "comp_dentist_nlmk_52.581783_39.619369_1000_halo800",
+      "sha256": "c5599e14f00d8d70cc4db58fdb502c61ca3841beefac016261e441ddd5b8123d",
+      "fetched_at": 1792349964.7530224,
+      "rows": 0,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_dentist_pobeda_52.574563_39.519071_1000_halo800.json": {
+      "area": "pobeda",
+      "cache_key": "comp_dentist_pobeda_52.574563_39.519071_1000_halo800",
+      "sha256": "7f92eb5c98d37cf1712f75109d4f3e759569544a83a06774755f136b2e8897c5",
+      "fetched_at": 1792349952.6496768,
+      "rows": 7,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_dentist_sokol_52.639733_39.653108_1000_halo800.json": {
+      "area": "sokol",
+      "cache_key": "comp_dentist_sokol_52.639733_39.653108_1000_halo800",
+      "sha256": "2568e3bb8f1ba101c299c590f3a55b38fec9d402d964c4dd3a64662b3f664d5d",
+      "fetched_at": 1792349961.0935137,
+      "rows": 2,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_dentist_syrsky_rudnik_52.579216_39.483490_1000_halo800.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_dentist_syrsky_rudnik_52.579216_39.483490_1000_halo800",
+      "sha256": "6855056c763447b4f3c8ac3aab3d160c28ced344111ad0e1b472595f93aeeb72",
+      "fetched_at": 1792349974.3150005,
+      "rows": 0,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_dentist_traktorny_52.535829_39.589651_1000_halo800.json": {
+      "area": "traktorny",
+      "cache_key": "comp_dentist_traktorny_52.535829_39.589651_1000_halo800",
+      "sha256": "9b02894842c908c542cc017b30c3b72d3351425bcfb5391663e5af2797f34f53",
+      "fetched_at": 1792349967.827335,
+      "rows": 0,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_dentist_universitetsky_52.605945_39.505230_1000_halo800.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_dentist_universitetsky_52.605945_39.505230_1000_halo800",
+      "sha256": "c335cdfd64744da612ed6117b0579dd8b84776e4117efe9faa9e8cda7404b504",
+      "fetched_at": 1792349881.0365744,
+      "rows": 0,
+      "business": "dentist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_universitetsky"
+    },
+    "comp_fast_food_center_52.612200_39.584300_1000.json": {
+      "area": "center",
+      "cache_key": "comp_fast_food_center_52.612200_39.584300_1000",
+      "sha256": "b72f7391657316f2e8905efc7cf6b9c1a4753ca702f443264e2f663a850634b2",
+      "fetched_at": 1792349947.2225783,
+      "rows": 49,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_center"
+    },
+    "comp_fast_food_eleytsky_52.593500_39.480000_1000.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_fast_food_eleytsky_52.593500_39.480000_1000",
+      "sha256": "8cfd4aabe7226447b01f6da2d5c253bc8b4c4465a8b12f0377c6d41a45aefa62",
+      "fetched_at": 1792349877.9290898,
+      "rows": 4,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_eleytsky"
+    },
+    "comp_fast_food_evropeysky_52.577319_39.503573_1000.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_fast_food_evropeysky_52.577319_39.503573_1000",
+      "sha256": "68ef8abae43e4c5526d2275a5c9cd6ea79266716035840607f466ba50bd163e2",
+      "fetched_at": 1792349956.548664,
+      "rows": 2,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_fast_food_matyrsky_52.535069_39.796079_1000.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_fast_food_matyrsky_52.535069_39.796079_1000",
+      "sha256": "3bb64b306c345cd5c6a3aaaa4c5d07f90674a2eb6d529b253f37b5f381add7d8",
+      "fetched_at": 1792349971.165323,
+      "rows": 0,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_fast_food_nlmk_52.581783_39.619369_1000.json": {
+      "area": "nlmk",
+      "cache_key": "comp_fast_food_nlmk_52.581783_39.619369_1000",
+      "sha256": "4119fef32576896b52bcd907f2bb934565377369fe3d11dec87bb7e86d6c49eb",
+      "fetched_at": 1792349964.7530224,
+      "rows": 5,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_fast_food_pobeda_52.574563_39.519071_1000.json": {
+      "area": "pobeda",
+      "cache_key": "comp_fast_food_pobeda_52.574563_39.519071_1000",
+      "sha256": "57d145a7067cf9f70c32d99c5175d87bc9a4693dcb9322e9007350e04b0bd50a",
+      "fetched_at": 1792349952.6496768,
+      "rows": 3,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_fast_food_sokol_52.639733_39.653108_1000.json": {
+      "area": "sokol",
+      "cache_key": "comp_fast_food_sokol_52.639733_39.653108_1000",
+      "sha256": "090c87884ccc95ac17868c1b4d233c479b853c7a1b6dd4fc28fcabf2bbad964e",
+      "fetched_at": 1792349961.0935137,
+      "rows": 2,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_fast_food_syrsky_rudnik_52.579216_39.483490_1000.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_fast_food_syrsky_rudnik_52.579216_39.483490_1000",
+      "sha256": "5aee67560fb4a95e3302255b13136030364a17b62009cca2137d0dd66f163236",
+      "fetched_at": 1792349974.3150005,
+      "rows": 1,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_fast_food_traktorny_52.535829_39.589651_1000.json": {
+      "area": "traktorny",
+      "cache_key": "comp_fast_food_traktorny_52.535829_39.589651_1000",
+      "sha256": "fb4c6cb688cdacafd08f46d32fd10e93aceb7b0f6bcd6296b8e6c62f62000875",
+      "fetched_at": 1792349967.827335,
+      "rows": 1,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_fast_food_universitetsky_52.605945_39.505230_1000.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_fast_food_universitetsky_52.605945_39.505230_1000",
+      "sha256": "e541be8814b4f4747ce3b411d5531930b07a8dfafdc0b5706b633040a59957ae",
+      "fetched_at": 1792349881.0365744,
+      "rows": 4,
+      "business": "fast_food",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_universitetsky"
+    },
+    "comp_fitness_center_52.612200_39.584300_1000_halo900.json": {
+      "area": "center",
+      "cache_key": "comp_fitness_center_52.612200_39.584300_1000_halo900",
+      "sha256": "6e8bf194f968796438e1db59a3e5c4a2d024a1692ec54fa99ef9ac12c95ab5f8",
+      "fetched_at": 1792349947.2225783,
+      "rows": 7,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_center"
+    },
+    "comp_fitness_eleytsky_52.593500_39.480000_1000_halo900.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_fitness_eleytsky_52.593500_39.480000_1000_halo900",
+      "sha256": "ef1cca6b11911ac339ef8c7abea80e996ef395311bc7e59442a4c6652ca83416",
+      "fetched_at": 1792349877.9290898,
+      "rows": 0,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_eleytsky"
+    },
+    "comp_fitness_evropeysky_52.577319_39.503573_1000_halo900.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_fitness_evropeysky_52.577319_39.503573_1000_halo900",
+      "sha256": "a25ede00eeea1465920055749d535fdc2b2afa5eb6d8245ba0db142e5df9e7ff",
+      "fetched_at": 1792349956.548664,
+      "rows": 4,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_fitness_matyrsky_52.535069_39.796079_1000_halo900.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_fitness_matyrsky_52.535069_39.796079_1000_halo900",
+      "sha256": "ef54a3b4b70436419f6a3d6e1a47714922721fd1c2a7b27e6526afac1679018b",
+      "fetched_at": 1792349971.165323,
+      "rows": 0,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_fitness_nlmk_52.581783_39.619369_1000_halo900.json": {
+      "area": "nlmk",
+      "cache_key": "comp_fitness_nlmk_52.581783_39.619369_1000_halo900",
+      "sha256": "813c98ec05ff7d33b448406afc8d51c5ddedce03507c157fbf06b6d148794607",
+      "fetched_at": 1792349964.7530224,
+      "rows": 2,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_fitness_pobeda_52.574563_39.519071_1000_halo900.json": {
+      "area": "pobeda",
+      "cache_key": "comp_fitness_pobeda_52.574563_39.519071_1000_halo900",
+      "sha256": "ac696180c803e2551b0ee5447413282586efb39d90c9826ea43cb8b4e9cedca5",
+      "fetched_at": 1792349952.6496768,
+      "rows": 4,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_fitness_sokol_52.639733_39.653108_1000_halo900.json": {
+      "area": "sokol",
+      "cache_key": "comp_fitness_sokol_52.639733_39.653108_1000_halo900",
+      "sha256": "f0cbfe26e97c84098bc343094601a5f99d1c445f8e73920d6cfa87f4f5afd398",
+      "fetched_at": 1792349961.0935137,
+      "rows": 2,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_fitness_syrsky_rudnik_52.579216_39.483490_1000_halo900.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_fitness_syrsky_rudnik_52.579216_39.483490_1000_halo900",
+      "sha256": "655da0582e1d9049582288da6a4627c19d99ff5842cbd6a494f0d511b87141d8",
+      "fetched_at": 1792349974.3150005,
+      "rows": 0,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_fitness_traktorny_52.535829_39.589651_1000_halo900.json": {
+      "area": "traktorny",
+      "cache_key": "comp_fitness_traktorny_52.535829_39.589651_1000_halo900",
+      "sha256": "2d2761eb4923256620720a1724efb4bd61ff9c23905fab7e182c9f395fe7c7ce",
+      "fetched_at": 1792349967.827335,
+      "rows": 0,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_fitness_universitetsky_52.605945_39.505230_1000_halo900.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_fitness_universitetsky_52.605945_39.505230_1000_halo900",
+      "sha256": "ee13786b2017c44c6687e01881a519f71c3a0eb508b55ad9dd661d6d87692b0a",
+      "fetched_at": 1792349881.0365744,
+      "rows": 1,
+      "business": "fitness",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_universitetsky"
+    },
+    "comp_florist_center_52.612200_39.584300_1000_halo500.json": {
+      "area": "center",
+      "cache_key": "comp_florist_center_52.612200_39.584300_1000_halo500",
+      "sha256": "68d8e0482cbc103340f0e4c2692d5929b8fc43cceaa9cff3cded5fe9b00d5296",
+      "fetched_at": 1792349947.2225783,
+      "rows": 42,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_center"
+    },
+    "comp_florist_eleytsky_52.593500_39.480000_1000_halo500.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_florist_eleytsky_52.593500_39.480000_1000_halo500",
+      "sha256": "a90eaea50191b8a5939b30feb74ae3df1b2343576f23715c5c106ca5763b7edd",
+      "fetched_at": 1792349877.9290898,
+      "rows": 0,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_eleytsky"
+    },
+    "comp_florist_evropeysky_52.577319_39.503573_1000_halo500.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_florist_evropeysky_52.577319_39.503573_1000_halo500",
+      "sha256": "d6cc113ec1c8fbadae3ad3f3dfc80c5dd9d667a78a92518a0add9e3a936a914a",
+      "fetched_at": 1792349956.548664,
+      "rows": 1,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_florist_matyrsky_52.535069_39.796079_1000_halo500.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_florist_matyrsky_52.535069_39.796079_1000_halo500",
+      "sha256": "096fe4332ac25cfc13497fd50a55d4281aa9a8474e00b5d62ab04a9a8e475e4b",
+      "fetched_at": 1792349971.165323,
+      "rows": 0,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_florist_nlmk_52.581783_39.619369_1000_halo500.json": {
+      "area": "nlmk",
+      "cache_key": "comp_florist_nlmk_52.581783_39.619369_1000_halo500",
+      "sha256": "d32170b571b79772ecb9055bd9677c67cd4c33200bb3e614bf1a1bd1d833c1ab",
+      "fetched_at": 1792349964.7530224,
+      "rows": 1,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_florist_pobeda_52.574563_39.519071_1000_halo500.json": {
+      "area": "pobeda",
+      "cache_key": "comp_florist_pobeda_52.574563_39.519071_1000_halo500",
+      "sha256": "7e52af46ebebf12a2acc4409acac48351e461183e635e6996f561ca976cc7252",
+      "fetched_at": 1792349952.6496768,
+      "rows": 1,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_florist_sokol_52.639733_39.653108_1000_halo500.json": {
+      "area": "sokol",
+      "cache_key": "comp_florist_sokol_52.639733_39.653108_1000_halo500",
+      "sha256": "f0b1bc33292c1e30638a4fdfb292500da3566ffd278383a4a8c5ad756ef70840",
+      "fetched_at": 1792349961.0935137,
+      "rows": 0,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_florist_syrsky_rudnik_52.579216_39.483490_1000_halo500.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_florist_syrsky_rudnik_52.579216_39.483490_1000_halo500",
+      "sha256": "bc4a88a903b5e75d19d8d8a9a30a6ff176d6b19d94273ff384cda99661d360c1",
+      "fetched_at": 1792349974.3150005,
+      "rows": 0,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_florist_traktorny_52.535829_39.589651_1000_halo500.json": {
+      "area": "traktorny",
+      "cache_key": "comp_florist_traktorny_52.535829_39.589651_1000_halo500",
+      "sha256": "6cef40fb00a4bc7e8fc3acd19ed3459bef5fe7351603a5d97fa570c49c686284",
+      "fetched_at": 1792349967.827335,
+      "rows": 1,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_florist_universitetsky_52.605945_39.505230_1000_halo500.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_florist_universitetsky_52.605945_39.505230_1000_halo500",
+      "sha256": "e1537bbcab2e22fc2c15a4bad3c2eb9ed28c4003088071f2a78203b8e1e7f8e9",
+      "fetched_at": 1792349881.0365744,
+      "rows": 1,
+      "business": "florist",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_universitetsky"
+    },
+    "comp_grocery_center_52.612200_39.584300_1000.json": {
+      "area": "center",
+      "cache_key": "comp_grocery_center_52.612200_39.584300_1000",
+      "sha256": "b5af61e2bd5d7d1f6a48b4490a7ee3feedd6b647240eb92c5efb4e8d41d7b61e",
+      "fetched_at": 1791817844.2068279,
+      "rows": 67,
+      "business": "grocery",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_grocery_eleytsky_52.593500_39.480000_1000.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_grocery_eleytsky_52.593500_39.480000_1000",
+      "sha256": "254778f33b4270f0e43b1ad79f8ea6fd8090eb87227d5ec124771d844f5128ed",
+      "fetched_at": 1791817819.2054913,
+      "rows": 12,
+      "business": "grocery",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_grocery_evropeysky_52.577319_39.503573_1000.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_grocery_evropeysky_52.577319_39.503573_1000",
+      "sha256": "6b90a29df354648c742fb320eb53b0f2b92e30c8ff2c45a2b29e41261e470c46",
+      "fetched_at": 1792349956.548664,
+      "rows": 32,
+      "business": "grocery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_grocery_matyrsky_52.535069_39.796079_1000.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_grocery_matyrsky_52.535069_39.796079_1000",
+      "sha256": "61660656d12004939efe6cdb4c24f1c291f55ef23fd611950f6ddd90e11ed69b",
+      "fetched_at": 1792349971.165323,
+      "rows": 8,
+      "business": "grocery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_grocery_nlmk_52.581783_39.619369_1000.json": {
+      "area": "nlmk",
+      "cache_key": "comp_grocery_nlmk_52.581783_39.619369_1000",
+      "sha256": "a2991425586a45eec7d5393fd35bd43a328a1262e2a236d35182a3fec7dc254c",
+      "fetched_at": 1792349964.7530224,
+      "rows": 14,
+      "business": "grocery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_grocery_pobeda_52.574563_39.519071_1000.json": {
+      "area": "pobeda",
+      "cache_key": "comp_grocery_pobeda_52.574563_39.519071_1000",
+      "sha256": "aaca99467b7fbd717af849f28c3d230d50933084af69754b0d8dbc5a86e22c90",
+      "fetched_at": 1792349952.6496768,
+      "rows": 41,
+      "business": "grocery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_grocery_sokol_52.639733_39.653108_1000.json": {
+      "area": "sokol",
+      "cache_key": "comp_grocery_sokol_52.639733_39.653108_1000",
+      "sha256": "5278e2eb01b67910a7d0d53f8c10e75e65a1cf9b19140089e0897db67a14c3b1",
+      "fetched_at": 1792349961.0935137,
+      "rows": 20,
+      "business": "grocery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_grocery_syrsky_rudnik_52.579216_39.483490_1000.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_grocery_syrsky_rudnik_52.579216_39.483490_1000",
+      "sha256": "bb40a64b2cbf7422ee507bdc14aee06032212007dec7c0ea1f725b042e9c7bc4",
+      "fetched_at": 1792349974.3150005,
+      "rows": 10,
+      "business": "grocery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_grocery_traktorny_52.535829_39.589651_1000.json": {
+      "area": "traktorny",
+      "cache_key": "comp_grocery_traktorny_52.535829_39.589651_1000",
+      "sha256": "d839342494a356a9da8e404c7ec38f4344f65fcd6e22064b4b8783e9a0716198",
+      "fetched_at": 1792349967.827335,
+      "rows": 20,
+      "business": "grocery",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_grocery_universitetsky_52.605945_39.505230_1000.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_grocery_universitetsky_52.605945_39.505230_1000",
+      "sha256": "a1c6e2239504bbd220861e7cdcb858b7cd12b77f1177094bd140680c4659040b",
+      "fetched_at": 1791745342.987577,
+      "rows": 19,
+      "business": "grocery",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_pet_center_52.612200_39.584300_1000_halo600.json": {
+      "area": "center",
+      "cache_key": "comp_pet_center_52.612200_39.584300_1000_halo600",
+      "sha256": "32608c1d7d1fe5afc1f322e89cf8b3eaa9e42f6267694338b59c9c02d07149fb",
+      "fetched_at": 1792349947.2225783,
+      "rows": 8,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_center"
+    },
+    "comp_pet_eleytsky_52.593500_39.480000_1000_halo600.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_pet_eleytsky_52.593500_39.480000_1000_halo600",
+      "sha256": "45e1be53d3ae58bfc61da9617fc2a12d343c3bb55ffc39d41bc5badc2edbc56a",
+      "fetched_at": 1792349877.9290898,
+      "rows": 1,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_eleytsky"
+    },
+    "comp_pet_evropeysky_52.577319_39.503573_1000_halo600.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_pet_evropeysky_52.577319_39.503573_1000_halo600",
+      "sha256": "39fb76ad8cb1226c8e4fc303f8977756ded3250ffa2619a4ffae2c7eb75265c6",
+      "fetched_at": 1792349956.548664,
+      "rows": 2,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_pet_matyrsky_52.535069_39.796079_1000_halo600.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_pet_matyrsky_52.535069_39.796079_1000_halo600",
+      "sha256": "6cfa53cb3fa349108ba6dbd38b3ca49efb72c31fa0d5da86be59d1e77e62173c",
+      "fetched_at": 1792349971.165323,
+      "rows": 0,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_pet_nlmk_52.581783_39.619369_1000_halo600.json": {
+      "area": "nlmk",
+      "cache_key": "comp_pet_nlmk_52.581783_39.619369_1000_halo600",
+      "sha256": "27ed2c45c00e6d991bc46536ce200686e115211b450279fbb795e158c665dff3",
+      "fetched_at": 1792349964.7530224,
+      "rows": 1,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_pet_pobeda_52.574563_39.519071_1000_halo600.json": {
+      "area": "pobeda",
+      "cache_key": "comp_pet_pobeda_52.574563_39.519071_1000_halo600",
+      "sha256": "945a6996d9599622e03184a0d3092894b0ad98de739f024e9bb117c71bbb62d2",
+      "fetched_at": 1792349952.6496768,
+      "rows": 3,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_pet_sokol_52.639733_39.653108_1000_halo600.json": {
+      "area": "sokol",
+      "cache_key": "comp_pet_sokol_52.639733_39.653108_1000_halo600",
+      "sha256": "736b3a9a45e71ea36e1b278d831745f3a2dc22d4c117bde4497d16302dba6e17",
+      "fetched_at": 1792349961.0935137,
+      "rows": 1,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_pet_syrsky_rudnik_52.579216_39.483490_1000_halo600.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_pet_syrsky_rudnik_52.579216_39.483490_1000_halo600",
+      "sha256": "d03b06616bcc95989066c2e5bd8991c17974c023fb69f8d0a20e7f1f048339e1",
+      "fetched_at": 1792349974.3150005,
+      "rows": 1,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_pet_traktorny_52.535829_39.589651_1000_halo600.json": {
+      "area": "traktorny",
+      "cache_key": "comp_pet_traktorny_52.535829_39.589651_1000_halo600",
+      "sha256": "6401f57631dab75ee9ebae129ab2e25c0e994ca3f707d6de7d9874a8d5b811b4",
+      "fetched_at": 1792349967.827335,
+      "rows": 0,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_pet_universitetsky_52.605945_39.505230_1000_halo600.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_pet_universitetsky_52.605945_39.505230_1000_halo600",
+      "sha256": "1bfe1666ac6eb1a52fbb7dae6c82abe942e2cd03962c4371405f887bd995b828",
+      "fetched_at": 1792349881.0365744,
+      "rows": 2,
+      "business": "pet",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_universitetsky"
+    },
+    "comp_pharmacy_center_52.612200_39.584300_1000_halo500.json": {
+      "area": "center",
+      "cache_key": "comp_pharmacy_center_52.612200_39.584300_1000_halo500",
+      "sha256": "d637951b2e7c6342c25418203ed7bf752bffc54fa83e2cb6e8363cceb23b7cdb",
+      "fetched_at": 1791818676.5358493,
+      "rows": 66,
+      "business": "pharmacy",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_pharmacy_eleytsky_52.593500_39.480000_1000_halo500.json": {
+      "area": "eleytsky",
+      "cache_key": "comp_pharmacy_eleytsky_52.593500_39.480000_1000_halo500",
+      "sha256": "480175f0fa1f72d67eaae82a96373f2b690e78424a07b81539942f7b9bba7c13",
+      "fetched_at": 1791818671.0706675,
+      "rows": 6,
+      "business": "pharmacy",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "comp_pharmacy_evropeysky_52.577319_39.503573_1000_halo500.json": {
+      "area": "evropeysky",
+      "cache_key": "comp_pharmacy_evropeysky_52.577319_39.503573_1000_halo500",
+      "sha256": "f7f02ebbfb08980d99ec2612acccd566b30a8ea219426deebca66be20e00f32d",
+      "fetched_at": 1792349956.548664,
+      "rows": 22,
+      "business": "pharmacy",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "comp_pharmacy_matyrsky_52.535069_39.796079_1000_halo500.json": {
+      "area": "matyrsky",
+      "cache_key": "comp_pharmacy_matyrsky_52.535069_39.796079_1000_halo500",
+      "sha256": "35ee0700748a66443512022d996d04a3651a3dea2433f06f04b9748125fd9086",
+      "fetched_at": 1792349971.165323,
+      "rows": 1,
+      "business": "pharmacy",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "comp_pharmacy_nlmk_52.581783_39.619369_1000_halo500.json": {
+      "area": "nlmk",
+      "cache_key": "comp_pharmacy_nlmk_52.581783_39.619369_1000_halo500",
+      "sha256": "5ee76edf09f68a0f1645441b16f094a790f6dbab13c7a22ea7c76ce8f5e69af9",
+      "fetched_at": 1792349964.7530224,
+      "rows": 11,
+      "business": "pharmacy",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "comp_pharmacy_pobeda_52.574563_39.519071_1000_halo500.json": {
+      "area": "pobeda",
+      "cache_key": "comp_pharmacy_pobeda_52.574563_39.519071_1000_halo500",
+      "sha256": "2bd932e7d542611cba0cadc2620fe65cd6a089a405178cd58a7c6e7857b380c0",
+      "fetched_at": 1792349952.6496768,
+      "rows": 25,
+      "business": "pharmacy",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "comp_pharmacy_sokol_52.639733_39.653108_1000_halo500.json": {
+      "area": "sokol",
+      "cache_key": "comp_pharmacy_sokol_52.639733_39.653108_1000_halo500",
+      "sha256": "df02a95729a678a5ca06542f2a03f7c673375d18d2545022bd558a7c483e9b1c",
+      "fetched_at": 1792349961.0935137,
+      "rows": 9,
+      "business": "pharmacy",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "comp_pharmacy_syrsky_rudnik_52.579216_39.483490_1000_halo500.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "comp_pharmacy_syrsky_rudnik_52.579216_39.483490_1000_halo500",
+      "sha256": "0c684ba57b521d132d496ed8962536b2bd7394e5d9f7788de577e52ef38ee827",
+      "fetched_at": 1792349974.3150005,
+      "rows": 4,
+      "business": "pharmacy",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "comp_pharmacy_traktorny_52.535829_39.589651_1000_halo500.json": {
+      "area": "traktorny",
+      "cache_key": "comp_pharmacy_traktorny_52.535829_39.589651_1000_halo500",
+      "sha256": "56da6a45c8e9549bab31428471bc54a178cddf426922f7c1cbc7725e248ec9e8",
+      "fetched_at": 1792349967.827335,
+      "rows": 4,
+      "business": "pharmacy",
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "comp_pharmacy_universitetsky_52.605945_39.505230_1000_halo500.json": {
+      "area": "universitetsky",
+      "cache_key": "comp_pharmacy_universitetsky_52.605945_39.505230_1000_halo500",
+      "sha256": "d1f9396815ee2407628df9516c603e849fa2999d5ee2c323eb80d46268bda0cc",
+      "fetched_at": 1791818672.4660912,
+      "rows": 6,
+      "business": "pharmacy",
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "houses_center_52.612200_39.584300_1000.json": {
+      "area": "center",
+      "cache_key": "houses_center_52.612200_39.584300_1000",
+      "sha256": "bb99602b2a2383f2110d8f2227ff3dff52f586a1c885e2b0168ae3692657d40e",
+      "fetched_at": 1791731397.8257606,
+      "rows": 360,
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "houses_eleytsky_52.593500_39.480000_1000.json": {
+      "area": "eleytsky",
+      "cache_key": "houses_eleytsky_52.593500_39.480000_1000",
+      "sha256": "5780e4505b9007c50d847ad64c89484778c64e01babe6e19f40f251f1c297d85",
+      "fetched_at": 1791728767.1005492,
+      "rows": 152,
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    },
+    "houses_evropeysky_52.577319_39.503573_1000.json": {
+      "area": "evropeysky",
+      "cache_key": "houses_evropeysky_52.577319_39.503573_1000",
+      "sha256": "403d1f5150ebbddf316489df706142d4a4022bf77451053bab8ccfe5514d197d",
+      "fetched_at": 1792349956.548664,
+      "rows": 738,
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_evropeysky"
+    },
+    "houses_matyrsky_52.535069_39.796079_1000.json": {
+      "area": "matyrsky",
+      "cache_key": "houses_matyrsky_52.535069_39.796079_1000",
+      "sha256": "8d7dddd3abea9c9dc911784cf181527140054cb293f1b8ded0f11011397a5f3e",
+      "fetched_at": 1792349971.165323,
+      "rows": 78,
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_matyrsky"
+    },
+    "houses_nlmk_52.581783_39.619369_1000.json": {
+      "area": "nlmk",
+      "cache_key": "houses_nlmk_52.581783_39.619369_1000",
+      "sha256": "edfc87804a4ddccff6d877f23ca5fe4fe6bf9657dfbd2976042ccf11f0f90b32",
+      "fetched_at": 1792349964.7530224,
+      "rows": 296,
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_nlmk"
+    },
+    "houses_pobeda_52.574563_39.519071_1000.json": {
+      "area": "pobeda",
+      "cache_key": "houses_pobeda_52.574563_39.519071_1000",
+      "sha256": "d7dd8a405577bdb850014b09f744b58644e897d305873e74e5f5bcc9aa58ef21",
+      "fetched_at": 1792349952.6496768,
+      "rows": 556,
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_pobeda"
+    },
+    "houses_sokol_52.639733_39.653108_1000.json": {
+      "area": "sokol",
+      "cache_key": "houses_sokol_52.639733_39.653108_1000",
+      "sha256": "ceae8dfc571a97f9f9a39fb47525eaabe1d8938674eda8624f4dea7ba493159a",
+      "fetched_at": 1792349961.0935137,
+      "rows": 260,
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_sokol"
+    },
+    "houses_syrsky_rudnik_52.579216_39.483490_1000.json": {
+      "area": "syrsky_rudnik",
+      "cache_key": "houses_syrsky_rudnik_52.579216_39.483490_1000",
+      "sha256": "0f19cd5079330a78aad3c6e81c8daa9b320dd10f49f73d09c52114fd345dfaef",
+      "fetched_at": 1792349974.3150005,
+      "rows": 519,
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_syrsky_rudnik"
+    },
+    "houses_traktorny_52.535829_39.589651_1000.json": {
+      "area": "traktorny",
+      "cache_key": "houses_traktorny_52.535829_39.589651_1000",
+      "sha256": "b561e1e77866f707263e904101b41b546c15a9555efa3b5454cb0afea3a91f61",
+      "fetched_at": 1792349967.827335,
+      "rows": 1302,
+      "status": "imported_osm",
+      "source_id": "osm_2026_10_18_traktorny"
+    },
+    "houses_universitetsky_52.605945_39.505230_1000.json": {
+      "area": "universitetsky",
+      "cache_key": "houses_universitetsky_52.605945_39.505230_1000",
+      "sha256": "5775d274716fc43f9c4f64f076f83a89262f51451fe64fed10b5ec0d77f75e4d",
+      "fetched_at": 1791745402.3671734,
+      "rows": 164,
+      "status": "preserved_original",
+      "source_id": "historical_snapshot",
+      "origin_note": "Original eighteen files preserved byte-for-byte. See data/README.md for historic acquisition method; original raw extract hashes were not recorded, so none are invented."
+    }
+  },
+  "historical_sources": {
+    "historical_snapshot": {
+      "documentation": "data/README.md",
+      "license": "ODbL-1.0",
+      "limitation": "Historic payload fetched_at and snapshot bytes retained. Original raw extract files and exact request URLs/hashes were not retained; no retrospective acquisition claims are made."
+    }
+  }
+}
