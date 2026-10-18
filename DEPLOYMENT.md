@@ -9,11 +9,12 @@
 - Запуск: `python serve.py`, Waitress слушает порт из `PORT`.
 - Проверка приложения: `GET /healthz` → HTTP 200, `{"status":"ok"}`.
 
-Последняя публикация: 18 октября 2026, runtime `5a85c3f`,
-deploy `dep-dba6iiu1egvs73dclas0` live с09:39:12 по Москве, trigger `new_commit`.
-Main CI success: run39104732797. Область/бизнес/радиус используют оформленные
-анимированные меню с клавиатурой и touch; карта и сохранения прошли public QA.
-Подробности публичной проверки: docs/verification/2026-10-18-choice-menus.md.
+Последняя публикация: 18 октября 2026, runtime `01dced1`,
+deploy `dep-dbab4njm8hqs73b72osg` live с14:51:08 по Москве, trigger `new_commit`.
+Source/main CI success: run39124731935/run39124808905 (67Python/62Node, Material rebuild).
+Полные локальные сценарии, объяснения/качество, сравнение/CSV/печать прошли public QA;
+карта и прежние сохранения работают.25статических файлов совпали с Git runtime.
+Подробности: docs/verification/2026-10-18-scenarios-and-explainability.md.
 SHA-256 CSS/JS/vendor и шрифтов совпали с Git blobs опубликованного коммита.
 Итоговая запись аудита меняет только документы; runtime повторно не собирается.
 

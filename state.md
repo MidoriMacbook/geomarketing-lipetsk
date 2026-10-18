@@ -1,25 +1,26 @@
 # Состояние работы
 
 ## Current Goal
-Активная задача: пользовательский пакет «Сценарии открытия и объяснимость».
-Прочитан полный запрос из attachment a5d23f07…/Вставленный текст.txt, необходимые
-семь skills и документы проекта; изучены текущие domain/service/API и frontend flows.
-Продуктовый аудит/roadmap/конкретный design записаны в
-docs/specs/2026-10-18-scenarios-and-explainability.md. PROJECT_ANALYSIS.md обновлён.
-Ветка codex/scenarios-and-explainability; дизайн и реализация явно согласованы.
-План docs/plans/2026-10-18-scenarios-and-explainability.md Tasks1–4 реализованы.
-67Python tests/62Node storage GREEN; root scenario/UI/mobile/legacy workspace+redesign
-GREEN, pageErrors[], validator70/14JSsyntax/diff/no stubs. Backend/storage review PASS.
-Исправлены2Important review RED→GREEN: circular boundary и настоящий encoded custom API key.
-Осталось whole-branch UI/integration review, CI/Render/public, audit/cleanup.
-Runtime Render пока прежний5a85c3f. Feature commits b56de83/c04c9ff/0102978.
-6локальных fullsnapshot/scenarios.v1, additive API, без аккаунтов/внешних API.
-Roothelper37612 serve.py на127.0.0.1:5085; браузер geomarketing-scenarios.
-После usersteer старыеhelper19928/23748 иbrowser1664 исчезли, новыйbrowser23632.
+Завершён пакет «Сценарии открытия и объяснимость», spec/plan согласованы и закрыты.
+Runtime01dced1a5669738b1ab9600c04387ed56830c1dc, Render dep-dbab4njm8hqs73b72osg
+live18октября2026 14:51:08Москва. SourceCI39124731935/mainCI39124808905 success,
+включая67Python/62Node tests, validator70/14JSsyntax/Material rebuild.
+Feature codex/scenarios-and-explainability сохранена; main fast-forward.
+Все browser сценарии GREEN: CRUD/UI17, restore/races11, hasTouch cafe/pharmacy,
+360/390/768/1440 и200%, legacy enrichment CSV/print/raw, workspace19/redesign/choices.
+Review нашло circular boundary/custom identity и legacy extras/halo wording;
+всё исправлено RED→GREEN, final whole-branch SpecPASS/QualitySecurityAPPROVED.
+Public UI/restore/touch/legacy/real API/map/save2/compare2 GREEN, pageErrors[],
+25assets hashes matchGit; public desktop/mobile screenshots лично просмотрены.
+Custom restore QA использует настоящий Flask-serialized fixture, не live Overpass.
+Новое:6полных локальных снимков/scenarios.v1/version1; quality/explanation/additive API;
+модель/5типов/3района/saved.v1 и CSV17prefix сохранены, нет внешних API/аккаунтов.
+Roadmap: geography/categories, далее field/economic inputs; не реализованы в этом пакете.
 Доказательства docs/verification/2026-10-18-scenarios-and-explainability.md.
-Важные риски: late-response/catalog race при restore; quota/corrupt/two-tab;
-ложная свежесть архива/score между расчётами/halo competitors. Решения и тесты в spec.
-Сохранить все исходные id/testid/ARIA/saved.v1/CSV/print/Leaflet/модель/5типов/3района.
+QA завершён: свой helper37612/child28108 serve.py остановлены после проверки
+commandlines; localhost5085 не слушается. Браузеры geomarketing-scenarios/public
+закрыты, worker scenarios-ui/PID26120 уже отсутствуют. Чужие процессы не затронуты.
+Финальный документальный audit [skip render] не меняет runtime01dced1.
 
 Ниже последняя завершённая публикация:
 

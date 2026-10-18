@@ -86,15 +86,15 @@ scripts/validate_project.py; tests/browser/scenarios.js.
 - [x] GREEN new browser + workspace/choices/redesign relevant regressions; validator/syntax.
 
 ### Task 5: Приёмка, документация и review
-- [ ] Все unit/Node tests, complete scenarios browser incl storage/two-tab/CSV/print.
-- [ ] Actual touch,360/390/768/1440/200%,keyboard,reduced,legacy/API/Leaflet fallback.
-- [ ] README/CHANGELOG/backend/frontend/data-flow/spec/state/session-log обновлены.
-- [ ] Независимый review batch и whole branch, устранить confirmed findings.
+- [x] Все unit/Node tests, complete scenarios browser incl storage/two-tab/CSV/print.
+- [x] Actual touch,360/390/768/1440/200%,keyboard,reduced,legacy/API/Leaflet fallback.
+- [x] README/CHANGELOG/backend/frontend/data-flow/spec/state/session-log обновлены.
+- [x] Независимый review batch и whole branch, устранить confirmed findings.
 
 ### Task 6: Выпуск
-- [ ] Explicit stage/source commit/push feature; CI success; ff main; один auto Render deploy.
-- [ ] Live API fields/UI scenarios/real map/CSV/print public QA, hashes match runtime.
-- [ ] Audit docs [skip render], own QA cleanup, clean main и итог пользователю.
+- [x] Explicit stage/source commit/push feature; CI success; ff main; один auto Render deploy.
+- [x] Live API fields/UI scenarios/real map/CSV/print public QA, hashes match runtime.
+- [x] Audit docs [skip render], own QA cleanup, clean main и итог пользователю.
 
 ## Waves / ownership
 Первая волна Tasks1/2/3: непересекающиеся файлы; root пишет Task4 tests и интеграцию.
