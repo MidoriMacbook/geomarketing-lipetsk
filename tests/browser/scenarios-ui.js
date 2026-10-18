@@ -68,7 +68,7 @@ async original => {
     await page.locator('#scenarios-section').screenshot({ path: 'tests/artifacts/scenarios/ui-desktop.png' });
     const qualityCases = await page.evaluate(async () => {
       const { qualitySummary } = await import('/static/js/data-quality.js');
-      const now = Date.now(), data = { source: 'cache', data_quality: { completeness: { status: 'usable_for_model', reasons: [{ code: 'osm', text: 'Проверить OSM' }] } }, data_meta: { houses: { fetched_at: (now - 8 * 86400000) / 1000 }, competitors: { fetched_at: now / 1000 } } };
+      const now = Date.now(), data = { source: 'cache', data_quality: { version:1, completeness: { status: 'usable_for_model', reasons: [{ code: 'osm', text: 'Проверить OSM' }] } }, data_meta: { houses: { fetched_at: (now - 8 * 86400000) / 1000 }, competitors: { fetched_at: now / 1000 } } };
       const stale = qualitySummary(data, now), fresh = qualitySummary({ ...data, data_meta: { houses: { fetched_at: now / 1000 }, competitors: { fetched_at: now / 1000 } } }, now);
       const unknown = qualitySummary({ ...data, data_meta: { houses: { fetched_at: now / 1000 } } }, now), legacy = qualitySummary({ ...data, data_quality: undefined }, now), demo = qualitySummary({ ...data, source: 'demo' }, now);
       return { stale, fresh, unknown, legacy, demo };
