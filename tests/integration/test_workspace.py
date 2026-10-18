@@ -27,14 +27,16 @@ class WorkspaceTests(unittest.TestCase):
              patch.object(osm, 'get_competitors', return_value=(competitors, True)):
             return self.client.get('/api/calculate', query_string={'type': business, **query})
 
-    def test_catalog_exposes_five_businesses_and_three_preset_districts(self):
+    def test_catalog_exposes_ten_businesses_and_configured_preset_districts(self):
         response = self.client.get('/api/catalog')
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
         self.assertEqual(data['status'], 'success')
         businesses = {item['key']: item for item in data['businesses']}
         expected = {'cafe': (350, 1.5), 'pharmacy': (500, 3), 'grocery': (400, 2),
-                    'bakery': (350, 1.8), 'beauty': (450, 1.6)}
+                    'bakery': (350, 1.8), 'beauty': (450, 1.6),
+                    'fast_food': (400, 1.8), 'florist': (500, 1.4), 'pet': (600, 1.6),
+                    'fitness': (900, 1.2), 'dentist': (800, 1.4)}
         self.assertEqual(set(businesses), set(expected))
         for key, (radius, alpha) in expected.items():
             self.assertEqual(businesses[key]['radius_m'], radius)
@@ -45,9 +47,10 @@ class WorkspaceTests(unittest.TestCase):
             self.assertEqual(item['center'], list(osm.DISTRICTS[item['key']]['center']))
             self.assertEqual(item['radius_m'], osm.DISTRICTS[item['key']]['radius'])
 
-    def test_all_five_categories_calculate_with_catalog_parameters(self):
+    def test_all_ten_categories_calculate_with_catalog_parameters(self):
         for key, radius in [('cafe', 350), ('pharmacy', 500), ('grocery', 400),
-                            ('bakery', 350), ('beauty', 450)]:
+                            ('bakery', 350), ('beauty', 450), ('fast_food', 400),
+                            ('florist', 500), ('pet', 600), ('fitness', 900), ('dentist', 800)]:
             with self.subTest(business=key):
                 response = self.calculate(key)
                 self.assertEqual(response.status_code, 200)
@@ -103,7 +106,7 @@ class WorkspaceTests(unittest.TestCase):
             self.assertIsNone(item['nearest_competitor_m'])
 
     def test_new_business_network_failure_has_clear_safe_error(self):
-        for business in ('grocery', 'bakery', 'beauty'):
+        for business in ('grocery', 'bakery', 'beauty', 'fast_food', 'florist', 'pet', 'fitness', 'dentist'):
             with self.subTest(business=business), \
                  patch.object(osm, 'get_houses', return_value=(self.houses, True)), \
                  patch.object(osm, 'get_competitors', side_effect=RuntimeError('private network details')):
