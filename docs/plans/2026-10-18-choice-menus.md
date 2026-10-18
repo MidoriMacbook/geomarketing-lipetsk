@@ -17,4 +17,4 @@ portal listbox и scoped CSS; vanilla JS/Flask/Leaflet, без новых пак
 - [x] choices.js/initChoiceMenus() в bootstrap, tokens/CSS/ARIA/fallback.
 - [x] Native contract tests force hidden select; настоящие user flows новым UI.
 - [x] GREEN new scenario/workspace/redesign/counters; syntax/validator/screenshots.
-- [ ] Independent review, CI/main/Render/public, docs and owned QA cleanup.
+- [x] Independent review, CI/main/Render/public, docs and owned QA cleanup.

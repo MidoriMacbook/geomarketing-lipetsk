@@ -1,5 +1,21 @@
 # Журнал решений
 
+## 2026-10-18 Оформленные меню [saved]
+Goal: убрать системный вид выбора области/бизнеса, добавить заметные анимации.
+Decisions:
+- Один choices.js для district/business/radius; без новых UI-зависимостей.
+- Rose/plum trigger с иконкой/стрелкой, listbox с галочкой и active/selected.
+- Native select сохраняет value/options/change; optional import оставляет native
+  при сетевом сбое. Keyboard focus/active descendant, touch scroll и viewport clamp.
+- Open360ms/row220ms stagger/close220ms inert snapshot; reduced-motion без effects.
+- Исправлены document scroll из scrollIntoView и отложенная smoothfocus-прокрутка.
+- В responsive test прозрачный фон композируется с предками, thresholds сохранены.
+Rejected: CSS-only оформление системного popup и новая внешняя UI-библиотека.
+Evidence: docs/verification/2026-10-18-choice-menus.md. Runtime5a85c3f,
+source/main CI success; Render live09:39:12Москва, public меню/карта/save/compare GREEN,
+20asset+2font hashes matchGit. Own QA browsers/server закрыты, audit [skip render].
+Limits: физические телефоны/VoiceOver/TalkBack/Safari/Firefox не проверены.
+
 ## 2026-10-17 Гармония карты, mobile и отказ от typewriter [saved]
 Goal: Близкие к референсу, различимые маркеры; отступы телефона; обычная анимация h1.
 Decisions:

@@ -1,6 +1,25 @@
 # Состояние работы
 
 ## Current Goal
+Завершено: оформленные меню области/бизнеса/радиуса, runtime
+5a85c3f50f3f4a98eec2f425395d992bc7674ec2. Feature codex/styled-select-menus сохранена.
+Source CI39104675122/mainCI39104732797 success, включая51backendtests.
+Render dep-dba6iiu1egvs73dclas0 live18октября09:39:12Москва (new_commit).
+Public choice-menus GREEN, touch390/200% swipe0→123; health200/API3recs/save2/compare2;
+карта390/768/1440 tiles6/12/16, nooverflow/pageErrors[],20asset+2font hashes matchGit.
+Public desktop/mobile screenshots лично просмотрены. Audit docs [skip render].
+Проверки: choice-menus (keyboard/mouse/hasTouch swipe/200%/fallback/reduce),
+workspace19groups, redesign, counters, map-harmony, isolated responsive GREEN.
+Validator63/all10JSsyntax/diff GREEN. Whole-branch+follow-up reviews APPROVED.
+Module choices.js optional dynamic import; original select value/change contract,
+portal fixed menu min256px/clamped; native fallback if module network failure.
+Своё QA завершено: браузеры geomarketing-choices/public закрыты;
+helper37208/child30756 serve.py остановлены после проверки commandlines,
+localhost5085 не слушается; чужие процессы не затронуты.
+Spec/plan/verification docs/*/2026-10-18-choice-menus*.md.
+
+Ниже прежняя завершённая задача:
+
 Завершено: rose/mauve map polish + phone inset + удаление typewriter, base9504400,
 runtime/main661ea50f8e3e2ad807d8ed214dd2f7c248662cb4. Render
 dep-db9t0n67bikc73e3bo1g live17октября22:46:45Москва. Feature
