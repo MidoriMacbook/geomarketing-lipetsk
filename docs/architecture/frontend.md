@@ -22,10 +22,26 @@
 | `static/js/ui.js` | DOM-утилиты, форматирование, cancel-safe motion, progress и native dialog |
 | `static/js/counters.js` | Визуальный count-up, один RAF, viewport, reset/reduce/print cleanup |
 | `static/js/choices.js` | Необязательное улучшение select: combobox/listbox, клавиатура, каталог и motion |
+| `static/js/scenario-storage.js` | Проверка схемы полного снимка, лимиты, latest-read Web Lock, exact repair |
+| `static/js/scenarios.js` | Список/формы/сравнение сценариев, callbacks capture/restore из app |
+| `static/js/data-quality.js` | Читаемые причины/даты/возраст архивов и структурированные объяснения |
+| `static/js/scenario-report.js` | Отдельные CSV и печать двух сценариев, без общего score |
 
 Состояние хранится в JS, сохранённые копии — в localStorage. Другие модули
 не ведут собственную скрытую копию списка. DOM строится через textContent;
 пользовательские строки не интерполируются в HTML.
+
+`geomarketing.scenarios.v1` хранит envelope schema_version1 и до6полных снимков;
+это отдельная сущность от сохранённого места. app.captureCurrent фиксирует анализ
+до ожидания lock. restoreScenario проверяет каталог и снимок до reset, отменяет
+запрос/увеличивает версию, применяет фильтры/порог/слои/ранг и рисует сохранённые
+данные без сети. selection.district='custom' — значение меню; analysis.district
+сохраняет настоящий API key custom_<lat4>_<lng4>_<radius>, координаты/радиус проверяются.
+Late response и catalog auto-run не могут заменить открытый снимок.
+Смена фильтров снимает архивный контекст; пересчёт не изменяет сохранённую копию.
+Ошибки/quota/version не превращаются в пустой список или успешное сохранение.
+Очистка повреждённого ключа требует подтверждения и повторной проверки exact raw.
+Storage events синхронизируют список/сравнение; без Web Locks изменения недоступны.
 
 ## Поток взаимодействия
 
@@ -46,6 +62,7 @@
 `components.css` — формы/карточки/KPI/таблицы/диалог/печать;
 `map.css` — Leaflet; `states.css` — состояние и обратная связь;
 `responsive.css` — адаптация 360–1440 px и reduced-motion.
+`scenarios.css` — локальные стили исследований/quality/details/диалогов и печати.
 
 Порядок stylesheet фиксируется в index.html. Leaflet и Unbounded/Golos Text
 загружаются локально; отказ шрифта оставляет системный fallback.
@@ -95,6 +112,11 @@ Runtime reduced-motion отменяет эффекты; статический f
 `responsive.js` — шесть ширин, старые записи, клавиатура и print CSS;
 `catalog-matrix.js` — все 15 сочетаний; `palette.js` — чтение токенов и canvas.
 Снимки и выгрузки браузерных проверок игнорируются Git.
+
+Сценарии проверяются отдельно: scenarios-ui.js — CRUD/quality/export/repair;
+scenarios.js — реальный custom API, восстановление/late request/catalog/две вкладки;
+scenarios-mobile.js — actual touch, две категории с разными радиусами, viewport/200%/motion.
+Node built-in runner проверяет scenario-storage.test.js без DOM/сети.
 
 `redesign.js` проверяет новые состояния/motion, живой Material progress,
 runtime reduced-motion, fallback без bundle, контраст, targets, 200% текста,

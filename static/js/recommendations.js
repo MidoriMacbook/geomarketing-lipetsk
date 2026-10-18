@@ -4,6 +4,7 @@ import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker } from './map.js';
 import { updateReportAvailability } from './report.js';
 import { countTo, counterValue, resetCounters } from './counters.js';
+import { qualityBlock, explanationBlock } from './data-quality.js';
 
 let renderedAnalysisId = null;
 
@@ -71,7 +72,7 @@ export function showResult(data) {
     osm.setAttribute('aria-label', `Открыть место ${rec.rank} в OpenStreetMap`);
     if (!index)osm.id = 'osm-link';
     actions.append(save, copy, osm);
-    card.append(heading, coordinate, metrics, node('p', 'nearest', `Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`), actions);
+    card.append(heading, coordinate, metrics, node('p', 'nearest', `Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`), actions, explanationBlock(rec));
     $('recommendation-list').append(card);
     countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: '%', from: previous[0] });
     countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ', from: previous[1] });
@@ -93,5 +94,6 @@ export function showResult(data) {
   $('data-warning').hidden = !warning;
   if (warning && newAnalysis) reveal($('data-warning'), 'notice');
   $('data-section').hidden = false;
+  $('data-quality')?.replaceChildren(qualityBlock(data));
   updateReportAvailability();
 }

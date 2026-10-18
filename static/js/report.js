@@ -1,6 +1,7 @@
 import { state } from './state.js';
 import { $, fmt, coords, distance, LIMITATIONS, node, dateText, sourceText, dataDate } from './ui.js';
 import { comparisonRows } from './saved-places.js';
+import { qualitySummary, qualityBlock, explanationBlock } from './data-quality.js';
 
 
 export function csvCell(value) {
@@ -10,9 +11,10 @@ export function csvCell(value) {
 }
 
 export function exportCSV() {
-  const rows = [['Категория', 'Район', 'Место', 'Широта', 'Долгота', 'Жителей (оценка)', 'Радиус, м', 'Конкурентов в радиусе', 'Ближайший конкурент, м', 'Относительная оценка (только внутри расчёта)', 'ID расчёта', 'Коэффициент конкуренции', 'Дата данных', 'Дата сохранения', 'Источник', 'Предупреждения', 'Ограничения модели'], ...state.saved.map(i => {
+  const rows = [['Категория', 'Район', 'Место', 'Широта', 'Долгота', 'Жителей (оценка)', 'Радиус, м', 'Конкурентов в радиусе', 'Ближайший конкурент, м', 'Относительная оценка (только внутри расчёта)', 'ID расчёта', 'Коэффициент конкуренции', 'Дата данных', 'Дата сохранения', 'Источник', 'Предупреждения', 'Ограничения модели', 'Свежесть данных', 'Пригодность данных', 'Причины ограничений'], ...state.saved.map(i => {
     const r = i.recommendation;
-    return [i.business_name, i.district_name, r.rank, r.lat, r.lng, r.residents_in_radius, r.radius_m, r.competitors_in_radius, r.nearest_competitor_m, r.score, i.analysis_id, i.parameters.alpha, i.data_date || 'Не указана', i.saved_at, sourceText(i.source), i.warning, LIMITATIONS];
+    const quality=qualitySummary(i);
+    return [i.business_name, i.district_name, r.rank, r.lat, r.lng, r.residents_in_radius, r.radius_m, r.competitors_in_radius, r.nearest_competitor_m, r.score, i.analysis_id, i.parameters.alpha, i.data_date || 'Не указана', i.saved_at, sourceText(i.source), i.warning, LIMITATIONS,quality.freshness,quality.completeness,quality.reasons.join(' | ')];
   })];
   const blob = new Blob(['\uFEFF', rows.map(row => row.map(csvCell).join(';')).join('\r\n')], {
     type: 'text/csv;charset=utf-8'
@@ -38,6 +40,7 @@ export function reportPlace(rec, context) {
     node('p', '', `Источник: ${sourceText(context.source)}. Дата данных: ${dateText(context.data_date)}${context.saved_at ? `. Сохранено: ${dateText(context.saved_at)}` : ''}.`)
   );
   if (context.warning) block.append(node('p', '', `Предупреждение: ${context.warning}`));
+  block.append(qualityBlock(context),explanationBlock(rec));
   return block;
 }
 

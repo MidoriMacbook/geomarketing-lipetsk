@@ -7,6 +7,9 @@ export const state = {
   requestVersion: 0,
   saved: [],
   comparison: new Set(),
+  scenarios: [],
+  scenarioComparison: new Set(),
+  openedScenarioId: null,
   repairStorageRaw: null,
   currentRequestKey: null,
   catalogRequest: null

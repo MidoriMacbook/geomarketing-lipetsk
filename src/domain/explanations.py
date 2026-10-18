@@ -10,7 +10,7 @@ def explain_recommendations(houses, competitors, center, half, parameters,
                             recommendations, centroids):
     """Return explanations in recommendation order without mutating model outputs.
 
-    Inputs are validated model data. ``half`` is the loaded bounding box half-size;
+    Inputs are validated model data. ``half`` is the loaded area's circular radius;
     the category's R describes demand reach, independently of that loaded area.
     """
     radius, alpha = parameters['R'], parameters['alpha']
@@ -43,8 +43,8 @@ def explain_recommendations(houses, competitors, center, half, parameters,
                  'плотность относится только к учтённым домам']
         if not len(competitors):
             risks.append('В выборке OSM конкуренты не отмечены; это не означает отсутствия конкуренции')
-        # Houses are fetched using a bounding box, while candidates occupy its inscribed circle.
-        if bool(np.any(np.abs(xy) + radius > half)):
+        # The loader clips houses to the area circle after fetching its bounding box.
+        if float(np.linalg.norm(xy)) + radius > half:
             risks.append('Круг доступности пересекает границу загруженной области: '
                          'спрос у границы может быть занижен')
         if multiplier > 4:

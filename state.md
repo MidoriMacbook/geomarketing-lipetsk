@@ -6,14 +6,17 @@
 семь skills и документы проекта; изучены текущие domain/service/API и frontend flows.
 Продуктовый аудит/roadmap/конкретный design записаны в
 docs/specs/2026-10-18-scenarios-and-explainability.md. PROJECT_ANALYSIS.md обновлён.
-Ветка подготовки: codex/scenarios-and-explainability. Базовые51unittest OK;
-diff-check и self-review spec без незаполненных разделов пройдены.
-Дизайн ещё не согласован: обязательный review gate brainstorming перед реализацией.
-Следующий шаг после ответа пользователя: writing-plans → исполнимый TDD-план,
-затем выполнение трёх связанных частей (снимки, объяснения/качество, сравнение).
-Production code/tests/публичный Render в этой подготовке не менялись.
-Предложены6локальных сценариев/fullsnapshot/отдельный scenarios.v1,
-аддитивные API поля, без аккаунтов и новых внешних API. Это пока проект решения.
+Ветка codex/scenarios-and-explainability; дизайн и реализация явно согласованы.
+План docs/plans/2026-10-18-scenarios-and-explainability.md Tasks1–4 реализованы.
+67Python tests/62Node storage GREEN; root scenario/UI/mobile/legacy workspace+redesign
+GREEN, pageErrors[], validator70/14JSsyntax/diff/no stubs. Backend/storage review PASS.
+Исправлены2Important review RED→GREEN: circular boundary и настоящий encoded custom API key.
+Осталось whole-branch UI/integration review, CI/Render/public, audit/cleanup.
+Runtime Render пока прежний5a85c3f. Feature commits b56de83/c04c9ff/0102978.
+6локальных fullsnapshot/scenarios.v1, additive API, без аккаунтов/внешних API.
+Roothelper37612 serve.py на127.0.0.1:5085; браузер geomarketing-scenarios.
+После usersteer старыеhelper19928/23748 иbrowser1664 исчезли, новыйbrowser23632.
+Доказательства docs/verification/2026-10-18-scenarios-and-explainability.md.
 Важные риски: late-response/catalog race при restore; quota/corrupt/two-tab;
 ложная свежесть архива/score между расчётами/halo competitors. Решения и тесты в spec.
 Сохранить все исходные id/testid/ARIA/saved.v1/CSV/print/Leaflet/модель/5типов/3района.

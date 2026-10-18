@@ -60,6 +60,20 @@ class ExplanationTests(unittest.TestCase):
         zero = np.array([[*self.center, 0]])
         self.assertEqual(self.explain(houses=zero)[0]['demand_level'], 'unknown')
 
+    def test_demand_exact_ten_percent_boundaries_remain_similar(self):
+        # Separated houses with R=1 make cross-contributions underflow to exact zero,
+        # so the two demands equal their resident weights and their mean is exactly 100.
+        points = [self.point(0), self.point(100)]
+        for weights, expected in [((90, 110), ['similar', 'similar']),
+                                  ((89, 111), ['lower', 'higher']),
+                                  ((91, 109), ['similar', 'similar'])]:
+            with self.subTest(weights=weights):
+                houses = np.array([[point['lat'], point['lng'], residents]
+                                   for point, residents in zip(points, weights)])
+                results = self.explain(houses=houses, points=points, radius=1)
+                self.assertEqual([item['metrics']['model_demand'] for item in results], list(weights))
+                self.assertEqual([item['demand_level'] for item in results], expected)
+
     def test_no_rivals_no_centers_and_zero_demand_are_finite(self):
         result = self.explain(houses=np.empty((0, 3)))[0]
         self.assertIsNone(result['metrics']['nearest_demand_center_m'])
@@ -73,6 +87,10 @@ class ExplanationTests(unittest.TestCase):
         results = self.explain(points=[self.point(0), self.point(950)], radius=100)
         self.assertFalse(any('границ' in text for text in results[0]['risks']))
         self.assertTrue(any('границ' in text for text in results[1]['risks']))
+
+    def test_diagonal_demand_circle_crosses_loaded_circle_even_inside_bbox(self):
+        result = self.explain(points=[self.point(600, 600)], radius=350, half=1000)[0]
+        self.assertTrue(any('границ' in text for text in result['risks']))
 
     def test_inputs_and_old_fields_are_unchanged(self):
         points = [{**self.point(0), 'rank': 1, 'score': 0.9}]

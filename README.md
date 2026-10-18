@@ -9,6 +9,10 @@
 - Три готовых района либо центр и радиус на карте.
 - Связанные карточки и маркеры, KPI и переключение слоёв.
 - До 12 сохранённых мест в браузере, сравнение до трёх, CSV и печатный отчёт.
+- До 6 полных сценариев: имя и заметка, карта/настройки, повторное открытие,
+  дублирование, изменение, удаление и сравнение двух исследований.
+- Объяснения спроса и конкуренции, даты и признаки качества исходных данных;
+  отдельные CSV и печатное сравнение сценариев без общего рейтинга.
 - Локальный Leaflet и JSON-снимки районов; обработка отказа API, тайлов и хранилища.
 - Тёмный сливовый интерфейс с розовыми акцентами, плавным появлением блоков и счётчиками чисел.
 
@@ -53,7 +57,7 @@ pnpm run check:material
 
 `app.py` собирает Flask-приложение, `serve.py` запускает Waitress.
 Внутренние модули: `src/routes → services → domain/utils`, настройки —
-`src/config.py`. Клиент — десять ES-модулей и семь CSS-файлов; код приложения
+`src/config.py`. Клиент — четырнадцать ES-модулей и восемь CSS-файлов; код приложения
 не требует сборщика, отдельный Material vendor собирается Rollup и хранится в Git.
 Корневые `osm.py` и `businesses.py` сохраняют старые публичные импорты.
 
@@ -86,9 +90,10 @@ node --check static/js/report.js
 node --check static/js/ui.js
 node --check static/js/counters.js
 node --check static/js/choices.js
+node --test tests/unit/scenario-storage.test.js
 ```
 
-51 серверный тест работает без сети. GitHub Actions запускает Python-тесты,
+Серверные тесты работают без сети. GitHub Actions запускает Python-тесты,
 компиляцию, структурный валидатор, синтаксические проверки JS и воспроизводимую
 сборку Material на Linux (Node24, pnpm11.25.0).
 
@@ -101,6 +106,9 @@ playwright-cli -s=geomarket run-code --filename=tests/browser/workspace.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/responsive.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/catalog-matrix.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/choice-menus.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios-ui.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios-mobile.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/palette.js
 playwright-cli -s=geomarket close
 ```
@@ -120,3 +128,29 @@ responsive проверяет 360/390/768/1024/1280/1440 px, прежние со
 200% текста, reduced-motion и нативный fallback в отдельных чистых контекстах.
 Старые сценарии с routes/storage/instrumentation запускайте в свежем сеансе,
 чтобы перехваты и состояние предыдущего сценария не влияли на результаты.
+
+## Сценарии и интерпретация
+
+«Сохранить сценарий» фиксирует весь текущий расчёт, выбранное место, порог зон
+и слои. «Открыть» восстанавливает эту копию без запроса OSM; «Найти места»
+создаёт новый расчёт и не перезаписывает исследование. Название и заметку можно
+изменять отдельно. Отметьте два сценария для сравнения, CSV или печати.
+
+Сценарии используют ключ `geomarketing.scenarios.v1` с `schema_version:1`,
+сохранённые места — прежний `geomarketing.saved.v1`. Миграции и аккаунтов нет.
+Лимит:6сценариев,250000символов JSON на запись и1250000на список. Квота браузера
+может быть меньше; ошибка записи сохраняет прежние данные. Повреждённый или
+неизвестный формат не перезаписывается: доступны исходный JSON и подтверждаемая
+очистка только сценариев. Без Web Locks доступны чтение/экспорт, запись отключена.
+CSV сохраняет сведения, но не является импортируемой резервной копией карты.
+
+`GET /api/calculate` дополнен `calculated_at`, `analysis_context`, `data_quality`
+и `explanation` у каждой рекомендации/`best`. Старые поля/маршруты/модель прежние.
+Пояснение показывает те же ядра спроса и штраф конкуренции, ближайший центр и
+ограничения у края области. Это не прогноз прибыли. Качество сообщает источник,
+возраст двух наборов и причины ограничений, без «процента достоверности».
+Старые сохранения без новых данных выводят «не оценено».
+
+Roadmap и контракт: [сценарии и объяснимость](docs/specs/2026-10-18-scenarios-and-explainability.md).
+Далее — конфигурируемые районы/проверенные категории, затем полевые заметки и
+экономические допущения. Новые категории и внешние API в этот пакет не входят.
