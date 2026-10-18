@@ -35,38 +35,47 @@ tests/integration/test_workspace.py. Existing scripts/import_osm_competitors.py
 можно использовать без изменения его публичного extract_competitors.
 Consumes: estimate_residents(tags,footprint), extract_competitors(source,business,area).
 Produces: BUSINESS_CATALOG +5 записей из spec;
-generate_snapshots(source: Path, area: dict, output_dir: Path, businesses=None) -> list[Path],
+generate_snapshots(source: Path, area: dict, output_dir: Path, businesses=None,
+*, fetched_at: float) -> list[Path],
 extract_houses(source: Path, area: dict) -> list[list[number]], CLI
 python scripts/import_osm_area.py --district KEY --source FILE --output-dir DIR
-[--business KEY ...], где без business создаются дома и все категории.
+[--business KEY ...] --fetched-at UNIX_SECONDS. None создаёт дома и все категории;
+переданный список создаёт только указанные конкурентные снимки, без домов.
 Security flag: security (validation of imported data, no runtime network changes).
 Does NOT cover: network download or choosing geographic centers; owner geography.
 
-- [ ] RED catalog exact ten names/R/alpha/tags; importer valid houses/circle/footprint,
+- [x] RED catalog exact ten names/R/alpha/tags; importer valid houses/circle/footprint,
   missing nodes/relation/bounds, empty competitors only from complete extract,
-  radius+900 coverage; no output changes when validation fails.
-- [ ] Implement catalog and importer using existing resident/competitor rules,
+  radius+900 coverage; no output changes when validation fails. Reject error/remark,
+  duplicate primitive(type,id), invalid unmatched node coordinates, nonfinite bounds,
+  malformed XML. Limits:64MiB,250000primitives,relation depth16; ignore unrelated
+  route/admin relation closure. Before legacy extraction, bound total expanded
+  geometry work at1000000node visits, counting repeated members; reject a small
+  acyclic exponentially repeated relation fixture. Validate all selected payloads
+  before any replacement.
+- [x] Implement catalog and importer using existing resident/competitor rules,
   complete-source validation and atomic file replacement; preserve old script tests.
-- [ ] GREEN: .venv/Scripts/python.exe -m unittest tests.integration.test_import_area
+- [x] GREEN: .venv/Scripts/python.exe -m unittest tests.integration.test_import_area
   tests.integration.test_importer tests.integration.test_workspace -v.
-- [ ] Commit only owned files; report RED/GREEN and exact public signatures.
+- [x] Commit only owned files; report RED/GREEN and exact public signatures.
 
 ## Task 2 — Цвета и интерфейс расширенного каталога
 
 Owner: worker frontend. Files: static/css/tokens.css, static/js/map.js,
 static/js/app.js (only model-parameter copy), static/index.html (area hint),
-tests/browser/{map-harmony,choice-menus,catalog-matrix,workspace}.js.
+tests/browser/{map-harmony,choice-menus,catalog-matrix,workspace}.js;
+static/js/choices.js — необходимая коррекция дробного округления последней строки.
 Consumes: existing CSS tokens, API catalog arrays, current menu contract.
 Produces: #91A5B8 house token/.78 circle opacity, matching legend,
 copy explaining search circles and heuristic parameters, catalog-size-aware tests.
 Security flag: none. Does NOT cover: changing map scoring, competitors, saved data.
 
-- [ ] RED map-harmony approved new color/opacity, legend matches, actual canvas
+- [x] RED map-harmony approved new color/opacity, legend matches, actual canvas
   options and dense viewport geometry; test must fail on old palette.
-- [ ] Implement token/opacity/copy and replace fixed5/15 menu assertions with
+- [x] Implement token/opacity/copy and replace fixed5/15 menu assertions with
   catalog-derived counts/last item while retaining keyboard/touch expectations.
-- [ ] GREEN on root QA server5085 after restart, mobile390/768/1440/200%, reduced motion.
-- [ ] Commit only owned files; root owns server lifecycle and final screenshots.
+- [x] GREEN on root QA server5085 after restart, mobile390/768/1440/200%, reduced motion.
+- [x] Commit only owned files; root owns server lifecycle and final screenshots.
 
 ## Task 3 — Проверенные области и снимки данных
 
@@ -80,26 +89,32 @@ provenance source/OSM object or address/coordinate/coverage/time/raw hash.
 Security flag: security (data provenance/complete coverage). Does NOT cover: build-time
 network dependency, synthetic residents, geocoder-first-hit guessing.
 
-- [ ] Research centers via primary OSM/address sources; record rejection of factory/shop
+- [x] Research centers via primary OSM/address sources; record rejection of factory/shop
   hits. Download complete OSM API0.6 bbox extracts sequentially with bounded requests.
-- [ ] RED exact10districts and110snapshots, original18hashes preserved, valid circles,
+  Resolve missing geometry of matching competitors using supplemental /full and
+  bounded recursive acquisition; merge identical primitives, reject conflicts/cycles.
+  Save base/supplemental URL/hash/acquisition timestamp and bind each output filename
+  to area/cache key; fetched_at comes from recorded HTTP acquisition, not assumed mtime.
+- [x] RED exact10districts and110snapshots, original18hashes preserved, valid circles,
   geo coverage/provenance/halo and source dates; no network in tests.
-- [ ] Add presets and import snapshots. For old three districts, import only the five
+- [x] Add presets and import snapshots. For old three districts, import only the five
   new businesses; do not regenerate original houses or original competitor records.
-- [ ] GREEN: .venv/Scripts/python.exe -m unittest tests.integration.test_catalog_data
+- [x] GREEN: .venv/Scripts/python.exe -m unittest tests.integration.test_catalog_data
   tests.integration.test_api -v, including100offline calculations.
-- [ ] Commit owned files and report sources, counts and any failed acquisition.
+- [x] Commit owned files and report sources, counts and any failed acquisition.
 
 ## Task 4 — Интеграция, review и выпуск
 
 Owner: root. Files: docs/verification/2026-10-18-catalog-and-map-colors.md,
-README.md, CHANGELOG.md, DEPLOYMENT.md, state.md/session-log.md and this plan.
+README.md, CHANGELOG.md, DEPLOYMENT.md, state.md/session-log.md, data/README.md,
+docs/architecture/*.md, docs/design/design-system.md,
+tests/browser/catalog-expansion.js and this plan.
 Consumes: Tasks1–3 and committed diffs. Produces: verified Git main and Render release.
 Security flag: none. Does NOT cover: physical phones/new browser engines/OSM completeness.
 
-- [ ] Full Python and Node tests, validator, JS syntax, unchanged Material build,
+- [x] Full Python and Node tests, validator, JS syntax, unchanged Material build,
   diff/stub scan; all100API pairs offline.
-- [ ] Browser palette/menus/catalog100, KPI auto-change, archive newtype/newdistrict,
+- [x] Browser palette/menus/catalog100, KPI auto-change, archive newtype/newdistrict,
   CSV/print, original scenario/storage regressions, mobile and screenshots.
 - [ ] Independent task review (spec + quality) and most-capable whole-branch review
   with this Review Focus and diff package; resolve findings RED→GREEN.
