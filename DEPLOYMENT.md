@@ -9,14 +9,16 @@
 - Запуск: `python serve.py`, Waitress слушает порт из `PORT`.
 - Проверка приложения: `GET /healthz` → HTTP 200, `{"status":"ok"}`.
 
-Последняя публикация: 18 октября 2026, runtime `0be19ea`,
-deploy `dep-dbabhtdg1s2s73b5c9h0` live с15:19:06 по Москве, trigger `new_commit`.
-Source/main CI success: run39126577310/run39126700421 (67Python/62Node, Material rebuild).
-При выборе готового района цифры, карта и рекомендации рассчитываются автоматически.
-Public QA: все три района, точные KPI/API, один запрос на смену, 390 px/count-up,
-pageErrors[]. Все25статических файлов совпали с Git runtime.
-Подробности: docs/verification/2026-10-18-district-auto.md.
-Предыдущий пакет: docs/verification/2026-10-18-scenarios-and-explainability.md.
+Последняя публикация: 19 октября 2026, runtime `7d48753`,
+deploy `dep-dbapg461egvs73dum4s0` live с07:11:13 по Москве, trigger `new_commit`.
+Source/main CI success: run39197703595/run39198088994 (84Python/62Node, Material rebuild).
+Десять областей и десять категорий,110реальных OSM-снимков; дома серо-синие,
+конкуренты ягодные. Все100сочетаний проверены offline и в локальном браузере.
+Public QA:10районов/5новыхтипов с точными Git-данными, новые сценарии/CSV/печать,
+10пунктов меню/actualtouch/200%, карта390/768/1440, pageErrors[].
+Все25статических файлов совпали с Git runtime.
+Подробности: docs/verification/2026-10-18-catalog-and-map-colors.md.
+Предыдущий пакет: docs/verification/2026-10-18-district-auto.md.
 Итоговая запись аудита меняет только документы; runtime повторно не собирается.
 
 Сервис создан через подключение Render; исходная конфигурация для повторного

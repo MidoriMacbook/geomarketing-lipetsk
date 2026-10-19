@@ -116,8 +116,8 @@ Security flag: none. Does NOT cover: physical phones/new browser engines/OSM com
   diff/stub scan; all100API pairs offline.
 - [x] Browser palette/menus/catalog100, KPI auto-change, archive newtype/newdistrict,
   CSV/print, original scenario/storage regressions, mobile and screenshots.
-- [ ] Independent task review (spec + quality) and most-capable whole-branch review
+- [x] Independent task review (spec + quality) and most-capable whole-branch review
   with this Review Focus and diff package; resolve findings RED→GREEN.
-- [ ] SourceCI success → main fast-forward/push → automatic Render live.
-- [ ] Public new areas/categories/KPIs/map/archive/mobile and static SHA256 match;
+- [x] SourceCI success → main fast-forward/push → automatic Render live.
+- [x] Public new areas/categories/KPIs/map/archive/mobile and static SHA256 match;
   audit docs [skip render], CI and clean checkout; close only own QA processes.
