@@ -1,20 +1,25 @@
 # Состояние работы
 
 ## Current Goal
-Подготовка нового пакета «каталог и цвета карты», branch codex/catalog-and-map-colors.
-Пользователь просит менее насыщенные синие дома и больше областей/типов бизнеса.
-Проект spec docs/specs/2026-10-18-catalog-and-map-colors.md, commit02bf554:
-серо-синий house#91A5B8/opacity.78, сохранить rose competitors; 10областей/10типов,
-все100пар с настоящими OSM-снимками и покрытием halo; старый scoring не менять.
-Список: +Победа/Европейский/Сокол/НЛМК/Тракторный/Матырский/Сырский Рудник;
-+fast_food/florist/pet/fitness/dentist. Brainstorming требует явное согласование spec;
-async-вопрос отправлен, ответа ещё нет, production-код НЕ менялся.
-Разведка docs/research/2026-10-18-catalog-data-discovery.md: обаOverpass failed,
-Nominatim доступен. Найдены OSM place Европейский/Тракторный/Матырский; первые
-результаты НЛМК=завод и Победа=магазин нельзя брать как центр жилья. Центры остальных
-ещё проверить; нельзя подставлять вымышленные координаты или нулевых конкурентов.
-После согласования writing-plans → TDD, снимки/матрица100, browser/review/CI/main/Render.
-Предыдущий публичный runtime всё ещё0be19ea, auditmainc8b09a2, auditCI39126943501 success.
+Пакет «каталог и цвета карты» реализован в codex/catalog-and-map-colors.
+Пользователь явно согласовал spec18октября и разрешил реализацию/публикацию;
+19октября попросил продолжить. Повторного согласования не требуется.
+Source3ce97ff70c702a299d832662d803e156443fded1, CI39157705140 success.
+10областей/10типов, house#91A5B8/.78, competitorpalette сохранена,110OSMснимков,
+92новых/18старыхbyte-preserved. Provenance всех110выходов; новые92полностью
+воспроизведены независимым review по10rawXML/11HTTPparts,1900mcoverage/7жилыхцентров.
+Task1importer4d20527 и Task3data4612732 SpecPASS/SecurityQualityAPPROVED.
+Task2d41bd10PASS; дополнительный945c535 исправил fractional clipping1px в choices.js.
+Fullverification84Python/62Node/70validator/14JS/Materialblobunchanged GREEN;
+browser100matrix/10menusactualtouch200%/workspace19/newscenariorestoreCSVprint/
+scenarios11/legacy/district-auto7 GREEN, pageErrors[]. Screenshotsdense738houses32comp
+1440/768/390/200% просмотрены. Подробности docs/verification/2026-10-18-catalog-and-map-colors.md.
+План docs/plans/2026-10-18-catalog-and-map-colors.md Task1–3 и первые2шагаTask4 закрыты.
+На паузе взаимодействия finalwholebranchreviewпрервано; подтверждена лишь minor
+docinconsistency (.95встаромабзацеdesign-system), исправляется перед новымreview.
+Осталось finalreviewmostcapable → CIlatest → mainFF/push → Renderlive → publicQA/hash →
+auditdocs/CI/cleanup. Исторические rawmetadata18файлов недоступны, явно задокументированы.
+Текущий публичный runtime пока0be19ea, auditmainc8b09a2. Новая версия ещё не в main.
 
 Предыдущее завершённое исправление:
 Завершено исправление пропавших KPI при выборе другого готового района.
