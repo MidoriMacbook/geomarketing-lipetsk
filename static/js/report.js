@@ -40,7 +40,7 @@ export function reportPlace(rec, context) {
     node('p', '', `Источник: ${sourceText(context.source)}. Дата данных: ${dateText(context.data_date)}${context.saved_at ? `. Сохранено: ${dateText(context.saved_at)}` : ''}.`)
   );
   if (context.warning) block.append(node('p', '', `Предупреждение: ${context.warning}`));
-  block.append(qualityBlock(context),explanationBlock(rec));
+  block.append(qualityBlock(context),explanationBlock(rec, { expanded: true }));
   return block;
 }
 

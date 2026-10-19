@@ -13,7 +13,7 @@ const timestamp = value => value ? new Date(value).toLocaleString('ru-RU') : 'Н
 const recText = rec => rec ? `Место ${rec.rank}: ${coords(rec)}; ≈ ${fmt(rec.residents_in_radius)} жителей в ${fmt(rec.radius_m)} м; ${fmt(rec.competitors_in_radius)} конкурентов; ближайший: ${distance(rec.nearest_competitor_m)}` : 'Не оценено';
 
 function explainError(error) {
-  return ({ invalid: 'Сохранённые сценарии повреждены. Исходные данные сохранены; скачайте JSON перед очисткой.', unsupported: 'Версия сохранённых сценариев не поддерживается. Исходные данные сохранены; доступна выгрузка JSON.', unavailable: 'Хранилище браузера недоступно или переполнено. Предыдущие сценарии сохранены. Освободите место либо скачайте CSV.', no_locks: 'Этот браузер не поддерживает безопасную запись сценариев. Чтение и экспорт доступны; для изменений используйте браузер с Web Locks.', limit: `Можно сохранить до ${SCENARIO_LIMIT} сценариев. Удалите ненужный или скачайте CSV.`, size: 'Снимок превышает допустимый размер. Сохраните нужные сведения в CSV или выберите меньшую область.', conflict: 'Сценарии изменились в другой вкладке. Список обновлён; повторите действие.' })[error.code] || 'Не удалось сохранить изменение. Предыдущие сценарии сохранены.';
+  return ({ invalid: 'Сохранённые исследования повреждены. Исходные данные сохранены; скачайте JSON перед очисткой.', unsupported: 'Версия сохранённых исследований не поддерживается. Исходные данные сохранены; доступна выгрузка JSON.', unavailable: 'Хранилище браузера недоступно или переполнено. Предыдущие исследования сохранены. Освободите место либо скачайте CSV.', no_locks: 'Этот браузер не поддерживает безопасную запись исследований. Чтение и экспорт доступны; для изменений используйте браузер с Web Locks.', limit: `Можно сохранить до ${SCENARIO_LIMIT} исследований. Удалите ненужный или скачайте CSV.`, size: 'Снимок превышает допустимый размер. Сохраните нужные сведения в CSV или выберите меньшую область.', conflict: 'Исследования изменились в другой вкладке. Список обновлён; повторите действие.' })[error.code] || 'Не удалось сохранить изменение. Предыдущие исследования сохранены.';
 }
 function accept(items) {
   state.scenarios = items;
@@ -49,7 +49,7 @@ function editDialog(item = null) {
     catch { draft = null; }
     if (!draft) { status('Сначала выполните расчёт для выбранной области.'); return; }
   }
-  $('scenario-dialog-title').textContent = item ? 'Изменить сценарий' : 'Сохранить сценарий';
+  $('scenario-dialog-title').textContent = item ? 'Изменить исследование' : 'Сохранить исследование';
   const analysis = item?.analysis || draft.analysis;
   $('scenario-form-context').textContent = `${analysis.district_name} · ${analysis.business_name}. Снимок включает карту, рекомендации и настройки.`;
   $('scenario-name').value = item?.name || `${analysis.district_name} · ${analysis.business_name} · ${new Date().toLocaleDateString('ru-RU')}`.slice(0, 80);
@@ -72,7 +72,7 @@ async function submit(event) {
     if (!id) return [...latest, record];
     if (!latest.some(item => item.id === id)) throw Object.assign(new Error('Scenario was deleted'), { code: 'conflict' });
     return latest.map(item => item.id === id ? { ...item, name, note, updated_at: now } : item);
-  }, id ? 'Сценарий изменён.' : 'Сценарий сохранён в этом браузере.');
+  }, id ? 'Исследование изменено.' : 'Исследование сохранено в этом браузере.');
   if (ok) closeDialog($('scenario-dialog'));
   else { $('scenario-form-error').textContent = $('scenario-status').textContent; $('scenario-form-error').hidden = false; }
 }
@@ -80,7 +80,7 @@ async function submit(event) {
 function toggleCompare(item) {
   if (state.scenarioComparison.has(item.id)) state.scenarioComparison.delete(item.id);
   else if (state.scenarioComparison.size < 2) state.scenarioComparison.add(item.id);
-  else { status('Для сравнения можно выбрать ровно два сценария. Снимите один из выбранных.'); return; }
+  else { status('Для сравнения можно выбрать ровно два исследования. Снимите один из выбранных.'); return; }
   const control = document.querySelector(`[data-scenario-id="${item.id}"] [data-testid="scenario-compare"]`);
   control?.setAttribute('aria-pressed', String(state.scenarioComparison.has(item.id)));
   control?.closest('article')?.classList.toggle('is-compared', state.scenarioComparison.has(item.id));
@@ -90,8 +90,8 @@ function renderComparison() {
   const container = $('scenario-comparison'), items = selected();
   container.replaceChildren(); container.hidden = !items.length;
   if (!items.length) return;
-  container.append(node('h3', '', 'Сравнение сценариев'));
-  if (items.length === 1) { container.append(node('p', 'notice', 'Выберите второй сценарий для сравнения.')); return; }
+  container.append(node('h3', '', 'Сравнение исследований'));
+  if (items.length === 1) { container.append(node('p', 'notice', 'Выберите второе исследование для сравнения.')); return; }
   const [left, right] = items, a = left.analysis, b = right.analysis;
   const sameRadius = a.parameters.radius_m === b.parameters.radius_m;
   const comparable = sameRadius && left.selection.business === right.selection.business && left.selection.area_radius_m === right.selection.area_radius_m;
@@ -100,7 +100,7 @@ function renderComparison() {
     const ar = a.recommendations[0], br = b.recommendations[0];
     if (ar && br) container.append(node('p', 'hint', `Разница населения в одинаковом радиусе лучших точек: ${fmt(Math.abs(ar.residents_in_radius - br.residents_in_radius))} жителей (оценка). Разница числа отмеченных конкурентов: ${fmt(Math.abs(ar.competitors_in_radius - br.competitors_in_radius))}. Это различия показателей, не рейтинг.`));
   }
-  const scroll = node('div', 'table-scroll'); scroll.tabIndex = 0; scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-label', 'Таблица сравнения сценариев, доступна горизонтальная прокрутка');
+  const scroll = node('div', 'table-scroll'); scroll.tabIndex = 0; scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-label', 'Таблица сравнения исследований, доступна горизонтальная прокрутка');
   const table = node('table'), head = node('thead'), tr = node('tr');
   ['Показатель', ...items.map(item => item.name)].forEach(text => { const th = node('th', '', text); th.scope = 'col'; tr.append(th); });
   head.append(tr); table.append(head);
@@ -126,6 +126,9 @@ function renderComparison() {
 }
 
 function render() {
+  const visible = !!state.scenarios.length || storageProblem;
+  $('scenarios-section').hidden = !visible;
+  document.querySelectorAll('a[href="#scenarios-section"]').forEach(link => { link.hidden = !visible; });
   cancelRevealsWithin($('scenario-list'));
   $('scenario-list').replaceChildren();
   $('scenario-count').textContent = `${state.scenarios.length} / ${SCENARIO_LIMIT}`;
@@ -143,7 +146,7 @@ function render() {
       actions.append(control); return control;
     };
     add('Открыть', 'scenario-open', async () => {
-      try { await callbacks.restoreScenario(item); status(`Открыт сценарий «${item.name}». Снимок восстановлен без нового запроса геоданных.`); }
+      try { await callbacks.restoreScenario(item); status(`Открыто исследование «${item.name}». Снимок восстановлен без нового запроса геоданных.`); }
       catch { status('Этот район или категория недоступны в текущем каталоге. Снимок сохранён: его можно читать, сравнивать и экспортировать. Текущая карта не изменена.'); }
     });
     add('Изменить', 'scenario-edit', () => editDialog(item), true);
@@ -151,7 +154,7 @@ function render() {
       const original = latest.find(row => row.id === item.id);
       if (!original) throw Object.assign(new Error('Deleted'), { code: 'conflict' });
       return [...latest, duplicateScenario(original)];
-    }, 'Копия сценария сохранена.'), true);
+    }, 'Копия исследования сохранена.'), true);
     const compare = add('Сравнить', 'scenario-compare', () => toggleCompare(item));
     compare.setAttribute('aria-pressed', String(state.scenarioComparison.has(item.id)));
     add('Удалить', 'scenario-delete', () => { deletingId = item.id; $('scenario-delete-name').textContent = item.name; openDialog($('scenario-delete-dialog')); $('scenario-delete-cancel').focus(); }, true);
@@ -163,16 +166,16 @@ function render() {
 export function updateScenarioAvailability() {
   if (!$('scenario-save')) return;
   $('scenario-save').disabled = pending || !writable() || !state.current;
-  $('scenario-save').title = !navigator.locks?.request ? 'Для записи сценариев требуется браузер с Web Locks.' : '';
+  $('scenario-save').title = !navigator.locks?.request ? 'Для записи исследований требуется браузер с Web Locks.' : '';
   document.querySelectorAll('[data-scenario-mutation]').forEach(control => { control.disabled = pending || !writable(); });
   $('scenario-export').disabled = !state.scenarios.length;
-  $('scenario-export').textContent = selected().length === 2 ? 'Скачать CSV двух сценариев' : 'Скачать CSV всех сценариев';
+  $('scenario-export').textContent = selected().length === 2 ? 'Скачать CSV двух исследований' : 'Скачать CSV всех исследований';
   $('scenario-print').disabled = selected().length !== 2;
   $('scenario-reset').disabled = pending || !navigator.locks?.request;
   $('scenario-reset-confirm').disabled = pending || !navigator.locks?.request;
   const archived = !!state.openedScenarioId && !!state.current;
   $('scenario-snapshot-notice').hidden = !archived;
-  $('scenario-snapshot-notice').textContent = archived ? `Сохранённый расчёт от ${timestamp(state.current.calculated_at)}. Снимок открыт без обновления геоданных. Нажмите «Найти места», чтобы пересчитать; сохранённый сценарий останется прежним.` : '';
+  $('scenario-snapshot-notice').textContent = archived ? `Сохранённый расчёт от ${timestamp(state.current.calculated_at)}. Снимок открыт без обновления геоданных. Нажмите «Найти места», чтобы пересчитать; сохранённое исследование останется прежним.` : '';
 }
 
 export function initScenarios() {
@@ -184,10 +187,11 @@ export function initScenarios() {
   $('scenario-delete-cancel').addEventListener('click', () => closeDialog($('scenario-delete-dialog')));
   $('scenario-delete-confirm').addEventListener('click', async () => {
     const id = deletingId, index = state.scenarios.findIndex(item => item.id === id);
-    await change(latest => latest.filter(item => item.id !== id), 'Сценарий удалён.', () => {
+    await change(latest => latest.filter(item => item.id !== id), 'Исследование удалено.', () => {
       closeDialog($('scenario-delete-dialog'));
       const cards = $('scenario-list').children;
-      (cards[Math.min(index, cards.length - 1)] || $('scenarios-title')).focus();
+      const target = cards[Math.min(index, cards.length - 1)] || $('scenario-save');
+      requestAnimationFrame(() => target.focus());
     });
   });
   $('scenario-export').addEventListener('click', () => exportScenariosCSV(selected().length === 2 ? selected() : state.scenarios));
@@ -200,10 +204,10 @@ export function initScenarios() {
   $('scenario-reset').addEventListener('click', () => { openDialog($('scenario-reset-dialog')); $('scenario-reset-cancel').focus(); });
   $('scenario-reset-cancel').addEventListener('click', () => closeDialog($('scenario-reset-dialog')));
   $('scenario-reset-confirm').addEventListener('click', async () => {
-    try { await clearDamagedScenarios(damagedRaw); closeDialog($('scenario-reset-dialog')); status('Повреждённый список сценариев очищен.'); load(); }
+    try { await clearDamagedScenarios(damagedRaw); closeDialog($('scenario-reset-dialog')); status('Повреждённый список исследований очищен.'); load(); }
     catch (error) { closeDialog($('scenario-reset-dialog')); load(); status(explainError(error)); }
   });
-  window.addEventListener('storage', event => { if (event.key === SCENARIO_KEY || event.key === null) { load(); if (!storageProblem) status('Список сценариев обновлён из другой вкладки.'); } });
+  window.addEventListener('storage', event => { if (event.key === SCENARIO_KEY || event.key === null) { load(); if (!storageProblem) status('Список исследований обновлён из другой вкладки.'); } });
   load();
   if (!navigator.locks?.request && !storageProblem) status(explainError({ code: 'no_locks' }));
 }

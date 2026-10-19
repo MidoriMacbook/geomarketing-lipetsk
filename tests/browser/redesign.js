@@ -59,7 +59,7 @@ async page => {
     const status = mode === 'failure' ? 503 : 200;
     if (!sameId || !lastId) lastId = `urban-browser-${++sequence}`;
     const body = mode === 'failure' ? { status: 'error', message: 'Временная ошибка проверки' } : {
-      ...payload, analysis_id: lastId, recommendations: mode === 'empty' ? [] : payload.recommendations,
+      ...payload, district: new URL(route.request().url()).searchParams.get('district'), analysis_id: lastId, recommendations: mode === 'empty' ? [] : payload.recommendations,
       notice: 'Проверьте выбранное место на местности.',
     };
     await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) }).catch(() => {});
@@ -100,6 +100,8 @@ async page => {
   // Entrances now wait until the user can see their content.
   await page.locator('#recommendation-list').scrollIntoViewIfNeeded();
   await page.waitForFunction(() => window.__urbanMotion.filter(item => item.observerVersion === 2 && item.id === 'gm:recommendation').length === document.querySelectorAll('[data-testid="recommendation-card"]').length);
+  await page.locator('#data-details').evaluate(details => { details.open = true; });
+  await page.waitForFunction(() => !document.getAnimations().some(animation => animation.id === 'gm:disclosure'));
   await page.locator('#data-warning').scrollIntoViewIfNeeded();
   await nextFrame();
   const initialTrace = await trace();
@@ -150,6 +152,8 @@ async page => {
   await clearTrace();
   await page.locator('[data-testid="compare-place"]').first().check();
   assert(await page.locator('#comparison').isVisible() && await page.locator('#comparison tbody tr').count() === 1, 'Comparison waits for its animation to become usable');
+  await page.locator('#comparison').scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => window.__urbanMotion.some(item => /comparison/.test(item.id)));
   assert((await trace()).some(item => /comparison/.test(item.id)), 'Comparison opening has no motion');
   await page.locator('[data-testid="compare-place"]').first().uncheck();
   assert(await page.locator('#comparison').isHidden(), 'Comparison close animation delays hidden state');
@@ -199,6 +203,8 @@ async page => {
   await page.locator('#district').selectOption('custom', {force:true});
   assert(await page.locator('#custom-box').isVisible(), 'Custom expansion delays visibility');
   assert(await page.locator('#district').getAttribute('aria-expanded') === 'true', 'Custom expansion lacks ARIA state');
+  await page.locator('#custom-box').scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => window.__urbanMotion.some(item => /custom.*(open|enter|expand)/.test(item.id)));
   assert((await trace()).some(item => /custom.*(open|enter|expand)/.test(item.id)), 'Custom area has no expansion feedback');
   await page.locator('#district').selectOption('eleytsky', {force:true});
   assert(await page.locator('#custom-box').isHidden(), 'Custom collapse delays hidden state');
@@ -228,9 +234,14 @@ async page => {
   const obsolete = holdRequest();
   await page.locator('#run').click(); await obsolete;
   await page.locator('#district').selectOption('center', {force:true});
+  await ready();
+  const centerAnalysisId = await page.evaluate(async () => (await import('/static/js/state.js')).state.current.analysis_id);
   release(); await nextFrame();
   assert(await page.locator('#analysis-progress').isHidden() && await page.locator('#run').isEnabled(), 'Cancelled request left loading active');
-  assert(await page.locator('#result').isHidden(), 'Obsolete result reappeared after a filter change');
+  assert(await page.evaluate(async expected => {
+    const { state } = await import('/static/js/state.js');
+    return state.current.district === 'center' && state.current.analysis_id === expected && new URLSearchParams(state.currentRequestKey).get('district') === 'center';
+  }, centerAnalysisId), 'Obsolete held response replaced the new center analysis');
   await page.locator('#district').selectOption('eleytsky', {force:true});
   await page.locator('#run').click(); await ready();
 
@@ -244,6 +255,7 @@ async page => {
   await clearTrace();
   const reducedRequest = holdRequest();
   await page.locator('#refresh-data').click(); await reducedRequest;
+  await page.locator('#analysis-progress').scrollIntoViewIfNeeded();
   await page.waitForFunction(() => {
     const progress = document.querySelector('#analysis-progress md-linear-progress');
     return progress.indeterminate && progress.shadowRoot?.getAnimations({ subtree: true }).some(animation => animation.playState === 'running');

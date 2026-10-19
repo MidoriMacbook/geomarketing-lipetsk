@@ -1,10 +1,10 @@
 import { state } from './state.js';
 import { $, fmt, coords, distance, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin } from './ui.js';
 import { savePlace, updateSaveButtons } from './saved-places.js';
-import { selectMarker } from './map.js';
+import { selectMarker, hoverPlace } from './map.js';
 import { updateReportAvailability } from './report.js';
 import { countTo, counterValue, resetCounters } from './counters.js';
-import { qualityBlock, explanationBlock } from './data-quality.js';
+import { qualityBlock, qualitySummary, explanationBlock } from './data-quality.js';
 
 let renderedAnalysisId = null;
 
@@ -15,7 +15,6 @@ export function selectPlace(rank, pan = true) {
     const active = +c.dataset.rank === rank;
     c.classList.toggle('selected', active);
     c.querySelector('.place-select').setAttribute('aria-pressed', active);
-    if (active && changed) reveal(c, 'selection', { duration: 'fast' });
   });
   selectMarker(rank, pan, changed);
 }
@@ -40,6 +39,11 @@ export function showResult(data) {
     card.dataset.testid = 'recommendation-card';
     card.dataset.rank = rec.rank;
     card.dataset.counterKey = `${rec.lat}:${rec.lng}:${rec.radius_m}`;
+    card.addEventListener('pointerenter', event => {
+      if (event.pointerType !== 'touch' && matchMedia('(hover: hover) and (pointer: fine)').matches) hoverPlace(rec.rank, true);
+    });
+    card.addEventListener('pointerleave', () => hoverPlace(rec.rank, false));
+    card.addEventListener('pointercancel', () => hoverPlace(rec.rank, false));
     const previous = previousValues.get(card.dataset.counterKey) || [];
     const heading = node('div', 'place-title'), select = button(`Место ${rec.rank}`, 'place-select', () => selectPlace(rec.rank));
     select.setAttribute('aria-pressed', rec.rank === state.selectedRank);
@@ -95,5 +99,12 @@ export function showResult(data) {
   if (warning && newAnalysis) reveal($('data-warning'), 'notice');
   $('data-section').hidden = false;
   $('data-quality')?.replaceChildren(qualityBlock(data));
+  const quality = qualitySummary(data);
+  const summary = `${state.openedScenarioId ? 'Сохранённый расчёт · ' : ''}${quality.source} · ${quality.freshness} · ${quality.completeness}`;
+  if ($('trust-summary')) {
+    $('trust-summary').dataset.resultSummary = summary;
+    $('trust-summary').textContent = summary;
+  }
+  if ($('data-summary')) $('data-summary').textContent = 'Даты, источники и ограничения';
   updateReportAvailability();
 }

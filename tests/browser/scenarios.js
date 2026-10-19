@@ -47,6 +47,7 @@ async original => {
     return native(input,options);
    };
   });
+  await page.locator('#data-details').evaluate(details=>{details.open=true;});
   await page.locator('#refresh-data').click();await page.waitForFunction(()=>typeof window.__releaseScenarioRequest==='function');
   await page.getByTestId('scenario-open').click();await page.evaluate(()=>window.__releaseScenarioRequest());
   await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');

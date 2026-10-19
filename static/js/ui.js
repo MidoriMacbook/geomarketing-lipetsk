@@ -227,6 +227,60 @@ export function setAnalysisState(value, message) {
     refreshing: 'Обновляем данные · предыдущий расчёт доступен', success: 'Расчёт готов', error: 'Расчёт недоступен · повторите попытку'
   })[value];
   syncProgress();
+  const trust = $('trust-summary');
+  if (trust) {
+    const summary = trust.dataset.resultSummary || '';
+    trust.textContent = value === 'refreshing' ? `Обновляем данные · предыдущий расчёт. ${summary}`
+      : value === 'error' && summary ? `Обновление не удалось · предыдущий расчёт. ${summary}`
+      : value === 'initial' || value === 'calculating' ? 'Данные ещё не оценены · выполните расчёт'
+      : summary || 'Данные ещё не оценены';
+  }
+}
+
+// Native details owns semantics. Motion only bridges between its final states.
+// Repeated initialization is harmless for saved cards and dynamically built reports.
+const disclosures = new WeakMap();
+export function initDisclosure(details, options = {}) {
+  if (!details?.matches('details') || disclosures.has(details)) return details;
+  const summary = details.querySelector(':scope > summary');
+  if (!summary) return details;
+  const existingBody = details.querySelector(':scope > .disclosure-body');
+  const body = existingBody || node('div', 'disclosure-body'), content = node('div', 'disclosure-content');
+  [...(existingBody || details).childNodes].filter(child => child !== summary).forEach(child => content.append(child));
+  body.append(content); if (!existingBody) details.append(body);
+  let wanted = details.open, revision = 0, active = false;
+  disclosures.set(details, body);
+  const transition = (open, from = body.getBoundingClientRect().height) => {
+    wanted = open;
+    const current = ++revision;
+    cancelUI(body);
+    if (!open && body.contains(document.activeElement)) summary.focus();
+    body.inert = !open;
+    details.open = true;
+    active = true;
+    animateUI(body, [{ height: `${from}px`, opacity: open ? .5 : 1 }, { height: `${open ? content.getBoundingClientRect().height : 0}px`, opacity: open ? 1 : 0 }], 'disclosure', {
+      duration: options.duration || 'base',
+      cleanup: () => {
+        if (current !== revision) return;
+        active = false; details.open = wanted; body.inert = false;
+      }
+    });
+  };
+  summary.addEventListener('click', event => {
+    if (event.defaultPrevented) return;
+    event.preventDefault();
+    transition(!wanted, details.open ? body.getBoundingClientRect().height : 0);
+  });
+  details.addEventListener('toggle', () => {
+    if (active || details.open === wanted) return;
+    wanted = details.open;
+    if (wanted) transition(true, 0);
+    else { ++revision; cancelUI(body); body.inert = false; }
+  });
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => {
+    if (active && wanted) transition(true);
+  }).observe(content);
+  return details;
 }
 
 export function initMotion() {
@@ -252,7 +306,15 @@ export function initMotion() {
     new IntersectionObserver(([entry]) => header.classList.toggle('is-scrolled', !entry.isIntersecting)).observe(sentinel);
   }
   setAnalysisState('initial');
-  ['settings', 'map-card', 'saved-section'].forEach(id => reveal($(id), 'section', { duration: 'slow', easing: 'emphasized' }));
+  ['settings', 'map-card', 'recommendations', 'saved-section', 'data-section'].forEach((id, index) => reveal($(id), 'section', { duration: 'slow', easing: 'emphasized', delay: Math.min(index * 30, 90) }));
+  document.querySelectorAll('details').forEach(details => initDisclosure(details));
+  $('trust-details-link')?.addEventListener('click', event => {
+    const details = $('data-details'), summary = $('data-summary');
+    if (!details || !summary) return;
+    event.preventDefault(); cancelUI(disclosures.get(details)); details.open = true;
+    summary.focus({ preventScroll: true });
+    $('data-section').scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'start' });
+  });
 }
 
 const dialogBounds = new WeakMap();

@@ -58,6 +58,7 @@ async page => {
     await new Promise(resolve => setTimeout(resolve, 400));
     await route.abort();
   });
+  await page.locator('#data-details').evaluate(details => { details.open = true; });
   await page.locator('#refresh-data').click();
   assert(await page.locator('#coords').isVisible() && await page.locator('#coords').innerText() === previousCoords, 'Pending refresh hid the successful result');
   assert(await page.locator('#print-report').isEnabled() && await page.locator('[data-testid="save-place"]').first().isEnabled(), 'Pending refresh disabled saved-result actions');
