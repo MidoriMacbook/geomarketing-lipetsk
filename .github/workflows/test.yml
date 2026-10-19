@@ -25,3 +25,4 @@ jobs:
       - run: |
           for module in static/js/*.js; do node --check "$module"; done
       - run: node --test tests/unit/scenario-storage.test.js
+      - run: node --test tests/unit/field-check-storage.test.js
