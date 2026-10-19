@@ -51,6 +51,9 @@ Task 2 and consumed after constructing each native details widget.
 `node --test tests/unit/field-check-storage.test.js tests/unit/scenario-storage.test.js`
 passes **75 tests**: 13 new field-storage tests and 62 existing scenario tests.
 `node --check` passes for the three changed/new production modules.
+`.venv/Scripts/python.exe scripts/validate_project.py` passes all 73 required
+files, import DAGs, static assets, public DOM IDs and semantic palette rules.
+Checklist colors consume existing tokens; no local color fallbacks remain.
 
 New unit tests cover isolated/prototype-safe IDs, strict booleans/indexes/schema,
 null vs invalid raw, duplicate IDs, 49 records, 161-character IDs, impossible dates
@@ -94,3 +97,7 @@ sweep/migration. A later explicit exact-raw recovery remains user-controlled.
 Older app versions that do not participate in these locks cannot be coordinated.
 Surviving saved IDs represent immutable app-created saved snapshots, consistent
 with the existing save/remove flow. Checklist state never enters CSV/print schema.
+
+Implementation commit: `87777f1` (`Add local field checks with serialized saved membership`).
+Palette-token correction and this verification update are recorded in the
+subsequent Task 3 follow-up commit.
