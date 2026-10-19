@@ -97,3 +97,7 @@ dialog p { margin-top:var(--space-3); font-size:var(--text-sm); line-height:1.65
 .counter-visual::after { content:attr(data-display); }
 .is-counting>.counter-final { opacity:0; }
 .is-counting>.counter-visual { display:block; }
+.disclosure-body { overflow:clip; }
+.disclosure-content { display:flow-root; }
+details>summary { cursor:pointer; min-height:var(--size-target); align-content:center; }
+details>summary:focus-visible { outline:var(--line-strong) solid var(--color-primary); outline-offset:var(--space-1); border-radius:var(--radius-control); }

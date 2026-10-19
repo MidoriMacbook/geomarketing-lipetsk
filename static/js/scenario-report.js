@@ -20,7 +20,7 @@ export function exportScenariosCSV(records) {
 export function printScenarios(records) {
   if (records.length !== 2) return;
   const report = $('print-report-content');
-  report.replaceChildren(node('h1', '', 'ГеоМаркетинг · Сравнение сценариев'), node('p', '', `Отчёт сформирован ${new Date().toLocaleString('ru-RU')}`), node('p', '', 'Сопоставляйте абсолютные показатели с учётом категории, радиуса и дат. Общего рейтинга сценариев нет. Конкуренты в выборке включают соседние территории.'));
+  report.replaceChildren(node('h1', '', 'ГеоМаркетинг · Сравнение исследований'), node('p', '', `Отчёт сформирован ${new Date().toLocaleString('ru-RU')}`), node('p', '', 'Сопоставляйте абсолютные показатели с учётом категории, радиуса и дат. Общего рейтинга исследований нет. Конкуренты в выборке включают соседние территории.'));
   records.forEach(item => {
     const a = item.analysis, section = node('section', 'scenario-print-context');
     section.append(node('h2', '', item.name), node('p', '', `${a.district_name} · ${a.business_name}. Центр: ${(item.selection.custom_point || a.analysis_context?.center || a.center).join(', ')}. Радиус области: ${fmt(item.selection.area_radius_m)} м. Радиус модели: ${fmt(a.parameters.radius_m)} м; коэффициент: ${a.parameters.alpha}. Порог зон: ${item.view.threshold}%.`), node('p', '', `Расчёт: ${a.calculated_at || 'дата не указана'}. Сохранено: ${item.saved_at}. Выбрано место ${item.view.selected_rank}.`), node('p', '', `В выборке: ≈ ${fmt(a.stats.residents)} жителей, ${fmt(a.stats.houses)} домов, ${fmt(a.stats.competitors)} конкурентов, включая соседние территории.`), node('p', '', `Заметка: ${item.note || 'Не указана'}`), qualityBlock(a));

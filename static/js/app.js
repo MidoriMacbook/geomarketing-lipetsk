@@ -25,7 +25,11 @@ function bootstrap() {
     resetCounters(document.querySelector('.kpis'));
     $('result').hidden = true;
     setRevealed($('result-empty'), true, 'empty');
-    $('data-section').hidden = true;
+    $('data-section').hidden = false;
+    $('source').textContent = 'Данные выбранной области ещё не оценены. Источник и даты появятся после расчёта.';
+    $('data-quality')?.replaceChildren();
+    $('data-warning').hidden = true;
+    if ($('trust-summary')) delete $('trust-summary').dataset.resultSummary;
     $('error').hidden = true;
     $('loading-hint').hidden = true;
     $('result-empty').querySelector('h3').textContent = 'Готово к новому расчёту';

@@ -1,4 +1,4 @@
-import { node, sourceText } from './ui.js';
+import { node, sourceText, initDisclosure, fmt, distance, LIMITATIONS } from './ui.js';
 
 const freshnessLabels = { fresh: 'За последние 24 часа', recent: 'От 24 часов до 7 дней', stale: 'Старше 7 дней', unknown: 'Свежесть неизвестна', demo: 'Демонстрационные данные' };
 const completenessLabels = { limited: 'Ограниченные данные', needs_review: 'Нужна проверка данных', usable_for_model: 'Данных достаточно для модели' };
@@ -56,16 +56,19 @@ export function qualityBlock(data, compact = false) {
   summary.reasons.forEach(reason => list.append(node('li', '', reason)));
   details.append(list);
   block.append(details);
+  if (compact) initDisclosure(details);
   return block;
 }
 
-export function explanationBlock(rec) {
+export function explanationBlock(rec, { expanded = false } = {}) {
   const block = node('div', 'explanation-block'), explanation = checkedExplanation(rec?.explanation);
   block.dataset.testid = 'explanation-block';
   if (!explanation) { block.append(node('p', 'hint', 'Объяснение для этого сохранённого расчёта не оценено.')); return block; }
   if (explanation.strengths?.length) block.append(node('p', 'explanation-strength', explanation.strengths[0]));
   const details = node('details'), metrics = explanation.metrics || {};
   details.append(node('summary', '', 'Почему это место'));
+  details.open = expanded;
+  details.append(node('p', '', `В радиусе ${fmt(rec.radius_m)} м: ≈ ${fmt(rec.residents_in_radius)} жителей, ${fmt(rec.competitors_in_radius)} конкурентов. Ближайший конкурент: ${distance(rec.nearest_competitor_m)}.`));
   const demand = { higher: 'Выше среднего среди точек этого расчёта', similar: 'Близок к среднему среди точек этого расчёта', lower: 'Ниже среднего среди точек этого расчёта', unknown: 'Не оценен' };
   const competition = { low: 'Небольшой штраф модели', moderate: 'Умеренный штраф модели', high: 'Высокий штраф модели' };
   const number = (value, suffix = '', digits = 2) => Number.isFinite(value) ? `${value.toLocaleString('ru-RU', { maximumFractionDigits: digits })}${suffix}` : 'не оценено';
@@ -79,6 +82,8 @@ export function explanationBlock(rec) {
     (explanation[key] || []).forEach(text => list.append(node('li', '', text)));
     details.append(list);
   }
+  details.append(node('h4', '', 'Ограничение модели'), node('p', '', LIMITATIONS));
   block.append(details);
+  if (!expanded) initDisclosure(details);
   return block;
 }

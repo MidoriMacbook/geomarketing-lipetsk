@@ -45,7 +45,7 @@
  --motion-counter:1100ms;
  --duration-fast:var(--motion-fast); --ease-standard:cubic-bezier(.2,0,.2,1);
  --ease-emphasized:cubic-bezier(.2,.8,.2,1); --ease-spring:cubic-bezier(.2,1.35,.4,1);
- --motion-distance:24px; --motion-distance-small:6px; --motion-hover-lift:-3px;
+ --motion-distance:12px; --motion-distance-small:6px; --motion-hover-lift:-3px;
  --motion-pulse-scale:1.14; --motion-ghost-opacity:.65; --opacity-disabled:.58;
  --motion-progress-start:-40%; --motion-progress-end:70%; --motion-progress-scale-start:.4;
  --motion-progress-scale-end:.6; --motion-progress-static:.45;

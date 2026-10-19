@@ -86,10 +86,20 @@ export function initMap() {
     reveal($('custom-hint'), 'notice');
     drawPreview();
   });
-  window.addEventListener('resize', () => {
-    map.invalidateSize();
-    if (state.current) fitArea(state.current);
-  });
+  let resizeFrame = null, lastWidth = 0, lastHeight = 0;
+  const resizeMap = () => {
+    if (resizeFrame !== null) return;
+    resizeFrame = requestAnimationFrame(() => {
+      resizeFrame = null;
+      const { width, height } = map.getContainer().getBoundingClientRect();
+      if (!width || !height || (width === lastWidth && height === lastHeight)) return;
+      lastWidth = width; lastHeight = height;
+      // Size changes must preserve the user's center, zoom and selected marker.
+      map.invalidateSize({ pan: true, animate: false, debounceMoveend: true });
+    });
+  };
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resizeMap).observe(map.getContainer());
+  window.addEventListener('resize', resizeMap);
   matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
     if (event.matches) map.stop();
   });
@@ -244,6 +254,7 @@ export function selectMarker(rank, pan, changed = false) {
   markers.forEach((marker, r) => {
     const pin = marker.getElement()?.querySelector('.recommendation-pin');
     pin?.classList.toggle('is-selected', r === rank);
+    pin?.classList.remove('is-preview');
     if (r !== rank) cancelUI(pin);
   });
   if (changed) {
@@ -253,6 +264,13 @@ export function selectMarker(rank, pan, changed = false) {
   const rec = state.current?.recommendations.find(r => r.rank === rank);
   if (map&&rec&&pan) map.panTo([rec.lat, rec.lng], {
     animate: !motionReduced()
+  });
+}
+
+export function hoverPlace(rank, active) {
+  markers.forEach((marker, currentRank) => {
+    marker.getElement()?.querySelector('.recommendation-pin')?.classList.toggle('is-preview',
+      active && currentRank === rank && currentRank !== state.selectedRank);
   });
 }
 

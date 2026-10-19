@@ -24,7 +24,7 @@ async original => {
     await page.locator('#scenario-submit').click();
     await page.waitForFunction(() => document.querySelector('#scenario-list').textContent.includes('Первое исследование'));
     await page.getByTestId('scenario-compare').first().click();
-    assert((await page.locator('#scenario-comparison').innerText()).includes('второй'), 'Single comparison selection has no guidance');
+    assert((await page.locator('#scenario-comparison').innerText()).includes('второе исследование'), 'Single comparison selection has no guidance');
     await page.getByTestId('scenario-compare').nth(1).click();
     assert(await page.locator('#scenario-comparison table').count() === 1, 'Comparison table is missing');
     assert(!/оценка внутри|Относительная оценка/.test(await page.locator('#scenario-comparison table').innerText()), 'Cross-analysis comparison includes score');
