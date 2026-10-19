@@ -1,6 +1,7 @@
 import { state } from './state.js';
 import { $, fmt, coords, distance, STORAGE_KEY, node, button, dateText, sourceText, storageStatus, dataDate, reveal, animateUI, exitSnapshot, setRevealed } from './ui.js';
 import { checkedQuality, checkedExplanation } from './data-quality.js';
+import { fieldChecksBlock, removeFieldChecks, refreshFieldChecks } from './field-checks.js';
 
 let updateReportAvailability = () => {};
 
@@ -48,14 +49,15 @@ export function loadSaved() {
   }
 }
 
-export async function mutateSaved(mutate, allowRepair = false) {
+export async function mutateSaved(mutate, allowRepair = false, removedId = null) {
   // Web Locks serialize read-modify-write transactions across tabs on this origin.
-  if (!navigator.locks?.request) {
-    storageStatus('В этом браузере согласованное сохранение недоступно. Изменения не сохранены. Используйте актуальный браузер и защищённое соединение.');
-    return;
-  }
+  let persisted = false;
   try {
-    await navigator.locks.request(`${STORAGE_KEY}.write`, () => {
+    if (!navigator.locks?.request) {
+      storageStatus('В этом браузере согласованное сохранение недоступно. Изменения не сохранены. Используйте актуальный браузер и защищённое соединение.');
+      return { success:false, persisted:false };
+    }
+    return await navigator.locks.request(`${STORAGE_KEY}.write`, async () => {
       let latest;
       try {
         latest = readSaved();
@@ -66,16 +68,23 @@ export async function mutateSaved(mutate, allowRepair = false) {
         else throw error;
       }
       const result = mutate(latest);
-      if (result.next) localStorage.setItem(STORAGE_KEY, JSON.stringify(result.next));
+      if (result.next) { localStorage.setItem(STORAGE_KEY, JSON.stringify(result.next)); persisted = true; }
+      let cleanupFailed = false;
+      if (persisted && removedId !== null && !result.next.some(item => item.id === removedId)) {
+        try { await removeFieldChecks(removedId, { readSaved, savedLockHeld:true }); }
+        catch { cleanupFailed = true; }
+      }
       state.saved = result.next || latest;
       state.repairStorageRaw = null;
       renderSaved();
       updateSaveButtons(!!result.next);
-      storageStatus(result.message);
+      storageStatus(cleanupFailed ? 'Место удалено. Не удалось очистить его проверку; данные проверки сохранены в браузере.' : result.message);
+      return { success:true, persisted, cleanupFailed };
     });
   }
   catch (error) {
-    storageStatus(error.message === 'invalid' ? 'Сохранённые данные повреждены. Изменения не сохранены. Обновите страницу, чтобы проверить запись.' : 'Хранилище браузера недоступно. Изменения не сохранены. Попробуйте другой браузер или разрешите хранение данных сайта.');
+    storageStatus(persisted ? 'Изменения сохранены. Не удалось обновить отображение; обновите страницу.' : error.message === 'invalid' ? 'Сохранённые данные повреждены. Изменения не сохранены. Обновите страницу, чтобы проверить запись.' : 'Хранилище браузера недоступно. Изменения не сохранены. Попробуйте другой браузер или разрешите хранение данных сайта.');
+    return { success:false, persisted };
   }
 }
 
@@ -134,14 +143,20 @@ export function updateSaveButtons(feedback = false) {
 export function renderSaved() {
   const previous = new Map([...$('saved-list').children].map(card => [card.dataset.savedId, { card, rect: card.getBoundingClientRect() }]));
   const nextIds = new Set(state.saved.map(item => item.id));
-  for (const [id, { card }] of previous) if (!nextIds.has(id)) exitSnapshot(card, 'saved-remove');
+  for (const [id, { card }] of previous) if (!nextIds.has(id)) { exitSnapshot(card, 'saved-remove'); card.remove(); }
   state.comparison = new Set([...state.comparison].filter(id => state.saved.some(item => item.id === id)));
-  $('saved-list').replaceChildren();
   $('saved-count').textContent = `${state.saved.length} / 12`;
   $('nav-saved-count').textContent = state.saved.length;
   setRevealed($('saved-empty'), !state.saved.length, 'empty');
   $('export-csv').disabled = !state.saved.length;
   state.saved.forEach(item => {
+    // Saved snapshots are immutable for an ID. Retain surviving cards and their
+    // native disclosure/input nodes across storage events, preserving focus.
+    if (previous.has(item.id)) {
+      const card = previous.get(item.id).card;
+      card.querySelector('[data-testid="compare-place"]').checked = state.comparison.has(item.id);
+      return;
+    }
     const rec = item.recommendation, card = node('article', 'saved-card');
     card.dataset.testid = 'saved-card';
     card.dataset.savedId = item.id;
@@ -165,12 +180,14 @@ export function renderSaved() {
     const remove = button('Удалить', '', () => mutateSaved(latest => ({
       next: latest.filter(p => p.id !== item.id),
       message: 'Место удалено из этого браузера.'
-    })));
+    }), false, item.id));
     remove.setAttribute('aria-label', `Удалить ${item.business_name}, место ${rec.rank}`);
     actions.append(label, remove);
     card.append(actions);
+    card.append(fieldChecksBlock(item.id, { readSaved }));
     $('saved-list').append(card);
   });
+  refreshFieldChecks();
   for (const card of $('saved-list').children) {
     const before = previous.get(card.dataset.savedId)?.rect;
     if (!before) reveal(card, 'saved-enter');
