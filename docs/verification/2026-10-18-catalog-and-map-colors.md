@@ -63,7 +63,35 @@ Spec и plan: docs/{specs,plans}/2026-10-18-catalog-and-map-colors.md,
 - Task1 4d20527 после исправлений: повторные теги/структура/UTF16 adversarial cases
   отклоняются до записи, UTF8/BOM/допустимые metadata проходят. Spec PASS /
   SecurityQuality APPROVED. Неразрешённых замечаний по этим задачам нет.
-- Финальное whole-branch review и публикация фиксируются после проверки выпуска.
+- Финальное whole-branch review c8b09a2..7d48753: Spec PASS / QualitySecurity
+  APPROVED, подтверждённых замечаний нет. Дополнительно независимо пройдены38
+  focused Python tests,110snapshot проверок и100полных ответов API через настоящий
+  scenario-storage.js validator. Максимальный сценарий86316символов при лимите250000.
+  Последнее1px исправление choices.js и desktop/mobile/200% снимки проверены.
+- Ранее найденное устаревшее упоминание .95 в design-system исправлено e5605b0.
+  Source CI39197703595 (7d48753) success; main fast-forward без изменения кода.
+- Main CI39198088994 completed/success.
+
+## Публикация 19 октября 2026
+
+- Runtime7d4875340653bf2660da752b0f4bf628dd62afa8, main fast-forward;
+  feature codex/catalog-and-map-colors сохранена.
+- Render dep-dbapg461egvs73dum4s0 live с07:11:13поМоскве, trigger new_commit;
+  ручное дублирующее развёртывание не запускалось.
+- Публичный API: все10областей и все5новых категорий представлены в10проверенных
+  парах; точные дома/оценка жителей/конкуренты, координаты и параметры совпали
+  с Git-снимками. Все ответы source=cache, рекомендации3, grid3600.
+- Public catalog-expansion GREEN:3новые пары, автоматический запрос, KPI/карта,
+  сохранение/открытие нового сценария безAPI, CSV/печать,390/768/1440,pageErrors[].
+- Public choice-menus GREEN:10business/11district, keyboard/motion/fallback,
+  обе геометрии360/390/768/1440/390@200%, actualCDPtouch scroll0→124,
+  последний dentist видим/выбирается; pageErrors[].
+- Public dense-map738houses/32grocery в Европейском; снимки1440/768/390 и
+  меню390/200% повторены и просмотрены. Сине-серые дома и ягодные конкуренты различимы.
+- SHA256 всех25статических файлов совпал с Git runtime. /healthz HTTP200/statusok
+  после уборки. catalog-release закрыт; прежние catalog-root/catalog-ui уже
+  отсутствуют; QAпорт5085 не слушается.
+- Финальный документальный audit [skip render] не меняет опубликованный runtime.
 
 ## Границы
 
