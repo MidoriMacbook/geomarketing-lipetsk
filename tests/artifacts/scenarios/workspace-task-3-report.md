@@ -101,3 +101,23 @@ with the existing save/remove flow. Checklist state never enters CSV/print schem
 Implementation commit: `87777f1` (`Add local field checks with serialized saved membership`).
 Palette-token correction and this verification update are recorded in the
 subsequent Task 3 follow-up commit.
+
+## Review round 1 — gentle persisted-check feedback
+
+The original requested gentle check animation was missing from the first pass.
+Added the actual-browser assertion before the fix; RED failed with
+`Persisted checkbox requires gentle check feedback`.
+
+Checkboxes now receive one finite, subtle scale effect using existing
+`animateUI`, `--motion-pulse-scale`, and `--motion-fast` only after persistence
+succeeds. A new change cancels prior checkbox feedback; failed writes never
+animate success. Only the checkbox transforms, leaving its 44px label target
+stationary. Existing shared motion cancellation handles runtime reduced-motion
+changes, and initial reduced motion prevents the effect entirely.
+
+GREEN: the complete field-check browser suite passes, including persisted state
+already present at animation invocation, finite normal-motion feedback, stable
+44px target, runtime cancellation, subsequent reduced-motion suppression,
+initial reduced motion, and no new success animation after quota failure.
+`node --check static/js/field-checks.js` and the 73-file project validator pass.
+The isolated `workspace-checklist` browser session was closed after QA.

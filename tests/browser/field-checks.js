@@ -5,6 +5,30 @@ async original => {
   context.on('page',tab=>tab.on('pageerror',error=>errors.push(error.message)));
   context.on('request',request=>{if(request.url().includes('/api/calculate'))calculations++;});
   try{
+    const motionContext=await original.context().browser().newContext({reducedMotion:'no-preference'}),motionPage=await motionContext.newPage();
+    try{
+      await motionPage.goto(base);await motionPage.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+      await motionPage.locator('[data-testid="save-place"]').first().click();await motionPage.waitForSelector('[data-testid="field-checks"]');
+      await motionPage.locator('[data-testid="field-checks"] summary').click();
+      await motionPage.evaluate(()=>{window.fieldMotion=[];const animate=Element.prototype.animate;Element.prototype.animate=function(...args){const effect=animate.apply(this,args);if(this.matches('[data-testid="field-check"]'))window.fieldMotion.push({effect,persisted:!!JSON.parse(localStorage.getItem('geomarketing.field-checks.v1'))?.records[0]?.checks[0]});return effect;};});
+      await motionPage.locator('[data-testid="field-check"]').first().check();
+      await motionPage.waitForFunction(()=>JSON.parse(localStorage.getItem('geomarketing.field-checks.v1'))?.records[0]?.checks[0]);
+      assert(await motionPage.evaluate(()=>window.fieldMotion.some(({effect,persisted})=>effect.id==='gm:field-check-saved'&&persisted)),'Persisted checkbox requires gentle check feedback');
+      await motionPage.waitForFunction(()=>!document.getAnimations().some(effect=>effect.id==='gm:field-check-saved'&&effect.playState==='running'));
+      assert(await motionPage.locator('.field-check-item').first().evaluate(el=>el.getBoundingClientRect().height>=44),'Check feedback keeps label hitbox stable');
+      await motionPage.locator('[data-testid="field-check"]').first().uncheck();
+      await motionPage.waitForFunction(()=>document.getAnimations().some(effect=>effect.id==='gm:field-check-saved'&&effect.playState==='running'));
+      await motionPage.emulateMedia({reducedMotion:'reduce'});
+      await motionPage.waitForFunction(()=>!document.getAnimations().some(effect=>effect.id==='gm:field-check-saved'&&effect.playState==='running'));
+      const reducedEffects=await motionPage.evaluate(()=>window.fieldMotion.length);
+      await motionPage.locator('[data-testid="field-check"]').first().check();await motionPage.waitForFunction(()=>JSON.parse(localStorage.getItem('geomarketing.field-checks.v1'))?.records[0]?.checks[0]);
+      assert(await motionPage.evaluate(()=>window.fieldMotion.length)===reducedEffects,'Runtime reduced motion blocks subsequent check effects');
+      await motionPage.emulateMedia({reducedMotion:'no-preference'});
+      await motionPage.evaluate(()=>{const set=Storage.prototype.setItem;window.restoreMotionStorage=()=>{Storage.prototype.setItem=set;};Storage.prototype.setItem=function(key,value){if(key==='geomarketing.field-checks.v1')throw Error('quota');return set.call(this,key,value);};});
+      await motionPage.locator('[data-testid="field-check"]').first().uncheck();await motionPage.waitForFunction(()=>document.querySelector('.field-check-status').textContent.includes('не сохранена'));
+      assert(await motionPage.evaluate(()=>window.fieldMotion.length)===reducedEffects,'Failed persistence produces no success effect');
+      await motionPage.evaluate(()=>window.restoreMotionStorage());
+    }finally{await motionContext.close();}
     await page.goto(base);await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
     assert(await page.locator('[data-testid="field-checks"]').count()===0,'Checklist is only for saved places');
     await page.locator('[data-testid="save-place"]').first().click();
@@ -13,6 +37,7 @@ async original => {
     assert(await widget.locator('input[type="checkbox"]').count()===7,'Seven checklist items required');
     await widget.locator('summary').click();await widget.locator('input').first().check();
     await page.waitForFunction(()=>JSON.parse(localStorage.getItem('geomarketing.field-checks.v1'))?.records[0]?.checks[0]);
+    assert(await page.evaluate(()=>!document.getAnimations().some(effect=>effect.id==='gm:field-check-saved')),'Initial reduced motion prevents check effect');
     await page.reload();await page.waitForSelector('[data-testid="field-checks"]');
     assert(await page.locator('[data-testid="field-checks"] input').first().isChecked(),'Check persists after reload');
     await page.locator('[data-testid="save-place"]').nth(1).click();await page.waitForFunction(()=>document.querySelectorAll('[data-testid="field-checks"]').length===2);
@@ -111,6 +136,6 @@ async original => {
       }finally{await isolated.close();}
     }
     assert(errors.length===0,`No page errors: ${errors.join(', ')}`);
-    return 'PASS checklist creation, keyboard/touch44, reload, real two tabs/latest writes, focus, quota/latest rollback, corrupt/recovery cancel/reset, future schema, model/API unchanged, failed deletion/incomplete cleanup/late write, CSV/print, blocked storage/getters/no locks/legacy IDs';
+    return 'PASS persisted-check finite feedback/initial+runtime reduced motion/failure no-effect, checklist creation, keyboard/touch44, reload, real two tabs/latest writes, focus, quota/latest rollback, corrupt/recovery cancel/reset, future schema, model/API unchanged, failed deletion/incomplete cleanup/late write, CSV/print, blocked storage/getters/no locks/legacy IDs';
   }finally{await context.close();}
 }
