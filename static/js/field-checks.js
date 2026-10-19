@@ -1,4 +1,4 @@
-import { node, initDisclosure } from './ui.js';
+import { node, initDisclosure, animateUI, cancelUI } from './ui.js';
 import { FIELD_CHECK_KEY, readFieldChecks, setFieldCheck, deleteFieldChecks, resetFieldChecks, fieldChecksWritable } from './field-check-storage.js';
 
 const labels = [
@@ -38,14 +38,20 @@ export function fieldChecksBlock(placeId, options = {}) {
     label.append(input, node('span','',text)); content.append(label);
     input.addEventListener('change', async () => {
       const checked = input.checked;
+      cancelUI(input);
       details.setAttribute('aria-busy','true');
-      let message;
-      try { await setFieldCheck(placeId,index,checked,options); message = 'Отметка сохранена в этом браузере.'; }
+      let message, persisted = false;
+      try { await setFieldCheck(placeId,index,checked,options); persisted = true; message = 'Отметка сохранена в этом браузере.'; }
       catch (error) { message = messages[error.code] || messages.unavailable; }
       // A deleted widget must never receive stale async feedback or be reinserted.
       if (!details.isConnected) return;
       details.removeAttribute('aria-busy');
       refreshFieldChecks(); status.textContent = message;
+      if (persisted) animateUI(input, [
+        { transform:'scale(1)' },
+        { transform:'scale(var(--motion-pulse-scale))', offset:.45 },
+        { transform:'scale(1)' }
+      ], 'field-check-saved', { duration:'fast' });
     });
     return input;
   });
