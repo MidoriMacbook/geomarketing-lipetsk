@@ -42,7 +42,20 @@ async original => {
     assert(await page.locator('[data-testid="field-checks"] input').first().isChecked(),'Check persists after reload');
     await page.locator('[data-testid="save-place"]').nth(1).click();await page.waitForFunction(()=>document.querySelectorAll('[data-testid="field-checks"]').length===2);
     const savedBefore=await page.evaluate(()=>localStorage.getItem('geomarketing.saved.v1'));
-    const other=await context.newPage();await other.goto(base);await other.waitForSelector('[data-testid="field-checks"]');
+    const other=await context.newPage();
+    // Saved cards render before catalog loading starts. Hold that response to
+    // exercise the bootstrap race: widget visibility alone is not analysis-ready.
+    let releaseCatalog;
+    const catalogGate=new Promise(resolve=>{releaseCatalog=resolve;});
+    await other.route('**/api/catalog',async route=>{
+      const response=await route.fetch();await catalogGate;await route.fulfill({response});
+    });
+    await other.goto(base);await other.waitForSelector('[data-testid="field-checks"]');
+    const beforeInitialCalculation=calculations;
+    assert(await other.evaluate(()=>document.documentElement.dataset.analysisState)==='initial','Saved checklist appears while delayed catalog is pending');
+    releaseCatalog();
+    await other.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+    assert(calculations===beforeInitialCalculation+1,'Delayed catalog completes exactly one initial calculation before checklist request baseline');
     const countBefore=calculations;
     await page.locator('[data-testid="field-checks"]').first().locator('summary').click();
     const focused=page.locator('[data-testid="field-checks"]').first().locator('input').nth(2);await focused.focus();
