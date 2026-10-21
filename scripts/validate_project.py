@@ -23,9 +23,9 @@ REQUIRED = [
     *[f'src/utils/{name}.py' for name in ('geo', 'formatting', 'validation')],
     'static/index.html', 'static/assets/favicon.svg',
     *[f'static/css/{name}.css' for name in
-      ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios')],
+      ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios', 'field-checks')],
     *[f'static/js/{name}.js' for name in
-      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality')],
+      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage')],
     'tests/unit/__init__.py', 'tests/integration/__init__.py',
     'tests/browser/smoke.js', 'tests/browser/workspace.js',
     'tests/fixtures/saved-places-v1.json', 'data/fixtures/example-cache.json',
