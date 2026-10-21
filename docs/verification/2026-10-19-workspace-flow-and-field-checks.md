@@ -56,6 +56,14 @@ workspace19regressiongroups GREEN, pageErrors[]. Densevisual21октября
 Исполнитель после fix также подтвердил scenarios-ui17/scenarios11/legacy/
 redesign motion+print+contrast/responsive; тестовые контексты закрыты.
 
+Wholebranch review GPT-6-Astra на0d15077 не нашло Important/Critical/security
+проблем; дваMinor исправлены e9bb7c4. RED выявил doublecleanup отменённого
+эффекта и оставшийся hoverlift приreduce. GREEN проверяет exact-once cleanup
+cancel/finish/replacement, trustlink во время закрытия остаётся open/focused,
+initial/runtime reduce убирает lift рекомендаций и сохранённых карточек.
+После изменения sharedhelper исполнитель подтвердил9browser suites;
+повторное review исправлений и CI/runtime публикация ожидаются.
+
 Новые browser suites:
 workspace-layout.js, workspace-interactions.js, field-checks.js.
 Новый Node suite: field-check-storage.test.js. Отчёты RED/GREEN исполнителей
