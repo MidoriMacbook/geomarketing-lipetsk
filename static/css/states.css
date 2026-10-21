@@ -1,4 +1,4 @@
-button,select,.button,.place-actions a,.saved-card,.recommendation,.site-header { transition:background-color var(--motion-fast) var(--ease-standard),color var(--motion-fast) var(--ease-standard),border-color var(--motion-fast) var(--ease-standard),box-shadow var(--motion-base) var(--ease-standard),transform var(--motion-fast) var(--ease-standard); }
+button,select,.button,.place-actions a,.saved-card,.scenario-card,.recommendation,.site-header { transition:background-color var(--motion-fast) var(--ease-standard),color var(--motion-fast) var(--ease-standard),border-color var(--motion-fast) var(--ease-standard),box-shadow var(--motion-base) var(--ease-standard),transform var(--motion-fast) var(--ease-standard); }
 button:disabled,select:disabled { cursor:default; opacity:var(--opacity-disabled); }
 .primary:hover:not(:disabled),.place-actions .save:hover:not(:disabled) { background:var(--color-primary-hover); border-color:var(--color-primary-hover); color:var(--color-on-primary); }
 .secondary:not(.save):hover:not(:disabled),.place-actions a:hover,.saved-card-actions button:hover { background:var(--color-subtle); color:var(--color-ink); }
@@ -7,10 +7,10 @@ button:active:not(:disabled),.place-actions a:active { transform:translateY(var(
 .site-header nav .active:hover { background:var(--color-panel-dark); color:var(--color-accent); }
 .site-header.is-scrolled { background:var(--color-surface); box-shadow:var(--shadow-control); border-color:var(--color-line); }
 @media (hover:hover) and (pointer:fine) {
- .recommendation:not(.selected):hover,.saved-card:hover { border-color:var(--color-primary); box-shadow:0 12px 32px var(--color-glow); }
+ .recommendation:not(.selected):hover,.saved-card:hover,.scenario-card:hover { border-color:var(--color-primary); box-shadow:0 12px 32px var(--color-glow); }
 }
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
- .recommendation:not(.selected):hover,.saved-card:hover { transform:translateY(var(--motion-hover-lift)); }
+ .recommendation:not(.selected):hover,.saved-card:hover,.scenario-card:hover { transform:translateY(var(--motion-hover-lift)); }
 }
 .recommendation-pin.is-preview { outline:var(--line-strong) solid var(--color-primary); box-shadow:0 0 16px var(--color-glow),var(--shadow-control); }
 .recommendation.selected { border-color:var(--color-primary); box-shadow:inset var(--space-1) 0 0 var(--color-primary); background:var(--color-selected); }
