@@ -137,6 +137,7 @@ playwright-cli -s=geomarket run-code --filename=tests/browser/field-checks.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios-ui.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios-mobile.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/research-open-motion.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/palette.js
 playwright-cli -s=geomarket close
 ```

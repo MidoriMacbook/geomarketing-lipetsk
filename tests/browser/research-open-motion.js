@@ -1,9 +1,9 @@
 async original => {
   const base = new URL(original.url()).origin, errors = [], passed = [];
   const assert = (ok, message) => { if (!ok) throw new Error(message); };
-  for (const [width, reducedMotion] of [[1440, 'reduce'], [390, 'reduce'], [1440, 'no-preference']]) {
+  for (const [width, reducedMotion] of [[1440, 'reduce'], [390, 'reduce'], [1440, 'no-preference'], [390, 'no-preference']]) {
     const context = await original.context().browser().newContext({
-      viewport: { width, height: 900 }, reducedMotion, hasTouch: width === 390
+      viewport: { width, height: 900 }, reducedMotion, hasTouch: width === 390, isMobile: width === 390
     });
     const page = await context.newPage();
     let calculations = 0;

@@ -1,50 +1,46 @@
 # Состояние работы
 
 ## Current Goal
-Утверждённый workspace flow и проверка помещения завершены и опубликованы
-21 октября 2026 в GitHub main и существующем бесплатном Render.
-Повторное согласование публикации не требуется.
-Spec/plan: docs/{specs,plans}/2026-10-19-workspace-flow-and-field-checks.md.
+Исправление исследований завершено 21 октября 2026, опубликовано в main/Render.
+Пользователь сообщил отсутствие hover и неработающую на вид кнопку «Открыть».
+Предыдущий workspace flow также опубликован; не начинать его заново.
 
 ## Decisions
-Карта и рекомендации делят desktop-высоту с пределом и доступной прокруткой.
-ResizeObserver/RAF компенсирует размер Leaflet без reset/fitArea, точность ≤1pixel.
-Данные перед footer, краткий trust у карты; объяснения и печать сохраняют контекст.
-Исследования скрыты пока пусты; первое сохранение/recovery/status доступны.
-Checklist только у saved, отдельный key field-checks.v1: схема1/7bool/48records/65536chars.
-Locks saved→field предотвращают late write после удаления; ошибки сохраняют raw.
-Палитра, 10×10, API/модель, старые saved/scenarios/CSV/Material/count-up сохранены.
+Restore работал, но focus preventScroll оставлял карту вне экрана (top=-1523px).
+После успешного restore карта явно показывается: smooth или instant при reduce.
+Фокус остаётся на map-title, подпись действия — «Открыть на карте».
+Исследования включены в существующие hover/transition CSS-селекторы;
+compare inset, fine-pointer-only и reduced motion сохранены.
+Схемы storage, API, модель, 10×10, Material и данные снимков не менялись.
 
-## Plan Status
-Все четыре задачи завершены. Независимые task reviews: Spec и Quality/Security PASS.
-Whole-branch GPT-6-Astra review: два Minor исправлены e9bb7c4;
-повторное review d8a55d7 PASS, нерешённых замечаний нет.
-Feature сохранена: codex/workspace-flow-field-checks; main обновлён fast-forward.
-Runtime d8a55d72b88280634116aa9662d1d345257edf44.
-Source/main CI Success: 39655304096 / 39655604319, точный SHA подтверждён в Actions UI.
-Render dep-dbcggjavcj2c738n948g live 21 октября 21:46:41 Москва, new_commit.
+## Release
+Runtime: 11a6faf6ed6bbe1058b02fae8beda80d6705ddf5.
+Ветка codex/research-open-motion сохранена; main обновлён fast-forward.
+Independent focused review PASS, замечаний нет.
+Source/main CI Success: 39659628732 / 39659829541.
+Render dep-dbcgtvpsrm7s73d01irg live 21 октября 22:15:23 Москва, new_commit.
 Сайт: https://geomarketing-lipetsk.onrender.com.
+Документы и расширение browser-покрытия — отдельный [skip render] audit.
 
 ## Evidence
-Python84/84, Node75/75, validator73files, 16JSsyntax, py_compile,
-Material unchanged, stub scan0; итоговые новые и прежние браузерные suites GREEN.
-Public: healthz200/catalog10×10/28asset hashes; layout48/interactions/fieldchecks/
-workspace19 GREEN, pageErrors[]. Dense738houses/32comp: 1440/1024 map=recs1100px,
-768/390 и 390/200% без overflow; screenshots просмотрены.
-Field harness ebe9e98: saved widget появляется до catalog/initial calculation;
-baseline берётся после success, строгий no-extra-request assertion сохранён.
-Локальная и публичная field suite GREEN; production не менялся.
-Формальная приёмка: docs/verification/2026-10-19-workspace-flow-and-field-checks.md.
-Тест/аудит публикуются с [skip render], чтобы не дублировать runtime deploy.
+Два RED→GREEN: карта вне экрана после открытия; отсутствие hover исследований.
+research-open-motion локально/public GREEN: 1440 keyboard/reduce и mouse/normal,
+390 mobile touch/reduce и touch/normal, unchanged storage/no calculate/focus,
+compare emphasis/runtime reduce. pageErrors[].
+scenarios-ui17/scenarios11/mobile/workspace-interactions GREEN.
+Node scenario62/62, validator73, JSsyntax/diff/stub checks PASS.
+360/390/768/1440 и 390/200% без overflow, targets≥44px; screenshot просмотрен.
+Public healthz200/28asset hashes совпали; app error/critical после deploy нет.
+Приёмка: docs/verification/2026-10-21-research-open-motion.md.
+Предыдущий пакет: docs/verification/2026-10-19-workspace-flow-and-field-checks.md.
 
 ## QA Cleanup
-Собственные браузерные контексты приёмки закрыты.
-Временный сервер остановлен после проверки PID/command line/родителей;
-порт5085 свободен. Не останавливать посторонние процессы при следующем запуске.
+Тестовые browser contexts и research-fix закрыты. Временный сервер остановлен
+после проверки PID/command line/parent/executable; порт5085 свободен.
+Не останавливать чужие процессы при следующей сессии.
 
 ## Open Issues
-Нет нерешённых требований этого пакета.
-Cross-key localStorage не crash-atomic: возможен недоступный orphan без sweeping.
+Нет нерешённых требований этого исправления.
 Chrome/touch emulation; физические устройства/другие engines/nativePDF вне приёмки.
-Во время QA Waitress queue warning1–4; app error/critical после deploy отсутствуют.
-GitHub REST rate403: push CI смотреть в публичном Actions UI с точным SHA.
+GitHub REST rate403: Actions UI с полным SHA — рабочий fallback.
+Прежний checklist cross-key storage не crash-atomic; автоматического sweeping нет.
