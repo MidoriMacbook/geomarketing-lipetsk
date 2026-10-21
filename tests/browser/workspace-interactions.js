@@ -54,6 +54,19 @@ async original => {
     await printPage.waitForFunction(() => document.querySelectorAll('[data-testid="saved-card"]').length === 1);
     await printPage.getByTestId('save-place').nth(1).click();
     await printPage.waitForFunction(() => document.querySelectorAll('[data-testid="saved-card"]').length === 2);
+    for (const selector of ['[data-testid="recommendation-card"]:not(.selected)', '[data-testid="saved-card"]']) {
+      const target = printPage.locator(selector).first();
+      await target.hover();
+      reviewCheck(await target.evaluate(element => new DOMMatrix(getComputedStyle(element).transform).m42 === 0), `Initial reduced motion still lifts ${selector}`);
+      await printPage.emulateMedia({ reducedMotion: 'no-preference' });
+      await printPage.waitForFunction(selector => {
+        const shift = new DOMMatrix(getComputedStyle(document.querySelector(selector)).transform).m42;
+        return shift <= -3 && shift >= -6;
+      }, selector);
+      await printPage.emulateMedia({ reducedMotion: 'reduce' });
+      await printPage.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      reviewCheck(await target.evaluate(element => new DOMMatrix(getComputedStyle(element).transform).m42 === 0), `Runtime reduced motion retains hover lift on ${selector}`);
+    }
     await printPage.getByTestId('compare-place').nth(0).check(); await printPage.getByTestId('compare-place').nth(1).check();
     const compactPrint = await printPage.evaluate(async () => {
       const { state } = await import('/static/js/state.js'), { printReport } = await import('/static/js/report.js');
@@ -153,6 +166,38 @@ async original => {
     await page.locator('#trust-details-link').click();
     assert(await page.locator('#data-details').getAttribute('open') !== null, 'Trust link does not open details');
     assert(await page.locator('#data-summary').evaluate(el => document.activeElement === el), 'Trust link has no focus destination');
+    await page.waitForFunction(() => !document.getAnimations().some(a => a.id === 'gm:disclosure'));
+    const cleanupCounts = await page.evaluate(async () => {
+      const { animateUI, cancelUI } = await import('/static/js/ui.js');
+      const target = document.createElement('div'), counts = { cancelled: 0, finished: 0, replaced: 0, replacement: 0, external: 0 };
+      document.body.append(target);
+      const start = key => animateUI(target, [{ opacity: 0 }, { opacity: 1 }], 'cleanup-test', { duration: 1000, cleanup: () => { counts[key]++; } });
+      try {
+        const cancelled = start('cancelled'), cancelledDone = cancelled.finished.catch(() => {});
+        cancelUI(target); cancelUI(target); await cancelledDone;
+        const finished = start('finished'); finished.finish(); await finished.finished;
+        const replaced = start('replaced'), replacedDone = replaced.finished.catch(() => {}), replacement = start('replacement');
+        await replacedDone;
+        const replacementSurvives = replacement.playState !== 'idle';
+        const replacementDone = replacement.finished.catch(() => {}); cancelUI(target); await replacementDone;
+        const external = start('external'), externalDone = external.finished.catch(() => {});
+        external.cancel(); await externalDone;
+        return { counts, replacementSurvives };
+      } finally { cancelUI(target); target.remove(); }
+    });
+    const trustInterrupt = await page.evaluate(async () => {
+      const details = document.querySelector('#data-details'), body = details.querySelector('.disclosure-body');
+      document.querySelector('#data-summary').click();
+      const closing = details.open && body.inert && document.getAnimations().some(animation => animation.id === 'gm:disclosure');
+      document.querySelector('#trust-details-link').click();
+      const immediate = details.open;
+      for (let i = 0; i < 120; i++) {
+        await new Promise(requestAnimationFrame);
+        if (i > 2 && !document.getAnimations().some(animation => animation.id === 'gm:disclosure')) break;
+      }
+      return { closing, immediate, open: details.open, inert: body.inert, focused: document.activeElement === document.querySelector('#data-summary') };
+    });
+    assert(Object.values(cleanupCounts.counts).every(count => count === 1) && cleanupCounts.replacementSurvives && trustInterrupt.closing && trustInterrupt.immediate && trustInterrupt.open && !trustInterrupt.inert && trustInterrupt.focused, `Animation cleanup or trust-link interruption failed: ${JSON.stringify({ cleanupCounts, trustInterrupt })}`);
     assert(calls === beforeCalls, 'Disclosure or hover makes calculation requests');
     const disclosureResize = await page.evaluate(async () => {
       const { state } = await import('/static/js/state.js'), { showResult } = await import('/static/js/recommendations.js');

@@ -88,12 +88,15 @@ export function animateUI(element, frames, purpose, options = {}) {
       easing: values[easing] || easing, delay, fill: 'backwards'
     });
     animation.id = `gm:${purpose}`;
-    const effect = { animation, cleanup };
-    effects.set(element, effect);
+    let settled = false;
     const finish = () => {
+      if (settled) return;
+      settled = true;
       if (effects.get(element) === effect) effects.delete(element);
       cleanup?.();
     };
+    const effect = { animation, cleanup: finish };
+    effects.set(element, effect);
     // Both branches consume finished; cancel never creates an unhandled rejection.
     animation.finished.then(finish, finish);
     return animation;
