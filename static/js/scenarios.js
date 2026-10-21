@@ -159,7 +159,7 @@ function render() {
       if (mutation) { control.dataset.scenarioMutation = ''; control.disabled = !writable() || pending; }
       actions.append(control); return control;
     };
-    add('Открыть', 'scenario-open', async () => {
+    add('Открыть на карте', 'scenario-open', async () => {
       try { await callbacks.restoreScenario(item); status(`Открыто исследование «${item.name}». Снимок восстановлен без нового запроса геоданных.`); }
       catch { status('Этот район или категория недоступны в текущем каталоге. Снимок сохранён: его можно читать, сравнивать и экспортировать. Текущая карта не изменена.'); }
     });

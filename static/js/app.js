@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog, cancelRevealsWithin } from './ui.js';
+import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog, cancelRevealsWithin, motionReduced } from './ui.js';
 import { configureSaved, loadSaved, renderSaved, updateSaveButtons } from './saved-places.js';
 import { exportCSV, printReport, updateReportAvailability } from './report.js';
 import { configureMap, initMap, clearAnalysisMap, clearPreview, updateCustomUI, drawPreview, drawMap, drawZones, fitArea, toggleLayer } from './map.js';
@@ -92,6 +92,7 @@ function bootstrap() {
     setAnalysisState('success','Открыт сохранённый расчёт · обновите данные перед выбором помещения');
     updateReportAvailability();updateScenarioAvailability();
     $('map-title').tabIndex=-1;$('map-title').focus({preventScroll:true});
+    $('map-card').scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'start'});
   }
   function updateParams() {
     if (!state.catalog) return;
