@@ -31,16 +31,34 @@ export function updateReportAvailability() {
   $('print-report').disabled = !state.current && !state.comparison.size;
 }
 
-export function reportPlace(rec, context) {
+export function reportPlace(rec, context, { includeContext = true } = {}) {
   const block = node('article', 'report-place');
   block.append(
-    node('h3', '', `${context.business_name} · место ${rec.rank} · ${context.district_name}`),
+    node('h3', '', includeContext ? `${context.business_name} · место ${rec.rank} · ${context.district_name}` : `Место ${rec.rank}`),
     node('p', '', `Координаты: ${coords(rec)}. Жителей в радиусе ${fmt(rec.radius_m)} м: ≈ ${fmt(rec.residents_in_radius)}. Конкурентов в радиусе: ${fmt(rec.competitors_in_radius)}. Ближайший конкурент: ${distance(rec.nearest_competitor_m)}.`),
-    node('p', '', `Относительная оценка внутри расчёта: ${Math.round(rec.score * 100)}%. Радиус модели: ${context.parameters.radius_m} м; коэффициент конкуренции: ${context.parameters.alpha}. ID расчёта: ${context.analysis_id}.`),
-    node('p', '', `Источник: ${sourceText(context.source)}. Дата данных: ${dateText(context.data_date)}${context.saved_at ? `. Сохранено: ${dateText(context.saved_at)}` : ''}.`)
+    node('p', '', `Относительная оценка внутри расчёта: ${Math.round(rec.score * 100)}%.${includeContext ? ` Радиус модели: ${context.parameters.radius_m} м; коэффициент конкуренции: ${context.parameters.alpha}. ID расчёта: ${context.analysis_id}.` : ''}`)
   );
-  if (context.warning) block.append(node('p', '', `Предупреждение: ${context.warning}`));
-  block.append(qualityBlock(context),explanationBlock(rec, { expanded: true }));
+  if (includeContext) {
+    block.append(node('p', '', `Источник: ${sourceText(context.source)}. Дата данных: ${dateText(context.data_date)}${context.saved_at ? `. Сохранено: ${dateText(context.saved_at)}` : ''}.`));
+    if (context.warning) block.append(node('p', '', `Предупреждение: ${context.warning}`));
+    block.append(qualityBlock(context));
+  }
+  block.append(explanationBlock(rec, { expanded: true }));
+  return block;
+}
+
+function reportAnalysis(context) {
+  const block = node('section', 'report-analysis-context');
+  const center = context.analysis_context?.center || context.center;
+  const areaRadius = context.analysis_context?.requested_radius_m || context.half_m;
+  block.append(
+    node('h2', '', 'Текущий расчёт'),
+    node('h3', '', `${context.district_name} · ${context.business_name}`),
+    node('p', '', `Центр области: ${center.map(value => value.toFixed(5)).join(', ')}. Радиус области: ${fmt(areaRadius)} м. Радиус модели: ${fmt(context.parameters.radius_m)} м; коэффициент конкуренции: ${context.parameters.alpha}.`),
+    node('p', '', `Дата расчёта: ${context.calculated_at ? new Date(context.calculated_at).toLocaleString('ru-RU') : 'Не указана'}. ID расчёта: ${context.analysis_id}.`),
+    node('p', '', `В выборке: ≈ ${fmt(context.stats.residents)} жителей, ${fmt(context.stats.houses)} домов, ${fmt(context.stats.competitors)} конкурентов, включая соседние территории.`),
+    qualityBlock(context)
+  );
   return block;
 }
 
@@ -48,13 +66,13 @@ export function printReport() {
   const report = $('print-report-content');
   report.replaceChildren(node('h1', '', 'ГеоМаркетинг · Липецк'), node('p', '', `Отчёт сформирован ${new Date().toLocaleString('ru-RU')}`));
   if (state.current) {
-    report.append(node('h2', '', 'Рекомендации текущего расчёта'));
     const context = {
       ...state.current,
-      data_date: dataDate(state.current),
-      warning: [state.current.warning, state.current.notice].filter(Boolean).join(' ')
+      data_date: dataDate(state.current)
     };
-    state.current.recommendations.forEach(r => report.append(reportPlace(r, context)));
+    report.append(reportAnalysis(context), node('h2', '', 'Рекомендации текущего расчёта'));
+    if (!state.current.recommendations.length) report.append(node('p', 'report-empty', 'Подходящих мест не найдено. Расчёт не предложил точек; измените область или её радиус и выполните новый расчёт.'));
+    state.current.recommendations.forEach(r => report.append(reportPlace(r, context, { includeContext: false })));
   }
   const items = comparisonRows();
   if (items.length) {
