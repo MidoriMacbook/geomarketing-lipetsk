@@ -21,6 +21,12 @@ Tasks1–3 приняты независимыми SpecPASS/QualitySecurityPASS.
 0fbbbea убрал ошибочно tracked taskreports; файлы оставлены localignored.
 Root Task4 localmatrix/reviews завершены; далее wholebranchmostcapablereview,
 featureCI→mainFF→Renderlive→publicQA/hash→auditCI/cleanup.
+Wholebranch Astrareview на0d15077 завершён:2Minor исправлены e9bb7c4:
+exact-once cleanup анимаций и отключение hoverlift в reducedmotion.
+RED→GREEN для trustlink во время close и initial/runtime reduce;9browser
+suites GREEN после изменений sharedhelper, повторное Astrareview ожидается.
+SourceCI0d15077success
+39609142757; GitHubAPIrate403, statusпрочитанчерезpublicActionsUI сточнымSHA.
 Текущий публичный runtime пока7d4875340653bf2660da752b0f4bf628dd62afa8.
 
 ## Evidence
@@ -32,12 +38,12 @@ Task2fix independentreview confirmed focus lastdelete/resetsuccess/failure,
 Формальная приёмка docs/verification/2026-10-19-workspace-flow-and-field-checks.md.
 
 ## QA Ownership / Cleanup
-Root QA http://127.0.0.1:5085 helperPID8164 (старый21832 завершён).
-Root browser workspace-release PID34052; task/review browsers closed.
+Root QA http://127.0.0.1:5085 helperPID32828 (старые8164/21832 завершены).
+Root browser workspace-publish PID25052; старыйworkspace-release не используется.
 После publicQA закрыть только собственные browser/server, проверить commandline
 и дочерниеPID перед остановкой; не трогать посторонние процессы.
 
 ## Open Issues
-Нет известных дефектов принятой реализации; wholebranch/release ещё не подтверждены.
+НовыйCI/re-review/Render/publicQA ещё впереди, код принятых замечаний исправлен.
 Cross-key localStorage не crash-atomic: возможный orphan сохраняется без sweeping.
 Chrome/touch emulation; физические устройства/другие engines/nativePDF не проверены.
