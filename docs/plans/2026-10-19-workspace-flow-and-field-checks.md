@@ -90,7 +90,7 @@ Security:none. Excludes physicaldevices/newengines/OSMquality/nativePDFpaginatio
 - [x] Singlefinalmatrix1440/1024/768/390/200%, mapheight0/1/3+expanded, no gap/dataorder,
   trustrefresh/error/archive, marker/card, checkliststorage/concurrency, oldstorage/
   reports,reduce/focus/touch44px,actualscreenshots+fullPython/Node/validator/JS/material.
-- [ ] Wholebranchmostcapablereview thenfeatureCIgreen→mainFF→Renderlive.
-- [ ] PublicUI/geometry/checklist/report/mobile/hash, docs/auditCI, ownQAcleanup.
+- [x] Wholebranchmostcapablereview thenfeatureCIgreen→mainFF→Renderlive.
+- [x] PublicUI/geometry/checklist/report/mobile/hash, docs/auditCI, ownQAcleanup.
   Finalanswer addressesnineuserrequestedpoints includingcause/fix/data/explanations/
   motion/checklist/files/tests/nextusefulfeatures.

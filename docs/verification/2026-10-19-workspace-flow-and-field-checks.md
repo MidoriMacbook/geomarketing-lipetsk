@@ -1,7 +1,7 @@
 # Рабочая зона и проверка места — приёмка19–21октября2026
 
-Статус21октября: реализация, локальная приёмка и task reviews завершены.
-Ожидаются whole-branch review, CI и подтверждение публикации.
+Статус 21 октября: реализация, независимые ревью, CI и публичная приёмка завершены.
+Опубликовано в main и существующем бесплатном Render, без нового сервиса.
 Spec: docs/specs/2026-10-19-workspace-flow-and-field-checks.md.
 Plan: docs/plans/2026-10-19-workspace-flow-and-field-checks.md.
 
@@ -23,7 +23,7 @@ Task1: независимое review SpecPASS/QualityPASS,48 layout cases и д�
 Root: Python unittest84/84 за45.060s, Material пересобран без изменения
 vendor-артефакта. Dense visual738домов/32конкурента:1440/1024/768/390px,
 390/200% без overflow;1440/1024 map/recs1100px. Просмотрены desktop, нижние
-данные и мобильная проверка. Финальные требования ещё проходят интеграцию.
+данные и мобильная проверка. Итоговая интеграция описана ниже.
 
 Root: Node75/75 (13field+62scenario), validator73files, синтаксис16JSмодулей.
 workspace.js19групп GREEN: прежние сохранения/две вкладки/лимиты/CSV/print/
@@ -61,13 +61,62 @@ Wholebranch review GPT-6-Astra на0d15077 не нашло Important/Critical/se
 эффекта и оставшийся hoverlift приreduce. GREEN проверяет exact-once cleanup
 cancel/finish/replacement, trustlink во время закрытия остаётся open/focused,
 initial/runtime reduce убирает lift рекомендаций и сохранённых карточек.
-После изменения sharedhelper исполнитель подтвердил9browser suites;
-повторное review исправлений и CI/runtime публикация ожидаются.
+После изменения sharedhelper исполнитель подтвердил9browser suites.
+Повторное независимое GPT-6-Astra review версии d8a55d7: Spec PASS,
+Quality/Security PASS, нерешённых замечаний нет; interaction suite проверен отдельно.
 
 Новые browser suites:
 workspace-layout.js, workspace-interactions.js, field-checks.js.
 Новый Node suite: field-check-storage.test.js. Отчёты RED/GREEN исполнителей
 и сырые QA-артефакты находятся в ignored tests/artifacts/scenarios.
+
+## Публикация и публичная приёмка 21 октября
+
+- Runtime: `d8a55d72b88280634116aa9662d1d345257edf44`.
+- Feature CI: [39655304096](https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/39655304096), Success, 55s.
+- Main CI: [39655604319](https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/39655604319), Success, 45s; тот же полный SHA.
+- Main обновлён fast-forward; feature-ветка сохранена.
+- Render `dep-dbcggjavcj2c738n948g`: live, trigger `new_commit`,
+  21 октября 21:46:41 по Москве. Повторный ручной deploy не запускался.
+- Сайт: https://geomarketing-lipetsk.onrender.com. `/healthz` — 200/status ok;
+  `/api/catalog` — 10 областей × 10 типов. SHA256 всех 28 runtime-ресурсов
+  (HTML, CSS, JS, favicon, Material) совпал с соответствующими Git blob.
+- Публичные workspace-layout (48 случаев), workspace-interactions и field-checks
+  прошли; сохранения, две вкладки, конкурентные записи, focus, reduced motion,
+  раскрытия и отсутствие расчётов от checklist проверены в браузере.
+- Публичный workspace.js: все 19 групп прошли, включая старые сохранения,
+  лимиты, сравнение, CSV/escaping/formulas, печать, race, ошибки API/тайлов,
+  custom area и mobile. `pageErrors: []`.
+- Реальный плотный набор: Европейский / продуктовый магазин, 738 домов,
+  32 конкурента, оценка 26 925 жителей. На ширинах 1440/1024 при viewport-height
+  1000px панели карты и рекомендаций имеют одинаковую высоту 1100px.
+  На 768/390 они идут последовательно; 390px/200% — без horizontal overflow.
+  Снимки desktop, нижних данных и семи мобильных отметок просмотрены вручную.
+- В app-логах с начала deploy нет error/critical. При интенсивной QA наблюдались
+  временные предупреждения очереди Waitress глубиной 1–4; нагрузочная ёмкость
+  сервиса этой приёмкой не измеряется.
+- Собственные QA-контексты закрыты, временный сервер остановлен после проверки
+  PID/command line/родителей; порт 5085 свободен.
+
+Первый публичный запуск field-checks выявил гонку самого теста: сохранённые
+карточки второй вкладки появлялись до загрузки каталога и её стартового расчёта.
+Без единого действия checklist был виден на 729ms, стартовый calculate на 745ms,
+готовность на 791ms. В `ebe9e98` тест детерминированно задерживает каталог,
+проверяет это промежуточное состояние и ровно один стартовый расчёт, затем
+снимает baseline. Исходное строгое утверждение `calculations === countBefore`
+сохранено. Полный локальный и публичный field-checks после исправления прошёл;
+runtime-код не менялся. Тест и итоговый аудит публикуются с `[skip render]`.
+
+GitHub REST временно вернул rate limit 403: результаты Actions проверены через
+публичную страницу каждого run с полным SHA, а не по устаревшему общему статусу.
+
+## Изменённые области
+
+HTML/CSS сетки, map.js/ResizeObserver, ui.js/disclosures и finite motion,
+data-quality/recommendations/report, scenarios и saved-places;
+новые field-check-storage.js, field-checks.js, field-checks.css и Node/browser suites.
+README, design-system, redesign-spec, frontend architecture, spec, plan,
+CHANGELOG и DEPLOYMENT описывают окончательную реализацию.
 
 ## Границы проверки
 
