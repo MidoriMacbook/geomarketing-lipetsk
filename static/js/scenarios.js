@@ -30,15 +30,29 @@ async function change(transform, success, after) {
   $('scenario-submit').disabled = true;
   $('scenario-submit').textContent = 'Сохраняем…';
   status('Сохраняем изменения…');
+  let succeeded = false;
   try {
     accept(await mutateScenarios(transform));
-    storageProblem = false; render(); status(success); after?.();
-    return true;
+    storageProblem = false; render(); status(success); succeeded = true;
   } catch (error) {
     if (error.code === 'conflict') load();
     status(explainError(error));
-    return false;
   } finally { pending = false; updateScenarioAvailability(); $('scenario-submit').disabled = false; $('scenario-submit').textContent = 'Сохранить'; }
+  if (succeeded) after?.();
+  return succeeded;
+}
+
+function focusAfterRemoval(index = 0) {
+  const cards = $('scenario-list').children;
+  const available = element => element?.isConnected && !element.disabled
+    && !element.closest('[hidden],[inert]') && element.getClientRects().length
+    && getComputedStyle(element).visibility !== 'hidden';
+  const card = cards[Math.min(index, cards.length - 1)];
+  if (available(card)) { card.focus(); return; }
+  const save = $('scenario-save');
+  if (available(save)) { save.focus(); return; }
+  const heading = [$('map-title'), $('settings-title'), $('page-title')].find(available);
+  if (heading) { heading.tabIndex = -1; heading.focus(); }
 }
 
 function editDialog(item = null) {
@@ -189,9 +203,7 @@ export function initScenarios() {
     const id = deletingId, index = state.scenarios.findIndex(item => item.id === id);
     await change(latest => latest.filter(item => item.id !== id), 'Исследование удалено.', () => {
       closeDialog($('scenario-delete-dialog'));
-      const cards = $('scenario-list').children;
-      const target = cards[Math.min(index, cards.length - 1)] || $('scenario-save');
-      requestAnimationFrame(() => target.focus());
+      focusAfterRemoval(index);
     });
   });
   $('scenario-export').addEventListener('click', () => exportScenariosCSV(selected().length === 2 ? selected() : state.scenarios));
@@ -204,8 +216,13 @@ export function initScenarios() {
   $('scenario-reset').addEventListener('click', () => { openDialog($('scenario-reset-dialog')); $('scenario-reset-cancel').focus(); });
   $('scenario-reset-cancel').addEventListener('click', () => closeDialog($('scenario-reset-dialog')));
   $('scenario-reset-confirm').addEventListener('click', async () => {
+    if (pending) return;
+    pending = true; updateScenarioAvailability();
     try { await clearDamagedScenarios(damagedRaw); closeDialog($('scenario-reset-dialog')); status('Повреждённый список исследований очищен.'); load(); }
     catch (error) { closeDialog($('scenario-reset-dialog')); load(); status(explainError(error)); }
+    finally { pending = false; updateScenarioAvailability(); }
+    if (storageProblem && !$('scenario-repair').hidden) $('scenario-reset').focus();
+    else focusAfterRemoval();
   });
   window.addEventListener('storage', event => { if (event.key === SCENARIO_KEY || event.key === null) { load(); if (!storageProblem) status('Список исследований обновлён из другой вкладки.'); } });
   load();

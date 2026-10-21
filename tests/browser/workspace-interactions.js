@@ -2,6 +2,95 @@ async original => {
   const context = await original.context().browser().newContext({ viewport: { width: 1440, height: 1000 } });
   const page = await context.newPage(), base = new URL(original.url()).origin, errors = [];
   const assert = (ok, message) => { if (!ok) throw new Error(message); };
+  // Reviewer regressions: run independently so both broken contracts are visible.
+  const reviewContext = await original.context().browser().newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
+  const reviewFailures = [], reviewCheck = (ok, message) => { if (!ok) reviewFailures.push(message); };
+  try {
+    const focusPage = await reviewContext.newPage();
+    focusPage.on('pageerror', error => reviewFailures.push(error.message));
+    await focusPage.goto(base); await focusPage.waitForFunction(() => document.documentElement.dataset.analysisState === 'success');
+    await focusPage.locator('#scenario-save').click(); await focusPage.locator('#scenario-name').fill('Фокус после удаления'); await focusPage.locator('#scenario-submit').click();
+    await focusPage.getByTestId('scenario-card').waitFor();
+    const originalResearch = await focusPage.evaluate(() => localStorage.getItem('geomarketing.scenarios.v1'));
+    await focusPage.getByTestId('scenario-duplicate').click();
+    await focusPage.waitForFunction(() => document.querySelectorAll('[data-testid="scenario-card"]').length === 2);
+    await focusPage.getByTestId('scenario-delete').first().click(); await focusPage.locator('#scenario-delete-confirm').click();
+    await focusPage.waitForFunction(() => document.querySelectorAll('[data-testid="scenario-card"]').length === 1);
+    reviewCheck(await focusPage.evaluate(() => !!document.activeElement?.closest('[data-testid="scenario-card"]')), 'Surviving research card does not receive focus when deletion completes');
+    await focusPage.locator('#business').selectOption({ index: 1 }, { force: true });
+    reviewCheck(await focusPage.locator('#scenario-save').isDisabled(), 'Filter-clear fixture did not disable research save');
+    await focusPage.getByTestId('scenario-delete').click(); await focusPage.locator('#scenario-delete-confirm').click();
+    await focusPage.waitForFunction(() => document.querySelector('#scenarios-section').hidden);
+    reviewCheck(await focusPage.locator('#map-title').evaluate(el => document.activeElement === el), 'Last deletion after filter clear loses workspace focus');
+    reviewCheck(await focusPage.locator('#scenario-status').isVisible() && (await focusPage.locator('#scenario-status').innerText()).includes('удалено'), 'Last deletion completion feedback is hidden');
+    await focusPage.evaluate(raw => localStorage.setItem('geomarketing.scenarios.v1', raw), originalResearch);
+    await focusPage.route('**/api/catalog', route => route.abort()); await focusPage.reload();
+    await focusPage.getByTestId('scenario-card').waitFor(); await focusPage.waitForFunction(() => document.documentElement.dataset.analysisState === 'error');
+    await focusPage.getByTestId('scenario-delete').click(); await focusPage.locator('#scenario-delete-confirm').click();
+    await focusPage.waitForFunction(() => document.querySelector('#scenarios-section').hidden);
+    reviewCheck(await focusPage.locator('#map-title').evaluate(el => document.activeElement === el), 'Last deletion without catalog/current result loses workspace focus');
+    await focusPage.evaluate(() => localStorage.setItem('geomarketing.scenarios.v1', '{broken')); await focusPage.reload();
+    await focusPage.locator('#scenario-repair').waitFor();
+    await focusPage.evaluate(() => {
+      window.__workspaceRemoveItem = Storage.prototype.removeItem;
+      Storage.prototype.removeItem = function(key) {
+        if (key === 'geomarketing.scenarios.v1') throw new DOMException('Storage unavailable', 'SecurityError');
+        return window.__workspaceRemoveItem.call(this, key);
+      };
+    });
+    await focusPage.locator('#scenario-reset').click(); await focusPage.locator('#scenario-reset-confirm').click();
+    await focusPage.waitForFunction(() => !document.querySelector('#scenario-reset-dialog').open);
+    reviewCheck(await focusPage.locator('#scenario-reset').evaluate(el => document.activeElement === el), 'Recovery reset failure moves focus away from the reachable recovery control');
+    reviewCheck(await focusPage.locator('#scenario-repair').isVisible() && await focusPage.evaluate(() => localStorage.getItem('geomarketing.scenarios.v1') === '{broken'), 'Recovery reset failure hides recovery or changes damaged data');
+    await focusPage.evaluate(() => { Storage.prototype.removeItem = window.__workspaceRemoveItem; delete window.__workspaceRemoveItem; });
+    await focusPage.locator('#scenario-reset').click(); await focusPage.locator('#scenario-reset-confirm').click();
+    await focusPage.waitForFunction(() => document.querySelector('#scenarios-section').hidden);
+    reviewCheck(await focusPage.locator('#map-title').evaluate(el => document.activeElement === el), 'Recovery reset without a result loses workspace focus');
+    reviewCheck(await focusPage.locator('#scenario-status').isVisible() && (await focusPage.locator('#scenario-status').innerText()).includes('очищен'), 'Recovery reset completion feedback is hidden');
+    const printPage = await reviewContext.newPage(); await printPage.goto(base);
+    printPage.on('pageerror', error => reviewFailures.push(error.message));
+    await printPage.waitForFunction(() => document.documentElement.dataset.analysisState === 'success');
+    await printPage.getByTestId('save-place').nth(0).click();
+    await printPage.waitForFunction(() => document.querySelectorAll('[data-testid="saved-card"]').length === 1);
+    await printPage.getByTestId('save-place').nth(1).click();
+    await printPage.waitForFunction(() => document.querySelectorAll('[data-testid="saved-card"]').length === 2);
+    await printPage.getByTestId('compare-place').nth(0).check(); await printPage.getByTestId('compare-place').nth(1).check();
+    const compactPrint = await printPage.evaluate(async () => {
+      const { state } = await import('/static/js/state.js'), { printReport } = await import('/static/js/report.js');
+      state.current = { ...state.current, warning: 'Текущее предупреждение', notice: 'Текущее ограничение' };
+      state.saved = state.saved.map((item, index) => ({ ...item, warning: `Предупреждение сохранённого места ${index + 1}` }));
+      window.print = () => {}; printReport();
+      const report = document.querySelector('#print-report-content'), places = [...report.querySelectorAll('.report-place')];
+      const currentPlaces = places.slice(0, state.current.recommendations.length), savedPlaces = places.slice(state.current.recommendations.length);
+      return {
+        recommendations: state.current.recommendations.length,
+        currentQuality: report.querySelectorAll('.report-analysis-context [data-testid="data-quality-block"]').length,
+        currentPlaceQuality: currentPlaces.reduce((count, place) => count + place.querySelectorAll('[data-testid="data-quality-block"]').length, 0),
+        currentContextRepeated: currentPlaces.some(place => ['ID расчёта:', 'Радиус модели:', state.current.district_name, state.current.business_name].some(text => place.textContent.includes(text))),
+        currentWarnings: ['Текущее предупреждение', 'Текущее ограничение'].map(text => report.textContent.split(text).length - 1),
+        savedContext: savedPlaces.map((place, index) => !!place.querySelector('[data-testid="data-quality-block"]') && place.textContent.includes(`Предупреждение сохранённого места ${index + 1}`) && place.textContent.includes('Источник:')),
+        closedExplanations: report.querySelectorAll('.explanation-block details:not([open])').length
+      };
+    });
+    reviewCheck(compactPrint.recommendations > 1 && compactPrint.currentQuality === 1 && compactPrint.currentPlaceQuality === 0 && !compactPrint.currentContextRepeated && compactPrint.currentWarnings.every(count => count === 1), 'Current print repeats analysis metadata or warnings across recommendations');
+    reviewCheck(compactPrint.savedContext.length === 2 && compactPrint.savedContext.every(Boolean), 'Saved comparison print loses per-place source, quality or warnings');
+    reviewCheck(compactPrint.closedExplanations === 0, 'Current or saved print explanations remain closed');
+    const printFacts = await printPage.evaluate(async () => {
+      const { state } = await import('/static/js/state.js'), { showResult } = await import('/static/js/recommendations.js'), { printReport } = await import('/static/js/report.js');
+      state.comparison.clear();
+      state.current = { ...state.current, district_name: 'Область без рекомендаций', business_name: 'Категория проверки', source: 'cache', recommendations: [], warning: 'Предупреждение печати', notice: 'Ограничение печати', data_meta: { houses: { fetched_at: 1792224000 }, competitors: { fetched_at: 1792310400 } } };
+      showResult(state.current); window.print = () => {}; printReport();
+      const report = document.querySelector('#print-report-content');
+      const dates = [...report.querySelectorAll('.quality-details p')].map(element => element.textContent);
+      return { text: report.textContent, quality: !!report.querySelector('[data-testid="data-quality-block"]'), dates, expectedDates: [1792224000, 1792310400].map(time => new Date(time * 1000).toLocaleString('ru-RU')) };
+    });
+    reviewCheck(printFacts.text.includes('Область без рекомендаций') && printFacts.text.includes('Категория проверки'), 'Empty-analysis print omits area/category context');
+    reviewCheck(printFacts.quality && printFacts.text.includes('OpenStreetMap') && printFacts.text.includes('Дома:') && printFacts.text.includes('Конкуренты:'), 'Empty-analysis print omits source, separate dataset dates or quality');
+    reviewCheck(printFacts.dates.length === 2 && printFacts.dates.every((date, index) => date.includes(printFacts.expectedDates[index])), 'Empty-analysis print collapses separate house and competitor dates');
+    reviewCheck(printFacts.text.includes('Предупреждение печати') && printFacts.text.includes('Ограничение печати'), 'Empty-analysis print omits warnings');
+    reviewCheck(printFacts.text.includes('Подходящих мест не найдено'), 'Empty-analysis print omits its conclusion');
+    assert(reviewFailures.length === 0, `Review regressions: ${reviewFailures.join('; ')}`);
+  } finally { await reviewContext.close(); }
   const trackMap = tab => tab.route('**/vendor/leaflet/leaflet.js', async route => {
     const response = await route.fetch();
     await route.fulfill({ response, body: `${await response.text()}\n;L.Map.addInitHook(function(){window.__workspaceMap=this;const invalidate=this.invalidateSize;this.invalidateSize=function(options){window.__workspaceInvalidations=(window.__workspaceInvalidations||0)+1;window.__workspaceResizeOptions=options;return invalidate.call(this,options);};});` });
@@ -122,7 +211,7 @@ async original => {
     const plainSavedBackground = await saved.evaluate(el => getComputedStyle(el).backgroundColor);
     await saved.locator('[data-testid="field-checks"] summary').click();
     await saved.locator('input[data-check-index="0"]').check();
-    await page.waitForFunction(() => JSON.parse(localStorage.getItem('geomarketing.field-checks.v1')).records[0].checks[0]);
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('geomarketing.field-checks.v1'))?.records[0]?.checks[0]);
     assert(await saved.getByTestId('compare-place').isChecked() === false && await saved.evaluate(el => getComputedStyle(el).backgroundColor) === plainSavedBackground, 'Checklist mark applies comparison highlight');
     await saved.getByTestId('compare-place').check();
     await page.waitForFunction(background => getComputedStyle(document.querySelector('[data-testid="saved-card"]')).backgroundColor !== background, plainSavedBackground);
