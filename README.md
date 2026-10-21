@@ -10,10 +10,13 @@
   автоматически обновляет расчёт.
 - Связанные карточки и маркеры, KPI и переключение слоёв.
 - До 12 сохранённых мест в браузере, сравнение до трёх, CSV и печатный отчёт.
-- До 6 полных сценариев: имя и заметка, карта/настройки, повторное открытие,
+- До 6 полных исследований: имя и заметка, карта/настройки, повторное открытие,
   дублирование, изменение, удаление и сравнение двух исследований.
-- Объяснения спроса и конкуренции, даты и признаки качества исходных данных;
-  отдельные CSV и печатное сравнение сценариев без общего рейтинга.
+- Объяснения спроса и конкуренции; краткий статус данных рядом с картой,
+  подробные даты и ограничения в конце страницы; отдельные CSV и печатное
+  сравнение исследований без общего рейтинга.
+- Сворачиваемая проверка на месте у сохранённой точки: семь локальных отметок
+  пользователя о помещении и окружении, без влияния на оценку модели.
 - Локальный Leaflet и JSON-снимки районов; обработка отказа API, тайлов и хранилища.
 - Тёмный сливовый интерфейс с розовыми акцентами, плавным появлением блоков и счётчиками чисел.
 - На карте дома обозначены приглушённым серо-синим, конкуренты — ягодным
@@ -22,6 +25,17 @@
 Население оценочное, расстояния прямые. Оценка нормирована внутри одного
 расчёта и не означает вероятность коммерческого успеха. Сохранения доступны
 в этом браузере; синхронизации между устройствами нет.
+
+Карта растягивается до высоты рекомендаций на компьютере; подробные сведения
+об источниках открываются через «Проверить детали» и находятся перед подвалом.
+Пустой раздел исследований скрыт: первое полное исследование можно сохранить
+действием после рабочей зоны. Записанные исследования и восстановление при
+повреждении хранилища остаются доступны.
+
+«Проверка пользователя» хранится отдельно в `geomarketing.field-checks.v1`.
+Она не заменяет осмотр помещения и не влияет на оценку. При отказе хранилища
+или неподдерживаемой версии исходные данные не перезаписываются; без Web Locks
+отметки доступны для чтения. Старые сохранённые места и исследования не мигрируют.
 
 Готовые области: Елецкий, Университетский, Центр (Быханов сад), Победа,
 Европейский, Сокол, НЛМК, Тракторный, Матырский, Сырский Рудник.
@@ -67,7 +81,7 @@ pnpm run check:material
 
 `app.py` собирает Flask-приложение, `serve.py` запускает Waitress.
 Внутренние модули: `src/routes → services → domain/utils`, настройки —
-`src/config.py`. Клиент — четырнадцать ES-модулей и восемь CSS-файлов; код приложения
+`src/config.py`. Клиент — шестнадцать ES-модулей и девять CSS-файлов; код приложения
 не требует сборщика, отдельный Material vendor собирается Rollup и хранится в Git.
 Корневые `osm.py` и `businesses.py` сохраняют старые публичные импорты.
 
@@ -101,6 +115,7 @@ node --check static/js/ui.js
 node --check static/js/counters.js
 node --check static/js/choices.js
 node --test tests/unit/scenario-storage.test.js
+node --test tests/unit/field-check-storage.test.js
 ```
 
 Серверные тесты работают без сети. GitHub Actions запускает Python-тесты,
@@ -116,6 +131,9 @@ playwright-cli -s=geomarket run-code --filename=tests/browser/workspace.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/responsive.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/catalog-matrix.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/choice-menus.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/workspace-layout.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/workspace-interactions.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/field-checks.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios-ui.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios-mobile.js

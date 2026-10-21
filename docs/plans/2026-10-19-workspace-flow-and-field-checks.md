@@ -27,14 +27,14 @@ Consumes: текущиеid и новыеHTML ids из spec. Produces: растя
 scenario-save вне hidden research; полеfieldsetCSSlink field-checks.css(создаётTask3).
 Security:none. Excludes: JS размер карты/качество/исследования — Task2.
 
-- [ ] RED тест:1440/1024 map-card.height>=recommendations.height, нет остатка в
+- [x] RED тест:1440/1024 map-card.height>=recommendations.height, нет остатка в
   рабочем ряду; data-section после saved/research и передfooter; native data-details
   defaultclosed,390order/44px/nooverflow. СуществующийCSS должен провалиться.
-- [ ] Implement grid/flex min/max, adaptive rec scrolling only atcomfortable cap,
+- [x] Implement grid/flex min/max, adaptive rec scrolling only atcomfortable cap,
   keep settings compact, preserve allIDs anddatacontents, relocateHTML.
-- [ ] GREEN layouttest andJSfreevisiblecontent,0/1/3cards includingexpanded;
+- [x] GREEN layouttest andJSfreevisiblecontent,0/1/3cards includingexpanded;
   coordinate JS hooks withTask2, don't edit their files.
-- [ ] Commit ownedpaths andreportRED/GREEN.
+- [x] Commit ownedpaths andreportRED/GREEN.
 
 ## Task2 — объяснения, motion, map resize и исследования (worker flow)
 
@@ -48,14 +48,14 @@ compacttrust/link/bottomfacts, fact-basedrecdisclosures, one-timepanels/buttonfe
 researchnaming/visibility+firstsave/recovery/oldrecords andfullprintmetadata.
 Security:none (reusevalidatedAPI/DOMtext). Excludes: storage schema/model/backend changes.
 
-- [ ] RED interactiontest oldtrustmissing,fullqualityintrudes, explanation/focus/
+- [x] RED interactiontest oldtrustmissing,fullqualityintrudes, explanation/focus/
   hoverrankunchanged, ResizeObserver afterdisclosure, researchinitialhiddenbut
   firstsavebuttonreachable andoldrecoverysurfacevisible.
-- [ ] Implement approvedfact-basedUI, cancellableaccessible disclosure, reduce runtime,
+- [x] Implement approvedfact-basedUI, cancellableaccessible disclosure, reduce runtime,
   hoverfinepointeronly/selectedsteady, actualheightresize withoutresetselection.
-- [ ] GREEN testpointer/keyboard/touch/reduce/fallback/print/CSV/refresherror/archive
+- [x] GREEN testpointer/keyboard/touch/reduce/fallback/print/CSV/refresherror/archive
   noAPIfromUIactions; adaptroot regression expectations only ifneeded.
-- [ ] Commit ownedpaths; coordinate sharedhelperTask3 andlayoutTask1.
+- [x] Commit ownedpaths; coordinate sharedhelperTask3 andlayoutTask1.
 
 ## Task3 — локальная пользовательская проверка (worker checklist)
 
@@ -69,14 +69,14 @@ storage/locks. Exactkey/schema/7items/limits in spec. NoDOMglobalsatpuremoduleim
 Security:localuntrustedstorage; preflightreview required beforeimplementation.
 Excludes: scores/API/oldschemas/actualphoto uploads. Fields appear only savedcards.
 
-- [ ] RED Node schema/isolatedrecords/strictbool/invalid/date/prototype-safeid/
+- [x] RED Node schema/isolatedrecords/strictbool/invalid/date/prototype-safeid/
   latestlock/twotabs/readonlynolock/quota/future/rawpreservation; browserwidgetabsent.
-- [ ] Implement storage+UI, checkbox44px+keyboard/progress/softfeedback; rollback
+- [x] Implement storage+UI, checkbox44px+keyboard/progress/softfeedback; rollback
   failedwrites, preservefocusstorageevent, removedonlyaftersaveddeletesucceeds.
   Recoverymayresetonlyownkey afterconfirmation+exactrawguard, noautomaticrepair.
-- [ ] GREEN Node/browserreload/twotab/corruptkey/blockedstorage/nolock/delete+latewrites,
+- [x] GREEN Node/browserreload/twotab/corruptkey/blockedstorage/nolock/delete+latewrites,
   modelunchanged/newcardsuntouched andnormalCSV/print stillwork.
-- [ ] Add Node testtoCI andcommitownedpaths.
+- [x] Add Node testtoCI andcommitownedpaths.
 
 ## Task4 — integration/review/release (root)
 
@@ -86,8 +86,8 @@ scripts/validate_project.py (requirednewfilesonly), spec/plan andQAwrappers/arti
 Consumes Tasks1–3 commits. Produces verified main+Render; no newAPI/contracts.
 Security:none. Excludes physicaldevices/newengines/OSMquality/nativePDFpagination.
 
-- [ ] Complete independenttaskreview(Spec+Quality); taskfixesRED→GREEN/re-review.
-- [ ] Singlefinalmatrix1440/1024/768/390/200%, mapheight0/1/3+expanded, no gap/dataorder,
+- [x] Complete independenttaskreview(Spec+Quality); taskfixesRED→GREEN/re-review.
+- [x] Singlefinalmatrix1440/1024/768/390/200%, mapheight0/1/3+expanded, no gap/dataorder,
   trustrefresh/error/archive, marker/card, checkliststorage/concurrency, oldstorage/
   reports,reduce/focus/touch44px,actualscreenshots+fullPython/Node/validator/JS/material.
 - [ ] Wholebranchmostcapablereview thenfeatureCIgreen→mainFF→Renderlive.
