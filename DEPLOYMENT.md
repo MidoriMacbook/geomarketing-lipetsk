@@ -9,17 +9,18 @@
 - Запуск: `python serve.py`, Waitress слушает порт из `PORT`.
 - Проверка приложения: `GET /healthz` → HTTP 200, `{"status":"ok"}`.
 
-Последняя публикация: 19 октября 2026, runtime `7d48753`,
-deploy `dep-dbapg461egvs73dum4s0` live с07:11:13 по Москве, trigger `new_commit`.
-Source/main CI success: run39197703595/run39198088994 (84Python/62Node, Material rebuild).
-Десять областей и десять категорий,110реальных OSM-снимков; дома серо-синие,
-конкуренты ягодные. Все100сочетаний проверены offline и в локальном браузере.
-Public QA:10районов/5новыхтипов с точными Git-данными, новые сценарии/CSV/печать,
-10пунктов меню/actualtouch/200%, карта390/768/1440, pageErrors[].
-Все25статических файлов совпали с Git runtime.
-Подробности: docs/verification/2026-10-18-catalog-and-map-colors.md.
-Предыдущий пакет: docs/verification/2026-10-18-district-auto.md.
-Итоговая запись аудита меняет только документы; runtime повторно не собирается.
+Последняя публикация: 21 октября 2026, runtime `d8a55d7`,
+deploy `dep-dbcggjavcj2c738n948g` live с 21:46:41 по Москве, trigger `new_commit`.
+Source/main CI success: run39655304096/run39655604319 (84 Python / 75 Node,
+Material rebuild). Рабочая зона без разрыва под картой, объяснения, нижний раздел
+данных и локальная проверка сохранённых мест опубликованы. Каталог 10×10 сохранён.
+Public QA: 48 layout cases, взаимодействия, чек-листы двух вкладок и прежние
+19 групп workspace/CSV/печати, 1440/1024/768/390px и 200%, pageErrors[].
+Все 28 runtime-ресурсов совпали с Git. Подробности:
+docs/verification/2026-10-19-workspace-flow-and-field-checks.md.
+Предыдущий пакет: docs/verification/2026-10-18-catalog-and-map-colors.md.
+Тестовая коррекция ebe9e98 и итоговый аудит используют `[skip render]`;
+runtime повторно не собирается.
 
 Сервис создан через подключение Render; исходная конфигурация для повторного
 развёртывания через Blueprint хранится в `render.yaml`. Она включает HTTP
