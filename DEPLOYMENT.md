@@ -9,17 +9,16 @@
 - Запуск: `python serve.py`, Waitress слушает порт из `PORT`.
 - Проверка приложения: `GET /healthz` → HTTP 200, `{"status":"ok"}`.
 
-Последняя публикация: 21 октября 2026, runtime `d8a55d7`,
-deploy `dep-dbcggjavcj2c738n948g` live с 21:46:41 по Москве, trigger `new_commit`.
-Source/main CI success: run39655304096/run39655604319 (84 Python / 75 Node,
-Material rebuild). Рабочая зона без разрыва под картой, объяснения, нижний раздел
-данных и локальная проверка сохранённых мест опубликованы. Каталог 10×10 сохранён.
-Public QA: 48 layout cases, взаимодействия, чек-листы двух вкладок и прежние
-19 групп workspace/CSV/печати, 1440/1024/768/390px и 200%, pageErrors[].
-Все 28 runtime-ресурсов совпали с Git. Подробности:
-docs/verification/2026-10-19-workspace-flow-and-field-checks.md.
-Предыдущий пакет: docs/verification/2026-10-18-catalog-and-map-colors.md.
-Тестовая коррекция ebe9e98 и итоговый аудит используют `[skip render]`;
+Последняя публикация: 21 октября 2026, runtime `11a6faf`,
+deploy `dep-dbcgtvpsrm7s73d01irg` live с 22:15:23 по Москве, trigger `new_commit`.
+Source/main CI success: run39659628732/run39659829541.
+«Открыть на карте» показывает восстановленный снимок; hover исследований
+согласован с сохранёнными местами. Проверены мышь/клавиатура/mobile touch,
+обычный и reduced motion, отсутствие нового расчёта и изменения сохранений.
+Все 28 runtime-ресурсов совпали с Git, /healthz200, pageErrors[]. Подробности:
+docs/verification/2026-10-21-research-open-motion.md.
+Предыдущий пакет: docs/verification/2026-10-19-workspace-flow-and-field-checks.md.
+Итоговый аудит и расширение browser-теста используют `[skip render]`;
 runtime повторно не собирается.
 
 Сервис создан через подключение Render; исходная конфигурация для повторного
