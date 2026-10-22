@@ -6,13 +6,23 @@
   "packageManager": "pnpm@11.25.0",
   "scripts": {
     "build:material": "rollup --config rollup.config.js",
-    "check:material": "node --check scripts/frontend/material-web-entry.js && rollup --config rollup.config.js"
+    "check:material": "node --check scripts/frontend/material-web-entry.js && rollup --config rollup.config.js",
+    "build:hero": "rollup --config rollup.config.js --configHero",
+    "check:hero": "node scripts/frontend/hero/check-build.js"
   },
   "dependencies": {
-    "@material/web": "2.5.0"
+    "@gsap/react": "2.1.2",
+    "@material/web": "2.5.0",
+    "gsap": "3.15.0",
+    "motion": "12.23.24",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "29.0.3",
     "@rollup/plugin-node-resolve": "16.0.3",
+    "@rollup/plugin-replace": "6.0.3",
+    "@rollup/plugin-terser": "1.0.0",
     "rollup": "4.64.7"
   }
 }

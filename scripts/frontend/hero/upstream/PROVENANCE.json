@@ -1,0 +1,12 @@
+{
+  "sha256": {
+    "BlurText.jsx": "f851c51dd709564b7cf5d4d06a991adab8932e04199dde1b083f8b8363ccb6a3",
+    "LICENSE.md": "4bdd1fa59a6b7d5954bc3b213dbc34e455c635a94bbcecf9293553797d0fad02",
+    "SplitText.jsx": "f3b9433ce28aa703f4ea6c4e7a7d023aa91de3f4b21002fc99477ea095c932b1",
+    "ScrollReveal.jsx": "e4d8b1b2006b7f627b150d17cca13e05a32e3e57cf5f1fc5f4d530b857f7b89b"
+  },
+  "retrieved": "2026-10-22",
+  "revision": "e12c22192ac7b4b452c5e2feb9b586d74765d696",
+  "license": "MIT + Commons Clause License Condition v1.0",
+  "repository": "https://github.com/DavidHDev/react-bits"
+}
