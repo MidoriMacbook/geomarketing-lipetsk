@@ -1,4 +1,6 @@
 button,select,.button,.place-actions a,.saved-card,.scenario-card,.recommendation,.site-header { transition:background-color var(--motion-fast) var(--ease-standard),color var(--motion-fast) var(--ease-standard),border-color var(--motion-fast) var(--ease-standard),box-shadow var(--motion-base) var(--ease-standard),transform var(--motion-fast) var(--ease-standard); }
+/* Saved/unsaved foreground and surface switch together to preserve contrast. */
+.place-actions .save { transition:box-shadow var(--motion-base) var(--ease-standard),transform var(--motion-fast) var(--ease-standard); }
 button:disabled,select:disabled { cursor:default; opacity:var(--opacity-disabled); }
 .primary:hover:not(:disabled),.place-actions .save:hover:not(:disabled) { background:var(--color-primary-hover); border-color:var(--color-primary-hover); color:var(--color-on-primary); }
 .secondary:not(.save):hover:not(:disabled),.place-actions a:hover,.saved-card-actions button:hover { background:var(--color-subtle); color:var(--color-ink); }
