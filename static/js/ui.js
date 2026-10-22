@@ -109,6 +109,9 @@ export function animateUI(element, frames, purpose, options = {}) {
 
 export function reveal(element, purpose, options = {}) {
   if (!element) return null;
+  // The editorial island owns the five once-only block entrances. Its failure
+  // leaves static content visible rather than replaying a second card animation.
+  if (document.getElementById('hero-motion-root') && ['section', 'recommendation', 'scenario', 'saved-enter', 'kpi'].includes(purpose)) return null;
   const frames = [{ opacity: 0, transform: 'translateY(var(--motion-distance))' }, { opacity: 1, transform: 'translateY(0)' }];
   cancelUI(element);
   if (motionReduced() || !element.isConnected) return null;

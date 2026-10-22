@@ -18,8 +18,9 @@
 - Сворачиваемая проверка на месте у сохранённой точки: семь локальных отметок
   пользователя о помещении и окружении, без влияния на оценку модели.
 - Локальный Leaflet и JSON-снимки районов; обработка отказа API, тайлов и хранилища.
-- Тёмный сливовый интерфейс с розовыми акцентами, плавным появлением блоков и счётчиками чисел.
-- На карте дома обозначены приглушённым серо-синим, конкуренты — ягодным
+- Светлый кремовый интерфейс, выразительный Playfair/Golos hero, доступная липкая
+  навигация и локальные React Bits-анимации. Расчёт и Leaflet остаются ES-модулями.
+- На тёмной карте дома обозначены Misty Sky, конкуренты — Rosewood
   со светлой обводкой; легенда использует те же цвета.
 
 Население оценочное, расстояния прямые. Оценка нормирована внутри одного
@@ -120,7 +121,14 @@ node --test tests/unit/field-check-storage.test.js
 
 Серверные тесты работают без сети. GitHub Actions запускает Python-тесты,
 компиляцию, структурный валидатор, синтаксические проверки JS и воспроизводимую
-сборку Material на Linux (Node24, pnpm11.25.0).
+сборки Material и hero на Linux (Node24, pnpm11.25.0).
+
+Hero собирается отдельно: `pnpm build:hero`; проверка исходных hashes,
+воспроизводимости и gzip-бюджета — `pnpm check:hero`. Bundle хранится в репозитории,
+Render не требует Node для запуска Flask. Статические h1/описание/CTA доступны
+до React и при его отказе; UI приложения не зависит от загрузки острова.
+Происхождение, точные лицензии и адаптации React Bits:
+`static/vendor/hero/SOURCES.md`. Шрифты локальные, с кириллицей и OFL.
 
 Браузерная проверка: установленный playwright-cli, Chrome и запущенный сервер.
 
@@ -138,6 +146,9 @@ playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios-ui.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/scenarios-mobile.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/research-open-motion.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/editorial-navigation.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/editorial-style.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/hero-island.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/palette.js
 playwright-cli -s=geomarket close
 ```
