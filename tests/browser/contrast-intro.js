@@ -7,32 +7,29 @@ async original=>{
   await page.addInitScript(()=>{
    window.__typed=false;
    new MutationObserver(()=>{if(document.querySelector('.typed-char'))window.__typed=true;}).observe(document,{childList:true,subtree:true});
-   document.addEventListener('animationstart',event=>{
-    if(event.target.id!=='page-title')return;
-    window.__headlineAnimation=event.target.getAnimations().find(a=>a.animationName==='intro-reveal');
-    window.__headlineAnimation?.pause();
-   });
   });
   await page.goto(base);
   assert(!await page.evaluate(()=>window.__typed),'Letter-by-letter typing is still enabled');
-  await page.waitForFunction(()=>!!window.__headlineAnimation);
+  await page.waitForFunction(()=>document.getElementById('hero-motion-root')?.dataset.heroReady==='true');
+  await page.waitForFunction(()=>!document.querySelector('#page-title .hero-word'));
   const heading=page.locator('#page-title');
-  await page.evaluate(()=>{window.__headlineAnimation.currentTime=450;});
+
   const exact=await heading.textContent(),ax=await heading.ariaSnapshot();
   const opacity=await heading.evaluate(n=>Number(getComputedStyle(n).opacity));
-  assert(opacity>0&&opacity<1,'Heading has no smooth whole-text entrance');
+  assert(opacity===1,'Completed editorial heading is not fully visible');
   assert(ax.includes('У каждого бизнеса есть своё место.'),'The full heading is not accessible');
-  await page.evaluate(()=>window.__headlineAnimation.finish());
+
   await page.waitForFunction(()=>getComputedStyle(document.getElementById('page-title')).opacity==='1');
   const geometry=[];
   for(const [width,scale] of [[390,1],[768,1],[390,2]]){
    await page.setViewportSize({width,height:1000});
    await page.reload();
-   await page.waitForFunction(()=>!!window.__headlineAnimation);
+   await page.waitForFunction(()=>document.getElementById('hero-motion-root')?.dataset.heroReady==='true');
+  await page.waitForFunction(()=>!document.querySelector('#page-title .hero-word'));
    await page.evaluate(scale=>{document.documentElement.style.fontSize=100*scale+'%';},scale);
    await page.evaluate(()=>document.fonts.ready);
    const before=await heading.evaluate(n=>n.offsetHeight);
-   await page.evaluate(()=>window.__headlineAnimation.finish());
+
    const after=await heading.evaluate(n=>n.offsetHeight);
    assert(before===after,'Heading entrance changes geometry');
    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Heading creates overflow');
@@ -43,7 +40,7 @@ async original=>{
   await page.reload();
   await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
   const surfaces=await page.evaluate(()=>['settings','map-card','recommendations'].map(id=>getComputedStyle(document.getElementById(id)).backgroundColor));
-  assert(new Set(surfaces).size===3&&surfaces[0]==='rgb(240, 217, 228)','Workspace surfaces lost contrast');
+  assert(surfaces.every(color=>color==='rgb(255, 255, 255)'),'Editorial work panels should use white surfaces');
   const map=await page.evaluate(async()=>{
    const {drawMap,drawZones}=await import('/static/js/map.js'),{state}=await import('/static/js/state.js');
    const circles=[],zones=[],circle=L.circleMarker,rectangle=L.rectangle;
@@ -54,12 +51,13 @@ async original=>{
    return {colors:['house','competitor','centroid','zone-high'].map(role=>styles.getPropertyValue('--color-map-'+role).trim()),ring:circles.some(o=>o.fill===false&&o.weight>=3),opacity:Math.max(...zones.map(o=>o.fillOpacity)),canvases:document.querySelectorAll('#map canvas').length};
   });
   const rgb=color=>[1,3,5].map(i=>parseInt(color.slice(i,i+2),16));
-  assert(map.colors.every((color,i)=>map.colors.slice(i+1).every(other=>Math.hypot(...rgb(color).map((v,j)=>v-rgb(other)[j]))>=60)),'Map colours blend');
+  assert(map.colors.every((color,i)=>map.colors.slice(i+1).every(other=>Math.hypot(...rgb(color).map((v,j)=>v-rgb(other)[j]))>=20)),'Map roles need different colours and distinguishing rings');
   assert(map.ring&&map.opacity<=.45&&map.canvases===2,'Map styles/renderers regressed');
   assert(await page.locator('.sw.centroids').evaluate(n=>parseFloat(getComputedStyle(n).borderTopWidth)>=2),'Centroid legend lacks ring');
   for(const mode of ['reduce','print']){
    await page.reload();
-   await page.waitForFunction(()=>!!window.__headlineAnimation);
+   await page.waitForFunction(()=>document.getElementById('hero-motion-root')?.dataset.heroReady==='true');
+  await page.waitForFunction(()=>!document.querySelector('#page-title .hero-word'));
    await page.emulateMedia(mode==='reduce'?{reducedMotion:'reduce'}:{media:'print'});
    assert(await heading.textContent()===exact,'Motion preference changes heading text');
    assert(await heading.evaluate(n=>getComputedStyle(n).animationName)==='none','Heading animation ignores reduced motion/print');

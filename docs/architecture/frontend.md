@@ -2,13 +2,39 @@
 
 Раньше весь клиент находился в `static/workspace.js`. Код перенесён
 по ответственности, с неизменными DOM-контрактами и браузерными сценариями.
-Основные ES-модули браузера не требуют сборщика или npm-зависимостей.
+Основные ES-модули приложения не требуют сборщика и не зависят от React.
 
-Исключение — изолированный vendor-bundle Material Web. Его исходная точка
-находится в `scripts/frontend/material-web-entry.js`, а Rollup создаёт
+Исходная точка отдельного vendor-bundle Material Web находится
+в `scripts/frontend/material-web-entry.js`, а Rollup создаёт
 `static/vendor/material-web/material-components.js`. Основные модули приложения
 не импортируют npm-пакеты и продолжают работать без сборки. Подробности и правила
 поэтапного внедрения: `docs/design/material-web.md`.
+
+## React Bits island: отдельный слой улучшения
+
+`navigation.js` обслуживает статическую навигацию/фокус/реальный header offset.
+`hero-loader.js` независимо и асинхронно загружает локальный
+`static/vendor/hero/hero-motion.js` после load/idle; каталог и расчёт этого не ждут.
+`scripts/frontend/hero-entry.js` монтирует React effect-controller в пустой
+`#hero-motion-root`, не заменяя h1/описание/CTA/SVG. Нет второго React-дерева приложения.
+
+Адаптированные исходники SplitText/BlurText/ScrollReveal, точный upstream revision,
+SHA256 и лицензия находятся в scripts/frontend/hero/upstream и SOURCES.md рядом
+с bundle. SplitText использует GSAP word-splitting с revert, BlurText — Motion mini,
+ScrollReveal — пять одноразовых block entrances вместо текстового scrub.
+PointerDrift — код приложения с событийным RAF, максимум6px, без постоянного ticker.
+Reduced motion/print/visibility/unmount завершают эффекты и восстанавливают стили.
+Отсутствие Observer либо сбой bundle оставляют обычный читаемый DOM.
+
+Тексты, hit targets и геометрия доступны до JS; font fallback не меняет перенос
+через ch-ширину. React не меняет фактические числа/copy/CSV/печать. `ui.reveal`
+пропускает старые row/panel entrances при наличии hero mount, сохраняя отдельные
+feedback/disclosure/map/counter эффекты: у крупных блоков только один владелец.
+
+Rollup конфиг разделяет Material и `--configHero`, npm-версии зафиксированы.
+`pnpm check:hero` проверяет исходные hashes, byte-reproducible build и≤180KiB gzip;
+CI также собирает прежний Material без изменений. Bundle заранее включён в Git:
+production Flask/Render не получает новой зависимости от Node.
 
 | Модуль | Ответственность |
 | --- | --- |
@@ -175,6 +201,9 @@ print и три финальных снимка. `material-web.js` — точе�
 В этой итерации итоговый QA объединяет workspace+redesign; исторические матрицы
 без нового основания повторно не запускаются.
 
-`dark-motion.js` — disposable-page regression: вход не расходуется ниже viewport,
-запускается после прокрутки, отменяется при reduced-motion, работает без Observer;
-тёмная карта фильтрует только tiles, печать остаётся светлой.
+`dark-motion.js` сохраняет историческое имя, проверяя текущую кремовую палитру,
+отсутствие per-row entrances, reduced motion, noObserver и светлую печать.
+`hero-island.js` доказывает реальные word/blur эффекты, identity/text/geometry,
+delay/failure/noJS/noObserver, pointer reset, reduce/print и отдельный/полный CLS.
+`editorial-navigation.js` добавляет sticky/menu/anchor/focus/noJS/short200%;
+`editorial-style.js` — семантическую палитру, шрифт, AA,8width/scale состояний.

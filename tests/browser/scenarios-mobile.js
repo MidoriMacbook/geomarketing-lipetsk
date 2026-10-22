@@ -34,7 +34,7 @@ async original=>{
   await page.locator('#scenarios-section').screenshot({path:'tests/artifacts/scenarios/touch-comparison-390.png'});
   await page.setViewportSize({width:1440,height:1000});await page.locator('#scenarios-section').screenshot({path:'tests/artifacts/scenarios/touch-comparison-1440.png'});
   const motion=await page.evaluate(()=>[...new Set(window.__scenarioMotion)]);
-  assert(motion.includes('gm:scenario')&&motion.includes('gm:dialog-enter'),'Scenario interactions have no visible motion');
+  assert(!motion.includes('gm:scenario')&&motion.includes('gm:dialog-enter'),'Editorial research should retain dialog feedback without per-card entrance');
   assert(!errors.length,errors.join(';'));
   return {touch:true,categories:['cafe','pharmacy'],geometry,motion,pageErrors:errors};
  }finally{await context.close();}

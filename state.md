@@ -1,46 +1,54 @@
 # Состояние работы
 
 ## Current Goal
-Исправление исследований завершено 21 октября 2026, опубликовано в main/Render.
-Пользователь сообщил отсутствие hover и неработающую на вид кнопку «Открыть».
-Предыдущий workspace flow также опубликован; не начинать его заново.
+22 октября2026: выполнить подробный светлый editorial-редизайн пользователя,
+опубликовать в main и существующем Render. Дизайн уже дан в прикреплённом промте,
+повторное согласование не требуется. Ветка codex/editorial-map-hero.
+Spec/plan: docs/{specs,plans}/2026-10-22-editorial-map-hero.md.
+Base main9a15e57, предыдущий live11a6faf — исправление исследований.
 
 ## Decisions
-Restore работал, но focus preventScroll оставлял карту вне экрана (top=-1523px).
-После успешного restore карта явно показывается: smooth или instant при reduce.
-Фокус остаётся на map-title, подпись действия — «Открыть на карте».
-Исследования включены в существующие hover/transition CSS-селекторы;
-compare inset, fine-pointer-only и reduced motion сохранены.
-Схемы storage, API, модель, 10×10, Material и данные снимков не менялись.
+Cream/white/Playfair+Golos, sixprimitivepalette, darkmap independently scoped.
+StaticHTML hero/SVG, asyncReact effectcontroller пустого #hero-motion-root;
+actualSplitText/BlurText/adapted5block ScrollReveal +boundedpointer, noUIrewrite.
+Upstream source e12c22192ac7b4b452c5e2feb9b586d74765d696;
+MIT+CommonsClause/GSAPstandard notices retained, no claim pureMIT.
+PinnedReact19.3.1/DOM19.3.1/GSAP3.15/@gsap/react2.1.2/Motion12.23.24.
+Hero312337raw/103506gzipbytes; initialCLS.001164/islandCLS0.
+NoJSheaderinflow; actualheaderoffset+menuavailableheight measured for200%/shortviewports.
+Savebuttonfg/bg atomic to prevent AA dip during crossingtransition; shadow/transform stay.
+All existing API/storage10×10/Material/Leaflet/CSV/print/id contracts preserved.
 
-## Release
-Runtime: 11a6faf6ed6bbe1058b02fae8beda80d6705ddf5.
-Ветка codex/research-open-motion сохранена; main обновлён fast-forward.
-Independent focused review PASS, замечаний нет.
-Source/main CI Success: 39659628732 / 39659829541.
-Render dep-dbcgtvpsrm7s73d01irg live 21 октября 22:15:23 Москва, new_commit.
-Сайт: https://geomarketing-lipetsk.onrender.com.
-Документы и расширение browser-покрытия — отдельный [skip render] audit.
+## Plan Status
+Task1 e1829b6 +headerfixes a48e54e/bab1e85 independently re-reviewed PASS;
+new atomic-saveCSS8a4b2f7 provenREDcontrast3.62→GREENresponsive suite.
+Task2 09a333e independently Spec/Quality/SecurityPASS; teardownprobe0RAF/WAAPI/errors.
+Root HTML/nav/ui/provenance docs/legacy test adaptations implemented; integration GREEN.
+Next: rootcommit→wholebranchmostcapablereview→CI→mainFF→
+Renderlive→publicQA/hash→finalauditCI/owncleanup. Do not repeat completed suites absentcause.
 
 ## Evidence
-Два RED→GREEN: карта вне экрана после открытия; отсутствие hover исследований.
-research-open-motion локально/public GREEN: 1440 keyboard/reduce и mouse/normal,
-390 mobile touch/reduce и touch/normal, unchanged storage/no calculate/focus,
-compare emphasis/runtime reduce. pageErrors[].
-scenarios-ui17/scenarios11/mobile/workspace-interactions GREEN.
-Node scenario62/62, validator73, JSsyntax/diff/stub checks PASS.
-360/390/768/1440 и 390/200% без overflow, targets≥44px; screenshot просмотрен.
-Public healthz200/28asset hashes совпали; app error/critical после deploy нет.
-Приёмка: docs/verification/2026-10-21-research-open-motion.md.
-Предыдущий пакет: docs/verification/2026-10-19-workspace-flow-and-field-checks.md.
+Root Python84/84(20.508s), Node75/75, validator78files, herodeterministic/hashes PASS.
+Worker frozeninstall/audit0/Materialbyteidentity PASS; independentbuildcheck confirmed.
+Rootfinalmatrix first12 GREEN: editorial-navigation/style/hero-island/workspace-layout48/
+workspace-interactions/field-checks/workspace19/choice-menus/scenarios-ui17/scenarios11/
+scenarios-mobile/research-open-motion. Responsive thenfailedmidcolorcrossfade;
+workerfixed8a4b2f7 and entire responsive GREEN. No API/storage regressions.
+Remaining palette/selected-contrast/redesign/dark-motion/map-harmony/contrast-intro GREEN.
+All19browser suites covered; no needrepeat wholematrix absentnewsource concerns.
+Rootnavnewtests noJS390200 and390x320200RED→GREEN; lastmenu248–308inside320.
+Task1 settledscreenshots1440/768/390 inspected; real4fontWOFF2 total121664bytes/OFL.
+Raw evidence ignored tests/artifacts/editorial. Final formal verification doc pending.
 
-## QA Cleanup
-Тестовые browser contexts и research-fix закрыты. Временный сервер остановлен
-после проверки PID/command line/parent/executable; порт5085 свободен.
-Не останавливать чужие процессы при следующей сессии.
+## QA Ownership
+Rootserver5085 helperPID31252 (verifycommandline/childrenbeforestop).
+Rootbrowsereditorial-root PID37828. Workers/review browsers closed independently.
+Allmatrix exec sessions finished; rootbrowser staysavailableforpublicQA/review.
+Do not stop unrelated Python/Chrome. Final owncleanup required afterpublicQA.
 
 ## Open Issues
-Нет нерешённых требований этого исправления.
-Chrome/touch emulation; физические устройства/другие engines/nativePDF вне приёмки.
-GitHub REST rate403: Actions UI с полным SHA — рабочий fallback.
-Прежний checklist cross-key storage не crash-atomic; автоматического sweeping нет.
+No unresolved productfinding afterheader/AAfixes; finalgates pending.
+Old tests dark-motion/map-harmony/contrast-intro/redesign now assertnewdesignintent,
+while preserving functional/accessibility checks; docs/verification/2026-10-22-editorial-map-hero.md.
+Chrome/touch emulation only; nativePDF/physicaldevices/otherengines outsideQA.
+GitHub RESTrate403 fallback ActionsUI withfullSHA. No duplicate manualRenderdeploy.

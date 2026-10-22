@@ -30,9 +30,9 @@ Consumes root HTML hooks: .intro.editorial-hero/.hero-copy/#page-title.hero-titl
 #nav-menu/#nav-toggle/.header-location/.header-reserve/.is-scrolled/.nav-open.
 Produces light AA tokens, localfont, responsive herostyles/map/control scopes.
 Security:none. Does NOT cover JS/mount/build/menu logic; root/Task2 own them.
-- [ ] RED style test old dark palette/old display/no sticky/map contrast.
-- [ ] Implement tokens/CSS/font within prescribed visual framework; retain grid cap.
-- [ ] GREEN computed contrast,4widths/200%,states/targets/map,noJS; commit owned paths.
+- [x] RED style test old dark palette/old display/no sticky/map contrast.
+- [x] Implement tokens/CSS/font within prescribed visual framework; retain grid cap.
+- [x] GREEN computed contrast,4widths/200%,states/targets/map,noJS; commit owned paths.
 
 ## Task2 — sourced React Bits island and build (worker island)
 Own scripts/frontend/hero/**, scripts/frontend/hero-entry.js, rollup.config.js,
@@ -45,10 +45,10 @@ Use actual upstream SplitText/BlurText sources, adaptations clearly documented.
 Coordinate section reveal with root: root ui.js disables old panel/card reveals;
 island owns once-only KPI/workspace/saved/scenarios/data (max5) with fail-safe visibility.
 Security:none (no untrusted/userHTML). Does NOT own app state/API/storage/HTML/CSS.
-- [ ] RED browser test island missing while fallback text remains available.
-- [ ] Install only required pinned deps; add source/provenance, cleanup-safe effects,
+- [x] RED browser test island missing while fallback text remains available.
+- [x] Install only required pinned deps; add source/provenance, cleanup-safe effects,
   local asyncloader/build. No duplicate h1; no proportional initial load/CLS regression.
-- [ ] GREEN delay/failure/noJS/reduce/print/pointer/offscreen/once/budget tests;
+- [x] GREEN delay/failure/noJS/reduce/print/pointer/offscreen/once/budget tests;
   rebuild hero+Material byte-identically, checksize, commit owned paths.
 
 ## Task3 — HTML/navigation and integration (root)
@@ -57,8 +57,8 @@ scripts/validate_project.py, docs/README/CHANGELOG/DEPLOYMENT/state/session-log.
 Consumes Task1CSS and Task2bundle. Produces static SVGhero, accessible sticky mobile
 navigation, anchors/focus offsets, no duplicate reveal, finalverified release.
 Security:none. Does NOT change model/storage/API; no photoassets needed.
-- [ ] RED nav tests structure/noJS/menu/anchors/last research-open with sticky offset.
-- [ ] Implement HTML/SVG/menu, preserve oldids and model-button (secondary hero button
+- [x] RED nav tests structure/noJS/menu/anchors/last research-open with sticky offset.
+- [x] Implement HTML/SVG/menu, preserve oldids and model-button (secondary hero button
   separateid), mobilefallback, root ui.js single reveal owner coordination.
 - [ ] Per-task independent reviews Spec+Quality; resolve findings, final matrix once:
   fullPython/Node/validator/JS/Material+hero/buildsize/palette + responsive/menu/

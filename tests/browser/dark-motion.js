@@ -24,14 +24,12 @@ async originalPage => {
     const before=await page.evaluate(()=>window.__darkEffects.filter(e=>e.id==='gm:recommendation'));
     assert(before.length===0,`Recommendation effects were consumed offscreen: ${JSON.stringify(before)}`);
     await cards.first().scrollIntoViewIfNeeded();
-    await page.waitForFunction(()=>window.__darkEffects.some(e=>e.id==='gm:recommendation'&&e.rank==='1'));
     const entered=await page.evaluate(()=>window.__darkEffects.filter(e=>e.id==='gm:recommendation'));
-    assert(entered.every(e=>e.duration>=650),'Result reveal is still too brief');
+    assert(entered.length===0,'Editorial layout should reveal blocks, not individual recommendation rows');
     const dark=await page.evaluate(()=>({scheme:getComputedStyle(document.documentElement).colorScheme,bg:getComputedStyle(document.body).backgroundColor,tileFilter:getComputedStyle(document.querySelector('.leaflet-tile-pane')).filter,canvasFilter:getComputedStyle(document.querySelector('.leaflet-points-pane')).filter}));
-    assert(dark.scheme==='dark' && dark.bg!=='rgb(241, 238, 230)','Dark theme was not applied');
-    assert(dark.bg==='rgb(22, 19, 31)','Reference palette Back in Black background missing');
-    const palette=await page.evaluate(()=>{const style=getComputedStyle(document.documentElement);return ['primary','muted','subtle','moonscape'].map(role=>style.getPropertyValue('--color-'+role).trim().toLowerCase());});
-    assert(palette.join(',')==='#f0d9e4,#cfb9c7,#4a3f4b,#806c79','Reference pink/mauve palette missing');
+    assert(dark.scheme==='light' && dark.bg==='rgb(255, 247, 230)','Editorial cream theme missing');
+    const palette=await page.evaluate(()=>{const style=getComputedStyle(document.documentElement);return ['cream','pink','rosewood','sage','sky','ink'].map(role=>style.getPropertyValue('--palette-'+role).trim().toLowerCase());});
+    assert(palette.join(',')==='#fff7e6,#f7c8d3,#b46a72,#a8b58a,#a9b7c6,#2d3a47','User six-colour palette missing');
     assert(dark.tileFilter!=='none'&&dark.canvasFilter==='none','Map processing must affect only tiles');
     const selectionContrast=await page.evaluate(()=>{
       const style=getComputedStyle(document.body,'::selection');
@@ -55,11 +53,11 @@ async originalPage => {
     await page.locator('#run').click();
     await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
     await cards.first().scrollIntoViewIfNeeded();
-    await page.waitForFunction(()=>document.getAnimations().some(a=>a.id==='gm:recommendation'&&a.playState==='running'));
+    assert(await page.evaluate(()=>!document.getAnimations().some(a=>a.id==='gm:recommendation'&&a.playState==='running')),'Refresh replayed per-row editorial entrances');
     assert(await page.evaluate(()=>window.__darkEffects.every(effect=>!effect.stale)),'A replaced recommendation received a stale entrance');
     await page.emulateMedia({media:'print'});
     const print=await page.evaluate(()=>({bg:getComputedStyle(document.body).backgroundColor,ink:getComputedStyle(document.getElementById('print-report-content')).color}));
-    assert(print.bg==='rgb(255, 255, 255)'&&print.ink==='rgb(21, 25, 28)','Dark theme must not create a dark printed report');
+    assert(print.bg==='rgb(255, 255, 255)'&&print.ink==='rgb(45, 58, 71)','Printed report must remain white with readable Midnight Lagoon ink');
     await page.emulateMedia({media:'screen',reducedMotion:'no-preference'});
     const fallback=await originalPage.context().newPage();
     try {

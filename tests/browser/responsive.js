@@ -55,7 +55,7 @@ async page => {
   await page.mouse.down();
   try {
     const savedPressed = await saveAppearance();
-    assert(savedPressed.saved && savedPressed.contrast >= 4.5 && savedPressed.transform !== 'none', 'Saved pressed appearance is unclear');
+    assert(savedPressed.saved && savedPressed.contrast >= 4.5 && savedPressed.transform !== 'none', 'Saved pressed appearance is unclear: ' + JSON.stringify(savedPressed));
   } finally { await page.mouse.up(); }
   const widths = [360, 390, 768, 1024, 1280, 1440];
   const matrix = [];

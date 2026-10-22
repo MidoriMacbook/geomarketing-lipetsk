@@ -29,18 +29,18 @@ async original=>{
    try{drawMap(state.current);}finally{L.circleMarker=original;}
    const style=getComputedStyle(document.documentElement);
    const roles=['house','competitor','centroid','zone-high'];
-   const colors=roles.map(role=>style.getPropertyValue('--color-map-'+role).trim());
+   const colors=roles.map(role=>style.getPropertyValue('--color-map-'+role).trim().toLowerCase());
    const legend=getComputedStyle(document.querySelector('.sw.competitors')),housesLegend=getComputedStyle(document.querySelector('.sw.houses'));
-   const houses=options.filter(o=>o.fillColor===colors[0]),competitors=options.filter(o=>o.fillColor===colors[1]);
+   const houses=options.filter(o=>o.fillColor?.toLowerCase()===colors[0]),competitors=options.filter(o=>o.fillColor?.toLowerCase()===colors[1]);
    const area=document.getElementById('map').getBoundingClientRect();
-   return {colors,houseCount:houses.length,houseOpacities:[...new Set(houses.map(o=>o.fillOpacity))],competitorCount:competitors.length,competitorOutline:competitors[0]?.color,competitorOpacities:[...new Set(competitors.map(o=>o.fillOpacity))],ring:options.some(o=>o.fill===false&&o.color===colors[2]),canvases:document.querySelectorAll('#map canvas').length,geometry:{width:area.width,height:area.height},legend:{fill:legend.backgroundColor,outline:legend.borderTopColor,houseFill:housesLegend.backgroundColor}};
+   return {colors,houseCount:houses.length,houseOpacities:[...new Set(houses.map(o=>o.fillOpacity))],competitorCount:competitors.length,competitorOutline:competitors[0]?.color,competitorOpacities:[...new Set(competitors.map(o=>o.fillOpacity))],ring:options.some(o=>o.fill===false&&o.color?.toLowerCase()===colors[2]),canvases:document.querySelectorAll('#map canvas').length,geometry:{width:area.width,height:area.height},legend:{fill:legend.backgroundColor,outline:legend.borderTopColor,houseFill:housesLegend.backgroundColor}};
   });
-  assert(map.colors.join(',')==='#91a5b8,#b94f7b,#e4d2ee,#8c709a','House color must be approved muted blue; other map colors must stay unchanged');
+  assert(map.colors.join(',')==='#a9b7c6,#b46a72,#a8b58a,#c3d09f','Map roles must follow the approved editorial palette');
   assert(map.houseOpacities.length===1&&map.houseOpacities[0]===.78,'House circles must use approved .78 fill opacity');
   assert(map.houseCount>=100&&map.competitorCount>0&&map.geometry.width>=250&&map.geometry.height>=300,'Color check must render a real dense map with both marker roles');
-  assert(map.competitorOutline==='#f0d9e4'&&map.competitorOpacities.length===1&&map.competitorOpacities[0]===1&&map.ring&&map.canvases===2,'Markers lose distinguishing outlines/rings or shared canvas');
-  assert(map.legend.houseFill==='rgb(145, 165, 184)','House legend does not match the map');
-  assert(map.legend.fill==='rgb(185, 79, 123)'&&map.legend.outline==='rgb(240, 217, 228)','Competitor legend does not match the map');
+  assert(map.competitorOutline.toLowerCase()==='#f7c8d3'&&map.competitorOpacities.length===1&&map.competitorOpacities[0]===1&&map.ring&&map.canvases===2,'Markers lose distinguishing outlines/rings or shared canvas');
+  assert(map.legend.houseFill==='rgb(169, 183, 198)','House legend does not match the map');
+  assert(map.legend.fill==='rgb(180, 106, 114)'&&map.legend.outline==='rgb(247, 200, 211)','Competitor legend does not match the map');
   assert(!errors.length,errors.join(';'));
   return {sizes,map,pageErrors:errors};
  }finally{await context.close();}

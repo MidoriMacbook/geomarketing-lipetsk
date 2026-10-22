@@ -99,21 +99,19 @@ async page => {
   assert(await page.locator('#kpi-residents').innerText() !== '—', 'Final KPI values are delayed behind motion');
   // Entrances now wait until the user can see their content.
   await page.locator('#recommendation-list').scrollIntoViewIfNeeded();
-  await page.waitForFunction(() => window.__urbanMotion.filter(item => item.observerVersion === 2 && item.id === 'gm:recommendation').length === document.querySelectorAll('[data-testid="recommendation-card"]').length);
+  await page.waitForFunction(() => document.getElementById('hero-motion-root')?.dataset.heroReady === 'true');
   await page.locator('#data-details').evaluate(details => { details.open = true; });
   await page.waitForFunction(() => !document.getAnimations().some(animation => animation.id === 'gm:disclosure'));
   await page.locator('#data-warning').scrollIntoViewIfNeeded();
   await nextFrame();
   const initialTrace = await trace();
   metrics.motion.initial = initialTrace;
-  assert(await page.evaluate(() => window.__urbanIntro.length > 0), 'First-screen CSS reveal did not run');
+  assert(await page.locator('h1').count() === 1 && await page.locator('#page-title').isVisible(), 'Progressive hero title is unavailable or duplicated');
   assert(initialTrace.some(item => /map/.test(item.id)), 'Initialized Leaflet map has no reveal');
   assert(initialTrace.some(item => /map-points|map-zones/.test(item.id) && item.keyframes.every(frame => !frame.transform || frame.transform === 'none')), 'Map layers must reveal using opacity without coordinate transforms');
-  assert(initialTrace.some(item => /kpi/.test(item.id)), 'Final KPIs have no reveal');
+  assert(await page.locator('.kpis').getAttribute('data-hero-entered') === 'true', 'KPI block has no once-only island entrance');
   const stagger = initialTrace.filter(item => item.id === 'gm:recommendation');
-  assert(stagger.length === payload.recommendations.length, `New analysis must reveal each recommendation once: ${JSON.stringify(stagger)}`);
-  const delays = stagger.map(item => item.timing.delay).sort((a, b) => a - b);
-  assert(delays[0] === 0 && delays.slice(1).every((delay, index) => delay - delays[index] >= 60 && delay - delays[index] <= 90), `Recommendation stagger is not 60–90ms: ${delays}`);
+  assert(stagger.length === 0, `Editorial entrances should target large blocks, not each row: ${JSON.stringify(stagger)}`);
   assert(initialTrace.some(item => /notice/.test(item.id)), 'Inline notice has no reveal');
   assert(await page.locator('#data-warning').isVisible(), 'Notice reveal delayed or hid warning text');
 
