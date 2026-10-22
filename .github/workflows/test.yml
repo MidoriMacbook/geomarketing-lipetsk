@@ -22,6 +22,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run check:material
       - run: git diff --exit-code -- static/vendor/material-web/material-components.js
+      - run: pnpm run check:hero
       - run: |
           for module in static/js/*.js; do node --check "$module"; done
       - run: node --test tests/unit/scenario-storage.test.js
