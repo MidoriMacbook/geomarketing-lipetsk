@@ -1,5 +1,7 @@
 /* Editorial cover. Static content is complete before the motion island starts. */
-.header-reserve { position:sticky; top:0; z-index:var(--z-header); min-height:var(--size-header); }
+.header-reserve { position:relative; top:0; z-index:var(--z-header); min-height:var(--size-header); }
+/* Measured anchor offsets and the collapsible menu require working navigation JS. */
+.header-reserve:has(>.site-header[data-navigation-ready]) { position:sticky; }
 .site-header { position:relative; z-index:var(--z-header); min-height:var(--size-header); max-height:none; padding:var(--space-3) max(var(--space-7),calc((100vw - var(--size-page))/2 + var(--space-7))); background:var(--color-header); backdrop-filter:blur(12px); }
 .site-header.is-scrolled { min-height:var(--size-header); padding-block:var(--space-3); background:var(--color-surface); box-shadow:0 2px 12px var(--color-shadow-soft); }
 .site-header.is-scrolled .brand-icon { transform:scale(.88); }
@@ -56,7 +58,8 @@
  .header-reserve:has(.site-header:not([data-navigation-ready])) { height:auto; }
  .site-header[data-navigation-ready] #nav-toggle { display:inline-flex; align-items:center; justify-content:center; }
  .site-header[data-navigation-ready]:not(.nav-open) #nav-menu { display:none; }
- .site-header.nav-open #nav-menu { display:flex; flex-direction:column; align-items:stretch; max-height:calc(100dvh - var(--size-header) - var(--space-6)); overflow-y:auto; }
+ .site-header.nav-open #nav-menu { display:flex; flex-direction:column; align-items:stretch; min-height:0; max-height:var(--nav-available-height,calc(100dvh - var(--size-header) - var(--space-6))); overflow-y:auto; }
+ .site-header.nav-open #nav-menu>a,.site-header.nav-open #nav-menu>button { flex-shrink:0; }
  .site-header #nav-menu a,.site-header #nav-menu button { padding:var(--space-3); min-height:var(--size-target); }
  .page { padding-top:0; }
  .intro.editorial-hero { min-height:430px; grid-template-columns:minmax(0,1.2fr) minmax(0,.85fr); gap:var(--space-4); padding-top:var(--space-8); margin-bottom:var(--space-5); }
