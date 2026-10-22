@@ -1,0 +1,11 @@
+Playfair Display, variable weights 400–900, normal and italic.
+Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display"
+License: SIL Open Font License 1.1; see playfair-OFL.txt.
+Official upstream: https://github.com/google/fonts/tree/main/ofl/playfairdisplay
+Browser subsets downloaded 2026-10-22 from official Google Fonts CSS API:
+https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap
+normal-cyrillic: https://fonts.gstatic.com/s/playfairdisplay/v40/nuFiD-vYSZviVYUb_rj3ij__anPXDTjYgFE_.woff2
+normal-latin: https://fonts.gstatic.com/s/playfairdisplay/v40/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgA.woff2
+italic-cyrillic: https://fonts.gstatic.com/s/playfairdisplay/v40/nuFkD-vYSZviVYUb_rj3ij__anPXDTnohkk72xU.woff2
+italic-latin: https://fonts.gstatic.com/s/playfairdisplay/v40/nuFkD-vYSZviVYUb_rj3ij__anPXDTnogkk7.woff2
+The official subsets are unmodified. Cyrillic and Latin ranges are declared in base.css.

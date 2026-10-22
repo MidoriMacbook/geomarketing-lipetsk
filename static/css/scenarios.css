@@ -9,7 +9,7 @@
 .scenario-card { min-width:0; padding:var(--space-5); border:var(--line) solid var(--color-border); border-radius:var(--radius-control); background:var(--color-surface); overflow-wrap:anywhere; }
 .scenario-card h3 { font-size:var(--text-base); line-height:1.55; }
 .scenario-card p { font-size:var(--text-xs); line-height:1.65; margin-top:var(--space-2); }
-.scenario-card.is-compared { box-shadow:inset var(--space-1) 0 var(--color-accent); border-color:var(--color-accent); }
+.scenario-card.is-compared { background:var(--color-selected); box-shadow:inset var(--space-1) 0 var(--color-accent); border-color:var(--color-accent); }
 .scenario-actions { padding-top:var(--space-4); margin-top:var(--space-4); border-top:var(--line) solid var(--color-line); }
 .scenario-actions .button { font-size:var(--text-xs); min-height:var(--size-target); padding:var(--space-2) var(--space-3); }
 .scenario-actions [aria-pressed=true] { background:var(--color-primary); color:var(--color-on-primary); }
