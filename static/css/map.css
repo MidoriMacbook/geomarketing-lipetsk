@@ -31,3 +31,15 @@ md-linear-progress:defined + .progress-fallback { display:none; }
 .trust-status { display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-1) var(--space-3); width:100%; padding-top:var(--space-2); border-top:var(--line) solid var(--color-line); }
 .trust-status p { flex:1 1 14rem; margin:0; }
 .trust-status a { display:inline-flex; align-items:center; min-height:var(--size-target); font-size:var(--text-xs); color:var(--color-primary); }
+
+/* The map is its own dark surface. Page colours must not bleed into Leaflet. */
+#map { --color-surface:var(--color-map-surface); --color-ink:var(--color-map-ink); --color-muted:var(--color-map-muted); --color-border:var(--color-map-line); --color-primary:var(--color-map-primary); --color-subtle:var(--color-map-canvas); color:var(--color-map-ink); color-scheme:dark; }
+#map .recommendation-pin.is-selected { background:var(--color-map-primary); color:var(--color-map-canvas); border-color:var(--color-map-canvas); }
+#map .leaflet-tooltip { font-size:var(--text-sm); line-height:1.5; padding:var(--space-2) var(--space-3); }
+#map .leaflet-tooltip-top::before { border-top-color:var(--color-map-line); }
+#map .leaflet-tooltip-bottom::before { border-bottom-color:var(--color-map-line); }
+#map .leaflet-tooltip-left::before { border-left-color:var(--color-map-line); }
+#map .leaflet-tooltip-right::before { border-right-color:var(--color-map-line); }
+#map .leaflet-bar a:focus-visible { outline-color:var(--color-map-primary); }
+.analysis-bar .status-dot { background:var(--color-map-primary); }
+.analysis-bar { --color-accent:var(--color-map-primary); }
