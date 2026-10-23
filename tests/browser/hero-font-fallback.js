@@ -1,6 +1,6 @@
 async original => {
   const base = new URL(original.url()).origin, metrics = [];
-  for (const [width,scale] of [[360,1],[390,1],[430,1],[600,1],[768,1],[1024,1],[1440,1],[390,2],[768,2],[1024,2],[1440,2]]) {
+  for (const [width,scale] of [[360,1],[390,1],[430,1],[600,1],[601,1],[650,1],[700,1],[768,1],[900,1],[901,1],[1024,1],[1100,1],[1101,1],[1280,1],[1440,1],[390,2],[768,2],[1024,2],[1440,2]]) {
     const context = await original.context().browser().newContext({viewport:{width,height:1000},reducedMotion:'reduce'});
     const page = await context.newPage();
     let release;
