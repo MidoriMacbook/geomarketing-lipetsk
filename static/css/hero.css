@@ -16,8 +16,11 @@
 .editorial-hero .hero-copy { position:relative; max-width:100%; z-index:1; }
 .editorial-hero .eyebrow { color:var(--color-primary); display:flex; align-items:center; gap:var(--space-3); letter-spacing:.12em; font-size:.6875rem; text-transform:uppercase; }
 .editorial-hero .eyebrow::before { content:""; width:var(--space-8); height:var(--line); background:var(--color-primary); }
-.intro .hero-title { font-size:var(--text-title); line-height:1.035; font-weight:500; letter-spacing:-.055em; margin:var(--space-5) 0 var(--space-5); max-width:100%; }
+.intro .hero-title { font-size:var(--text-title); line-height:1.035; font-weight:500; letter-spacing:-.055em; margin:var(--space-5) 0 var(--space-5); max-width:100%; container:hero-title / inline-size; }
 .hero-title-line { display:block; }
+/* At enlarged text sizes choose stable word rows in either display font.
+   The em threshold follows this heading's font size rather than device width. */
+@container hero-title (width < 6em) { .hero-title-word { display:block; } }
 .hero-title em { font-weight:500; color:var(--color-primary); }
 .intro .hero-description { max-width:30rem; font-size:var(--text-base); line-height:1.65; color:var(--color-muted); }
 .hero-links { display:flex; align-items:center; flex-wrap:wrap; gap:var(--space-3) var(--space-5); margin-top:var(--space-5); }
@@ -75,6 +78,7 @@
  .brand-icon { width:34px; height:34px; }
  .intro.editorial-hero { display:block; min-height:440px; padding:var(--space-7) 0 var(--space-6); margin-bottom:var(--space-4); }
  .intro .hero-title { font-size:var(--text-title-mobile); max-width:100%; margin:var(--space-4) 0 var(--space-4); line-height:1.06; letter-spacing:-.045em; overflow-wrap:normal; }
+ .hero-title-business { display:block; }
  .intro .hero-description { font-size:.9375rem; line-height:1.6; max-width:28rem; }
  .hero-links { gap:var(--space-2) var(--space-4); margin-top:var(--space-4); }
  .hero-links .button { font-size:var(--text-xs); }
