@@ -1,7 +1,7 @@
 # Светлый editorial-redesign — приёмка 22 октября
 
-Локальная реализация и task reviews завершены. Итоговое whole-branch review,
-CI, публикация и публичная приёмка выполняются перед завершением задачи.
+Редизайн опубликован 23 октября: runtime56f3555, main CI и Render live.
+Локальная реализация, независимые ревью и публичная приёмка завершены.
 Spec/plan: docs/{specs,plans}/2026-10-22-editorial-map-hero.md.
 
 ## Реализация
@@ -54,7 +54,7 @@ MIT+Commons Clause, GSAP standard notices сохранены. Это компо�
   stagger/CSS-intro. Семантика карты/легенды/обводок, AA, контракты данных,
   print/focus/reduce сохранены. HEX-сравнения нормализуют регистр.
 - Real dense visual: Европейский/магазин,738домов/32конкурента. Hero на
-  1440/1024/768/390:484.5/444.5/430/440px; desktop map/recs1100px обе.
+  1440/1024/768/390:484.5/477.516/463.406/440px; desktop map/recs1100px обе.
   Все4ширины без overflow. Header/hero,1024workspace и research screenshots
   просмотрены; сохранения/данные/карта читаются в новой теме.
 
@@ -88,9 +88,44 @@ RED добавлен в регрессию; правило container<9em ста�
 изменения все19случаев GREEN. При обычном размере1440/390 композиция прежняя,
 на768/1024 заголовок получает предсказуемый дополнительный перенос.
 
+## Публикация и публичная приёмка 23 октября
+
+- Whole-branch review9a15e57..42ce49e охватило59путей; исходные Important
+  замечания исправлены. Независимое rereview42ce49e..56f3555: Spec/Quality/
+  Security PASS, открытых замечаний нет. Проверка19font cases повторена
+  независимо на финальном HEAD. Дополнительный sweep не запустился из-за
+  deadline автоматического approval; это ограничение инструмента, а не PASS
+  невыполненного теста. Предыдущие anchor/focus/menu probes подтверждены.
+- Source CI [39930316425](https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/39930316425)
+  и main CI [39932049840](https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/39932049840)
+  завершились Success для56f3555a4c17a43ccf1896362a8c899a5e8ee7ef.
+- Fast-forward в main; автоматический Render deploy dep-dbdih6lbedkc73d1f420,
+  trigger new_commit, live с2026-10-23 09:29:19Z (12:29:19 Москва).
+  Сервис/workspace/тариф не менялись, ручной дубликат не запускался.
+- Публичный SHA256 всех40ресурсов совпал с Git56f3555: HTML, CSS/JS,
+  favicon, Material, hero bundle и восемь WOFF2. /healthz200 {status:ok},
+  каталог10×10. App error/critical logs после начала deploy пусты.
+- На опубликованном сайте GREEN: editorial-navigation, editorial-style,
+  hero-island, hero-font-fallback19, header-anchor12, header-focus27,
+  workspace19, scenarios-ui17, research-open-motion. Последние три проверяют
+  расчёт/карту/слои/сохранения/сравнение/CSV/print/storage/races и открытие
+  исследования без нового расчёта. pageErrors[] во всех функциональных suites.
+- Public real-data visual: Европейский/магазин;1440/1024/768/390 безoverflow,
+  desktop map/recs по1100px. Сняты hero/workspace/research/data и общий верх;
+  просмотрены итоговые desktop/mobile и1024hero. Hero484.5/477.516/463.406/440px.
+- Последние исправления перепроверены профильными suites, responsive и
+  research-open-motion. Ранее пройдены все19 исходных browser suites,
+  Python84 и Node75; матрица без причины полностью повторно не запускалась.
+- Финальная документация коммитится с [skip render]; CI проверяет её отдельно,
+  runtime остаётся56f3555. QA artifacts находятся в ignored tests/artifacts/editorial.
+
 ## Границы
 
 Chrome и touch emulation; физические устройства, другие движки и native PDF
 пагинация отдельно не проверялись. Компактная схема hero скрыта на телефоне
 ради читаемости CTA; fallback без island остаётся статическим. Производительность
 оценивалась по bundle/CLS и отсутствию фоновых RAF, не нагрузкой сервера.
+Дополнительный probe320px/200% показал overflow также при восстановлении
+предыдущего состояния hero42ce49e; введение проблемы исправлениями42ce49e..56f3555
+не подтвердилось. Эта ширина не входит в согласованную основную матрицу390+;
+предельный масштаб320/200% не объявляется поддержанным этой приёмкой.
