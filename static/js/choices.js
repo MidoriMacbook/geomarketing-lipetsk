@@ -78,7 +78,7 @@ function enhance(select) {
     menu.hidden=false;opened=true;current=controller;query='';
     trigger.setAttribute('aria-expanded','true');
     setActive(Math.max(0,options.findIndex(option=>option.value===select.value&&!option.disabled)));
-    animateUI(menu,[{opacity:0,transform:'translateY(-6px) scale(.98)'},{opacity:1,transform:'translateY(0) scale(1)'}],'choice-open',{duration:'base',easing:'emphasized'});
+    animateUI(menu,[{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}],'choice-open',{duration:'base',easing:'emphasized'});
     rows.forEach((row,index)=>animateUI(row,[{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'translateY(0)'}],'choice-row',{duration:'fast',delay:index*motionStagger()/2}));
   }
   function choose(index,focus=true) {

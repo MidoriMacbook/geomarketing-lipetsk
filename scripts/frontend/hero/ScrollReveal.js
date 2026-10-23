@@ -1,46 +1,70 @@
-// React Bits ScrollReveal's enter-mode progress/render algorithm, adapted to
-// five existing blocks. IntersectionObserver replaces text scrub/ScrollTrigger.
+// React Bits ScrollReveal adapted to one-time block entrances, without scrub.
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-
-const clamp01 = value => Math.min(Math.max(value, 0), 1);
-const easeOut = value => 1 - Math.pow(1 - value, 3);
 const selectors = ['.kpis','#workspace','#saved-section','#scenarios-section','#data-section'];
-
 export function ScrollReveal({ enabled }) {
   const completed = useRef(new WeakSet());
   useEffect(() => {
     if (!enabled) return;
-    const animations = new Map();
+    const animations = new Map(), blocks = selectors.map(s=>document.querySelector(s)).filter(Boolean);
     const clear = el => {
-      el.style.removeProperty('opacity');
-      el.style.removeProperty('transform');
-      el.style.removeProperty('will-change');
+      el.classList.remove('motion-prepared');
+      for (const key of ['opacity','transform','will-change']) el.style.removeProperty(key);
     };
-    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-      const el = entry.target;
-      if (!entry.isIntersecting || el.hidden || !el.getClientRects().length || completed.current.has(el)) return;
-      completed.current.add(el);
-      observer.unobserve(el);
+    const finish = el => {
+      animations.get(el)?.kill(); animations.delete(el);
+      clear(el); completed.current.add(el); observer.unobserve(el);
       el.dataset.heroEntered = 'true';
-      // Keep controls and data readable while entering; nothing pre-hides a block.
-      const state = {p:0};
-      const render = () => {
-        const t = clamp01(state.p), settle = easeOut(t);
-        el.style.opacity = String(.88 + .12*t);
-        el.style.transform = `translateY(${(12*(1-settle)).toFixed(2)}px)`;
-      };
-      el.style.willChange = 'opacity, transform';
-      animations.set(el, gsap.to(state, {p:1,duration:.55,ease:'none',onUpdate:render,onComplete:()=>{clear(el);animations.delete(el);}}));
-    }), {threshold:.08});
-    for (const selector of selectors) {
-      const el = document.querySelector(selector);
-      if (el && !completed.current.has(el)) observer.observe(el);
-    }
-    return () => {
-      observer.disconnect();
-      for (const [el,animation] of animations) { animation.kill(); clear(el); }
     };
-  }, [enabled]);
+    const observer = new IntersectionObserver(entries => entries.forEach(({target:el,isIntersecting}) => {
+      if (!isIntersecting || el.hidden || !el.getClientRects().length || completed.current.has(el)) return;
+      completed.current.add(el); observer.unobserve(el); el.dataset.heroEntered='true';
+      if (el.contains(document.activeElement)) { finish(el); return; }
+      el.classList.remove('motion-prepared');
+      animations.set(el,gsap.fromTo(el,{opacity:0,y:24,willChange:'transform, opacity'},
+        {opacity:1,y:0,duration:.7,ease:'power3.out',onComplete:()=>{clear(el);animations.delete(el);}}));
+    }),{threshold:0,rootMargin:'0px 0px -24px 0px'});
+    // A pointer can arrive during an entrance (especially after native scroll
+    // to an off-screen control). Freeze geometry through the click so down/up
+    // cannot land on different controls. Keyboard focus exposes it immediately.
+    const hold = el => { const animation=animations.get(el); if(animation){animation.pause();el.style.opacity='1';} };
+    let pointerHeld=false,resumeFrame=0,releaseTimer=0;
+    const onPointer = event => {clearTimeout(releaseTimer);pointerHeld=true;blocks.forEach(el=>{if(el.contains(event.target))hold(el);});};
+    const release = () => {
+      clearTimeout(releaseTimer);
+      cancelAnimationFrame(resumeFrame);
+      // Touch generates compatibility mouse/focus events after pointerup.
+      // Keep the hold through that complete click dispatch as well.
+      resumeFrame=requestAnimationFrame(()=>{resumeFrame=0;pointerHeld=false;animations.forEach(animation=>animation.resume());});
+    };
+    const onUp=()=>{releaseTimer=setTimeout(release,500);};
+    const onKey=()=>{pointerHeld=false;release();};
+    const onFocus = event => blocks.forEach(el=>{
+      if(!el.contains(event.target))return;
+      if(pointerHeld)hold(el);else finish(el);
+    });
+    for (const el of blocks) {
+      if (completed.current.has(el)) continue;
+      el.classList.add('motion-prepared'); observer.observe(el);
+    }
+    document.addEventListener('focusin',onFocus);
+    document.addEventListener('pointerdown',onPointer,true);
+    document.addEventListener('pointerup',onUp,true);
+    document.addEventListener('click',release,true);
+    document.addEventListener('keydown',onKey,true);
+    document.addEventListener('pointercancel',release,true);
+    return () => {
+      observer.disconnect(); document.removeEventListener('focusin',onFocus);
+      cancelAnimationFrame(resumeFrame);
+      clearTimeout(releaseTimer);
+      document.removeEventListener('pointerdown',onPointer,true);
+      document.removeEventListener('pointerup',onUp,true);
+      document.removeEventListener('click',release,true);
+      document.removeEventListener('keydown',onKey,true);
+      document.removeEventListener('pointercancel',release,true);
+      blocks.forEach(el=>{animations.get(el)?.kill();clear(el);});
+      animations.clear();
+    };
+  },[enabled]);
   return null;
 }

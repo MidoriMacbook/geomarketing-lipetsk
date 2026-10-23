@@ -259,7 +259,7 @@ export function selectMarker(rank, pan, changed = false) {
   });
   if (changed) {
     const pin = markers.get(rank)?.getElement()?.querySelector('.recommendation-pin');
-    animateUI(pin, [{ transform: 'scale(1)' }, { transform: 'scale(var(--motion-pulse-scale))', offset: .45 }, { transform: 'scale(1)' }], 'marker-pulse', { duration: 'slow', easing: 'spring' });
+    animateUI(pin, [{ transform: 'scale(1)' }, { transform: 'scale(var(--motion-pulse-scale))', offset: .45 }, { transform: 'scale(1)' }], 'marker-pulse', { duration: 480, easing: 'spring' });
   }
   const rec = state.current?.recommendations.find(r => r.rank === rank);
   if (map&&rec&&pan) map.panTo([rec.lat, rec.lng], {
@@ -277,8 +277,6 @@ export function hoverPlace(rank, active) {
 export function toggleLayer(key, enabled) {
   if (!map) return;
   enabled ? layers[key].addTo(map) : map.removeLayer(layers[key]);
-  if (enabled) {
-    const pane = key === 'zones' ? 'zones' : key === 'recommendations' ? 'markerPane' : 'points';
-    animateUI(map.getPane(pane), [{ opacity: .35 }, { opacity: 1 }], `map-${key === 'zones' ? 'zones' : 'points'}`);
-  }
+  const pane = key === 'zones' ? 'zones' : key === 'recommendations' ? 'markerPane' : 'points';
+  animateUI(map.getPane(pane), [{ opacity: .6 }, { opacity: 1 }], `map-${key === 'zones' ? 'zones' : 'points'}`, {duration:220});
 }
