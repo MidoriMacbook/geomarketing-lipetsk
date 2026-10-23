@@ -151,6 +151,7 @@ playwright-cli -s=geomarket run-code --filename=tests/browser/editorial-style.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/hero-island.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/hero-font-fallback.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/header-anchor.js
+playwright-cli -s=geomarket run-code --filename=tests/browser/header-focus.js
 playwright-cli -s=geomarket run-code --filename=tests/browser/palette.js
 playwright-cli -s=geomarket close
 ```
