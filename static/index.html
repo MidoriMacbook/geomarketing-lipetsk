@@ -41,11 +41,11 @@
     <p class="eyebrow"><span class="city-indicator" aria-hidden="true"></span> Городская аналитика · Липецк</p>
     <h1 id="page-title" class="hero-title"><span class="hero-title-word">У</span> <span class="hero-title-word">каждого</span> <span class="hero-title-business hero-title-word">бизнеса</span> <span class="hero-title-line"><span class="hero-title-word">есть</span> <span class="hero-title-word">своё</span> <em class="hero-title-word">место.</em></span></h1>
     <p id="hero-description" class="hero-description">Найдите своих клиентов на карте города. Сравните спрос и конкуренцию — и выберите места для проверки до аренды.</p>
-    <div class="hero-links"><a class="button primary" href="#workspace">Открыть карту <span aria-hidden="true">↗</span></a><button class="button secondary" id="hero-model-button" type="button">Как работает расчёт <span aria-hidden="true">↗</span></button></div>
-    <p class="hero-meta"><span>01 / Изучите город</span><span>02 / Найдите своё место</span></p>
+    <div class="hero-links"><span class="hero-magnet"><a class="button primary" href="#workspace">Открыть карту <span aria-hidden="true">↗</span></a></span><button class="hero-text-action" id="hero-model-button" type="button"><span class="hero-action-label">Как работает расчёт</span><span class="hero-action-arrow" aria-hidden="true">↗</span></button></div>
+    <p class="hero-meta"><span>01 / Изучите город</span><span>02 / Найдите своё место</span><button id="hero-motion-toggle" type="button" aria-pressed="false" hidden>Пауза схемы</button></p>
   </div>
   <div id="hero-art" class="hero-art" aria-hidden="true">
-    <svg viewBox="0 0 600 460" fill="none" focusable="false">
+    <svg class="city-desktop" viewBox="0 0 600 460" fill="none" focusable="false">
       <g transform="rotate(-9 300 230)">
         <g data-hero-drift="3">
           <path class="city-block" d="M68 74h110v65H68zM203 74h90v65h-90zM318 74h130v65H318zM68 164h110v92H68zM203 164h90v92h-90zM318 164h130v92H318zM68 281h110v91H68zM203 281h90v91h-90zM318 281h130v91H318zM473 164h65v92h-65zM473 281h65v91h-65z"/>
@@ -55,12 +55,13 @@
           <circle class="city-radius" cx="305" cy="267" r="116"/><circle class="city-radius" cx="305" cy="267" r="67"/>
           <path class="city-route" d="M100 312h90V152h115v115h156V95"/>
           <circle class="city-pin" cx="100" cy="312" r="7"/><circle class="city-pin" cx="461" cy="95" r="7"/>
-          <path class="city-pin" d="M305 236c-16 0-29 13-29 29 0 21 29 45 29 45s29-24 29-45c0-16-13-29-29-29Z"/>
+          <circle class="city-response" cx="305" cy="264" r="20"/><path class="city-pin" d="M305 236c-16 0-29 13-29 29 0 21 29 45 29 45s29-24 29-45c0-16-13-29-29-29Z"/>
           <circle cx="305" cy="264" r="9" class="city-pin-core"/>
         </g>
       </g>
       <text class="city-note" x="68" y="30">52°36′ N / 39°36′ E</text><text class="city-note" x="370" y="433">ГОРОД В ДЕТАЛЯХ</text>
     </svg>
+    <svg class="city-mobile" viewBox="0 0 350 70" fill="none" focusable="false"><path class="city-block" d="M8 12h45v19H8zM70 12h46v19H70zM8 45h45v17H8zM70 45h46v17H70z"/><circle class="city-radius" cx="173" cy="35" r="29"/><path class="city-route" d="M18 38h155l24-20h68l28 30h48"/><circle class="city-response" cx="173" cy="35" r="12"/><circle class="city-pin" cx="173" cy="35" r="7"/><text class="city-note" x="229" y="64">52°36′ / 39°36′</text></svg>
     <div class="hero-art-caption"><span>Схема поиска</span><span>Спрос → окружение → место</span></div>
   </div>
   <div id="hero-motion-root" aria-hidden="true"></div>

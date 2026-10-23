@@ -250,21 +250,24 @@ export function initDisclosure(details, options = {}) {
   if (!details?.matches('details') || disclosures.has(details)) return details;
   const summary = details.querySelector(':scope > summary');
   if (!summary) return details;
+  details.dataset.expanded = String(details.open);
   const existingBody = details.querySelector(':scope > .disclosure-body');
   const body = existingBody || node('div', 'disclosure-body'), content = node('div', 'disclosure-content');
   [...(existingBody || details).childNodes].filter(child => child !== summary).forEach(child => content.append(child));
   body.append(content); if (!existingBody) details.append(body);
   let wanted = details.open, revision = 0, active = false;
   disclosures.set(details, body);
-  const transition = (open, from = body.getBoundingClientRect().height) => {
+  const transition = open => {
+    const from = details.open ? getComputedStyle(body).clipPath : 'inset(0 0 100% 0)';
     wanted = open;
     const current = ++revision;
     cancelUI(body);
     if (!open && body.contains(document.activeElement)) summary.focus();
     body.inert = !open;
     details.open = true;
+    details.dataset.expanded = String(open);
     active = true;
-    animateUI(body, [{ height: `${from}px`, opacity: open ? .5 : 1 }, { height: `${open ? content.getBoundingClientRect().height : 0}px`, opacity: open ? 1 : 0 }], 'disclosure', {
+    animateUI(body, [{ clipPath: from === 'none' ? 'inset(0 0 0% 0)' : from, opacity: open ? .35 : 1 }, { clipPath: `inset(0 0 ${open ? 0 : 100}% 0)`, opacity: open ? 1 : 0 }], 'disclosure', {
       duration: options.duration || 'base',
       cleanup: () => {
         if (current !== revision) return;
@@ -275,17 +278,14 @@ export function initDisclosure(details, options = {}) {
   summary.addEventListener('click', event => {
     if (event.defaultPrevented) return;
     event.preventDefault();
-    transition(!wanted, details.open ? body.getBoundingClientRect().height : 0);
+    transition(!wanted);
   });
   details.addEventListener('toggle', () => {
     if (active || details.open === wanted) return;
-    wanted = details.open;
-    if (wanted) transition(true, 0);
+    wanted = details.open; details.dataset.expanded = String(wanted);
+    if (wanted) transition(true);
     else { ++revision; cancelUI(body); body.inert = false; }
   });
-  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => {
-    if (active && wanted) transition(true);
-  }).observe(content);
   return details;
 }
 

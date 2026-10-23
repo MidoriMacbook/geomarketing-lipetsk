@@ -1,5 +1,16 @@
 # Журнал изменений
 
+## 2026-10-23 — тёплые поверхности и motion polish
+
+- Убран экранный белый: Cream/Blush/Sage поверхности, тёплые тени, Cream на CTA/карте.
+- Ранний запуск React-island; заметные word/blur/section entrances, mobile SVG,
+  медленный маршрут/радиус с паузой, React Bits Magnet на основной CTA.
+- Вторичная CTA стала text-action; улучшены меню, selection mark, layer fade,
+  marker pulse480ms, disclosure clip-path и chevron.
+- Вход раздела не сдвигает кнопку между pointerdown/up; клавиатурный фокус,
+  reduced motion, печать и статические fallback сохраняются.
+
+
 ## [2026-10-23] Светлый редизайн опубликован
 
 - Крупный хедер, кремовая палитра, Playfair/Golos и локальные анимации React Bits

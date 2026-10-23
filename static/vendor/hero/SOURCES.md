@@ -13,7 +13,7 @@ Official repository: https://github.com/DavidHDev/react-bits
 Pinned revision: `e12c22192ac7b4b452c5e2feb9b586d74765d696`, retrieved 2026-10-22.
 
 Original JS/CSS components are retained under
-`scripts/frontend/hero/upstream/{SplitText,BlurText,ScrollReveal}.jsx`, along with
+`scripts/frontend/hero/upstream/{SplitText,BlurText,ScrollReveal,Magnet}.jsx`, along with
 the exact upstream license. Their original paths are
 `src/content/TextAnimations/<name>/<name>.jsx` at that revision. SHA-256 values
 are recorded in `scripts/frontend/hero/upstream/PROVENANCE.json` (upstream LF
@@ -29,21 +29,26 @@ GSAP and @gsap/react have GreenSock's standard license, also linked in the notic
 
 - `SplitText.js` retains the React/useGSAP lifecycle, GSAP SplitText word splitting,
   font gate, timeline/fromTo/stagger algorithm and revert cleanup. It targets the
-  existing static h1, uses words at 16px/55ms, and omits upstream rendering,
+  existing static h1, uses words at 32px/740ms with 85ms stagger, and omits upstream rendering,
   loops, hover springs, clipping and ScrollTrigger. It immediately rejects a
   split that changes measured heading dimensions. Temporary word wrappers keep
   original whitespace and textContent, and are reverted on finish, interruption,
   print, reduced motion and unmount. No duplicate or hidden text is rendered.
 - `BlurText.js` retains upstream blur/direction snapshots and buildKeyframes.
   Motion's `motion/react-mini` useAnimate hook applies the three snapshots to the
-  existing short subtitle as one paragraph. Upstream per-word rendering, duplicate
+  existing short subtitle as one paragraph (8px blur/14px y/750ms, delay480ms after fonts). Upstream per-word rendering, duplicate
   screen-reader text, trigger loops and spring effects are omitted. Inline styles
   are restored on finish and cancellation.
-- `ScrollReveal.js` retains upstream enter-mode progress state, clamping,
-  easeOut/render and once-only play guard. It applies a subtle 12px entrance
-  to five existing blocks, using IntersectionObserver instead of text splitting
-  and ScrollTrigger scrub. No block is hidden while waiting for observation;
-  opacity remains at least .88 while entering. It never observes cards or rows.
+- `ScrollReveal.js` adapts the enter-mode once guard to five existing blocks.
+  GSAP fromTo handles opacity0→1/y24→0/700ms; IntersectionObserver replaces
+  text splitting and ScrollTrigger scrub. A JS-only preparation class is removed
+  on entry, focus or cleanup. Pointerdown pauses geometry through pointerup.
+- `Magnet.js` adapts upstream reach/maxOffset and numerical spring solver to one
+  existing static CTA. Source: `src/content/Animations/Magnet/Magnet.jsx`, same
+  pinned revision, retrieved 2026-10-23. SHA256 is included in PROVENANCE.json.
+  Global registry, multiple ownership, tilt, scale and JSX are omitted. Max6px,
+  fine pointer only, keyboard/print/reduce reset, bounded event-driven RAF.
+- `CityMotion.js` is application code: CSS SVG route/radius lifecycle and pause.
 - `PointerDrift.js` is application code, not a claimed React Bits component.
   Fine hover only, +/-6px maximum, event-driven requestAnimationFrame. It has
   no permanent frame loop, and resets on leave, blur, offscreen, visibility,

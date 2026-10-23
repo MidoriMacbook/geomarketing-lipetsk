@@ -1,6 +1,6 @@
 # Визуальный редизайн: светлая карта города
 
-Спецификация от22октября2026 замещает прежнее сливово-розовое оформление
+Спецификация от22октября2026 с полировкой23октября2026 замещает прежнее сливово-розовое оформление
 по прямому новому заданию пользователя. Полный контракт:
 docs/specs/2026-10-22-editorial-map-hero.md.
 
@@ -28,9 +28,9 @@ ResizeObserver обновляет отступ якорей по реально�
 возвращает фокус на доступную кнопку меню, hero-диалог — на свою кнопку.
 Короткий экран с200% текста получает вертикальную прокрутку меню, а не колонки.
 
-Desktop hero380–520px, mobile420–520px при стандартном тексте; при200% высота
-растёт без обрезки. На телефоне схема скрыта ради читаемого заголовка и CTA.
-Рабочие панели белые, границы и номера разделяют их; serif не используется в данных.
+Desktop hero380–520px, mobileдо560px при стандартном тексте; при200% высота
+растёт без обрезки. На телефоне схема заменена горизонтальной SVG-полосой70px.
+Рабочие панели Warm Cream #FEF1E3, границы и номера разделяют их; serif не используется в данных.
 Функционально тёмная карта имеет собственные легенду/подписи/tooltip/control roles.
 
 ## Motion ownership
@@ -45,10 +45,11 @@ Desktop hero380–520px, mobile420–520px при стандартном тек�
 в SOURCES.md. Существующие row/panel reveal отключены во избежание двойных входов,
 но save/delete feedback, disclosures, marker pulse и точный count-up сохранены.
 
-Весь контент виден при delay/failure/noJS. React не меняет textContent, смысл
+Весь контент виден при delay/failure/noJS; работающий JS готовит пять разделов к входу0→1/y24px. React не меняет textContent, смысл
 или геометрию заголовка; временные word-wrappers снимаются. Reduced motion/print
 останавливают активные и ожидающие эффекты; pointer reset выполняется при
-leave/blur/offscreen/visibility. Нет вечного animation loop или canvas/WebGL.
+leave/blur/offscreen/visibility. Событийный RAF останавливается после возврата Magnet; только SVG имеет медленные
+CSS-циклы с паузой/viewport/visibility/reduce/print. Canvas/WebGL в hero нет.
 
 ## Сохранённая работа приложения
 
@@ -64,6 +65,10 @@ leave/blur/offscreen/visibility. Нет вечного animation loop или can
 Новая матрица включает noJS/200%/shortviewport, AA/targets/focus, fallback island,
 фактические word/blur эффекты, pointer≤6px, initial/runtime reduce, print/CLS,
 workspace/storage/scenarios/CSV и воспроизводимые Material+hero сборки.
-Reactостров:312337raw/103506gzip bytes, бюджет≤180KiB gzip. Измерять полный и
+Reactостров:316045raw/104413gzip bytes, бюджет≤180KiB gzip. Измерять полный и
 добавленный островом CLS отдельно. Chrome/touch emulation не заменяет проверку
 физических телефонов, других движков и native PDF-пагинации.
+
+Точные новые значения, причины изменений и правила прерывания:
+docs/specs/2026-10-23-warm-motion-polish.md. Основная CTA — Magnet, вторичная —
+text-action с линией только под текстом. Белый допустим исключительно в печати.

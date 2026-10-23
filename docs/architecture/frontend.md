@@ -14,11 +14,11 @@
 
 `navigation.js` обслуживает статическую навигацию/фокус/реальный header offset.
 `hero-loader.js` независимо и асинхронно загружает локальный
-`static/vendor/hero/hero-motion.js` после load/idle; каталог и расчёт этого не ждут.
+`static/vendor/hero/hero-motion.js` сразу из deferred script, не ожидая window.load; каталог и расчёт этого не ждут.
 `scripts/frontend/hero-entry.js` монтирует React effect-controller в пустой
 `#hero-motion-root`, не заменяя h1/описание/CTA/SVG. Нет второго React-дерева приложения.
 
-Адаптированные исходники SplitText/BlurText/ScrollReveal, точный upstream revision,
+Адаптированные исходники SplitText/BlurText/ScrollReveal/Magnet, точный upstream revision,
 SHA256 и лицензия находятся в scripts/frontend/hero/upstream и SOURCES.md рядом
 с bundle. SplitText использует GSAP word-splitting с revert, BlurText — Motion mini,
 ScrollReveal — пять одноразовых block entrances вместо текстового scrub.
@@ -207,3 +207,17 @@ print и три финальных снимка. `material-web.js` — точе�
 delay/failure/noJS/noObserver, pointer reset, reduce/print и отдельный/полный CLS.
 `editorial-navigation.js` добавляет sticky/menu/anchor/focus/noJS/short200%;
 `editorial-style.js` — семантическую палитру, шрифт, AA,8width/scale состояний.
+
+## Motion polish — 23 октября 2026
+
+CityMotion управляет только CSS-классами SVG и кнопкой паузы. Магнит использует
+адаптированные reach/maxOffset/spring из React Bits на существующей ссылке,
+без React-обёртки вокруг приложения. Предел6px, RAF прекращается в покое.
+ScrollReveal готовит пять блоков классом motion-prepared; finish/cleanup
+снимают opacity/transform. Pointerdown удерживает геометрию до завершения click (включая touch compatibility events),
+чтобы focus не перемещал кнопку между down/up. Keyboard focus завершает вход.
+Нативный details остаётся источником состояния; clip-path360ms не измеряет
+и не анимирует layout-height. Повторное действие отменяет предыдущее через revision.
+
+Отдельный warm-motion.js проверяет четырёхширинную матрицу, отсутствие белых
+поверхностей, mobile SVG/560px, pause/Magnet/reduce/print и запуск до window.load.

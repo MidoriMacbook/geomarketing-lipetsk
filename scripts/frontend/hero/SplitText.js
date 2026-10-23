@@ -13,7 +13,7 @@ export function SplitText({ enabled }) {
     const el = document.getElementById('page-title');
     if (!enabled || played.current || !el) return;
     played.current = true;
-    let active = true, split = null, intro = null, fontTimer = 0;
+    let active = true, split = null, intro = null;
     const finish = () => {
       intro?.kill();
       intro = null;
@@ -21,7 +21,6 @@ export function SplitText({ enabled }) {
       split = null;
     };
     const start = () => {
-      clearTimeout(fontTimer);
       if (!active || (document.fonts && document.fonts.status !== 'loaded')) return;
       const box = el.getBoundingClientRect();
       if (box.bottom <= 0 || box.top >= innerHeight) return;
@@ -36,16 +35,17 @@ export function SplitText({ enabled }) {
         if (Math.abs(box.height-next.height)>.5 || Math.abs(box.width-next.width)>.5) { finish(); return; }
         el.dataset.heroSplitStarted = 'true';
         intro = gsap.timeline({ onComplete: finish });
-        intro.fromTo(split.words, {opacity: 0.2, y: 16, willChange: 'transform, opacity'}, {
-          opacity: 1, y: 0, duration: .62, ease: 'power3.out',
-          stagger: gsap.utils.distribute({each: .055, from: 'start'}),
+        intro.fromTo(split.words, {opacity: 0, y: 32, willChange: 'transform, opacity'}, {
+          opacity: 1, y: 0, duration: .74, ease: 'power3.out',
+          stagger: gsap.utils.distribute({each: .085, from: 'start'}),
         });
       } catch { finish(); }
     };
-    // Upstream font readiness gate; timeout skips animation, never hides text.
+    // Wait for fonts without hiding the server-rendered title or losing the
+    // entrance on a slow connection. The viewport check prevents late replay.
     if (!document.fonts || document.fonts.status === 'loaded') start();
-    else Promise.race([document.fonts.ready, new Promise(resolve=>{fontTimer=setTimeout(resolve,600);})]).then(start);
-    return () => { active = false; clearTimeout(fontTimer); finish(); };
+    else document.fonts.ready.then(start);
+    return () => { active = false; finish(); };
   }, {dependencies:[enabled],revertOnUpdate:true});
   return null;
 }

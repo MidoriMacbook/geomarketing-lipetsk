@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 export function PointerDrift({ enabled }) {
   useEffect(() => {
-    const art = document.getElementById('hero-art');
+    const art = document.getElementById('hero');
     if (!enabled || !art) return;
     const fine = matchMedia('(hover:hover) and (pointer:fine)');
     const pieces = [...art.querySelectorAll('[data-hero-drift]')];
@@ -19,7 +19,7 @@ export function PointerDrift({ enabled }) {
       });
     };
     const move = event => {
-      if (!fine.matches) return;
+      if (!fine.matches || event.pointerType === 'touch') return;
       const box = art.getBoundingClientRect();
       x = Math.max(-6,Math.min(6,((event.clientX-box.left)/box.width-.5)*12));
       y = Math.max(-6,Math.min(6,((event.clientY-box.top)/box.height-.5)*12));
