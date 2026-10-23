@@ -4,6 +4,7 @@ const toggle = document.getElementById('nav-toggle');
 if (header && menu && toggle) {
   const mobile = matchMedia('(max-width:900px)');
   let modelFromMenu = false;
+  const syncOffset = () => document.documentElement.style.setProperty('--header-offset', `${Math.ceil(header.getBoundingClientRect().height)}px`);
   const syncMenuCap = () => {
     if (!header.classList.contains('nav-open')) return;
     const bottomPadding = parseFloat(getComputedStyle(header).paddingBottom) || 0;
@@ -16,6 +17,7 @@ if (header && menu && toggle) {
     toggle.setAttribute('aria-expanded', 'false');
     if (returnFocus) toggle.focus({ preventScroll: true });
     menu.inert = mobile.matches;
+    syncOffset();
   };
   const sync = () => {
     const hadMenuFocus = menu.contains(document.activeElement);
@@ -60,7 +62,6 @@ if (header && menu && toggle) {
   mobile.addEventListener('change', sync);
   sync();
   header.dataset.navigationReady = 'true';
-  const syncOffset = () => document.documentElement.style.setProperty('--header-offset', `${Math.ceil(header.getBoundingClientRect().height)}px`);
   syncOffset();
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => { syncMenuCap(); syncOffset(); }).observe(header);
   else window.addEventListener('resize', syncOffset);
