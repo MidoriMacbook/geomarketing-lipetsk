@@ -51,4 +51,20 @@ Magnet адаптирован из той же закреплённой React Bi
 Chrome desktop и mobile/touch emulation. Физические телефоны, другие движки,
 нативная PDF-пагинация и серверная нагрузка отдельно не проверялись.
 API/Flask/математика/каталог/форматы localStorage не изменены.
-Публикация будет отмечена после подтверждения live и публичной проверки.
+
+## Публикация
+
+Runtime f1b0b7859e3735024920da60460c1fe4edafa52a в main.
+Feature CI40014554183 и main CI40014779563: Success для точного SHA.
+Render dep-dbdrlp8473hc73beq8ug: live с 23 октября22:53:28 Москва,
+trigger new_commit. Никаких новых ресурсов или изменений сервера.
+Публичные40 ресурсов совпадают с Git по SHA256; healthz={"status":"ok"}.
+App error/critical logs с начала deploy пусты.
+
+
+Публичные warm-motion, hero-island, workspace и research-open-motion: PASS.
+Подтверждены карта/расчёт/layers/saved/CSV/print/архив, mobile/touch/keyboard,
+noJS/failure/noObserver/slow load, runtime reduce. pageErrors[].
+Public island CLS0; initial CLS0.001164111267843364.
+Локальный QA Python4088/30260 остановлен; CLI браузер закрывается после аудита.
+Аудит документации публикуется с [skip render], runtime остаётся f1b0b78.

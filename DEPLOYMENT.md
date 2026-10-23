@@ -9,20 +9,17 @@
 - Запуск: `python serve.py`, Waitress слушает порт из `PORT`.
 - Проверка приложения: `GET /healthz` → HTTP 200, `{"status":"ok"}`.
 
-Последняя публикация: 23 октября 2026, runtime `56f3555`,
-deploy `dep-dbdih6lbedkc73d1f420` live с 12:29:19 по Москве, trigger `new_commit`.
-Source/main CI success: run39930316425/run39932049840.
-Опубликованы светлая палитра, крупная обложка с локальными React Bits,
-новая типографика и доступная sticky-навигация. На публичном сайте прошли
-шесть профильных suites и workspace/scenarios-ui/research-open-motion;
-проверены карта, сохранения, сравнение, CSV, печать и восстановление снимков.
-Все 40 ресурсов (включая hero bundle и восемь WOFF2) совпали с Git,
-/healthz200, каталог10×10, pageErrors[]. Подробности:
-docs/verification/2026-10-22-editorial-map-hero.md.
-Предыдущая публикация: docs/verification/2026-10-21-research-open-motion.md.
-Предыдущий пакет: docs/verification/2026-10-19-workspace-flow-and-field-checks.md.
-Итоговый аудит и расширение browser-теста используют `[skip render]`;
-runtime повторно не собирается.
+Последняя публикация: 23 октября 2026, runtime `f1b0b78`,
+deploy `dep-dbdrlp8473hc73beq8ug` live с22:53:28 по Москве, trigger `new_commit`.
+Source/main CI success: run40014554183/run40014779563.
+Опубликованы тёплые поверхности без экранного белого, заметные React Bits
+анимации, Magnet на CTA и мобильная SVG-схема с паузой. Публичные warm-motion,
+hero-island, workspace, research-open-motion PASS: карта, сохранения, CSV,
+печать, открытие исследования, reduce/keyboard/mobile/fallback.
+Все40 ресурсов совпали с Git, healthz200, pageErrors[], app error logs пусты.
+Подробности: docs/verification/2026-10-23-warm-motion-polish.md.
+Предыдущая версия: docs/verification/2026-10-22-editorial-map-hero.md.
+Итоговый аудит документации использует `[skip render]` без повторной сборки.
 
 Сервис создан через подключение Render; исходная конфигурация для повторного
 развёртывания через Blueprint хранится в `render.yaml`. Она включает HTTP
