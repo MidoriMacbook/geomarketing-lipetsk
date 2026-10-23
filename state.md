@@ -1,54 +1,40 @@
 # Состояние работы
 
 ## Current Goal
-22 октября2026: выполнить подробный светлый editorial-редизайн пользователя,
-опубликовать в main и существующем Render. Дизайн уже дан в прикреплённом промте,
-повторное согласование не требуется. Ветка codex/editorial-map-hero.
-Spec/plan: docs/{specs,plans}/2026-10-22-editorial-map-hero.md.
-Base main9a15e57, предыдущий live11a6faf — исправление исследований.
+23 октября 2026: светлый редизайн опубликован в main и существующем Render.
+Пользовательский запрос реализован. Runtime: 56f3555a4c17a43ccf1896362a8c899a5e8ee7ef.
+Сайт: https://geomarketing-lipetsk.onrender.com
+Ветка разработки codex/editorial-map-hero сохранена; текущая ветка main.
 
 ## Decisions
-Cream/white/Playfair+Golos, sixprimitivepalette, darkmap independently scoped.
-StaticHTML hero/SVG, asyncReact effectcontroller пустого #hero-motion-root;
-actualSplitText/BlurText/adapted5block ScrollReveal +boundedpointer, noUIrewrite.
-Upstream source e12c22192ac7b4b452c5e2feb9b586d74765d696;
-MIT+CommonsClause/GSAPstandard notices retained, no claim pureMIT.
-PinnedReact19.3.1/DOM19.3.1/GSAP3.15/@gsap/react2.1.2/Motion12.23.24.
-Hero312337raw/103506gzipbytes; initialCLS.001164/islandCLS0.
-NoJSheaderinflow; actualheaderoffset+menuavailableheight measured for200%/shortviewports.
-Savebuttonfg/bg atomic to prevent AA dip during crossingtransition; shadow/transform stay.
-All existing API/storage10×10/Material/Leaflet/CSV/print/id contracts preserved.
+- Cream/white, шесть цветов пользователя, Playfair Display + Golos; карта имеет отдельные тёмные токены.
+- Статический HTML/SVG и асинхронный React effect-controller: текст, форма и карта не зависят от island.
+- Локальные адаптации React Bits SplitText/BlurText/ScrollReveal с точным source/license; без полной React-миграции.
+- Переносы h1 зависят от ширины его контейнера; большой текст не обрезается и не уменьшается ради высоты.
+- Header измеряется до перехода; общий scroll-padding учитывает его один раз и защищает фокус без id.
+- API, математика, каталог10×10, три storage-схемы, Leaflet, CSV/print и Material сохранены.
 
 ## Plan Status
-Task1 e1829b6 +headerfixes a48e54e/bab1e85 independently re-reviewed PASS;
-new atomic-saveCSS8a4b2f7 provenREDcontrast3.62→GREENresponsive suite.
-Task2 09a333e independently Spec/Quality/SecurityPASS; teardownprobe0RAF/WAAPI/errors.
-Root HTML/nav/ui/provenance docs/legacy test adaptations implemented; integration GREEN.
-Next: rootcommit→wholebranchmostcapablereview→CI→mainFF→
-Renderlive→publicQA/hash→finalauditCI/owncleanup. Do not repeat completed suites absentcause.
+План docs/plans/2026-10-22-editorial-map-hero.md выполнен.
+Whole-branch review исходного диапазона и отдельное review исправлений: PASS, открытых замечаний нет.
+Source CI39930316425 и main CI39932049840: Success для runtime56f3555.
+Render dep-dbdih6lbedkc73d1f420 live с23 октября12:29:19 Москва.
+Итоговый doc-only аудит использует [skip render]; его собственный CI проверяется по текущему SHA main.
 
 ## Evidence
-Root Python84/84(20.508s), Node75/75, validator78files, herodeterministic/hashes PASS.
-Worker frozeninstall/audit0/Materialbyteidentity PASS; independentbuildcheck confirmed.
-Rootfinalmatrix first12 GREEN: editorial-navigation/style/hero-island/workspace-layout48/
-workspace-interactions/field-checks/workspace19/choice-menus/scenarios-ui17/scenarios11/
-scenarios-mobile/research-open-motion. Responsive thenfailedmidcolorcrossfade;
-workerfixed8a4b2f7 and entire responsive GREEN. No API/storage regressions.
-Remaining palette/selected-contrast/redesign/dark-motion/map-harmony/contrast-intro GREEN.
-All19browser suites covered; no needrepeat wholematrix absentnewsource concerns.
-Rootnavnewtests noJS390200 and390x320200RED→GREEN; lastmenu248–308inside320.
-Task1 settledscreenshots1440/768/390 inspected; real4fontWOFF2 total121664bytes/OFL.
-Raw evidence ignored tests/artifacts/editorial. Final formal verification doc pending.
+Формальная приёмка: docs/verification/2026-10-22-editorial-map-hero.md.
+Локально покрыты19 исходных browser suites и3 новых regression; Python84, Node75, validator78.
+Финальные профильные suites, responsive/research и публичные9 suites GREEN.
+Font19 вариантов, anchors12 маршрутов, focus27 переходов; no overflow на проверенных ширинах.
+Публичные40 ресурсов совпали с Git; healthz200, каталог10×10, pageErrors[], app error/critical logs пусты.
+Hero312337raw/103506gzip; source hashes/deterministic build PASS, islandCLS0, initialCLS0.001164.
+Hero1440/1024/768/390:484.5/477.516/463.406/440px; desktop map/recs по1100px.
+Публичные screenshots в ignored tests/artifacts/editorial/public-*.png.
 
-## QA Ownership
-Rootserver5085 helperPID31252 (verifycommandline/childrenbeforestop).
-Rootbrowsereditorial-root PID37828. Workers/review browsers closed independently.
-Allmatrix exec sessions finished; rootbrowser staysavailableforpublicQA/review.
-Do not stop unrelated Python/Chrome. Final owncleanup required afterpublicQA.
-
-## Open Issues
-No unresolved productfinding afterheader/AAfixes; finalgates pending.
-Old tests dark-motion/map-harmony/contrast-intro/redesign now assertnewdesignintent,
-while preserving functional/accessibility checks; docs/verification/2026-10-22-editorial-map-hero.md.
-Chrome/touch emulation only; nativePDF/physicaldevices/otherengines outsideQA.
-GitHub RESTrate403 fallback ActionsUI withfullSHA. No duplicate manualRenderdeploy.
+## Open Issues / QA limits
+Нет открытых замечаний, блокирующих согласованный выпуск.
+Chrome/touch emulation; физические телефоны, другие движки и native PDF отдельно не проверялись.
+320px/200% вне основной матрицы; наблюдённый overflow не введён последними исправлениями хедера.
+Дополнительный независимый sweep не запустился из-за approval deadline; фактический font19 повторён независимо.
+QA Python30176/25340 остановлены. Закрывать только собственные CLI browser sessions после финального CI.
+GitHub REST rate-limit обходится чтением Actions UI с проверкой полного SHA; не дублировать Render deploy.

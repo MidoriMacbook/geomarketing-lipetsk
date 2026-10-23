@@ -60,7 +60,7 @@ Security:none. Does NOT change model/storage/API; no photoassets needed.
 - [x] RED nav tests structure/noJS/menu/anchors/last research-open with sticky offset.
 - [x] Implement HTML/SVG/menu, preserve oldids and model-button (secondary hero button
   separateid), mobilefallback, root ui.js single reveal owner coordination.
-- [ ] Per-task independent reviews Spec+Quality; resolve findings, final matrix once:
+- [x] Per-task independent reviews Spec+Quality; resolve findings, final matrix once:
   fullPython/Node/validator/JS/Material+hero/buildsize/palette + responsive/menu/
   scenarios/workspace/field/CSV/print; visual screenshots4widths/states.
-- [ ] Wholebranch review, featureCI→mainFF→Renderlive→publicQA/hash→auditCI/owncleanup.
+- [x] Wholebranch review, featureCI→mainFF→Renderlive→publicQA/hash→auditCI/owncleanup.
