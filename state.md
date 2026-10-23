@@ -2,8 +2,9 @@
 
 ## Current Goal
 23 октября 2026: тёплая палитра и motion polish по приложенному заданию.
-Ветка codex/warm-motion-polish. Реализация и локальные проверки завершены,
-следующий этап — commit/push main, Render live и публичная проверка.
+Реализовано и опубликовано: main/runtime f1b0b7859e3735024920da60460c1fe4edafa52a.
+Render dep-dbdrlp8473hc73beq8ug live23октября22:53:28 Москва.
+Сайт https://geomarketing-lipetsk.onrender.com. Ветка разработки сохранена.
 
 ## Decisions
 - Только шесть базовых цветов и производные; экранный белый удалён.
@@ -20,8 +21,11 @@ Python84, Node75, validator78, hero316045raw/104413gzip, deterministic/sourcehas
 Workspace, field-checks, workspace-interactions GREEN; motion click bugs RED→GREEN.
 390/768/1024/1440: overflow false, экранные white=[], hero506/491/505/485px.
 
-## Pending
-Проверить CI и публикацию runtime, затем обновить аудит [skip render].
-Собственные тестовые процессы: Python wrapper4088 (дочерний PID проверить),
-браузер CLI warm-final; закрыть только свои процессы после завершения.
+## Release / limits
+Source CI40014554183 и main CI40014779563 Success.
+Публичные warm-motion/hero-island/workspace/research-open-motion PASS.
+40resources SHA256 match; healthz200; pageErrors[]; app error/critical logs[].
+Island CLS0, initialCLS0.001164111267843364.
+Итоговый аудит документации [skip render], без изменения runtime.
+Собственный локальный сервер4088/30260 остановлен; CLI warm-final закрыть после CI.
 Лимиты QA: Chrome/touch emulation; физические устройства и native PDF не проверены.
