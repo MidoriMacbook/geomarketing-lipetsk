@@ -259,7 +259,7 @@ export function selectMarker(rank, pan, changed = false) {
   });
   if (changed) {
     const pin = markers.get(rank)?.getElement()?.querySelector('.recommendation-pin');
-    animateUI(pin, [{ transform: 'scale(1)' }, { transform: 'scale(var(--motion-pulse-scale))', offset: .45 }, { transform: 'scale(1)' }], 'marker-pulse', { duration: 480, easing: 'spring' });
+    animateUI(pin, [{ transform: 'scale(1)' }, { transform: 'scale(var(--motion-pulse-scale))', offset: .45 }, { transform: 'scale(1)' }], 'marker-pulse', { duration: 420, easing: 'spring' });
   }
   const rec = state.current?.recommendations.find(r => r.rank === rank);
   if (map&&rec&&pan) map.panTo([rec.lat, rec.lng], {

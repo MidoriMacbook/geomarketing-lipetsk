@@ -10,8 +10,8 @@ async original => {
       await page.goto(base,{waitUntil:'domcontentloaded'});
       await page.evaluate(async scale=>{
         document.documentElement.style.fontSize=`${100*scale}%`;
-        await document.fonts.load('16px "Golos Text"','Текст');
-        await document.fonts.load('16px "Golos Text"','Text');
+        await document.fonts.load('16px "Onest"','Текст');
+        await document.fonts.load('16px "Onest"','Text');
       },scale);
       await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
       await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));

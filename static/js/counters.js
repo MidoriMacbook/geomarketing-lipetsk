@@ -22,7 +22,7 @@ function tick(time) {
   for (const [element, record] of records) {
     if (!element.isConnected) { settle(element); continue; }
     if (record.started === null) continue;
-    const progress = Math.min(1, Math.max(0, (time - record.started) / duration));
+    const progress = Math.min(1, Math.max(0, (time - record.started) / (record.duration ?? duration)));
     record.current = Math.round(record.from + (record.target - record.from) * (1 - (1 - progress) ** 3));
     record.visual.dataset.display = format(record.current, record.prefix, record.suffix);
     if (progress === 1) settle(element);
@@ -110,3 +110,15 @@ matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event 
 matchMedia('print').addEventListener('change', event => { if (event.matches) settleAll(); });
 window.addEventListener('beforeprint', settleAll);
 document.addEventListener('visibilitychange', () => { if (document.hidden) settleAll(); });
+
+// A replay changes only aria-hidden generated content, never the exact value.
+export function replayCounter(element) {
+  settle(element);
+  const target = Number(element.dataset.counterTarget);
+  const visual = element.querySelector('.counter-visual');
+  if (!visual || !Number.isSafeInteger(target) || motionReduced() || document.hidden) return;
+  const from = Math.round(target * .94);
+  records.set(element, { from, target, current: from, prefix: '', suffix: '', visual, started: null, duration: 560 });
+  visual.dataset.display = format(from, '', '');
+  start(element);
+}

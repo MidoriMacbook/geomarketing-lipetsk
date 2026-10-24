@@ -36,14 +36,14 @@
  --color-map-ink:var(--palette-cream); --color-map-muted:var(--palette-map-muted); --color-map-line:var(--palette-map-line);
  --color-overlay:rgb(45 58 71 / .70); --color-shadow-soft:rgb(137 67 78 / .09); --color-shadow-strong:rgb(137 67 78 / .20);
  --color-glow:rgb(180 106 114 / .12); --color-glow-blue:rgb(169 183 198 / .15);
- --color-grid:rgb(45 58 71 / .07); --color-header:rgb(255 247 230 / .97);
+ --color-grid:rgb(45 58 71 / .07); --color-header:var(--palette-cream);
  --color-moonscape:var(--palette-rosewood);
  --color-hero-block:var(--palette-sky); --color-hero-demand:var(--palette-sage); --color-hero-route:var(--palette-rosewood);
  --color-hero-line:var(--palette-line); --color-hero-wash:var(--palette-pink-soft); --color-hero-paper:var(--palette-paper);
  --color-print-page:var(--palette-cream); --color-print-ink:var(--palette-ink); --color-print-muted:var(--palette-ink-muted);
  --color-print-settings:var(--palette-paper); --color-print-line:var(--palette-line);
  --map-tile-filter:grayscale(1) invert(.94) contrast(.85) brightness(1.15);
- --font-body:"Golos Text",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ --font-body:"Onest",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
  --font-display:"Playfair Display",Georgia,"Times New Roman",serif;
  --font-mono:ui-monospace,"Cascadia Code",Consolas,monospace;
  --text-xs:.75rem; --text-sm:.8125rem; --text-base:1rem; --text-lg:1.125rem; --text-xl:1.375rem;

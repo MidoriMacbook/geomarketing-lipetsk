@@ -1,0 +1,15 @@
+Onest v11, official Google Fonts browser subsets, retrieved 2026-10-24.
+SIL Open Font License 1.1: Onest-OFL.txt
+Upstream: https://github.com/googlefonts/onest
+License: https://raw.githubusercontent.com/google/fonts/main/ofl/onest/OFL.txt
+CSS: https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap
+Normal variable weight 100–900; Cyrillic U+0400–045F includes the full Russian alphabet and Ё/ё.
+Local WOFF2; font-display:swap; no runtime font CDN.
+
+onest-cyrillic.woff2: 15860 bytes
+https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xmb-HY6EQ.woff2
+SHA256 68e5e01d6265bd68967746d4f5a9d18d0e6cbb5d15583c7082d6384ab1229b27
+
+onest-latin.woff2: 33760 bytes
+https://fonts.gstatic.com/s/onest/v11/gNMKW3F-SZuj7xmf-HY.woff2
+SHA256 052df74533250c2e0ca0c4bdd32de594e107d99c1648e63820ef9c6142067828

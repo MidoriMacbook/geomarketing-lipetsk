@@ -7,7 +7,7 @@ button:disabled,select:disabled { cursor:default; opacity:var(--opacity-disabled
 button:active:not(:disabled),.place-actions a:active { transform:translateY(var(--line)); }
 .site-header nav a:hover,.site-header nav button:hover { background:var(--color-subtle); color:var(--color-ink); }
 .site-header nav .active:hover { background:var(--color-choice-selected); color:var(--color-ink); }
-.site-header.is-scrolled { background:var(--color-surface); box-shadow:var(--shadow-control); border-color:var(--color-line); }
+.site-header.is-scrolled { background:var(--color-header); box-shadow:var(--shadow-control); border-color:var(--color-line); }
 @media (hover:hover) and (pointer:fine) {
  .recommendation:not(.selected):hover,.saved-card:hover,.scenario-card:hover { border-color:var(--color-primary); box-shadow:0 12px 32px var(--color-glow); }
 }
@@ -55,3 +55,35 @@ html[data-analysis-state=error] .status-dot { background:var(--color-on-dark); }
 .recommendation { position:relative; }
 .recommendation.selected::before { content:""; position:absolute; left:0; top:var(--space-4); height:var(--space-8); width:var(--space-1); border-radius:var(--radius-pill); background:var(--color-primary); transform-origin:top; pointer-events:none; }
 @keyframes selection-mark { from { transform:scaleY(.2); opacity:.3; } to { transform:scaleY(1); opacity:1; } }
+/* Metric replays preserve the exact number and all report data. */
+.kpis>div { position:relative; isolation:isolate; overflow:hidden; padding-bottom:var(--space-8); --kpi-accent:var(--palette-rosewood); transition:background-color 180ms; }
+.kpis>div:nth-child(2) { --kpi-accent:var(--palette-sky); }
+.kpis>div:nth-child(3) { --kpi-accent:var(--palette-pink); }
+.kpis>div:nth-child(4) { --kpi-accent:var(--palette-sage); }
+.kpis>div.is-replaying { background:color-mix(in srgb,var(--kpi-accent) 16%,var(--color-kpi)); }
+.kpi-replay { position:absolute; inset:0; width:100%; border:0; background:transparent; border-radius:inherit; color:var(--color-muted); text-align:right; }
+.kpi-replay-hint { position:absolute; right:var(--space-4); bottom:var(--space-3); font-size:.6875rem; text-decoration:underline; text-underline-offset:3px; }
+.kpi-replay:disabled { visibility:hidden; }
+.kpi-replay:focus-visible { outline-offset:-4px; }
+.kpi-replay:hover,.kpi-replay:active { background:transparent; transform:none; }
+.kpi-wave { position:absolute; border-radius:50%; background:var(--kpi-accent); opacity:0; pointer-events:none; z-index:-1; }
+.kpi-progress { position:absolute; left:var(--space-4); right:var(--space-4); bottom:0; height:3px; transform-origin:left; background:var(--kpi-accent); opacity:0; pointer-events:none; }
+.choice-trigger:active:not(:disabled),#run:active:not(:disabled),.layers label:active { transform:scale(.985); }
+.layers label { transition:transform 180ms var(--ease-emphasized),background-color 180ms; border-radius:var(--radius-control); }
+.choice-option[aria-selected=true] .choice-check { animation:choice-check-in 300ms var(--ease-emphasized); }
+.choice-option[aria-selected=true] .choice-option-mark { animation:choice-mark-in 320ms var(--ease-emphasized); }
+.recommendation.selected::before { animation:selection-mark 360ms var(--ease-emphasized); }
+.place-actions .save { min-width:9.5em; position:relative; }
+.place-actions .save.is-saved::after { content:""; position:absolute; bottom:4px; left:var(--space-3); right:var(--space-3); height:1px; background:currentColor; transform-origin:left; animation:save-line 360ms var(--ease-emphasized); }
+html[data-analysis-state=calculating] #result-empty::after,html[data-analysis-state=initial] #catalog-status { animation:loading-enter 400ms var(--ease-emphasized); }
+@keyframes choice-check-in { from { opacity:0; clip-path:inset(0 100% 0 0); } to { opacity:1; clip-path:inset(0); } }
+@keyframes choice-mark-in { from { transform:scale(.85); } to { transform:scale(1); } }
+@keyframes save-line { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+@keyframes loading-enter { from { opacity:.3; transform:translateY(4px); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) {
+ .choice-trigger,.layers label,#run,.kpis>div { transform:none!important; }
+ .choice-check,.choice-option-mark,.recommendation.selected::before,.place-actions .save::after,#catalog-status,#result-empty::after { animation:none!important; }
+}
+@media print { .kpi-replay,.kpi-wave,.kpi-progress { display:none!important; } }
+
+.save-check { display:inline-block; animation:choice-check-in 320ms var(--ease-emphasized); }
