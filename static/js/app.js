@@ -14,8 +14,15 @@ function bootstrap() {
   initMotion();
   import('./choices.js').then(({initChoiceMenus})=>initChoiceMenus()).catch(()=>{});
   initDialogMotion($('model-dialog'));
+  function refreshFeedback(message = '', busy = false) {
+    $('refresh-status').textContent = message;
+    $('refresh-status').hidden = !message;
+    $('refresh-data').setAttribute('aria-busy', String(busy));
+    $('refresh-label').textContent = busy ? 'Обновляем…' : 'Обновить данные';
+  }
   function resetSelection() {
     cancelRequest();
+    refreshFeedback();
     state.current = null;
     state.currentRequestKey = null;
     state.openedScenarioId = null;
@@ -129,10 +136,14 @@ function bootstrap() {
     }
   }
   async function run(refresh = false) {
-    if (!state.catalog) return;
+    if (!state.catalog) {
+      if (refresh) refreshFeedback('Сначала дождитесь загрузки настроек. При ошибке повторите их загрузку в панели анализа.');
+      return;
+    }
     const district = $('district').value;
     if (district === 'custom'&&!state.customPoint) {
       showError('Сначала кликните по карте, чтобы выбрать центр области.');
+      if (refresh) refreshFeedback('Выберите центр своей области на карте, затем повторите обновление.');
       return;
     }
     const params = requestParams();
@@ -146,6 +157,7 @@ function bootstrap() {
     const version = state.requestVersion, request = beginCalculationRequest(), controller = request.controller;
     $('run').disabled = true;
     $('refresh-data').disabled = true;
+    refreshFeedback(refresh ? 'Запрашиваем свежие дома и конкурентов в OpenStreetMap. Это может занять до минуты.' : '', refresh);
     $('run').textContent = 'Рассчитываем…';
     $('loading-hint').hidden = false;
     $('loading-hint').textContent = preserveResult?'Обновляем расчёт. Пока показан предыдущий успешный результат.': 'Загрузка и расчёт могут занять до минуты.';
@@ -168,11 +180,18 @@ function bootstrap() {
       showResult(data);
       fitArea(data);
       setAnalysisState('success', data.recommendations.length ? 'Расчёт готов · выберите место на карте' : 'Расчёт готов · подходящих мест не найдено');
+      if (refresh) {
+        const fresh = data.source === 'osm' && ['houses', 'competitors'].every(key => data.data_meta?.[key]?.cached === false);
+        refreshFeedback(fresh
+          ? 'Данные получены из OpenStreetMap, расчёт обновлён. Числа могут остаться прежними, если в источнике нет изменений.'
+          : `Свежие данные получены не полностью. Расчёт использует доступную копию. ${data.warning || 'Проверьте даты источников выше и повторите обновление позже.'}`);
+      }
     }
     catch (err) {
       if (version !== state.requestVersion)return;
       const message = request.timedOut?'Загрузка заняла слишком много времени. Повторите попытку или выберите готовый район.': err.user?err.message: err instanceof TypeError?'Нет связи с сервером. Проверьте интернет и повторите попытку.': 'Не удалось выполнить расчёт. Повторите попытку позже.';
       showError((preserveResult?'Обновить расчёт не удалось. Показан предыдущий успешный результат. ': '')+message);
+      if (refresh) refreshFeedback(`${message}${preserveResult ? ' Предыдущий успешный расчёт сохранён.' : ''}`);
       setAnalysisState('error', preserveResult ? 'Обновление не удалось · показан предыдущий расчёт' : 'Расчёт недоступен · повторите попытку');
       if (!preserveResult) {
         $('result-empty').querySelector('h3').textContent = 'Расчёт пока недоступен';

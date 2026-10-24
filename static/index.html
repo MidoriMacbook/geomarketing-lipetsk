@@ -102,7 +102,8 @@
       <p id="source">Источник — OpenStreetMap. Даты домов и конкурентов появятся после расчёта.</p><div id="data-quality"></div><p id="data-warning" class="notice" hidden></p>
       <p>Модель учитывает жилую застройку, радиус доступности и конкурентов выбранной категории. Данные могут быть неполными или устаревшими. Оценка сравнивает места только внутри одного расчёта и не прогнозирует выручку.</p>
       <p>Перед арендой проверьте наличие помещения, вход, парковку и остановки, поток людей, конкурентов и стоимость аренды.</p>
-      <button id="refresh-data" class="button secondary" type="button">Обновить данные <span aria-hidden="true">↻</span></button>
+      <button id="refresh-data" class="button secondary" type="button" aria-describedby="refresh-status"><span id="refresh-label">Обновить данные</span> <span class="refresh-icon" aria-hidden="true">↻</span></button>
+      <p id="refresh-status" class="refresh-status" role="status" aria-live="polite" hidden></p>
     </div></details>
   </section>
   <footer class="page-footer"><span>ГеоМаркетинг · Липецк</span><p>Ориентир для поиска, а не прогноз выручки. Проверьте помещения, аренду и окружение на месте.</p></footer>
