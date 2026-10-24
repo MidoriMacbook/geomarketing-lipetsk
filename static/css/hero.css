@@ -141,7 +141,7 @@
 .city-motion-active.city-motion-intro .city-response { animation-play-state:running; }
 /* Navigation is a stable cream bar; the mobile panel overlays below it. */
 .nav-items { position:relative; display:flex; align-items:center; gap:var(--space-2); }
-.nav-items>a,.nav-items>button { position:relative; z-index:1; }
+.nav-items>a,.nav-items>button { position:relative; z-index:1; transition:transform 220ms var(--ease-emphasized),color 220ms var(--ease-standard); }
 .site-header .nav-items .active { background:transparent; }
 .nav-indicator { position:absolute; top:0; left:0; border-radius:var(--radius-control); background:var(--color-featured); pointer-events:none; transition:transform 400ms var(--ease-emphasized),width 400ms var(--ease-emphasized),opacity 200ms; }
 .menu-icon { position:relative; display:block; width:18px; height:18px; margin-left:var(--space-2); }
