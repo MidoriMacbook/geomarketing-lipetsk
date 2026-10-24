@@ -10,3 +10,8 @@ Sources:
 - https://github.com/google/fonts/tree/main/ofl/unbounded
 
 The UI uses font-display: swap and system fallbacks. No runtime external font requests are needed.
+
+Onest (variable100–900, normal) используется для интерфейса с24октября2026.
+Кириллица/латиница: локальные WOFF2; лицензия Onest-OFL.txt, источники и SHA256
+в onest-SOURCES.txt. Старые шрифты сохранены как лицензированные ресурсы,
+но Golos/Unbounded не подключаются текущим интерфейсом.
