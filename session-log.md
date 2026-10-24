@@ -246,4 +246,6 @@ KPI replay, press/selection/save feedback, локальный Onest и section P
 Убраны пользовательская пауза и бесконечная пульсация схемы. API/storage/export
 не изменены. Локальные проверки и ограничения описаны в
 `docs/verification/2026-10-24-touch-motion-polish.md`.
-Следующий шаг: публикация проверенной версии и проверка публичных ресурсов.
+Публикация завершена: runtime a251cb1, Render dep-dbe98h3bc2fs738043pg live.
+43 публичных ресурса совпали с Git; CI success, public browser checks PASS.
+Локальный сервер предыдущего запуска уже отсутствует; тестовый Chrome закрывается.

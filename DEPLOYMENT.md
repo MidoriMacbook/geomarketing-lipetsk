@@ -1,3 +1,25 @@
+## Публикация 24 октября 2026 — touch polish
+
+Опубликовано: runtime `a251cb107510f8a77eee3b4367537475650522eb` (основной
+пакет `9a272f74a7171cf4c54fed26babf7223bfddf82b`, затем CSS hover220ms).
+Render `dep-dbe98h3bc2fs738043pg`: live24октября2026,14:21:05МСК.
+https://geomarketing-lipetsk.onrender.com/
+
+CI основного пакета и финальной CSS-правки success:
+- https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/40070915547
+- https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/40089443798
+
+На публичном9a272f7 прошли touch-motion/workspace/scenarios-ui, включая
+четыре ширины, реальные касания/клавиатуру, сохранения, CSV/печать, сравнение.
+После CSS-only измененияa251cb1 отдельно подтверждены интерполяция hover220ms,
+конечный offset−1px и отсутствие движения при reduce. SHA256 всех43 публичных
+ресурсов совпали сa251cb1. Health status=ok; error/critical app logs пусты.
+
+Полный прогон после CSS-only строки не повторялся: изменение проверено узким
+browser-тестом и CI, функциональные проверки основного пакета приведены выше.
+
+---
+
 # Публичное размещение
 
 - Адрес: https://geomarketing-lipetsk.onrender.com
