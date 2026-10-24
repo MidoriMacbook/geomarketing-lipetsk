@@ -249,3 +249,7 @@ KPI replay, press/selection/save feedback, локальный Onest и section P
 Публикация завершена: runtime a251cb1, Render dep-dbe98h3bc2fs738043pg live.
 43 публичных ресурса совпали с Git; CI success, public browser checks PASS.
 Локальный сервер предыдущего запуска уже отсутствует; тестовый Chrome закрывается.
+
+## 24 октября 2026 — исправления мобильной обратной связи
+
+Опубликован d8ff80e: меню с полноширинными строками, невидимые KPI-кнопки, повтор малых чисел от0, height-анимации details и стрелки, локальная обратная связь обновления. CI success; Render dep-dbefj1k9v7es73cfhkhg live;43публичныхфайла совпали. mobile-feedback локально/публично PASS; touch-motion4ширины, header-anchor12, header-focus27, field-checks, workspace-interactions PASS. Внешние Overpass при проверке недоступны: реальные свежие данные не получены, интерфейс честно показывает копию. Подробности: docs/verification/2026-10-24-mobile-feedback-fixes.md.
