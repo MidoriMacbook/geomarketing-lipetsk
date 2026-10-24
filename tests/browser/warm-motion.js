@@ -20,9 +20,7 @@ async original => {
       if(width===390)assert(layout.height<=560&&layout.mobile!=='none','Mobile schematic is missing or hero exceeds 560px');
       const route=page.locator(width===390?'.city-mobile .city-route':'.city-desktop .city-route');
       assert(await route.evaluate(e=>getComputedStyle(e).animationPlayState)==='running','SVG route is static');
-      await page.locator('#hero-motion-toggle').click();
-      assert(await route.evaluate(e=>getComputedStyle(e).animationPlayState)==='paused','SVG pause is ignored');
-      await page.locator('#hero-motion-toggle').click();
+      assert(await page.locator('#hero-motion-toggle').count()===0,'Decorative pause control should be removed');
       if(width===1440){
         const cta=page.locator('.hero-magnet a'),r=await cta.boundingBox();
         await page.mouse.move(r.x+r.width-8,r.y+r.height/2);

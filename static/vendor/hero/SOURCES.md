@@ -48,7 +48,7 @@ GSAP and @gsap/react have GreenSock's standard license, also linked in the notic
   pinned revision, retrieved 2026-10-23. SHA256 is included in PROVENANCE.json.
   Global registry, multiple ownership, tilt, scale and JSX are omitted. Max6px,
   fine pointer only, keyboard/print/reduce reset, bounded event-driven RAF.
-- `CityMotion.js` is application code: CSS SVG route/radius lifecycle and pause.
+- `CityMotion.js` is application code: finite CSS SVG route/response lifecycle; automatic visibility pause, no user control or infinite pulse.
 - `PointerDrift.js` is application code, not a claimed React Bits component.
   Fine hover only, +/-6px maximum, event-driven requestAnimationFrame. It has
   no permanent frame loop, and resets on leave, blur, offscreen, visibility,

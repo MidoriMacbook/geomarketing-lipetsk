@@ -134,7 +134,10 @@ export function updateSaveButtons(feedback = false) {
     const newlySaved = exists && !b.classList.contains('is-saved');
     b.classList.toggle('is-saved', exists);
     b.setAttribute('aria-pressed', String(exists));
-    b.textContent = exists ? 'Сохранено ✓' : 'Сохранить';
+    if (b.textContent !== (exists ? 'Сохранено ✓' : 'Сохранить')) {
+      b.replaceChildren(node('span', 'save-label', exists ? 'Сохранено' : 'Сохранить'));
+      if (exists) { const check = node('span', 'save-check', ' ✓'); check.setAttribute('aria-hidden', 'true'); b.append(check); }
+    }
     b.setAttribute('aria-label', exists ? `Место ${b.dataset.rank} сохранено` : `Сохранить место ${b.dataset.rank}`);
     if (feedback && newlySaved) reveal(b, 'save-feedback', { duration: 'fast' });
   });

@@ -1,3 +1,13 @@
+
+## 2026-10-24 — touch motion polish
+
+Реализованы cream header, mobile grid-menu400/300ms, desktop indicator, доступный
+KPI replay, press/selection/save feedback, локальный Onest и section Playfair.
+Убраны пользовательская пауза и бесконечная пульсация схемы. API/storage/export
+не изменены. Локальные проверки и ограничения описаны в
+`docs/verification/2026-10-24-touch-motion-polish.md`.
+Следующий шаг: публикация проверенной версии и проверка публичных ресурсов.
+
 # Состояние работы
 
 ## Current Goal

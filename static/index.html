@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#FFF7E6">
 <meta name="description" content="Карта спроса и конкуренции в Липецке. Сравните места для кофейни, аптеки, магазина, пекарни и салона красоты.">
 <title>ГеоМаркетинг — места для бизнеса в Липецке</title>
-<link rel="preload" href="/static/assets/fonts/golos-text-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/static/assets/fonts/onest-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/static/assets/fonts/playfair-display-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
@@ -23,6 +23,7 @@
 <script src="/static/vendor/leaflet/leaflet.js" defer></script>
 <script src="/static/vendor/material-web/material-components.js" type="module"></script>
 <script src="/static/js/app.js" type="module"></script>
+<script src="/static/js/kpi-interactions.js" type="module"></script>
 <script src="/static/js/navigation.js" type="module"></script>
 <script src="/static/js/hero-loader.js" defer></script>
 </head>
@@ -31,8 +32,8 @@
 <div id="header-sentinel" aria-hidden="true"></div>
 <div class="header-reserve"><header id="site-header" class="site-header">
   <a class="brand" href="/" aria-label="ГеоМаркетинг, главная"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M6 9h28v22H6zM14 9v22M26 9v22M6 20h28"/><circle cx="20" cy="20" r="7"/><circle cx="20" cy="20" r="2"/></svg></span><span>ГеоМаркетинг<small>Городская аналитика · Липецк</small></span></a>
-  <button id="nav-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" hidden><span>Меню</span><span aria-hidden="true">≡</span></button>
-  <nav id="nav-menu" aria-label="Основная навигация"><a class="active" href="#workspace">Карта и анализ</a><a href="#scenarios-section" hidden>Исследования</a><a href="#saved-section">Сохранённые <span id="nav-saved-count">0</span></a><button id="model-button" type="button">Как это работает <span aria-hidden="true">↗</span></button></nav>
+  <button id="nav-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" hidden><span>Меню</span><span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span></button>
+  <nav id="nav-menu" aria-label="Основная навигация"><div class="nav-clip"><div class="nav-items"><span class="nav-indicator" aria-hidden="true"></span><a class="active" href="#workspace">Карта и анализ</a><a href="#scenarios-section" hidden>Исследования</a><a href="#saved-section">Сохранённые <span id="nav-saved-count">0</span></a><button id="model-button" type="button">Как это работает <span aria-hidden="true">↗</span></button></div></div></nav>
   <span class="header-location">Липецк <span aria-hidden="true">/</span> 52°36′ N</span>
 </header></div>
 <main class="page">
@@ -42,7 +43,7 @@
     <h1 id="page-title" class="hero-title"><span class="hero-title-word">У</span> <span class="hero-title-word">каждого</span> <span class="hero-title-business hero-title-word">бизнеса</span> <span class="hero-title-line"><span class="hero-title-word">есть</span> <span class="hero-title-word">своё</span> <em class="hero-title-word">место.</em></span></h1>
     <p id="hero-description" class="hero-description">Найдите своих клиентов на карте города. Сравните спрос и конкуренцию — и выберите места для проверки до аренды.</p>
     <div class="hero-links"><span class="hero-magnet"><a class="button primary" href="#workspace">Открыть карту <span aria-hidden="true">↗</span></a></span><button class="hero-text-action" id="hero-model-button" type="button"><span class="hero-action-label">Как работает расчёт</span><span class="hero-action-arrow" aria-hidden="true">↗</span></button></div>
-    <p class="hero-meta"><span>01 / Изучите город</span><span>02 / Найдите своё место</span><button id="hero-motion-toggle" type="button" aria-pressed="false" hidden>Пауза схемы</button></p>
+    <p class="hero-meta"><span>01 / Изучите город</span><span>02 / Найдите своё место</span></p>
   </div>
   <div id="hero-art" class="hero-art" aria-hidden="true">
     <svg class="city-desktop" viewBox="0 0 600 460" fill="none" focusable="false">

@@ -140,7 +140,7 @@ geomarketing.field-checks.v1 хранит envelope schema_version1 и до48 з�
 сохраняя focus; detached callbacks не перезаписывают новый интерфейс.
 Node field-check-storage.test.js и browser field-checks.js проверяют эти границы.
 
-Порядок stylesheet фиксируется в index.html. Leaflet и Unbounded/Golos Text
+Порядок stylesheet фиксируется в index.html. Leaflet, Onest и Playfair Display
 загружаются локально; отказ шрифта оставляет системный fallback.
 Отказ Leaflet не блокирует API. UI primary и функциональный map primary разделены.
 
@@ -220,4 +220,16 @@ ScrollReveal готовит пять блоков классом motion-prepared
 и не анимирует layout-height. Повторное действие отменяет предыдущее через revision.
 
 Отдельный warm-motion.js проверяет четырёхширинную матрицу, отсутствие белых
-поверхностей, mobile SVG/560px, pause/Magnet/reduce/print и запуск до window.load.
+поверхностей, mobile SVG/560px, automatic pause/Magnet/reduce/print и запуск до window.load.
+
+## Touch polish — 24 октября 2026
+
+`navigation.js` владеет grid-панелью, inert/ARIA, отменяемым отложенным переходом,
+общим desktop-indicator и активной секцией. Панель абсолютная: header-offset
+считается только по шапке. `kpi-interactions.js` — независимое улучшение четырёх
+карточек; MutationObserver следит только за числом/target, не за кадрами анимации.
+`counters.replayCounter` использует существующий scheduler560ms; точный DOM-текст
+и state не меняет. Повторы/смена данных/hidden/reduce/print завершают эффекты.
+CityMotion больше не содержит пользовательского состояния паузы. CSS-маршрут
+конечный4s и автоматически приостанавливается прежними gates island.
+Onest100–900 подключён локально; официальные источники/лицензия/SHA256 в fonts.
