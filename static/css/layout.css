@@ -41,10 +41,14 @@
 .data-section { display:block; margin-top:var(--space-9); padding:var(--space-5) 0; border-top:var(--line) solid var(--color-line); }
 .data-section h2 { margin-bottom:var(--space-2); }
 .data-section p { font-size:var(--text-sm); color:var(--color-muted); max-width:var(--size-copy-measure); }
-#data-details { margin-top:var(--space-3); }
-#data-summary { cursor:pointer; min-height:var(--size-target); padding:var(--space-3) 0; font-size:var(--text-sm); font-weight:600; }
+#data-details { margin-top:var(--space-4); border:var(--line) solid var(--color-line); border-radius:var(--radius-panel); background:var(--color-surface); }
+#data-summary { display:grid; grid-template-columns:minmax(0,1fr) var(--space-4); align-items:center; gap:var(--space-4); cursor:pointer; min-height:56px; padding:var(--space-4); font-size:var(--text-sm); font-weight:600; border-radius:inherit; }
+#data-summary::after { content:""; justify-self:center; width:8px; height:8px; margin:0; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg); }
+#data-details[data-expanded=true]>#data-summary::after { transform:rotate(225deg); }
 #data-summary:focus-visible { outline:var(--focus-width) solid var(--color-primary); outline-offset:var(--focus-offset); }
-#data-details .disclosure-body>p,#data-details .button { margin-top:var(--space-3); }
+#data-details>.disclosure-body>.disclosure-content { padding:0 var(--space-4) var(--space-4); }
+#data-details>.disclosure-body>.disclosure-content>p,#data-details .button { margin-top:var(--space-3); }
+.data-section+.page-footer { margin-top:var(--space-3); }
 .saved-section { margin-top:var(--space-10); padding:var(--space-7); background:var(--color-saved); border-radius:var(--radius-panel); border:var(--line) solid var(--color-line); border-top:var(--space-1) solid var(--color-primary); box-shadow:var(--shadow-panel); }
 .saved-heading { display:flex; justify-content:space-between; align-items:center; gap:var(--space-5); padding-bottom:var(--space-5); border-bottom:var(--line) solid var(--color-line); margin-bottom:var(--space-6); }
 .saved-heading h2 { font-size:var(--text-xl); margin:var(--space-2) 0; }
