@@ -117,7 +117,8 @@ export function replayCounter(element) {
   const target = Number(element.dataset.counterTarget);
   const visual = element.querySelector('.counter-visual');
   if (!visual || !Number.isSafeInteger(target) || motionReduced() || document.hidden) return;
-  const from = Math.round(target * .94);
+  // Small counts must cross an integer boundary to visibly replay.
+  const from = target < 20 ? 0 : Math.floor(target * .94);
   records.set(element, { from, target, current: from, prefix: '', suffix: '', visual, started: null, duration: 560 });
   visual.dataset.display = format(from, '', '');
   start(element);

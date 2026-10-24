@@ -103,6 +103,6 @@ details>summary { cursor:pointer; min-height:var(--size-target); align-content:c
 details>summary:focus-visible { outline:var(--line-strong) solid var(--color-primary); outline-offset:var(--space-1); border-radius:var(--radius-control); }
 
 details[data-expanded]>summary::after { content:"⌄"; display:inline-block; margin-inline-start:var(--space-2); color:var(--color-primary); transition:transform var(--motion-base) var(--ease-emphasized); }
-details[data-expanded=true]>summary details[data-expanded]>summary::after { content:"⌄"; transform:rotate(180deg); }
+details[data-expanded=true]>summary::after { transform:rotate(180deg); }
 details[data-expanded]>summary { list-style:none; }
 details[data-expanded]>summary::-webkit-details-marker { display:none; }

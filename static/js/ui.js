@@ -258,7 +258,8 @@ export function initDisclosure(details, options = {}) {
   let wanted = details.open, revision = 0, active = false;
   disclosures.set(details, body);
   const transition = open => {
-    const from = details.open ? getComputedStyle(body).clipPath : 'inset(0 0 100% 0)';
+    const from = details.open ? body.getBoundingClientRect().height : 0;
+    const opacity = details.open ? getComputedStyle(body).opacity : '0';
     wanted = open;
     const current = ++revision;
     cancelUI(body);
@@ -267,8 +268,8 @@ export function initDisclosure(details, options = {}) {
     details.open = true;
     details.dataset.expanded = String(open);
     active = true;
-    animateUI(body, [{ clipPath: from === 'none' ? 'inset(0 0 0% 0)' : from, opacity: open ? .35 : 1 }, { clipPath: `inset(0 0 ${open ? 0 : 100}% 0)`, opacity: open ? 1 : 0 }], 'disclosure', {
-      duration: options.duration || 'base',
+    animateUI(body, [{ height: `${from}px`, opacity }, { height: `${open ? content.getBoundingClientRect().height : 0}px`, opacity: open ? 1 : 0 }], 'disclosure', {
+      duration: options.duration || (open ? 400 : 300),
       cleanup: () => {
         if (current !== revision) return;
         active = false; details.open = wanted; body.inert = false;

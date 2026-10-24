@@ -6,9 +6,6 @@ document.querySelectorAll('.kpis>div').forEach(card => {
   const label = card.firstElementChild.textContent.replace('≈', '').trim();
   const replay = node('button', 'kpi-replay');
   replay.type = 'button';
-  const hint = node('span', 'kpi-replay-hint', 'Повторить');
-  hint.setAttribute('aria-hidden', 'true');
-  replay.append(hint);
   const wave = node('span', 'kpi-wave'), progress = node('span', 'kpi-progress');
   wave.setAttribute('aria-hidden', 'true'); progress.setAttribute('aria-hidden', 'true');
   card.append(wave, progress, replay);
