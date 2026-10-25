@@ -45,8 +45,9 @@ DEMO_COMPETITORS = {
 def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
     """Return usable rows, source, warnings, and cache provenance."""
     try:
-        houses, h_cached = osm.get_houses(area, refresh)
-        competitors, c_cached = osm.get_competitors(business, area, refresh)
+        with osm.loading_budget():
+            houses, h_cached = osm.get_houses(area, refresh)
+            competitors, c_cached = osm.get_competitors(business, area, refresh)
         houses, competitors = validate_data(houses, competitors)
         if len(houses) < MIN_HOUSES:
             raise RuntimeError(f'в OpenStreetMap найдено слишком мало домов ({len(houses)})')

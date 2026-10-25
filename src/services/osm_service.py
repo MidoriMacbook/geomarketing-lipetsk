@@ -1,5 +1,9 @@
 """OpenStreetMap loading and resident estimation without HTTP dependencies."""
 import math
+import logging
+import time
+from contextlib import contextmanager
+from contextvars import ContextVar
 from urllib.parse import urlparse
 import numpy as np
 import requests
@@ -18,6 +22,18 @@ from src.utils.geo import _bbox, _footprint_m2
 from src.utils.validation import area_for, custom_area
 
 BUSINESS_TAGS = {key: info['tags'] for key, info in BUSINESS_CATALOG.items()}
+logger = logging.getLogger(__name__)
+_deadline = ContextVar('overpass_deadline', default=None)
+
+
+@contextmanager
+def loading_budget():
+    """Share a retry budget across houses and competitors in one calculation."""
+    token = _deadline.set(time.monotonic() + 85)
+    try:
+        yield
+    finally:
+        _deadline.reset(token)
 
 
 def competitor_margin(business):
@@ -32,20 +48,44 @@ def competitor_cache_name(business, area):
 
 def _overpass(query):
     errors = []
+    deadline = _deadline.get() or time.monotonic() + 85
     for url in OVERPASS_URLS:
         host = urlparse(url).hostname
-        for attempt in range(1):
+        for attempt in range(2):
+            remaining = deadline - time.monotonic()
+            if remaining <= 4:
+                errors.append('loading time budget exhausted')
+                break
+            resp = None
+            started = time.monotonic()
+            retry = False
             try:
-                resp = requests.post(url, data={'data': query}, headers=HEADERS, timeout=(3, 10))
+                # Query execution plus the upstream queue can exceed ten seconds.
+                resp = requests.get(url, params={'data': query}, headers=HEADERS,
+                                    timeout=(3, min(40, remaining - 3)))
                 resp.raise_for_status()
                 data = resp.json()
-                remark = data.get('remark', '')
-                if 'error' in remark.lower():   # запрос не уложился во время или не хватило памяти
-                    raise RuntimeError(remark)
+                if not isinstance(data, dict) or not isinstance(data.get('elements'), list):
+                    raise ValueError('Invalid Overpass response')
+                if data.get('remark'):
+                    raise ValueError('Incomplete Overpass response: ' + str(data['remark'])[:160])
                 return data['elements']
-            except Exception as exc:  # noqa: BLE001 - пробуем следующий сервер
-                errors.append(f'{host}: {str(exc)[:110]}')
+            except Exception as exc:  # noqa: BLE001 - fail over without losing saved data
+                # Do not log URLs containing user coordinates or entire response bodies.
+                status = getattr(resp, 'status_code', None)
+                logger.warning('Overpass %s failed: %s status=%s', host, type(exc).__name__, status)
+                errors.append(f'{host}: {type(exc).__name__} status={status}')
+                # A gateway may reject immediately while the data server is healthy.
+                # Retry only this fast transient failure, never a timeout or rate limit.
+                retry = (attempt == 0 and status in (502, 503, 504)
+                         and time.monotonic() - started < 3
+                         and deadline - time.monotonic() > 45)
+            finally:
+                if resp is not None:
+                    resp.close()
+            if not retry:
                 break
+            time.sleep(.25)
     raise RuntimeError('Overpass API недоступен (' + '; '.join(errors) + ')')
 
 
@@ -89,7 +129,7 @@ def _load_houses(district):
     lat0, lng0 = district['center']
     types = '|'.join(sorted(APARTMENT_TYPES | PRIVATE_TYPES))
     box = _bbox(district['center'], district['radius'])
-    query = (f'[out:json][timeout:8];('
+    query = (f'[out:json][timeout:25];('
              f'way["building"~"^({types})$"]({box});'
              f'way["building"="yes"]["building:levels"]({box});'
              f'way["building"="yes"]["addr:housenumber"]({box});'
@@ -120,7 +160,7 @@ def _load_competitors(business, district):
     radius = district['radius'] + competitor_margin(business)
     box = _bbox(district['center'], radius)
     parts = '\n'.join(f'nwr[{tag}]({box});' for tag in BUSINESS_TAGS[business])
-    query = f'[out:json][timeout:8];({parts});out center tags;'
+    query = f'[out:json][timeout:25];({parts});out body center;'
     seen, rows = set(), []
     for el in _overpass(query):
         if el['type'] == 'node':

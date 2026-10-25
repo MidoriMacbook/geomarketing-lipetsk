@@ -30,7 +30,7 @@ export function beginCalculationRequest() {
   request.timeout = setTimeout(() => {
     request.timedOut = true;
     request.controller.abort();
-  }, 70000);
+  }, 100000);
   return request;
 }
 
