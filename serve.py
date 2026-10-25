@@ -13,5 +13,8 @@ from src.config import server_host, server_port
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
+    # Temporary runtime investigation; removed after the network probe.
+    from scripts.diagnose_osm_network import diagnose
+    diagnose()
     serve(app, host=server_host('0.0.0.0'),
           port=server_port(8080), threads=4)
