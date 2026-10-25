@@ -17,10 +17,12 @@ def server_port(default: int) -> int:
     return int(os.environ.get('PORT', str(default)))
 
 OVERPASS_URLS = [
-    'https://overpass-api.de/api/interpreter',
+    # The other node behind overpass-api.de (lambert) returned 502/timeouts
+    # during the 2026-10-25 outage. Pin the verified healthy official node.
+    'https://gall.openstreetmap.de/api/interpreter',
     'https://overpass.private.coffee/api/interpreter',   # бывший overpass.kumi.systems
 ]
-HEADERS = {'User-Agent': 'GeoMarketingLipetsk/1.0 (student project)'}
+HEADERS = {'User-Agent': 'GeoMarketingLipetsk/1.0 (+https://github.com/MidoriMacbook/geomarketing-lipetsk)'}
 DISTRICTS = {
     'eleytsky': {'name': 'мкр. Елецкий', 'center': (52.5935, 39.4800), 'radius': 1000},
     'universitetsky': {'name': 'мкр. Университетский', 'center': (52.605945, 39.505230), 'radius': 1000},

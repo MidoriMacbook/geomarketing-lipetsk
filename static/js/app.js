@@ -157,10 +157,10 @@ function bootstrap() {
     const version = state.requestVersion, request = beginCalculationRequest(), controller = request.controller;
     $('run').disabled = true;
     $('refresh-data').disabled = true;
-    refreshFeedback(refresh ? 'Запрашиваем свежие дома и конкурентов в OpenStreetMap. Это может занять до минуты.' : '', refresh);
+    refreshFeedback(refresh ? 'Запрашиваем свежие дома и конкурентов в OpenStreetMap. Это может занять до полутора минут.' : '', refresh);
     $('run').textContent = 'Рассчитываем…';
     $('loading-hint').hidden = false;
-    $('loading-hint').textContent = preserveResult?'Обновляем расчёт. Пока показан предыдущий успешный результат.': 'Загрузка и расчёт могут занять до минуты.';
+    $('loading-hint').textContent = preserveResult?'Обновляем расчёт. Пока показан предыдущий успешный результат.': 'Загрузка и расчёт могут занять до полутора минут.';
     setAnalysisState(preserveResult ? 'refreshing' : 'calculating');
     if (!preserveResult) {
       $('result-empty').querySelector('h3').textContent = 'Ищем подходящие места';
