@@ -73,7 +73,9 @@ def _overpass(query):
             except Exception as exc:  # noqa: BLE001 - fail over without losing saved data
                 # Do not log URLs containing user coordinates or entire response bodies.
                 status = getattr(resp, 'status_code', None)
-                logger.warning('Overpass %s failed: %s status=%s', host, type(exc).__name__, status)
+                reason = getattr(exc.args[0], 'reason', None) if exc.args else None
+                logger.warning('Overpass %s failed: %s cause=%s status=%s',
+                               host, type(exc).__name__, type(reason).__name__, status)
                 errors.append(f'{host}: {type(exc).__name__} status={status}')
                 # A gateway may reject immediately while the data server is healthy.
                 # Retry only this fast transient failure, never a timeout or rate limit.
