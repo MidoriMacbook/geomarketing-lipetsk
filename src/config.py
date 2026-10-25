@@ -17,8 +17,9 @@ def server_port(default: int) -> int:
     return int(os.environ.get('PORT', str(default)))
 
 OVERPASS_URLS = [
-    # The other node behind overpass-api.de (lambert) returned 502/timeouts
-    # during the 2026-10-25 outage. Pin the verified healthy official node.
+    # Let DNS try both official nodes: Render cannot connect directly to gall.
+    'https://overpass-api.de/api/interpreter',
+    # An independent hostname remains useful when the shared endpoint fails.
     'https://gall.openstreetmap.de/api/interpreter',
     'https://overpass.private.coffee/api/interpreter',   # бывший overpass.kumi.systems
 ]
