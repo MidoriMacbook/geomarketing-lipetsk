@@ -4,7 +4,7 @@ import json
 import math
 import time
 
-from src.config import DISTRICTS, LIPETSK_BOUNDS, MAX_RADIUS, COMPETITOR_MARGIN_M
+from src.config import DISTRICTS, LIPETSK_BOUNDS, COMPETITOR_MARGIN_M
 from src.domain.businesses import BUSINESS_CATALOG
 from src.utils.geo import _bbox
 
@@ -29,6 +29,14 @@ def make_bundle(houses, competitors, fetched_at):
     return validate_bundle(bundle)
 
 
+def _finite_number(value):
+    try:
+        return (not isinstance(value, bool) and isinstance(value, (int, float))
+                and math.isfinite(value))
+    except OverflowError:
+        return False
+
+
 def validate_bundle(bundle):
     if not isinstance(bundle, dict) or set(bundle) != {
             'schema', 'coverage', 'fetched_at', 'houses', 'competitors', 'version'}:
@@ -36,8 +44,7 @@ def validate_bundle(bundle):
     if bundle['schema'] != SCHEMA_VERSION or bundle['coverage'] != COVERAGE:
         raise ValueError('Unsupported city data coverage/schema')
     saved = bundle['fetched_at']
-    if (isinstance(saved, bool) or not isinstance(saved, (int, float))
-            or not math.isfinite(saved) or saved <= 0 or saved > time.time() + 300):
+    if not _finite_number(saved) or saved <= 0 or saved > time.time() + 300:
         raise ValueError('Invalid source date')
     competitors = bundle['competitors']
     if not isinstance(competitors, dict) or set(competitors) != set(BUSINESS_CATALOG):
@@ -47,12 +54,17 @@ def validate_bundle(bundle):
             raise ValueError('Invalid city rows')
         for row in rows:
             if (not isinstance(row, list) or len(row) != columns
-                    or any(isinstance(v, bool) or not isinstance(v, (int, float))
-                           or not math.isfinite(v) for v in row)
+                    or any(not _finite_number(v) for v in row)
                     or not COVERAGE['south'] <= row[0] <= COVERAGE['north']
                     or not COVERAGE['west'] <= row[1] <= COVERAGE['east']
                     or (columns == 3 and row[2] <= 0)):
                 raise ValueError('Invalid city coordinate/population')
+    try:
+        population = math.fsum(row[2] for row in bundle['houses'])
+    except OverflowError:
+        raise ValueError('Invalid city population total') from None
+    if not math.isfinite(population):
+        raise ValueError('Invalid city population total')
     if len(bundle['houses']) < 500 or sum(map(len, competitors.values())) < 10:
         raise ValueError('Incomplete city extract')
     if bundle['version'] != digest(bundle):

@@ -18,6 +18,7 @@ async page => {
   const data=await (await response).json();
   await page.waitForFunction(()=>!document.getElementById('refresh-data').disabled);
   const outcome=await page.locator('#refresh-status').textContent();
+  const recheckSeconds=Math.round((Date.now()-started)/10)/100;
   if(data.data_delivery?.status!=='unchanged'||!outcome.includes('Новых данных пока нет')) throw Error('Incorrect recheck '+JSON.stringify({data:data.data_delivery,outcome}));
   if(data.data_delivery.version!==initial.data_delivery.version||data.data_meta.houses.fetched_at!==initial.data_meta.houses.fetched_at) throw Error('Recheck changed source date/version');
   const catalog=await (await page.request.get(base+'/api/catalog')).json(), matrix=[];
@@ -35,5 +36,5 @@ async page => {
   await page.locator('#data-details').screenshot({path:'tests/artifacts/daily-data-mobile.png'});
   if(errors.length)throw Error(errors.join('; '));
   return {ok:true,version:data.data_delivery.version,fetched_at:data.data_meta.houses.fetched_at,
-          recheckSeconds:Math.round((Date.now()-started)/10)/100,outcome,matrix,businesses:catalog.businesses.length,customHouses:custom.stats.houses,pageErrors:errors};
+          recheckSeconds,outcome,matrix,businesses:catalog.businesses.length,customHouses:custom.stats.houses,pageErrors:errors};
 }
