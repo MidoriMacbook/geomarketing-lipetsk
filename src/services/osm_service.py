@@ -136,8 +136,13 @@ def _load_houses(district):
              f'way["building"="yes"]["building:levels"]({box});'
              f'way["building"="yes"]["addr:housenumber"]({box});'
              f');out body geom;')
+    return parse_houses(_overpass(query), district)
+
+
+def parse_houses(elements, district=None):
+    """Use identical footprint/population rules in live and daily collection."""
     rows = []
-    for el in _overpass(query):
+    for el in elements:
         geom = el.get('geometry')
         if not geom or len(geom) < 3:
             continue
@@ -149,10 +154,12 @@ def _load_houses(district):
             continue
         lat = sum(g['lat'] for g in geom) / len(geom)
         lng = sum(g['lon'] for g in geom) / len(geom)
-        dx = (lng - lng0) * 111_000 * math.cos(math.radians(lat0))
-        dy = (lat - lat0) * 111_000
-        if math.hypot(dx, dy) > district['radius']:   # рамка шире круга: срезаем углы
-            continue
+        if district is not None:
+            lat0, lng0 = district['center']
+            dx = (lng - lng0) * 111_000 * math.cos(math.radians(lat0))
+            dy = (lat - lat0) * 111_000
+            if math.hypot(dx, dy) > district['radius']:
+                continue
         rows.append([round(lat, 6), round(lng, 6), max(1, round(residents))])
     return rows
 
@@ -163,8 +170,12 @@ def _load_competitors(business, district):
     box = _bbox(district['center'], radius)
     parts = '\n'.join(f'nwr[{tag}]({box});' for tag in BUSINESS_TAGS[business])
     query = f'[out:json][timeout:25];({parts});out body center;'
+    return parse_competitors(_overpass(query))
+
+
+def parse_competitors(elements, deduplicate=True):
     seen, rows = set(), []
-    for el in _overpass(query):
+    for el in elements:
         if el['type'] == 'node':
             lat, lng = el['lat'], el['lon']
         elif 'center' in el:
@@ -172,7 +183,7 @@ def _load_competitors(business, district):
         else:
             continue
         key = (round(lat, 4), round(lng, 4))  # один объект мог попасть дважды (точка и контур)
-        if key not in seen:
+        if not deduplicate or key not in seen:
             seen.add(key)
             rows.append([round(lat, 6), round(lng, 6)])
     return rows
