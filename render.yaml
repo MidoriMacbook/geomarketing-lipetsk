@@ -14,6 +14,8 @@ services:
         value: 0.0.0.0
       - key: CACHE_DIR
         value: /tmp/geomarketing-cache
+      - key: CITY_DATA_URL
+        value: https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/osm-data/city.json
       - key: OMP_NUM_THREADS
         value: "1"
       - key: OPENBLAS_NUM_THREADS

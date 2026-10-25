@@ -21,7 +21,7 @@ async page => {
  await p.waitForTimeout(500);
  await p.route('**/api/calculate?**',async r=>{await new Promise(resolve=>setTimeout(resolve,500));await r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({message:'Проверка: источник временно недоступен'})});});
  await p.locator('#refresh-data').click();
- check((await p.locator('#refresh-data').textContent()).includes('Обновляем'),'No refresh loading feedback near button');
+ check((await p.locator('#refresh-data').textContent()).includes('Проверяем'),'No refresh loading feedback near button');
  await p.waitForTimeout(800);
  check(await p.locator('#refresh-status').count()>0&&await p.locator('#refresh-status').isVisible(),'No local refresh outcome');
 
@@ -34,12 +34,17 @@ async page => {
   await p.unroute('**/api/calculate?**');
  };
  const fresh=structuredClone(fixture);fresh.source='osm';fresh.warning=null;if(fresh.data_quality)fresh.data_quality.source='osm';
+ delete fresh.data_delivery; // Keep explicit coverage of older/live API responses.
  Object.values(fresh.data_meta).forEach(meta=>{meta.cached=false;meta.warning=null;meta.fetched_at=Date.now()/1000;meta.stale=false;});
  await reply(fresh);
  check((await p.locator('#refresh-status').textContent()).startsWith('Данные получены'),'Fresh success not shown');
  const partial=structuredClone(fresh);partial.data_meta.houses.cached=true;partial.warning='Обновление домов не удалось.';
  await reply(partial);
  check((await p.locator('#refresh-status').textContent()).includes('не полностью'),'Partial refresh incorrectly called fresh');
+ for(const [status, text] of [['updated','Новая версия'],['unchanged','Новых данных пока нет'],['unavailable','Не удалось проверить']]){
+  const daily=structuredClone(fixture);daily.data_delivery={mode:'daily',status};await reply(daily);
+  check((await p.locator('#refresh-status').textContent()).includes(text),'Missing daily status '+status);
+ }
  check(await p.locator('#refresh-data').getAttribute('aria-busy')==='false','Refresh busy state stuck');
  const summary=p.locator('#data-summary');
  await summary.click();await p.waitForTimeout(70);

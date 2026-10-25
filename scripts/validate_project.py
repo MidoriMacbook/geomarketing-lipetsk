@@ -17,15 +17,15 @@ REQUIRED = [
     'src/__init__.py', 'src/config.py',
     *[f'src/{name}/__init__.py' for name in ('routes', 'domain', 'services', 'utils')],
     *[f'src/routes/{name}.py' for name in ('health', 'catalog', 'calculate')],
-    *[f'src/domain/{name}.py' for name in ('businesses', 'models', 'scoring', 'explanations', 'data_quality')],
+    *[f'src/domain/{name}.py' for name in ('businesses', 'models', 'scoring', 'explanations', 'data_quality', 'city_data')],
     *[f'src/services/{name}.py' for name in
-      ('analysis_service', 'catalog_service', 'cache_service', 'osm_service')],
+      ('analysis_service', 'catalog_service', 'cache_service', 'osm_service', 'city_feed_service')],
     *[f'src/utils/{name}.py' for name in ('geo', 'formatting', 'validation')],
     'static/index.html', 'static/assets/favicon.svg',
     *[f'static/css/{name}.css' for name in
       ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios', 'field-checks', 'hero')],
     *[f'static/js/{name}.js' for name in
-      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage', 'navigation', 'hero-loader', 'kpi-interactions')],
+      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage', 'navigation', 'hero-loader', 'kpi-interactions', 'data-delivery')],
     'static/vendor/hero/hero-motion.js', 'scripts/frontend/hero-entry.js',
     'tests/unit/__init__.py', 'tests/integration/__init__.py',
     'tests/browser/smoke.js', 'tests/browser/workspace.js',

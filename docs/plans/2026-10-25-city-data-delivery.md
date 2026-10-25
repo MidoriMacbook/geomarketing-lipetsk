@@ -12,12 +12,12 @@ Dependencies: только существующие Python/requests/numpy, бе�
 Assumptions: GitHub raw доступен с Render; сборка Overpass успешна хотя бы периодически.
 Failure coverage: повреждение, откат даты, пустые категории, конкурентные запросы, нет сети/нет файла.
 
-- [ ] 1. RED: tests/unit/test_city_data.py — фильтрация, контракт и целостность.
-- [ ] 2. GREEN: src/domain/city_data.py; общие парсеры в osm_service.py.
-- [ ] 3. RED→GREEN: tests/unit/test_city_feed.py и src/services/city_feed_service.py — атомарная загрузка, сохранение даты/копии, откат, начальная загрузка.
-- [ ] 4. RED→GREEN: интеграция в analysis_service.py; поле data_delivery в payload без изменения модели и архива исследований.
-- [ ] 5. scripts/collect_city_data.py и .github/workflows/osm-data.yml: ежедневная атомарная публикация ветки osm-data, ограниченная конкуренция, отказ без затирания предыдущей версии.
-- [ ] 6. UI: «Проверить обновления», периодичность и дата, состояния новой/той же/недоступной версии; мобильная проверка.
+- [x] 1. RED: tests/unit/test_city_data.py — фильтрация, контракт и целостность.
+- [x] 2. GREEN: src/domain/city_data.py; общие парсеры в osm_service.py.
+- [x] 3. RED→GREEN: tests/unit/test_city_feed.py и src/services/city_feed_service.py — атомарная загрузка, сохранение даты/копии, откат, начальная загрузка.
+- [x] 4. RED→GREEN: интеграция в analysis_service.py; поле data_delivery в payload без изменения модели и архива исследований.
+- [x] 5. scripts/collect_city_data.py и .github/workflows/osm-data.yml: ежедневная атомарная публикация ветки osm-data, ограниченная конкуренция, отказ без затирания предыдущей версии.
+- [x] 6. UI: «Проверить обновления», периодичность и дата, состояния новой/той же/недоступной версии; мобильная проверка.
 - [ ] 7. Полные Python/Node/структурные проверки; реальный workflow GitHub, загрузка с Render, повторная проверка той же версии, район/тип/custom.
 - [ ] 8. Документы, публикация, CI/Render live, чистый репозиторий.
 

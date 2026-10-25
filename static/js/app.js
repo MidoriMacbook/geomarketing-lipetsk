@@ -1,4 +1,5 @@
 import { state } from './state.js';
+import { refreshMessage } from './data-delivery.js';
 import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog, cancelRevealsWithin, motionReduced } from './ui.js';
 import { configureSaved, loadSaved, renderSaved, updateSaveButtons } from './saved-places.js';
 import { exportCSV, printReport, updateReportAvailability } from './report.js';
@@ -18,7 +19,7 @@ function bootstrap() {
     $('refresh-status').textContent = message;
     $('refresh-status').hidden = !message;
     $('refresh-data').setAttribute('aria-busy', String(busy));
-    $('refresh-label').textContent = busy ? 'Обновляем…' : 'Обновить данные';
+    $('refresh-label').textContent = busy ? 'Проверяем…' : 'Проверить обновления';
   }
   function resetSelection() {
     cancelRequest();
@@ -157,7 +158,9 @@ function bootstrap() {
     const version = state.requestVersion, request = beginCalculationRequest(), controller = request.controller;
     $('run').disabled = true;
     $('refresh-data').disabled = true;
-    refreshFeedback(refresh ? 'Запрашиваем свежие дома и конкурентов в OpenStreetMap. Это может занять до полутора минут.' : '', refresh);
+    refreshFeedback(refresh ? (state.current?.data_delivery?.mode === 'daily'
+      ? 'Проверяем новую версию ежедневной выгрузки. Пока показан предыдущий расчёт.'
+      : 'Запрашиваем свежие дома и конкурентов в OpenStreetMap. Это может занять до полутора минут.') : '', refresh);
     $('run').textContent = 'Рассчитываем…';
     $('loading-hint').hidden = false;
     $('loading-hint').textContent = preserveResult?'Обновляем расчёт. Пока показан предыдущий успешный результат.': 'Загрузка и расчёт могут занять до полутора минут.';
@@ -181,10 +184,7 @@ function bootstrap() {
       fitArea(data);
       setAnalysisState('success', data.recommendations.length ? 'Расчёт готов · выберите место на карте' : 'Расчёт готов · подходящих мест не найдено');
       if (refresh) {
-        const fresh = data.source === 'osm' && ['houses', 'competitors'].every(key => data.data_meta?.[key]?.cached === false);
-        refreshFeedback(fresh
-          ? 'Данные получены из OpenStreetMap, расчёт обновлён. Числа могут остаться прежними, если в источнике нет изменений.'
-          : `Свежие данные получены не полностью. Расчёт использует доступную копию. ${data.warning || 'Проверьте даты источников выше и повторите обновление позже.'}`);
+        refreshFeedback(refreshMessage(data));
       }
     }
     catch (err) {

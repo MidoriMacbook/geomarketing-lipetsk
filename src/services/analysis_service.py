@@ -3,13 +3,14 @@ import logging
 from datetime import datetime, timezone
 import numpy as np
 
-from src.config import MIN_HOUSES, DEMO_HALF_SIZE_M, LOW_DATA_RESIDENTS
+from src.config import MIN_HOUSES, DEMO_HALF_SIZE_M, LOW_DATA_RESIDENTS, CITY_DATA_URL
 from src.domain.businesses import BUSINESS_CATALOG
 from src.domain.models import Area, LoadedData
 from src.domain.data_quality import assess_data_quality
 from src.domain.explanations import explain_recommendations
 from src.domain.scoring import score_locations
 from src.services import osm_service as osm
+from src.services import city_feed_service as city_feed
 from src.utils.formatting import cache_metadata, analysis_payload
 from src.utils.validation import UserError, validate_data
 
@@ -44,20 +45,34 @@ DEMO_COMPETITORS = {
 
 def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
     """Return usable rows, source, warnings, and cache provenance."""
+    feed_warning = None
+    if CITY_DATA_URL:
+        try:
+            return city_feed.load(area, business, refresh)
+        except city_feed.FeedUnavailable as exc:
+            feed_warning = str(exc)
     try:
+        options = {'cached_only': True} if CITY_DATA_URL else {}
         with osm.loading_budget():
-            houses, h_cached = osm.get_houses(area, refresh)
-            competitors, c_cached = osm.get_competitors(business, area, refresh)
+            houses, h_cached = osm.get_houses(area, refresh if not CITY_DATA_URL else False, **options)
+            competitors, c_cached = osm.get_competitors(business, area, refresh if not CITY_DATA_URL else False, **options)
         houses, competitors = validate_data(houses, competitors)
         if len(houses) < MIN_HOUSES:
             raise RuntimeError(f'в OpenStreetMap найдено слишком мало домов ({len(houses)})')
         metadata = cache_metadata(h_cached, c_cached)
         warnings = sorted({info['warning'] for info in metadata.values() if info['warning']})
+        if feed_warning:
+            warnings.append(feed_warning)
         if any(info['stale'] for info in metadata.values()):
             warnings.append('Сохранённым данным больше 7 дней. Обновите их перед принятием решения.')
         return LoadedData(houses, competitors, ('cache' if h_cached and c_cached else 'osm'),
-                          ' '.join(warnings) or None, metadata)
+                          ' '.join(warnings) or None, metadata,
+                          {'mode': 'daily', 'status': 'unavailable', 'interval_hours': 24}
+                          if CITY_DATA_URL else None)
     except Exception as exc:  # noqa: BLE001
+        if CITY_DATA_URL:
+            raise UserError('Ежедневная выгрузка временно недоступна, а для этой области '
+                            'нет пригодной сохранённой копии. Повторите проверку позже.') from exc
         if business not in DEMO_COMPETITORS:
             raise UserError('Не удалось загрузить пригодные данные домов и конкурентов '
                             'OpenStreetMap для этого типа бизнеса. '
