@@ -18,6 +18,9 @@
 - Сворачиваемая проверка на месте у сохранённой точки: семь локальных отметок
   пользователя о помещении и окружении, без влияния на оценку модели.
 - Локальный Leaflet и JSON-снимки районов; обработка отказа API, тайлов и хранилища.
+- На опубликованном сайте — ежедневная городская выгрузка OpenStreetMap через
+  GitHub Actions. «Проверить обновления» загружает новую версию либо сообщает,
+  что используется последняя; дата относится к исходным данным.
 - Светлый кремовый интерфейс, выразительный Playfair/Golos hero, доступная липкая
   навигация и локальные React Bits-анимации. Расчёт и Leaflet остаются ES-модулями.
 - На тёмной карте дома обозначены Misty Sky, конкуренты — Rosewood
@@ -62,6 +65,17 @@ python -m venv .venv
 Откройте http://localhost:8080. Waitress слушает `0.0.0.0`;
 HOST и PORT задаются окружением. `python app.py` — локальный режим
 на http://127.0.0.1:5001 без отладчика по умолчанию.
+
+Для ежедневного режима при локальном запуске задайте `CITY_DATA_URL` перед стартом:
+
+```powershell
+$env:CITY_DATA_URL='https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/osm-data/city.json'
+.venv/Scripts/python.exe serve.py
+```
+
+Linux/macOS: `CITY_DATA_URL='https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/osm-data/city.json' .venv/bin/python serve.py`.
+Без переменной остаётся прежний локальный режим Overpass/районных снимков.
+Расписание и проверка публикации описаны в [DEPLOYMENT.md](DEPLOYMENT.md).
 
 Готовый Material Web bundle включён в `static/vendor`, поэтому для обычного
 Python-запуска Node.js не нужен. Если меняется список Material-компонентов:

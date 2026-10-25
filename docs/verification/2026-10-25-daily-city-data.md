@@ -40,5 +40,29 @@ mobile-feedback и workspace-interactions PASS с моделированными
 
 ## Публикация
 
-Реальная проверка Render и финальный runtime записываются после завершения deploy.
-Локальные успехи и UI-подмены не считаются подтверждением доступности с хостинга.
+Runtime ec325784147b4bab3baed18733dc27a5f3471803. Render
+dep-dbf0bh3phbkc73a34mrg live25октября13:38:36UTC. CITY_DATA_URL добавлен
+через merge env, replace=false; остальные переменные не заменены.
+
+Финальный CI success:
+https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/40198340203.
+Повторная настоящая сборка данных success:
+https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/40198340211.
+Новая версия dd1000d07fa394b8f7cb6f67c057137d583e8c9bb5a60d3beee6180ab40a458a,
+fetched_at1792935470.0598962 (25октября16:37:50Москва).
+
+Публичный реальный refresh:3.210s, status=updated,source=osm,оба cached=false,
+stale=false,warning=null. Дата/версия совпали с GitHub;153дома/12347жителей/2конкурента.
+Повтор:0.574s,status=unchanged,оба cached=true,исходная дата и версия те же.
+Никакие сетевые ответы в этих проверках не подменялись.
+
+Публичный browser daily-data PASS:10областей/10категорий/custom1500m,
+390/768/1440 без overflow, pageErrors[]. Кнопка:unchanged за0.53s,
+сообщение «Новых данных пока нет», дата не изменилась.
+44публичныхресурса SHA256 совпали с runtime Git. Error/critical app-логи пусты.
+Окончательный Python106/106, Node77/77, validator82 PASS; повторное ревью без замечаний.
+
+Проверки устройств: Chrome с эмуляцией ширин/touch; физические телефоны и Safari
+в этом прогоне не проверялись. GitHub/OSM могут быть недоступны; рабочая копия
+остаётся с прежней датой. Защитные сценарии проверены unit/UI-подменами отдельно
+от настоящей публичной загрузки.
