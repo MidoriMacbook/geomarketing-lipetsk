@@ -74,8 +74,9 @@ def _overpass(query):
                 # Do not log URLs containing user coordinates or entire response bodies.
                 status = getattr(resp, 'status_code', None)
                 reason = getattr(exc.args[0], 'reason', None) if exc.args else None
-                logger.warning('Overpass %s failed: %s cause=%s status=%s',
-                               host, type(exc).__name__, type(reason).__name__, status)
+                os_errno = getattr(getattr(reason, '__cause__', None), 'errno', None)
+                logger.warning('Overpass %s failed: %s cause=%s errno=%s status=%s',
+                               host, type(exc).__name__, type(reason).__name__, os_errno, status)
                 errors.append(f'{host}: {type(exc).__name__} status={status}')
                 # A gateway may reject immediately while the data server is healthy.
                 # Retry only this fast transient failure, never a timeout or rate limit.
