@@ -18,8 +18,8 @@ Failure coverage: повреждение, откат даты, пустые ка
 - [x] 4. RED→GREEN: интеграция в analysis_service.py; поле data_delivery в payload без изменения модели и архива исследований.
 - [x] 5. scripts/collect_city_data.py и .github/workflows/osm-data.yml: ежедневная атомарная публикация ветки osm-data, ограниченная конкуренция, отказ без затирания предыдущей версии.
 - [x] 6. UI: «Проверить обновления», периодичность и дата, состояния новой/той же/недоступной версии; мобильная проверка.
-- [ ] 7. Полные Python/Node/структурные проверки; реальный workflow GitHub, загрузка с Render, повторная проверка той же версии, район/тип/custom.
-- [ ] 8. Документы, публикация, CI/Render live, чистый репозиторий.
+- [x] 7. Полные Python/Node/структурные проверки; реальный workflow GitHub, загрузка с Render, повторная проверка той же версии, район/тип/custom.
+- [x] 8. Документы, публикация, CI/Render live, чистый репозиторий.
 
 Команды: python -m unittest discover -s tests -q; node --test tests/unit/*.test.js;
 python scripts/validate_project.py; Playwright browser + фактические data_delivery/version/fetched_at.

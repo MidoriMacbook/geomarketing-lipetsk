@@ -75,6 +75,11 @@ https://render.com/docs/free. Платные ресурсы при первом 
 
 ### Ежедневная городская выгрузка
 
+Активна на Render с25октября2026: runtime ec325784147b4bab3baed18733dc27a5f3471803,
+deploy dep-dbf0bh3phbkc73a34mrg live. Реальный refresh3.210s, повтор0.574s с прежней
+датой; все10областей/10категорий/custom проверены. Подробный аудит:
+[daily-city-data](docs/verification/2026-10-25-daily-city-data.md).
+
 Для новой согласованной схемы задайте `CITY_DATA_URL`:
 `https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/osm-data/city.json`.
 Переменная добавлена в render.yaml; существующий сервис обновляется отдельно

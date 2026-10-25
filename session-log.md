@@ -254,7 +254,7 @@ KPI replay, press/selection/save feedback, локальный Onest и section P
 
 Опубликован d8ff80e: меню с полноширинными строками, невидимые KPI-кнопки, повтор малых чисел от0, height-анимации details и стрелки, локальная обратная связь обновления. CI success; Render dep-dbefj1k9v7es73cfhkhg live;43публичныхфайла совпали. mobile-feedback локально/публично PASS; touch-motion4ширины, header-anchor12, header-focus27, field-checks, workspace-interactions PASS. Внешние Overpass при проверке недоступны: реальные свежие данные не получены, интерфейс честно показывает копию. Подробности: docs/verification/2026-10-24-mobile-feedback-fixes.md.
 
-## 2026-10-25 [saved]
+## 2026-10-25 [saved] [superseded by 2026-10-25 daily delivery]
 Goal: Восстановить реальные обновления геоданных на Render.
 Decisions:
 - Успех требует свежих домов и конкурентов; HTTP200 и source=osm сами по себе недостаточны.
@@ -266,3 +266,14 @@ Rejected:
 - Принудительный IPv4 без проверки отказа IPv4-соединения.
 Open:
 - Выбор ежедневной выгрузки GitHub либо доступного поставщика реального времени.
+
+## 2026-10-25 daily delivery [saved]
+Goal: Доставлять реальные геоданные на Render через ежедневную городскую выгрузку.
+Decisions:
+- GitHub Actions собирает весь город в отдельную ветку osm-data; ежедневные данные не требуют перезапуска Render.
+- CITY_DATA_URL включает daily; кнопка проверяет новую версию, сохраняя исходную дату при отсутствии изменений или ошибке.
+- Схема, полнота, checksum и численная пригодность проверяются до атомарной замены; отказ использует сохранённые копии.
+Rejected:
+- Обновление даты при повторном получении той же версии.
+- Сетевой Overpass в fallback daily-режима Render.
+Open: none.
