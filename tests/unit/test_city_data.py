@@ -47,6 +47,18 @@ class CityDataTests(unittest.TestCase):
         self.assertLess(bundle['fetched_at'], time.time() - 90)
         self.assertEqual(len(bundle['version']), 64)
 
+    def test_finite_rows_with_overflowing_population_sum_are_rejected(self):
+        api = self.api(); houses = city_rows()
+        for row in houses[:50]: row[2] = 2.4e307
+        with self.assertRaises(ValueError):
+            api.make_bundle(houses, {key: [[52.5935,39.48]] for key in BUSINESS_CATALOG}, time.time())
+
+    def test_unrepresentable_numbers_are_rejected_as_invalid_data(self):
+        api = self.api(); competitors = {key: [[52.5935,39.48]] for key in BUSINESS_CATALOG}
+        with self.assertRaises(ValueError): api.make_bundle(city_rows(), competitors, 10 ** 500)
+        houses = city_rows(); houses[0][2] = 10 ** 500
+        with self.assertRaises(ValueError): api.make_bundle(houses, competitors, time.time())
+
     def test_damage_missing_categories_and_future_dates_are_rejected(self):
         api = self.api(); bundle = self.bundle()
         for change in [lambda b: b['houses'][0].__setitem__(2, -1),

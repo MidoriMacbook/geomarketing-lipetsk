@@ -12,7 +12,7 @@ from src.config import CACHE_DIR, CACHE_TTL, CITY_DATA_URL, HEADERS
 from src.domain.city_data import select_area, validate_bundle
 from src.domain.models import CacheInfo, LoadedData
 from src.utils.formatting import cache_metadata
-from src.utils.validation import UserError
+from src.utils.validation import UserError, validate_data
 
 CACHE_FILE = CACHE_DIR / 'city-v1.json'
 MAX_BYTES = 10 * 1024 * 1024
@@ -75,7 +75,7 @@ def _get_bundle(refresh):
     global _memory, _last_check, _last_error
     if not _lock.acquire(blocking=False):
         if _memory is None:
-            raise FeedUnavailable('City data is loading')
+            raise FeedUnavailable('Ежедневная выгрузка загружается. Пока используем сохранённые данные.')
         return _memory, 'checking', True, 'Проверка обновлений уже выполняется. Показана доступная версия.'
     try:
         if _memory is None:
@@ -83,7 +83,7 @@ def _get_bundle(refresh):
                 if CACHE_FILE.stat().st_size > MAX_BYTES:
                     raise ValueError('City cache too large')
                 _memory = validate_bundle(json.loads(CACHE_FILE.read_bytes()))
-            except (OSError, ValueError, TypeError, KeyError):
+            except (OSError, ValueError, TypeError, KeyError, OverflowError):
                 pass
         if _memory is not None and not refresh and time.time() - _last_check < 3600:
             return _memory, 'unavailable' if _last_error else 'current', True, _last_error
@@ -99,7 +99,7 @@ def _get_bundle(refresh):
             _memory = bundle
             _last_error = None
             return bundle, ('updated' if changed else 'unchanged') if refresh else 'current', not changed, None
-        except (requests.RequestException, OSError, ValueError, TypeError, KeyError):
+        except (requests.RequestException, OSError, ValueError, TypeError, KeyError, OverflowError):
             _last_error = 'Не удалось проверить ежедневную выгрузку. Показана последняя доступная копия с прежней датой.'
             logger.warning('Daily city data unavailable; keeping last complete version')
             if previous is None:
@@ -120,9 +120,11 @@ def load(area, business, refresh=False):
     age = time.time() - bundle['fetched_at']
     if age > 2 * 86400:
         warning = ' '.join(filter(None, [warning, 'Выгрузка не обновлялась больше двух суток. Проверьте изменения на местности.']))
+    house_rows, competitor_rows = validate_data(
+        np.asarray(houses, dtype=float).reshape(-1, 3),
+        np.asarray(competitors, dtype=float).reshape(-1, 2))
     info = CacheInfo(cached, bundle['fetched_at'], age > CACHE_TTL, warning)
-    return LoadedData(np.asarray(houses, dtype=float).reshape(-1, 3),
-                      np.asarray(competitors, dtype=float).reshape(-1, 2),
+    return LoadedData(house_rows, competitor_rows,
                       'cache' if cached else 'osm', warning, cache_metadata(info, info),
                       {'mode': 'daily', 'status': status, 'version': bundle['version'],
                        'fetched_at': bundle['fetched_at'], 'checked_at': _last_check,

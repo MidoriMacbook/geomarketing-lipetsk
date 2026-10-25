@@ -66,7 +66,9 @@ class CityFeedTests(unittest.TestCase):
         older = copy.deepcopy(self.bundle)
         from src.domain.city_data import digest
         older['fetched_at'] -= 100; older['version'] = digest(older)
-        for candidate in [older, {'schema': 99}]:
+        huge = copy.deepcopy(self.bundle); huge['houses'][0][2] = 10 ** 500
+        huge['version'] = digest(huge)
+        for candidate in [older, {'schema': 99}, huge]:
             with patch.object(self.feed.requests, 'get', return_value=self.response(candidate)):
                 result = self.feed.load(area_for('eleytsky'), 'cafe', True)
             self.assertEqual(result.delivery['status'], 'unavailable')
@@ -78,6 +80,18 @@ class CityFeedTests(unittest.TestCase):
             result = self.feed.load(area_for('eleytsky'), 'cafe', True)
         self.assertEqual(result.delivery['status'], 'unchanged')
         self.assertEqual(result.metadata['competitors']['fetched_at'], self.bundle['fetched_at'])
+
+    def test_overflowing_population_cannot_replace_good_copy(self):
+        self.path.write_text(json.dumps(self.bundle))
+        from src.domain.city_data import digest
+        broken = copy.deepcopy(self.bundle)
+        for row in broken['houses'][:50]: row[2] = 2.4e307
+        broken['fetched_at'] += 50; broken['version'] = digest(broken)
+        with patch.object(self.feed.requests, 'get', return_value=self.response(broken)):
+            result = self.feed.load(area_for('eleytsky'), 'cafe', True)
+        self.assertEqual(result.delivery['status'], 'unavailable')
+        self.assertEqual(result.delivery['version'], self.bundle['version'])
+        self.assertEqual(json.loads(self.path.read_text()), self.bundle)
 
     def test_no_network_and_no_copy_is_explicitly_unavailable(self):
         with patch.object(self.feed.requests, 'get', side_effect=OSError('offline')):
