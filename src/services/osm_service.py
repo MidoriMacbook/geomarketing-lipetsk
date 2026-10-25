@@ -189,8 +189,10 @@ def parse_competitors(elements, deduplicate=True):
     return rows
 
 
-def get_houses(area, refresh=False):
+def get_houses(area, refresh=False, *, cached_only=False):
     def load_usable_houses():
+        if cached_only:
+            raise RuntimeError('No saved houses for this area')
         rows = _load_houses(area)
         if len(rows) < 5:
             raise RuntimeError(f'в OpenStreetMap найдено слишком мало домов ({len(rows)})')
@@ -199,8 +201,12 @@ def get_houses(area, refresh=False):
     return np.array(data, dtype=float).reshape(-1, 3), cached
 
 
-def get_competitors(business, area, refresh=False):
-    data, cached = _cached(competitor_cache_name(business, area), lambda: _load_competitors(business, area),
+def get_competitors(business, area, refresh=False, *, cached_only=False):
+    def load_rows():
+        if cached_only:
+            raise RuntimeError('No saved competitors for this area')
+        return _load_competitors(business, area)
+    data, cached = _cached(competitor_cache_name(business, area), load_rows,
                            refresh, allow_empty=True)
     return np.array(data, dtype=float).reshape(-1, 2), cached
 

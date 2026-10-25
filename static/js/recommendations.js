@@ -1,4 +1,5 @@
 import { state } from './state.js';
+import { deliverySummary } from './data-delivery.js';
 import { $, fmt, coords, distance, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin } from './ui.js';
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker, hoverPlace } from './map.js';
@@ -92,7 +93,7 @@ export function showResult(data) {
   if (newAnalysis) ['residents', 'houses', 'competitors', 'places'].forEach(key => reveal($('kpi-'+key), 'kpi'));
   $('map-context').textContent = `${data.district_name} · ${data.business_name}`;
   if ($('analysis-context')) $('analysis-context').textContent = `${data.district_name} · ${data.business_name}`;
-  $('source').textContent = `Источник: ${sourceText(data.source)}. Дата самой ранней копии: ${dateText(dataDate(data))}. Население оценено по площади и этажности домов.`;
+  $('source').textContent = `Источник: ${sourceText(data.source)}. Дата самой ранней копии: ${dateText(dataDate(data))}. Население оценено по площади и этажности домов. ${deliverySummary(data)}`.trim();
   const warning = [data.source === 'demo'?'Показаны демонстрационные данные: не используйте их для выбора места без проверки.': '', data.warning, data.notice].filter(Boolean).join(' ');
   $('data-warning').textContent = warning;
   $('data-warning').hidden = !warning;

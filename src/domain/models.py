@@ -30,6 +30,7 @@ class LoadedData:
     source: str
     warning: str | None
     metadata: dict = field(default_factory=dict)
+    delivery: dict | None = None
 
 
 @dataclass(frozen=True)
