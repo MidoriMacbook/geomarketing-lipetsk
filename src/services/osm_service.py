@@ -54,8 +54,7 @@ def _overpass(query):
         for attempt in range(2):
             remaining = deadline - time.monotonic()
             if remaining <= 4:
-                errors.append('loading time budget exhausted')
-                break
+                raise RuntimeError('Overpass API: loading time budget exhausted')
             resp = None
             started = time.monotonic()
             retry = False
