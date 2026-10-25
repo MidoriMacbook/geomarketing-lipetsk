@@ -17,10 +17,10 @@ def server_port(default: int) -> int:
     return int(os.environ.get('PORT', str(default)))
 
 OVERPASS_URLS = [
-    # Let DNS try both official nodes: Render cannot connect directly to gall.
     'https://overpass-api.de/api/interpreter',
-    # An independent hostname remains useful when the shared endpoint fails.
-    'https://gall.openstreetmap.de/api/interpreter',
+    # Independent global instance; a second name for the same node cannot help
+    # when the host refuses connections from the deployment network.
+    'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
     'https://overpass.private.coffee/api/interpreter',   # бывший overpass.kumi.systems
 ]
 HEADERS = {'User-Agent': 'GeoMarketingLipetsk/1.0 (+https://github.com/MidoriMacbook/geomarketing-lipetsk)'}
