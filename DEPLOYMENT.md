@@ -1,11 +1,11 @@
-## Публикация 24 октября 2026 — touch polish
+## Публикация 24 октября 2026 — полировка касаний
 
-Опубликовано: runtime `a251cb107510f8a77eee3b4367537475650522eb` (основной
+Опубликовано: версия приложения `a251cb107510f8a77eee3b4367537475650522eb` (основной
 пакет `9a272f74a7171cf4c54fed26babf7223bfddf82b`, затем CSS hover220ms).
 Render `dep-dbe98h3bc2fs738043pg`: live24октября2026,14:21:05МСК.
 https://geomarketing-lipetsk.onrender.com/
 
-CI основного пакета и финальной CSS-правки success:
+CI основного пакета и финальной CSS-правки успешно:
 - https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/40070915547
 - https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/40089443798
 
@@ -31,12 +31,12 @@ browser-тестом и CI, функциональные проверки осн
 - Запуск: `python serve.py`, Waitress слушает порт из `PORT`.
 - Проверка приложения: `GET /healthz` → HTTP 200, `{"status":"ok"}`.
 
-Последняя публикация: 23 октября 2026, runtime `f1b0b78`,
+Последняя публикация: 23 октября 2026, версия приложения `f1b0b78`,
 deploy `dep-dbdrlp8473hc73beq8ug` live с22:53:28 по Москве, trigger `new_commit`.
-Source/main CI success: run40014554183/run40014779563.
+CI исходной и основной версий успешно: run40014554183/run40014779563.
 Опубликованы тёплые поверхности без экранного белого, заметные React Bits
 анимации, Magnet на CTA и мобильная SVG-схема с паузой. Публичные warm-motion,
-hero-island, workspace, research-open-motion PASS: карта, сохранения, CSV,
+hero-island, workspace, research-open-motion успешно: карта, сохранения, CSV,
 печать, открытие исследования, reduce/keyboard/mobile/fallback.
 Все40 ресурсов совпали с Git, healthz200, pageErrors[], app error logs пусты.
 Подробности: docs/verification/2026-10-23-warm-motion-polish.md.
@@ -75,7 +75,7 @@ https://render.com/docs/free. Платные ресурсы при первом 
 
 ### Ежедневная городская выгрузка
 
-Активна на Render с25октября2026: runtime ec325784147b4bab3baed18733dc27a5f3471803,
+Активна на Render с25октября2026: версия приложения ec325784147b4bab3baed18733dc27a5f3471803,
 deploy dep-dbf0bh3phbkc73a34mrg live. Реальный refresh3.210s, повтор0.574s с прежней
 датой; все10областей/10категорий/custom проверены. Подробный аудит:
 [daily-city-data](docs/verification/2026-10-25-daily-city-data.md).

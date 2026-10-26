@@ -1,19 +1,9 @@
-# Палитра карты и отступы
+# Палитра карты и отступы — итоги 17 октября 2026
 
-**Goal:** согласовать карту с розово-лиловой палитрой и убрать тесные строки телефона.
-**Architecture:** существующие map tokens, Leaflet styling и responsive CSS.
-**Spec:** docs/specs/2026-10-17-map-harmony-design.md.
+[Спецификация](../specs/2026-10-17-map-harmony-design.md) согласовала функциональные цвета карты с исторической розово-лиловой палитрой. Дома, конкуренты и центры спроса различались цветом, обводкой и формой; легенда повторяла эти обозначения.
 
-## Tasks
-- [x] RED: isolated browser scenario mobile panel inset/select/button padding;
-  текущая причина padding:0 воспроизводится. Проверить карту и легенду.
-- [x] Implement: map palette/competitor outline/house opacity/legend;
-  responsive recommendation padding16, phone buttons/select12/tooltip8x12.
-- [x] GREEN360/390/430/768,200% и actual map canvas/contrast/screenshots;
-  selected contrast/palette regression, validator/syntax.
-- [x] Уточнение пользователя: RED letter typing still enabled → удалить intro.js,
-  использовать CSS whole-heading intro; сохранить map/geometry/AX/reduce/print тесты.
-- [x] Whole-branch review, CI/main/Render/public, docs and cleanup.
+Устранена причина тесных строк телефона: правило до 900 px обнуляло отступ всего блока рекомендаций. Возвращён отступ 16 px, внутренние отступы кнопок и полей увеличены до 12 px, подсказок — до 8×12 px.
 
-Review focus: narrow phones/wrapped long labels, hit targets, visible distinction
-between related marker colours and translucent zones; preserve shared canvas2.
+Побуквенное появление заголовка удалено вместе с `intro.js`; заголовок появляется целиком через CSS, доступный текст остаётся постоянным. Печать и уменьшение движения отключают эффект.
+
+Историческая проверка включала 360/390/430/768 px, 200% текста, перенос длинных подписей, области нажатия, реальные параметры рисования и контраст карты. Сохранены два общих элемента холст, геометрия, API и хранилища. Позднейшая палитра домов закреплена в [спецификации расширенного каталога](../specs/2026-10-18-catalog-and-map-colors.md).

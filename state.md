@@ -1,24 +1,22 @@
-# Состояние — 26 октября 2026
+# Текущее состояние — 26 октября 2026
 
-Рабочее пространство завершено и опубликовано.
-Runtime f31ee4e975b51ee3ebe64266a2ca810f670a55b8 на main.
-Render dep-dbfmv5o473hc73aa8vp0 live15:21:18UTC; CI40348255264 success.
-План docs/plans/2026-10-26-workspace-guidance.md выполнен.
-Отчёт и список33файлов: docs/verification/2026-10-26-workspace-guidance.md.
+Этап: статусы KPI, очистка документации, фирменный favicon.
+Базовая опубликованная версия b3a819e; текущие изменения ещё не закоммичены.
+План: docs/plans/2026-10-26-status-and-project-docs.md.
+Отчёт: docs/verification/2026-10-26-status-and-project-docs.md.
 
-KPI→временное выделение/guide/legend, компактное Отображение, сводка4строки,
-preview без pan, статус сохранения, тёплые токены, hero/context-date.
-API/daily/model/storage/CSV/print contracts сохранены.
-Python106/Node86/validator85 PASS; independent review без незакрытых findings.
-Локальные browser guidance/fallbacks/mobile-feedback/workspace-interactions/
-palette/contrast-intro/rapid PASS. Публичные guidance/fallbacks PASS,
-47resources SHA256 match. Четыре ширины390/768/1024/1440,200%,touch,
-320–430hero,keyboard/reduce/noLeaflet; pageErrors[]. Error/critical Render нет.
+Статус заменяет отдельное пояснение; временное выделение карты сохранено.
+SVG/PNG32/PNG180 и цвет панели подключены. API/модель/геоданные/хранилища
+и ежедневная выгрузка не меняются. Документы не удаляются и не переносятся.
+Новые коммиты должны быть только по-русски. Историю не переписывать.
 
-Плановый daily run40297274617 failure на Collect complete city data26Oct;
-UIзадача pipeline не меняла. Сайт использует последнюю корректную копию25Oct
-с её настоящей датой. Не считать новое поступление данных подтверждённым.
-Физические телефоны/Safari/screen-reader/nativePDF не проверены.
+Проверены Python106,Node86,валидатор87,68локальных ссылок без ошибок.
+Браузер: статусы4KPI,8сочетаний ширины/масштаба,касания,уменьшение движения,
+отказ Leaflet,сохранения,исследования,CSV/печать — успешно,ошибок JavaScript нет.
+Впереди итоговая проверка изменений, публикация, CI/Render и публичная проверка.
 
-Свой CLI workspace-focus закрыт, owned сервер28856/11052 остановлен.
-Итоговый docs audit сохраняется [skip render] [skip ci].
+Свой сервер8094: запуск23004, дочерний процесс уточнить перед остановкой.
+Свой браузер status-check:36088. Старые favicon-check/light/dark могут быть
+закрыты средой; проверить только собственные сеансы. HTTP8093 запуск6676 был
+временным для иконок. Просмотр системной рамки через Windows остановлен средством
+управления из-за неопределённого URL; не повторять и не обходить ограничение.

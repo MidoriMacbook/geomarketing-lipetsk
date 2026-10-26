@@ -15,22 +15,22 @@ focus/Escape и сценарии уже на них опираются. Их з�
 не добавляется. Печатная палитра светлая, progress в отчёт не попадает.
 Флаг html[data-material-web="ready"] и событие material-web-ready сохранены.
 
-## Reduced motion и отказ bundle
+## Reduced анимации и отказ сборка
 
 CSS страницы не управляет Shadow DOM. Поэтому ui.js при reduced-motion снимает
 indeterminate, скрывает Material, отменяет shadow animations после Lit update
-и показывает статический .progress-fallback. Runtime смена preference работает
-без перезагрузки; revision guard защищает от отложенного старого обновления.
+и показывает статический .progress-fallback. Версия приложения смена preference работает
+без перезагрузки; версия guard защищает от отложенного старого обновления.
 
-Fallback — div с role=progressbar, именем и без aria-valuenow. Если bundle
-не загрузился, он показывает ожидание; API, карта и native controls работают.
+резервный режим — div с role=progressbar, именем и без aria-valuenow. Если сборка
+не загрузился, он показывает ожидание; API, карта и native управление работают.
 Бизнес-логика не ждёт whenDefined. После ожидания обе версии скрыты.
 
 ## Сборка
 
 package.json и pnpm-lock.yaml фиксируют версии. Rollup/node-resolve собирают
 scripts/frontend/material-web-entry.js в static/vendor/material-web/material-components.js.
-Source map не публикуется; восемь модулей приложения сборки не требуют.
+Карта исходников не публикуется; восемь модулей приложения сборки не требуют.
 
 ```powershell
 pnpm install --frozen-lockfile
@@ -38,7 +38,7 @@ pnpm run check:material
 ```
 
 check:material проверяет entry и пересобирает vendor; запускать затем build:material
-не требуется. Bundle хранится в Git, Python/Render не требуют Node.
+не требуется. сборка хранится в Git, Python/Render не требуют Node.
 CI Node24/pnpm11.25.0 пересобирает файл, проверяет отсутствие diff и синтаксис JS.
 
 ## Skiper UI
@@ -46,12 +46,12 @@ CI Node24/pnpm11.25.0 пересобирает файл, проверяет от
 Skiper UI просмотрен в браузере как референс компактной навигации, выразительной
 типографики и коротких микровзаимодействий. Он не устанавливается: React/TSX/
 shadcn/Tailwind не входят в стек проекта. Исходники и платные компоненты
-не копируются; motion написан на CSS/WAAPI.
+не копируются; анимации написан на CSS/WAAPI.
 
 ## Дальнейшее внедрение
 
 Для нового Material-контрола сначала зафиксировать native-контракты, обосновать
 пользу, добавить один импорт, сопоставить токены и проверить keyboard/focus,
-цели44px, mobile, reduced-motion и отказ bundle.
+цели44px, мобильный, reduced-motion и отказ bundle.
 tests/browser/material-web.js проверяет реальный upgraded DOM; redesign.js —
 поведение progress при запросе и оба fallback-сценария.

@@ -46,7 +46,7 @@
 
 `GET /api/calculate` сохраняет все существующие поля и добавляет `business_name`,
 `analysis_id`, `parameters`, `recommendations`. `best` равен первой рекомендации.
-Рекомендация: rank, lat, lng, score (0..1), residents_in_radius, radius_m,
+Рекомендация: ранг, lat, lng, оценка (0..1), residents_in_radius, radius_m,
 competitors_in_radius, nearest_competitor_m. `analysis_id` идентифицирует один
 расчёт для корректной интерпретации сравнения и сохранения нескольких мест.
 

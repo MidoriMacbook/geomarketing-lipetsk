@@ -25,7 +25,7 @@ async page => {
   const initial = await page.evaluate(() => fetch('/api/calculate?district=eleytsky&type=cafe').then(r => r.json()));
   assert(initial.recommendations.length >= 1 && initial.recommendations.length <= 3, 'Recommendation count');
   assert(await page.locator('[data-testid="recommendation-marker"]').count() === initial.recommendations.length, 'Numbered markers');
-  const reviewFailures = [];
+  const regressionFailures = [];
   // Same-origin tabs must retain independent additions and synchronize external deletions.
   await page.evaluate(() => localStorage.removeItem('geomarketing.saved.v1'));
   await page.reload();
@@ -37,16 +37,16 @@ async page => {
     await Promise.all([page.locator('[data-testid="save-place"]').first().click(), otherTab.locator('[data-testid="save-place"]').first().click()]);
     await Promise.all([waitSaved(page, 2), waitSaved(otherTab, 2)]);
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('geomarketing.saved.v1')));
-    if (stored.length !== 2) reviewFailures.push('Two-tab additions lost a saved place');
-    if (await page.locator('[data-testid="saved-card"]').count() !== 2 || await otherTab.locator('[data-testid="saved-card"]').count() !== 2) reviewFailures.push('Storage events did not synchronize saved lists');
+    if (stored.length !== 2) regressionFailures.push('Two-tab additions lost a saved place');
+    if (await page.locator('[data-testid="saved-card"]').count() !== 2 || await otherTab.locator('[data-testid="saved-card"]').count() !== 2) regressionFailures.push('Storage events did not synchronize saved lists');
     await page.locator('[data-testid="compare-place"]').first().check();
     await otherTab.locator('[data-testid="saved-card"]').first().getByRole('button', { name: /Удалить/ }).click();
     await Promise.all([waitSaved(page, 1), waitSaved(otherTab, 1), waitComparison(page, 0)]);
-    if (await page.locator('#comparison tbody tr').count() !== 0) reviewFailures.push('External delete did not clear comparison');
+    if (await page.locator('#comparison tbody tr').count() !== 0) regressionFailures.push('External delete did not clear comparison');
     const deletedId = stored[0].id;
     await page.locator('[data-testid="save-place"]').nth(1).click();
     await Promise.all([waitSaved(page, 2), waitSaved(otherTab, 2)]);
-    if (await page.evaluate(id => JSON.parse(localStorage.getItem('geomarketing.saved.v1')).some(item => item.id === id), deletedId)) reviewFailures.push('Stale tab resurrected a deleted save');
+    if (await page.evaluate(id => JSON.parse(localStorage.getItem('geomarketing.saved.v1')).some(item => item.id === id), deletedId)) regressionFailures.push('Stale tab resurrected a deleted save');
   } finally { await otherTab.close(); }
   await page.evaluate(() => localStorage.removeItem('geomarketing.saved.v1'));
   await page.reload();
@@ -63,9 +63,9 @@ async page => {
   assert(await page.locator('#coords').isVisible() && await page.locator('#coords').innerText() === previousCoords, 'Pending refresh hid the successful result');
   assert(await page.locator('#print-report').isEnabled() && await page.locator('[data-testid="save-place"]').first().isEnabled(), 'Pending refresh disabled saved-result actions');
   await page.locator('#error').waitFor({ state: 'visible' });
-  if (!await page.locator('#result').isVisible() || !await page.locator('#coords').isVisible()) reviewFailures.push('Failed refresh discarded successful recommendations');
-  else if (await page.locator('#coords').innerText() !== previousCoords || await page.locator('#kpi-residents').innerText() !== previousKPI) reviewFailures.push('Failed refresh changed the successful result');
-  if (!await page.locator('#print-report').isEnabled() || !await page.locator('[data-testid="save-place"]').first().isVisible()) reviewFailures.push('Failed refresh disabled saved-result actions');
+  if (!await page.locator('#result').isVisible() || !await page.locator('#coords').isVisible()) regressionFailures.push('Failed refresh discarded successful recommendations');
+  else if (await page.locator('#coords').innerText() !== previousCoords || await page.locator('#kpi-residents').innerText() !== previousKPI) regressionFailures.push('Failed refresh changed the successful result');
+  if (!await page.locator('#print-report').isEnabled() || !await page.locator('[data-testid="save-place"]').first().isVisible()) regressionFailures.push('Failed refresh disabled saved-result actions');
   await page.unroute('**/api/calculate?**');
   await page.evaluate(() => localStorage.setItem('geomarketing.saved.v1', '[{"analysis_id":"malformed"}]'));
   await page.reload();
@@ -74,8 +74,8 @@ async page => {
   await page.evaluate(() => { Storage.prototype.getItem = () => { throw new DOMException('blocked', 'SecurityError'); }; });
   await page.locator('[data-testid="save-place"]').first().click();
   await waitStorageMessage(page, 'недоступно');
-  if (await page.locator('[data-testid="saved-card"]').count() !== 0 || !/недоступно/.test(await page.locator('#storage-status').innerText())) reviewFailures.push('Blocked getItem falsely reported successful save');
-  assert(reviewFailures.length === 0, reviewFailures.join('; '));
+  if (await page.locator('[data-testid="saved-card"]').count() !== 0 || !/недоступно/.test(await page.locator('#storage-status').innerText())) regressionFailures.push('Blocked getItem falsely reported successful save');
+  assert(regressionFailures.length === 0, regressionFailures.join('; '));
   await page.reload();
   await page.evaluate(() => localStorage.removeItem('geomarketing.saved.v1'));
   await page.reload();

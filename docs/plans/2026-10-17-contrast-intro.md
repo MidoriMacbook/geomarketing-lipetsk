@@ -1,32 +1,7 @@
-# Контраст и печатающийся заголовок
+# Контраст разделов — итоги 17 октября 2026
 
-**Goal:** разделить визуальные роли интерфейса и карты, добавить первое появление h1.
-**Architecture:** существующие CSS tokens и компоненты; изолированный intro.js,
-вызов bootstrap; scoped light palette настроек, прежние Leaflet renderers.
-**Stack:** vanilla JS/WAAPI/Leaflet/Flask, без зависимостей.
-**Spec:** docs/specs/2026-10-17-contrast-intro-design.md.
+[Спецификация](../specs/2026-10-17-contrast-intro-design.md) разделила поверхности настроек, рекомендаций, сохранений и KPI. Карта получила различимые функциональные цвета, формы и легенду; геометрия и общие средства рисования Leaflet сохранены.
 
-## Constraints / Review Focus
-- Полный h1 доступен сразу, интро не блокирует анализ; сбои storage/animation безопасны.
-- При reduce/print/hidden нет скрытых букв; refresh не повторяет интро.
-- Светлая панель: >=4.5 текста, >=3 контролов, 44px targets, no overflow.
-- Карта имеет различные роли, canvas остаётся2; нет чтения стилей на каждую точку.
+Первоначальный эффект побуквенного появления заголовка позднее заменён обычным появлением всего заголовка; актуальное решение описано в [уточнении карты и отступов](2026-10-17-map-harmony.md). Полный доступный текст и геометрия заголовка не зависят от эффекта.
 
-## Task1: RED
-- [x] Новый isolated tests/browser/contrast-intro.js: разные поверхности/карта/legend,
-  h1 partial visual + stable AX/layout, first-session/reduce/hidden/print/storage failure.
-- [x] Запустить и увидеть отсутствие различимых панелей/typing.
-
-## Task2: Implement
-- [x] tokens/layout/components/responsive: settings light scope, grouped KPI,
-  recommendations/saved headings and surfaces, map palette and legend shapes.
-- [x] map.js: golden ring centroid and lower zone opacity, same shared renderers.
-- [x] intro.js initHeadline() + bootstrap: text-node wrappers, steps opacity,
-  idempotent cleanup and session guard; exact heading restored after cancellation.
-- [x] GREEN targeted scenario; counters/dark-motion/selected/palette/redesign/workspace,
-  validator/syntax, screenshots desktop/mobile/200%.
-
-## Task3: Release
-- [x] Independent whole-branch review, fix concrete issues and document evidence.
-- [x] Feature CI, main/Render, public browser/asset verification.
-- [x] Update docs/state/session-log and close own QA processes.
+Историческая проверка охватывала контраст текста не ниже 4.5:1, контролов не ниже 3:1, области нажатия 44 px, 200% текста, печать, уменьшение движения и отказ хранилища. Проверялись прежние функции рабочего пространства, карта и счётчики на компьютере и телефоне. Публикация и сверка статических файлов выполнялись на существующем Render.
