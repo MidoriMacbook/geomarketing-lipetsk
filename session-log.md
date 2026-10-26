@@ -288,4 +288,4 @@ Decisions:
 Rejected:
 - Новый расчёт, автоматический pan/scroll и запись фильтров при нажатии KPI.
 - Новые библиотеки, глобальный редизайн и изменение daily/API/storage.
-Open: combined review и публичная приёмка.
+Open: none for workspace guidance; failed daily collection26Oct is recorded separately, pipeline unchanged.
