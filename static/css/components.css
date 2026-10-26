@@ -107,8 +107,8 @@ details[data-expanded=true]>summary::after { transform:rotate(180deg); }
 details[data-expanded]>summary { list-style:none; }
 details[data-expanded]>summary::-webkit-details-marker { display:none; }
 
-/* Only the two workspace disclosures use the grid transition. Native details
-   remains the no-script fallback and retains its normal keyboard behaviour. */
+/* Вторичные настройки используют переход сетки. Без JavaScript остаётся
+   обычный details с нативным управлением клавиатурой. */
 details[data-workspace-disclosure]>summary { display:grid; grid-template-columns:minmax(0,1fr) var(--space-4); gap:var(--space-1) var(--space-3); list-style:none; border-radius:var(--radius-control); }
 details[data-workspace-disclosure]>summary::-webkit-details-marker { display:none; }
 details[data-workspace-disclosure]>summary::after { content:"⌄"; grid-column:2; grid-row:1/3; align-self:center; margin:0; color:currentColor; transition:transform var(--motion-workspace) var(--ease-emphasized); }

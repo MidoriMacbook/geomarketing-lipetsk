@@ -1,7 +1,7 @@
 import { motionReduced } from './ui.js';
 
 const controllers=new WeakMap();
-export function initWorkspaceDisclosure(details,onChange=()=>{}) {
+export function initWorkspaceDisclosure(details) {
  if(!details)return null;
  if(controllers.has(details))return controllers.get(details);
  const summary=details.querySelector(':scope>summary'),body=details.querySelector(':scope>.workspace-disclosure-body');
@@ -21,7 +21,6 @@ export function initWorkspaceDisclosure(details,onChange=()=>{}) {
   details.dataset.expanded=String(open);summary.setAttribute('aria-expanded',String(open));
   if(immediate||motionReduced())finish();
   else timer=setTimeout(finish,310);
-  onChange(open);
  };
  summary.addEventListener('click',event=>{event.preventDefault();setOpen(!wanted);});
  details.addEventListener('keydown',event=>{
@@ -30,7 +29,7 @@ export function initWorkspaceDisclosure(details,onChange=()=>{}) {
  });
  details.addEventListener('toggle',()=>{
   if(timer!==null||details.open===wanted)return;
-  wanted=details.open;finish();onChange(wanted);
+  wanted=details.open;finish();
  });
  matchMedia('(prefers-reduced-motion:reduce)').addEventListener('change',event=>{if(event.matches)finish();});
  window.addEventListener('beforeprint',finish);

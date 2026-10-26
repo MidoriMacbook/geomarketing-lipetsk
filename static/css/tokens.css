@@ -68,7 +68,7 @@
  --motion-progress-start:-40%; --motion-progress-end:70%; --motion-progress-scale-start:.4;
  --motion-progress-scale-end:.6; --motion-progress-static:.45;
  --z-skip:2000; --z-header:1000; --z-map:0; --z-zones:405; --z-points:420; --z-ghost:1500;
- --z-choice:1200; --z-map-guide:700;
+ --z-choice:1200;
  --size-target:44px; --size-logo:40px; --size-switch:20px; --size-swatch:12px; --size-marker:44px;
  --size-marker-selected:44px; --size-table:760px; --size-dialog:620px; --size-report:180mm;
  --size-page:1600px; --size-settings:220px; --size-settings-min:210px;

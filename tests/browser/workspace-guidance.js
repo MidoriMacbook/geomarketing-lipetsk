@@ -23,11 +23,12 @@ async original=>{
    check(await page.locator('.kpi-replay[aria-pressed=true]').count()===1,'Multiple KPI pressed');
    const after=await snapshot();check(JSON.stringify(after)===JSON.stringify(before),'KPI changed data/view/storage '+key);
    check(Math.abs(await page.evaluate(()=>scrollY)-scroll)<2,'KPI automatically scrolled '+key);
-   check(await page.locator('#map-guide').evaluate(e=>e.open),'Missing map explanation '+key);
-   const message=await page.locator('#map-guide-message').textContent();check(message.length>40,'Empty explanation');
-   if(key==='competitors')check(message.includes(JSON.parse(before.data).business_name),'Missing category');
+   const expected={residents:'Жители: на карте выделены дома и зоны спроса',houses:'Дома: на карте выделены учтённые жилые объекты',competitors:'Конкуренты: на карте выделены объекты выбранной категории',places:'Рекомендации: на карте выделены предложенные места'};
+   check(await page.locator('#analysis-status').textContent()===expected[key],'Incorrect KPI status '+key);
+   check(await button(key).getAttribute('aria-controls')==='analysis-status','KPI does not control existing status');
   }
   await button('places').click();await page.waitForTimeout(450);check(await button('places').getAttribute('aria-pressed')==='false','Repeated KPI did not clear');
+  check(await page.locator('#analysis-status').textContent()==='Расчёт готов · выберите место на карте','Repeated KPI lost ordinary status');
   await button('residents').focus();await page.keyboard.press('Enter');check(await button('residents').getAttribute('aria-pressed')==='true','Enter KPI');
   await page.keyboard.press('Space');check(await button('residents').getAttribute('aria-pressed')==='false','Space KPI');
   await page.keyboard.press('Enter');await page.keyboard.press('Escape');check(await button('residents').getAttribute('aria-pressed')==='false','Escape KPI');
@@ -36,15 +37,14 @@ async original=>{
   check(await paths()===0,'House layer did not hide');
   await button('houses').click();await page.waitForTimeout(450);check(await paths()===JSON.parse(before.data).houses.length,'KPI did not temporarily expose houses');
   check(!await page.locator('#layer-houses').isChecked(),'KPI changed checkbox preference');
-  check((await page.locator('#map-guide-message').textContent()).includes('Временно'),'Missing temporary-layer explanation');
+
   await page.locator('#scenario-save').click();await page.locator('#scenario-name').fill('Связь KPI и карты');await page.locator('#scenario-submit').click();await page.waitForFunction(()=>!document.getElementById('scenario-dialog').open);
   const record=await page.evaluate(()=>JSON.parse(localStorage.getItem('geomarketing.scenarios.v1')).scenarios?.[0]||JSON.parse(localStorage.getItem('geomarketing.scenarios.v1')).records?.[0]);
   check(record&&record.view.layers.houses===false,'Research captured temporary visibility');
   await button('houses').click();await page.waitForTimeout(450);check(await paths()===0,'KPI clear did not restore hidden preference');
   await page.locator('#layer-houses').check();await page.waitForTimeout(60);await page.locator('#layer-houses').uncheck();await page.waitForTimeout(60);await page.locator('#layer-houses').check();await page.waitForTimeout(500);
   check(await paths()===JSON.parse(before.data).houses.length,'Rapid layer toggles lost latest visibility');
-  await button('places').click();await page.locator('#map-guide-first').click();await page.waitForTimeout(500);
-  check(await page.locator('[data-testid=recommendation-card] .place-select').first().evaluate(e=>document.activeElement===e),'Explicit jump did not focus first place');
+  await button('places').click();await page.getByTestId('recommendation-card').first().locator('.place-select').click();
   const card=page.getByTestId('recommendation-card').nth(1),rank=await card.getAttribute('data-rank');
   const oldRank=await page.evaluate(async()=>(await import('/static/js/state.js')).state.selectedRank),view=await page.evaluate(()=>JSON.stringify({center:window.__guidanceMap.getCenter(),zoom:window.__guidanceMap.getZoom()}));
   await card.locator('.place-select').focus();check(await card.evaluate(e=>e.classList.contains('is-preview')),'Keyboard card preview absent');
@@ -58,16 +58,19 @@ async original=>{
   const denied=page.getByTestId('recommendation-card').first();await denied.getByTestId('save-place').click();await page.waitForTimeout(250);
   check(!(await denied.locator('.save-confirmation').textContent()).includes('Сохранено'),'Failed storage showed save success');await page.evaluate(()=>delete navigator.locks);
   const widths=[];
-  for(const width of [390,768,1024,1440]){
-   await page.setViewportSize({width,height:1000});await page.waitForTimeout(100);
-   check(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'Overflow at '+width);
-   const size=await page.locator('#map').boundingBox();await button('residents').click();await page.waitForTimeout(400);await page.locator('#map-guide-clear').click();await page.waitForTimeout(400);
-   check(Math.abs((await page.locator('#map').boundingBox()).height-size.height)<1,'Guide changed map height '+width);
-   widths.push(width);await page.locator('#workspace').scrollIntoViewIfNeeded();await page.screenshot({path:`tests/artifacts/workspace-after-${width}.png`});
+  for(const scale of [1,2])for(const width of [390,768,1024,1440]){
+   await page.setViewportSize({width,height:1000});await page.evaluate(scale=>document.documentElement.style.fontSize=scale===2?'200%':'',scale);await page.waitForTimeout(150);
+   check(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'Overflow at '+width+'/'+scale);
+   await page.keyboard.press('Escape');await page.waitForTimeout(450);
+   const beforeSize=await page.locator('#map-card').boundingBox(),mapSize=await page.locator('#map').boundingBox();
+   for(const key of ['residents','houses','competitors','places']){
+    await button(key).evaluate(e=>e.click());await page.waitForTimeout(60);
+    const afterSize=await page.locator('#map-card').boundingBox(),afterMap=await page.locator('#map').boundingBox();
+    check(Math.abs(afterSize.height-beforeSize.height)<1,'Status changed map-card height '+width+'/'+scale+'/'+key);
+    check(Math.abs(afterMap.height-mapSize.height)<1,'Status changed map height '+width+'/'+scale+'/'+key);
+   }
+   await page.keyboard.press('Escape');widths.push({width,scale});
   }
-  await page.setViewportSize({width:390,height:1000});await page.evaluate(()=>document.documentElement.style.fontSize='200%');await page.waitForTimeout(200);await button('competitors').click();await page.waitForTimeout(400);
-  check(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'200% overflow');
-  const guide=await page.locator('#map-guide').boundingBox(),map=await page.locator('#map').boundingBox();check(guide.x>=map.x&&guide.x+guide.width<=map.x+map.width+1,'200% guide escapes map');
   await page.evaluate(()=>document.documentElement.style.fontSize='');
   await page.emulateMedia({reducedMotion:'reduce'});await button('houses').click();check(await page.locator('.kpis').evaluate(e=>e.getAnimations({subtree:true}).length===0),'Reduced KPI still animates');
   await page.locator('#display-options-summary').focus();await page.keyboard.press('Escape');await page.waitForTimeout(20);
@@ -81,7 +84,7 @@ async original=>{
   await button('competitors').click();await page.locator('#print-report').click();
   check(await page.evaluate(()=>window.__guidancePrint)===1,'Print not invoked');
   check(await page.locator('#print-report-content .report-place').count()>=1,'Missing report places');
-  check(await page.locator('#print-report-content #map-guide').count()===0,'Transient guide leaked into print');
+
   const apiBeforeArchive=calls;await page.getByTestId('scenario-open').first().click();await page.waitForTimeout(400);
   check(calls===apiBeforeArchive,'Opening research requested API');
   check((await page.locator('#analysis-context').textContent()).includes('сохранённый'),'Archive source context missing');
@@ -94,6 +97,6 @@ async original=>{
   check((await page.locator('#refresh-status').textContent()).includes('данных')||(await page.locator('#refresh-status').textContent()).includes('версия'),'Refresh lost feedback');
   check(calls===apiBeforeArchive+2,'Refresh request count');
   check(errors.length===0,errors.join('; '));
-  return {ok:true,widths,canvas:before.canvases,calls,checks:'focus semantics/keyboard/hidden layers/rapid toggles/guide dimensions/recommendations/save denial/scenario view/200%/reduce',pageErrors:errors};
+  return {ok:true,widths,canvas:before.canvases,calls,checks:'focus semantics/keyboard/hidden layers/rapid toggles/status dimensions/recommendations/save denial/scenario view/200%/reduce',pageErrors:errors};
  }finally{await ctx.close();}
 }

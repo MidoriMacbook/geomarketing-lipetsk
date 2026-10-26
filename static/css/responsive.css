@@ -12,7 +12,6 @@
  .intro-coordinate { display:none; }
  .site-header nav { gap:0; }
  #map { min-height:var(--size-map-tablet); flex-basis:var(--size-map-tablet); }
- .map-stage { --map-stage-min:var(--size-map-tablet); }
 }
 @media (max-width:1023px) {
  .workspace { grid-template-columns:minmax(0,1fr); }
@@ -22,7 +21,6 @@
  #recommendation-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-4); }
  .recommendation { margin-bottom:0; }
  #map { min-height:var(--size-map-tablet); flex-basis:var(--size-map-tablet); }
- .map-stage { --map-stage-min:var(--size-map-tablet); }
 }
 @media (max-width:900px) {
  .site-header { flex-wrap:wrap; padding:var(--space-4) var(--space-5); gap:var(--space-3); }
@@ -71,8 +69,6 @@
  .map-heading { align-items:flex-start; padding:var(--space-4); }.map-badge { display:none; }
  .analysis-bar { padding:var(--space-3) var(--space-4); }
  #map { height:auto; min-height:var(--size-map-mobile); flex-basis:var(--size-map-mobile); }
- .map-stage { --map-stage-min:var(--size-map-mobile); }
- #map-guide { top:var(--space-3); left:var(--space-3); }
  #display-options .layers label,.threshold label { font-size:var(--text-sm); line-height:1.55; }
  .recommendation-brief>div { grid-template-columns:minmax(0,.85fr) minmax(0,1.25fr); }
  .map-footer { padding:var(--space-3); gap:var(--space-2); }

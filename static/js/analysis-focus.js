@@ -1,22 +1,24 @@
-// Presentation descriptions only: never mutate a calculation or its view settings.
+// Подсветка и подписи не меняют расчёт или настройки пользователя.
 const descriptions = {
- residents: {layers:['houses','zones'], text:'Оценка основана на жилой застройке внутри выбранной области. Зоны показывают относительный спрос в этом расчёте.'},
- houses: {layers:['houses'], text:'Выделены жилые объекты OpenStreetMap внутри области. Это добровольная разметка домов, а не перепись населения.'},
- competitors: {layers:['competitors'], text:'Выделены конкуренты выбранной категории, включая окружение области.'},
- places: {layers:['recommendations'], text:'Номера на карте связаны с карточками рекомендаций. Это места для проверки помещения и окружения, а не готовый прогноз выручки.'}
+ residents: {layers:['houses','zones'], text:'Жители: на карте выделены дома и зоны спроса'},
+ houses: {layers:['houses'], text:'Дома: на карте выделены учтённые жилые объекты'},
+ competitors: {layers:['competitors'], text:'Конкуренты: на карте выделены объекты выбранной категории'},
+ places: {layers:['recommendations'], text:'Рекомендации: на карте выделены предложенные места'}
 };
 export function nextFocus(current,key,available) {
  return available && Object.hasOwn(descriptions,key) && current!==key ? key : null;
 }
-export function focusDescription(key,data={}) {
+export function focusDescription(key,data) {
+ if(!data)return {layers:[],text:'Данные ещё не рассчитаны · выберите область'};
  const item=descriptions[key];
- if(!item)return {layers:[],text:'Выберите показатель над картой: выделение поможет прочитать данные, не меняя расчёт.'};
+ if(!item)return {layers:[],text:'Расчёт готов · выберите место на карте'};
+ if((key==='houses'||key==='residents')&&!data.houses?.length)
+  return {layers:[],text:key==='houses'?'Дома: в области нет учтённых жилых объектов':'Жители: недостаточно данных о жилых домах'};
  let text=item.text;
- if(key==='competitors')text=(data.stats?.competitors===0
-   ? 'В этой выборке OpenStreetMap конкуренты не отмечены. Это не доказывает их отсутствия.'
-   : item.text)+` Категория: ${data.business_name || 'выбранный тип бизнеса'}.`;
- if(key==='places'&&Array.isArray(data.recommendations)&&!data.recommendations.length)
-   text='Этот расчёт не предложил мест для проверки. Попробуйте другую область или увеличьте её радиус.';
+ if(key==='competitors'&&data.stats?.competitors===0)
+  text='Конкуренты: в области не отмечены; проверьте окружение';
+ if(key==='places'&&!data.recommendations?.length)
+  text='Рекомендации: места для проверки не предложены';
  return {layers:[...item.layers],text};
 }
 export function analysisContext(data,phase='success',selection={}) {

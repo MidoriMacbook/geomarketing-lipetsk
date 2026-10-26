@@ -7,30 +7,52 @@ import { initWorkspaceDisclosure } from './workspace-disclosure.js';
 
 const keys=['residents','houses','competitors','places'];
 const cards=new Map(),byId=id=>document.getElementById(id);
-let active=null,guide=null;
+let active=null,baseStatus=null,focusedStatus=null;
 
-function updateGuide() {
- const info=focusDescription(active,state.current||{});
- const names={houses:'Дома',zones:'Спрос',competitors:'Конкуренты'};
- const temporary=info.layers.filter(key=>byId('layer-'+key)?.checked===false).map(key=>names[key]);
- const message=byId('map-guide-message');
- if(message){message.textContent=info.text+(temporary.length?` Временно показаны отключённые слои: ${temporary.join(', ')}. Настройки слоёв сохранены.`:'');message.scrollTop=0;}
- if(byId('map-guide-first'))byId('map-guide-first').hidden=active!=='places'||!state.current?.recommendations.length;
- if(byId('map-guide-clear'))byId('map-guide-clear').textContent=active?'Снять выделение':'Закрыть пояснение';
+function reserveStatusHeight() {
+ const status=byId('analysis-status');if(!status)return;
+ const width=status.getBoundingClientRect().width;if(!width)return;
+ const styles=getComputedStyle(status),measure=status.cloneNode(false);
+ measure.removeAttribute('id');measure.removeAttribute('role');measure.removeAttribute('aria-live');
+ measure.setAttribute('aria-hidden','true');
+ Object.assign(measure.style,{position:'absolute',visibility:'hidden',pointerEvents:'none',width:width+'px',height:'auto',minHeight:'0',margin:'0',padding:'0',border:'0',font:styles.font,letterSpacing:styles.letterSpacing,lineHeight:styles.lineHeight,overflowWrap:styles.overflowWrap,wordBreak:styles.wordBreak});
+ status.parentElement.append(measure);
+ let height=0;
+ for(const text of [baseStatus||status.textContent,...keys.map(key=>focusDescription(key,state.current).text)]){
+  measure.textContent=text;height=Math.max(height,measure.getBoundingClientRect().height);
+ }
+ measure.remove();status.style.setProperty('--size-analysis-status',Math.ceil(height)+'px');
 }
+function updateKpiStatus() {
+ const status=byId('analysis-status');if(!status)return;
+ focusedStatus=typeof L==='undefined'?'Карта недоступна · результаты расчёта сохранены':focusDescription(active,state.current).text;
+ status.textContent=focusedStatus;
+}
+initWorkspaceDisclosure(byId('display-options'));
+let statusMeasureKey='',statusFrame=null;
+const resizeStatus=()=>{
+ const status=byId('analysis-status'),width=status?.getBoundingClientRect().width;
+ if(!width)return;
+ const styles=getComputedStyle(status),key=[width,styles.font,styles.letterSpacing].join('|');
+ if(key===statusMeasureKey)return;statusMeasureKey=key;
+ cancelAnimationFrame(statusFrame);statusFrame=requestAnimationFrame(reserveStatusHeight);
+};
+if(typeof ResizeObserver!=='undefined'&&byId('analysis-status'))new ResizeObserver(resizeStatus).observe(byId('analysis-status'));
+window.addEventListener('resize',resizeStatus);
+document.fonts?.ready.then(reserveStatusHeight);
 export function updateAnalysisContext(phase=document.documentElement.dataset.analysisState) {
  const target=byId('analysis-context');if(!target)return;
  const selection=state.catalog?{district_name:byId('district')?.selectedOptions[0]?.textContent,business_name:byId('business')?.selectedOptions[0]?.textContent}:{};
  target.textContent=analysisContext(state.current,state.openedScenarioId&&phase==='success'?'archive':phase,selection);
 }
-export function clearKpiFocus({closeGuide=true,restoreFocus=false,immediate=false}={}) {
- const previous=cards.get(active);active=null;
+export function clearKpiFocus({immediate=false}={}) {
+ const status=byId('analysis-status');
+ if(active&&status?.textContent===focusedStatus)status.textContent=baseStatus;
+ active=null;baseStatus=null;focusedStatus=null;
  cards.forEach(({card,button})=>{card.dataset.active='false';button.setAttribute('aria-pressed','false');});
  if(byId('map-card'))delete byId('map-card').dataset.kpiFocus;
  if(byId('recommendations'))delete byId('recommendations').dataset.kpiFocus;
- setMapEmphasis([],{animate:!immediate});updateGuide();
- if(restoreFocus&&previous&&!previous.button.disabled)previous.button.focus({preventScroll:true});
- if(closeGuide)guide?.setOpen(false,{immediate});
+ setMapEmphasis([],{animate:!immediate});
 }
 function syncButtons() {
  const available=!!state.current&&!['calculating','refreshing'].includes(document.documentElement.dataset.analysisState);
@@ -41,21 +63,6 @@ function syncButtons() {
  });
 }
 
-if(byId('map-guide')) {
- guide=initWorkspaceDisclosure(byId('map-guide'),open=>{
-  if(!open&&active)clearKpiFocus({closeGuide:false});
-  else if(open)updateGuide();
- });
- initWorkspaceDisclosure(byId('display-options'));
- byId('map-guide-clear').addEventListener('click',()=>clearKpiFocus({restoreFocus:true}));
- byId('map-guide-first').addEventListener('click',()=>{
-  const first=document.querySelector('[data-testid="recommendation-card"] .place-select');
-  if(!first)return;
-  first.click();first.focus({preventScroll:true});
-  first.closest('[data-testid="recommendation-card"]').scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'start'});
- });
-}
-
 document.querySelectorAll('.kpis>div').forEach((card,index)=>{
  const key=keys[index],number=card.querySelector('strong');if(!key||!number)return;
  const label=card.firstElementChild.textContent.replace('≈','').trim();
@@ -63,33 +70,34 @@ document.querySelectorAll('.kpis>div').forEach((card,index)=>{
  const hint=node('span','',`Показать связь показателя «${label}» с картой. Повторное нажатие снимает выделение.`);
  hint.id='kpi-action-'+key;hint.hidden=true;
  indicator.setAttribute('aria-hidden','true');progress.setAttribute('aria-hidden','true');
- button.type='button';button.setAttribute('aria-pressed','false');button.setAttribute('aria-controls','map-guide');button.setAttribute('aria-describedby',hint.id);
+ button.type='button';button.setAttribute('aria-pressed','false');button.setAttribute('aria-controls','analysis-status');button.setAttribute('aria-describedby',hint.id);
  card.dataset.kpi=key;card.dataset.active='false';card.append(indicator,progress,hint,button);
  cards.set(key,{card,number,button,label});
  new MutationObserver(syncButtons).observe(number,{childList:true,attributes:true,attributeFilter:['data-counter-target']});
  button.addEventListener('click',()=>{
   const wanted=nextFocus(active,key,!button.disabled);
   if(!wanted){clearKpiFocus();replayCounter(number);return;}
+  if(!active)baseStatus=byId('analysis-status')?.textContent;
   active=wanted;
   cards.forEach(item=>{const selected=item.card===card;item.card.dataset.active=String(selected);item.button.setAttribute('aria-pressed',String(selected));});
   byId('map-card').dataset.kpiFocus=key;byId('recommendations').dataset.kpiFocus=key;
-  setMapEmphasis(focusDescription(key,state.current).layers);updateGuide();guide?.setOpen(true);
+  setMapEmphasis(focusDescription(key,state.current).layers);updateKpiStatus();
   replayCounter(number);
   if(!motionReduced())animateUI(card,[{transform:'scale(1)'},{transform:'scale(.985)',offset:.45},{transform:'scale(1)'}],'kpi-press',{duration:220});
  });
 });
 syncButtons();
-document.addEventListener('gm:analysis-rendered',()=>{clearKpiFocus({immediate:true});updateAnalysisContext('success');syncButtons();});
+document.addEventListener('gm:analysis-rendered',()=>{clearKpiFocus({immediate:true});updateAnalysisContext('success');syncButtons();reserveStatusHeight();});
 document.addEventListener('gm:recommendation-selected',()=>clearKpiFocus());
 new MutationObserver(()=>{
  const phase=document.documentElement.dataset.analysisState;
- if(['initial','calculating','refreshing'].includes(phase))clearKpiFocus({immediate:true});
- updateAnalysisContext(phase);syncButtons();
+ if(['initial','calculating','refreshing','error'].includes(phase))clearKpiFocus({immediate:true});
+ updateAnalysisContext(phase);syncButtons();reserveStatusHeight();
 }).observe(document.documentElement,{attributes:true,attributeFilter:['data-analysis-state']});
 document.addEventListener('keydown',event=>{
- if(event.key!=='Escape'||event.defaultPrevented||(!active&&!guide?.open))return;
+ if(event.key!=='Escape'||event.defaultPrevented||!active)return;
  if(document.querySelector('dialog[open],.site-header.nav-open,[role="listbox"]:not([hidden])')||event.target.closest('input,select,textarea,[role="combobox"]'))return;
- event.preventDefault();clearKpiFocus({restoreFocus:byId('map-guide')?.contains(document.activeElement)});
+ event.preventDefault();clearKpiFocus();
 });
 window.addEventListener('beforeprint',()=>{cards.forEach(({card})=>cancelUI(card));clearKpiFocus({immediate:true});});
 matchMedia('(prefers-reduced-motion:reduce)').addEventListener('change',event=>{if(event.matches)cards.forEach(({card})=>cancelUI(card));});

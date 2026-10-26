@@ -1,31 +1,7 @@
-# Анимация чисел
+# Анимация чисел — итоги 17 октября 2026
 
-**Goal:** добавить визуальный count-up без изменения точных результатов.
-**Architecture:** новый counters.js, интеграция app/recommendations, CSS overlay.
-**Tech Stack:** прежний vanilla JS/Flask/Leaflet, requestAnimationFrame, без пакетов.
-**Spec:** docs/specs/2026-10-17-number-counters-design.md.
+[Спецификация](../specs/2026-10-17-number-counters-design.md) описывает модуль `counters.js` и его подключение к KPI и числовым показателям рекомендаций. Координаты, ранги, радиусы и даты не анимируются.
 
-## Global Constraints
-- Финальный DOM/state/API/storage/print не ждут анимации.
-- Overlay aria-hidden; один RAF; viewport/reduced-motion/cancel учитываются.
-- Только целые неотрицательные метрики, никаких счётчиков координат/рангов.
+Точные значения сразу находятся в состоянии приложения и доступном DOM. Промежуточное число рисуется отдельным визуальным слоем с `aria-hidden`; он не влияет на копирование, ширину, API, CSV или печать. Используется один requestAnimationFrame. Отмена, новый расчёт, скрытие страницы, печать и уменьшение движения завершают отображение точным значением.
 
-## Review Focus
-1. Refresh/reset во время tick не возвращает старые числа или скрытый overlay.
-2. Offscreen/hidden/reduce/print оставляют финальные значения и очищают очередь.
-3. Доступный текст не меняется на каждом кадре; overlay не влияет на layout.
-
-## Task 1: RED
-- [x] Disposable browser scenario: count-up, final text, reset/refresh/reduced/viewport.
-- [x] Подтвердить отсутствие новой функции до production изменений.
-
-## Task 2: Реализация
-- [x] counters.js: countTo/resetCounters, один RAF, observer и cleanup.
-- [x] Интеграция KPI/метрик/score, CSS и доступность/печать.
-- [x] GREEN и прицельный workspace/dark regression, syntax/validator.
-
-## Task 3: Публикация
-- [x] Уточнение пользователя: палитра с изображения, scoped KPI typography;
-      RED/GREEN, контраст, карта, desktop/mobile screenshots.
-- [x] Независимое whole-branch review и документы.
-- [x] CI/main/Render/public проверка.
+Исторические проверки охватывали нарастание и уменьшение чисел, обновление/сброс во время эффекта, ожидание видимости, отсутствие IntersectionObserver, нули, стабильный доступный текст и прежние функции рабочего пространства. Дополнительно проверялись контраст, легенда и типографика KPI после изменения палитры. Синтаксис, структура, GitHub Actions и опубликованные файлы Render проверялись в рамках выпуска.

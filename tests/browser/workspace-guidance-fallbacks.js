@@ -8,7 +8,7 @@ async original=>{
   const kpi=key=>page.locator('#kpi-'+key).locator('..').locator('.kpi-replay');
   await kpi('competitors').tap();await page.waitForTimeout(350);
   check(await kpi('competitors').getAttribute('aria-pressed')==='true','Touch KPI focus absent');
-  check((await page.locator('#map-guide-message').textContent()).includes('Категория:'),'Touch category explanation');
+  check((await page.locator('#analysis-status').textContent()).startsWith('Конкуренты:'),'Touch category status');
   const id=await page.evaluate(async()=>(await import('/static/js/state.js')).state.current.analysis_id);
   await page.locator('#business-trigger').click();await page.getByRole('option').nth(1).click();
   await page.waitForTimeout(50);
@@ -28,10 +28,8 @@ async original=>{
   }
   await page.setViewportSize({width:390,height:1000});await page.evaluate(()=>document.documentElement.style.fontSize='200%');
   await kpi('residents').tap();await page.waitForTimeout(400);
-  const message=page.locator('#map-guide-message');
-  const clipped=await message.evaluate(e=>e.scrollHeight>e.clientHeight+1);
-  if(clipped)check(await message.evaluate(e=>e.tabIndex>=0),'Scrollable guide text is not keyboard reachable');
-  await page.screenshot({path:'tests/artifacts/workspace-guide-touch-200.png'});
+  check((await page.locator('#analysis-status').textContent()).startsWith('Жители:'),'Touch status absent at 200%');
+  await page.screenshot({path:'tests/artifacts/workspace-status-touch-200.png'});
   await page.emulateMedia({reducedMotion:'reduce'});await kpi('houses').tap();
   check(await page.locator('#map').evaluate(e=>e.getAnimations({subtree:true}).length===0),'Reduced map still animates');
   check(errors.length===0,errors.join('; '));results.push({touch:true,heroWidths:[320,360,390,430],textScale200:true,reduced:true});
@@ -42,7 +40,7 @@ async original=>{
   await page.route('**/static/vendor/leaflet/leaflet.js',route=>route.abort());await page.goto(base);
   await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
   await page.locator('#kpi-residents').locator('..').locator('.kpi-replay').click();
-  check(await page.locator('#map-guide').evaluate(e=>e.open),'No-Leaflet explanation unavailable');
+  check((await page.locator('#analysis-status').textContent()).includes('Карта недоступна'),'No-Leaflet status promises visible highlights');
   check(await page.locator('#map-status').isVisible(),'No-Leaflet warning missing');
   check(errors.length===0,errors.join('; '));results.push({noLeaflet:true,pageErrors:errors});
  }finally{await fallback.close();}

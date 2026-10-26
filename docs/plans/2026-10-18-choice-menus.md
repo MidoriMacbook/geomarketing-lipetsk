@@ -1,20 +1,7 @@
-# Меню выбора: план
+# Меню выбора — итоги 18 октября 2026
 
-**Goal:** оформить и анимировать выбор области/бизнеса/радиуса без потери поведения.
-**Architecture:** choices.js + существующие ui motion, original select value/change,
-portal listbox и scoped CSS; vanilla JS/Flask/Leaflet, без новых пакетов.
-**Spec:** docs/specs/2026-10-18-choice-menus-design.md.
+[Спецификация](../specs/2026-10-18-choice-menus-design.md) описывает `choices.js` и `initChoiceMenus()`. Оформленные меню области, бизнеса и радиуса дополняют прежние `select`: исходные значения, варианты, отключение и событие `change` сохранены.
 
-## Review focus
-- Catalog retry/disabled/options/value не расходятся между native и trigger.
-- Esc/outside/Tab/typeahead/scroll/resize/hidden не оставляют orphan menu/focus.
-- Только один popup, reduced/print и fast close/reopen безопасны, no overflow.
-- UI commit вызывает исходный change один раз, custom area/radius/API не ломаются.
+Открывается одно меню с доступной семантикой combobox/listbox, поиском по набору текста и управлением клавиатурой. Escape, внешний клик, Tab, прокрутка, изменение размера и скрытие поля корректно завершают взаимодействие. Повторное открытие отменяет прежнее закрытие; уменьшение движения и печать не оставляют скрытых доступных элементов. При отказе модуля работают обычные поля.
 
-## Tasks
-- [x] RED: новый isolated choice-menus.js для pointer/keyboard/typeahead/disabled/
-  retry/custom/radius/focus/viewport/motion/fallback, исходный UI не имеет trigger.
-- [x] choices.js/initChoiceMenus() в bootstrap, tokens/CSS/ARIA/fallback.
-- [x] Native contract tests force hidden select; настоящие user flows новым UI.
-- [x] GREEN new scenario/workspace/redesign/counters; syntax/validator/screenshots.
-- [x] Independent review, CI/main/Render/public, docs and owned QA cleanup.
+Историческая проверка включала мышь, касание, клавиатуру, повторную загрузку каталога, отключённые поля, свою область, радиус, фокус, границы экрана и анимации. Проверены прежние сценарии рабочего пространства, редизайна и счётчиков, синтаксис, структура и снимки экрана. Публикация использовала GitHub Actions и существующий Render.

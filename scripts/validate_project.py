@@ -22,6 +22,7 @@ REQUIRED = [
       ('analysis_service', 'catalog_service', 'cache_service', 'osm_service', 'city_feed_service')],
     *[f'src/utils/{name}.py' for name in ('geo', 'formatting', 'validation')],
     'static/index.html', 'static/assets/favicon.svg',
+    'static/assets/favicon-32.png', 'static/assets/apple-touch-icon.png',
     *[f'static/css/{name}.css' for name in
       ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios', 'field-checks', 'hero')],
     *[f'static/js/{name}.js' for name in
@@ -48,8 +49,7 @@ REQUIRED_IDS = {
     'settings-title', 'area-hint', 'custom-box', 'custom-hint',
     'scenarios-section', 'scenario-save', 'scenario-status', 'scenario-list', 'scenario-comparison', 'data-quality',
     'business-parameters', 'map-title', 'recommendations-title', 'data-title',
-    'display-options', 'display-options-summary', 'map-guide', 'map-guide-summary',
-    'map-guide-message', 'map-guide-first', 'map-guide-clear',
+    'display-options', 'display-options-summary', 'analysis-status',
     'saved-title', 'comparison-title', 'model-title', 'print-report-content',
 }
 
