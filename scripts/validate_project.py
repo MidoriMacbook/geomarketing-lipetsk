@@ -25,7 +25,7 @@ REQUIRED = [
     *[f'static/css/{name}.css' for name in
       ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios', 'field-checks', 'hero')],
     *[f'static/js/{name}.js' for name in
-      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage', 'navigation', 'hero-loader', 'kpi-interactions', 'data-delivery')],
+      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage', 'navigation', 'hero-loader', 'kpi-interactions', 'data-delivery', 'analysis-focus', 'recommendation-brief', 'workspace-disclosure')],
     'static/vendor/hero/hero-motion.js', 'scripts/frontend/hero-entry.js',
     'tests/unit/__init__.py', 'tests/integration/__init__.py',
     'tests/browser/smoke.js', 'tests/browser/workspace.js',
@@ -48,6 +48,8 @@ REQUIRED_IDS = {
     'settings-title', 'area-hint', 'custom-box', 'custom-hint',
     'scenarios-section', 'scenario-save', 'scenario-status', 'scenario-list', 'scenario-comparison', 'data-quality',
     'business-parameters', 'map-title', 'recommendations-title', 'data-title',
+    'display-options', 'display-options-summary', 'map-guide', 'map-guide-summary',
+    'map-guide-message', 'map-guide-first', 'map-guide-clear',
     'saved-title', 'comparison-title', 'model-title', 'print-report-content',
 }
 

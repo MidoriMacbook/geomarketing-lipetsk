@@ -1,27 +1,25 @@
-# Состояние — 25 октября 2026
+# Состояние — 26 октября 2026
 
-Ежедневная выгрузка GitHub Actions реализована и опубликована.
-План docs/plans/2026-10-25-city-data-delivery.md выполнен.
-Runtime ec325784147b4bab3baed18733dc27a5f3471803 на main.
-Render dep-dbf0bh3phbkc73a34mrg live25октября13:38:36UTC.
-CITY_DATA_URL настроен merge env, replace=false.
+Активная задача: рабочее пространство по docs/specs/2026-10-26-workspace-guidance.md.
+Без глобального редизайна; API/модель/данные/daily/storage/CSV/print сохраняются.
+Baseline main 2e737b8, runtime Render ec325784147b4bab3baed18733dc27a5f3471803.
 
-Daily workflow40198340211 success; CI40198340203 success.
-Веткаosm-data/city.json:23369домов,10категорий.
-Версияdd1000d07fa394b8f7cb6f67c057137d583e8c9bb5a60d3beee6180ab40a458a,
-fetched_at1792935470.0598962. Публичный refresh3.210s:updated,обаcached=false,
-153дома/12347жителей/2конкурента. Повтор0.574s:unchanged,дата прежняя.
+Реализованы transient KPI→panes/legend/guide, компактное Отображение,
+сводка рекомендаций/preview/save status, тёплые токены,
+безопасный mobile hero и честный контекст даты. Два worker завершили правки.
+Рабочее дерево ещё не закоммичено; combined review и публикация впереди.
 
-Публичный browser daily-data:10областей/10категорий/custom1500m,
-390/768/1440безoverflow,pageErrors[]. Кнопка0.53s,новыхданныхнет,датапрежняя.
-44публичныхресурса SHA256 совпали с Git; error/criticalлоговнет.
-Python106,Node77,validator82 PASS; ревью замечаний не осталось.
-Отчёт docs/verification/2026-10-25-daily-city-data.md.
+Свежая проверка: Python106 OK, Node86 PASS, validator85 PASS, diff check OK.
+workspace-guidance и fallbacks PASS: 390/768/1024/1440, touch,
+200% текста, 320–430 hero, keyboard/Escape/reduce/noLeaflet, CSV/print,
+сохранение/отказ storage, исследование, расчёт/refresh, отсутствие API при KPI.
+Сейчас повторяется regression mobile-feedback/workspace-interactions/palette.
 
-Свой локальный сервер17572/19712 остановлен; CLI daily-feed закрыт.
-Итоговый аудит сохраняется docs-only коммитом [skip render] [skip ci].
+Свой сервер на8092 (Start-Process PID17808, child уточнить перед stop).
+CITY_DATA_URL daily; CACHE_DIR tests/artifacts/workspace-focus-cache.
+Свой browser CLI workspace-focus PID18708, запускать require_escalated:
+в sandbox Chrome crashpad аварийно закрывается.
 
-Исходные даты всегда сохраняются. CITY_DATA_URL default пустой для старого
-локального режима; настройка daily приведена в README/DEPLOYMENT.
-При отказе GitHub остаётся городская копия либо старый районный снимок,
-без сетевого Overpass с Render. Архивы исследований и модель не изменены.
+Далее: документация/combined review, исправления, main push,
+CI/Render live, public browser QA и hashes, audit/cleanup/clean git.
+Daily pipeline и Render env не менять. Авторизация main/Render дана ранее.

@@ -1,22 +1,69 @@
 import { state } from './state.js';
 import { deliverySummary } from './data-delivery.js';
-import { $, fmt, coords, distance, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin } from './ui.js';
+import { $, fmt, coords, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin } from './ui.js';
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker, hoverPlace } from './map.js';
 import { updateReportAvailability } from './report.js';
 import { countTo, counterValue, resetCounters } from './counters.js';
 import { qualityBlock, qualitySummary, explanationBlock } from './data-quality.js';
+import { recommendationBrief } from './recommendation-brief.js';
 
 let renderedAnalysisId = null;
+let previewCard = null;
 
-export function selectPlace(rank, pan = true) {
+function previewPlace(card, rank, active) {
+  if (active) {
+    previewCard?.classList.remove('is-preview');
+    previewCard = card;
+    card.classList.add('is-preview');
+    hoverPlace(rank, true);
+  } else if (previewCard === card) {
+    card.classList.remove('is-preview');
+    previewCard = null;
+    hoverPlace(rank, false);
+  }
+}
+
+function connectCardPreview(card, rank) {
+  let hovered = false, focused = false, pressed = false;
+  const update = () => previewPlace(card, rank, hovered || focused || pressed);
+  card.addEventListener('pointerenter', event => {
+    if (event.pointerType === 'touch' || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    hovered = true;
+    update();
+  });
+  card.addEventListener('pointerleave', () => { hovered = false; pressed = false; update(); });
+  card.addEventListener('pointerdown', event => {
+    if (event.pointerType !== 'touch') return;
+    pressed = true;
+    update();
+  });
+  card.addEventListener('pointerup', () => { pressed = false; update(); });
+  card.addEventListener('pointercancel', () => { hovered = false; pressed = false; update(); });
+  card.addEventListener('focusin', () => { focused = true; update(); });
+  card.addEventListener('focusout', event => {
+    if (card.contains(event.relatedTarget)) return;
+    focused = false;
+    update();
+  });
+  card.addEventListener('click', event => {
+    if (event.defaultPrevented || event.target.closest('button, a, input, select, textarea, label, details, [role="button"], [contenteditable]')) return;
+    if (window.getSelection()?.isCollapsed === false) return;
+    selectPlace(rank);
+  });
+}
+
+export function selectPlace(rank, pan = false) {
   const changed = state.selectedRank !== rank;
   state.selectedRank = rank;
+  previewCard?.classList.remove('is-preview');
+  previewCard = null;
   document.querySelectorAll('[data-testid="recommendation-card"]').forEach(c => {
     const active = +c.dataset.rank === rank;
     c.classList.toggle('selected', active);
     c.querySelector('.place-select').setAttribute('aria-pressed', active);
   });
+  document.dispatchEvent(new CustomEvent('gm:recommendation-selected', { detail: { rank } }));
   selectMarker(rank, pan, changed);
 }
 
@@ -28,6 +75,7 @@ export function showResult(data) {
   ]));
   cancelRevealsWithin($('recommendation-list'));
   resetCounters($('recommendation-list'));
+  if (previewCard) previewPlace(previewCard, +previewCard.dataset.rank, false);
   $('recommendation-list').replaceChildren();
   setRevealed($('result-empty'), !data.recommendations.length, 'empty');
   $('result').hidden = !data.recommendations.length;
@@ -40,11 +88,7 @@ export function showResult(data) {
     card.dataset.testid = 'recommendation-card';
     card.dataset.rank = rec.rank;
     card.dataset.counterKey = `${rec.lat}:${rec.lng}:${rec.radius_m}`;
-    card.addEventListener('pointerenter', event => {
-      if (event.pointerType !== 'touch' && matchMedia('(hover: hover) and (pointer: fine)').matches) hoverPlace(rec.rank, true);
-    });
-    card.addEventListener('pointerleave', () => hoverPlace(rec.rank, false));
-    card.addEventListener('pointercancel', () => hoverPlace(rec.rank, false));
+    connectCardPreview(card, rec.rank);
     const previous = previousValues.get(card.dataset.counterKey) || [];
     const heading = node('div', 'place-title'), select = button(`Место ${rec.rank}`, 'place-select', () => selectPlace(rec.rank));
     select.setAttribute('aria-pressed', rec.rank === state.selectedRank);
@@ -56,7 +100,24 @@ export function showResult(data) {
     people.append(node('strong', '', `≈ ${fmt(rec.residents_in_radius)}`), node('small', '', `жителей в ${fmt(rec.radius_m)} м`));
     competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов в радиусе'));
     metrics.append(people, competition);
-    const actions = node('div', 'place-actions'), save = button('Сохранить', 'button secondary save', () => savePlace(rec));
+    const brief = node('dl', 'recommendation-brief'), summary = recommendationBrief(rec);
+    for (const [key, label] of [['demand', 'Спрос'], ['competition', 'Конкуренция'], ['nearest', 'Ближайший конкурент'], ['check', 'Проверить на месте']]) {
+      const row = node('div');
+      row.append(node('dt', '', label), node('dd', key === 'nearest' ? 'nearest' : '', summary[key]));
+      brief.append(row);
+    }
+    const confirmation = node('p', 'save-confirmation');
+    confirmation.setAttribute('role', 'status');
+    const actions = node('div', 'place-actions'), save = button('Сохранить', 'button secondary save', async () => {
+      const analysisId = state.current?.analysis_id, savedId = `${analysisId}:${rec.rank}`;
+      const alreadySaved = state.saved.some(item => item.id === savedId);
+      confirmation.textContent = '';
+      if (!analysisId || analysisId !== data.analysis_id) return;
+      await savePlace(rec);
+      if (!alreadySaved && state.current?.analysis_id === analysisId && renderedAnalysisId === analysisId && card.isConnected && state.saved.some(item => item.id === savedId)) {
+        confirmation.textContent = 'Сохранено для сравнения';
+      }
+    });
     save.dataset.testid = 'save-place';
     save.dataset.rank = rec.rank;
     const copy = button('Координаты', 'button secondary', async() => {
@@ -77,7 +138,7 @@ export function showResult(data) {
     osm.setAttribute('aria-label', `Открыть место ${rec.rank} в OpenStreetMap`);
     if (!index)osm.id = 'osm-link';
     actions.append(save, copy, osm);
-    card.append(heading, coordinate, metrics, node('p', 'nearest', `Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`), actions, explanationBlock(rec));
+    card.append(heading, coordinate, metrics, brief, actions, confirmation, explanationBlock(rec));
     $('recommendation-list').append(card);
     countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: '%', from: previous[0] });
     countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ', from: previous[1] });
@@ -108,4 +169,5 @@ export function showResult(data) {
   }
   if ($('data-summary')) $('data-summary').textContent = 'Даты, источники и ограничения';
   updateReportAvailability();
+  document.dispatchEvent(new CustomEvent('gm:analysis-rendered', { detail: { data } }));
 }

@@ -237,3 +237,29 @@ Onest100–900 подключён локально; официальные ис�
 ## Исправления мобильной обратной связи, 24 октября
 
 `initDisclosure` теперь измеряет текущую и целевую высоту тела: переход400/300ms вместо прежнего clip-path. WAAPI не оставляет inline-height, revision защищает быстрый разворот. `app.refreshFeedback` синхронизирует подпись/aria-busy/локальный role=status, учитывает cached для обоих наборов. Контракт API и сохранений не менялся.
+
+## KPI → карта — 26 октября 2026
+
+analysis-focus.js содержит чистые функции single-focus, пояснений и контекста
+исходной даты. kpi-interactions.js владеет только временным presentation state,
+aria-pressed, guide и lifecycle; не записывает state/storage и не вызывает API.
+События gm:analysis-rendered и gm:recommendation-selected сбрасывают выделение.
+app.js очищает акцент перед сбросом, переключением слоя и изменением порога.
+
+map.js разделяет пользовательские preferences и transient emphasis. Отдельные
+panes/canvas домов, конкурентов и зон позволяют opacity без перестроения объектов.
+Всего пять постоянных canvas: boundary, zones, houses, competitors, centroids.
+Отложенное удаление скрытого слоя защищено revision; rapid-toggle сохраняет
+последнее предпочтение. Маркеры используют существующий markerPane. Preview
+не выбирает rank и не двигает карту, selectPlace по умолчанию также без pan.
+
+workspace-disclosure.js управляет только помеченными native details: wanted,
+отменяемый timer310ms, data-expanded, inert и focus; runtime reduce/print
+завершают переход. Старый ui.initDisclosure пропускает эти два элемента.
+recommendation-brief.js выводит консервативную сводку из уже проверенных полей;
+recommendations.js проверяет актуальный analysis id и сохранённую запись после
+await перед сообщением успеха. Storage-модули, схема API, CSV/печать неизменны.
+
+Проверки: analysis-focus/recommendation-brief Node, workspace-guidance и
+workspace-guidance-fallbacks browser. Полная матрица:
+[26 октября](../verification/2026-10-26-workspace-guidance.md).

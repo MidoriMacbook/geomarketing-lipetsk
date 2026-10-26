@@ -247,6 +247,7 @@ export function setAnalysisState(value, message) {
 // Repeated initialization is harmless for saved cards and dynamically built reports.
 const disclosures = new WeakMap();
 export function initDisclosure(details, options = {}) {
+  if (details?.hasAttribute('data-workspace-disclosure')) return details;
   if (!details?.matches('details') || disclosures.has(details)) return details;
   const summary = details.querySelector(':scope > summary');
   if (!summary) return details;

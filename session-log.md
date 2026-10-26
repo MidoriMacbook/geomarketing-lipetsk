@@ -277,3 +277,15 @@ Rejected:
 - Обновление даты при повторном получении той же версии.
 - Сетевой Overpass в fallback daily-режима Render.
 Open: none.
+
+## 2026-10-26 workspace guidance [saved]
+Goal: Связать числа, карту и выбор места без глобального редизайна.
+Decisions:
+- KPI владеют только transient presentation; отключённые слои временно видны с пояснением.
+- Пять persistent canvas разделяют opacity групп без перестроения тысяч объектов.
+- Две native grid-disclosure дополняют существующие, сохраняя keyboard/reduce/print.
+- Сводка использует текущие объяснения; успех сохранения подтверждается после записи.
+Rejected:
+- Новый расчёт, автоматический pan/scroll и запись фильтров при нажатии KPI.
+- Новые библиотеки, глобальный редизайн и изменение daily/API/storage.
+Open: combined review и публичная приёмка.
