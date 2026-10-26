@@ -1,7 +1,7 @@
 # Приёмка рабочего пространства — 26 октября 2026
 
 Baseline: main2e737b8. Спецификация: ../specs/2026-10-26-workspace-guidance.md.
-Публикация и итоговое ревью пока ожидаются.
+Независимое combined review: Critical/Important нет; Minor в историческом тесте исправлен. Публикация ожидается.
 
 ## Проверки
 
@@ -19,7 +19,7 @@ Baseline: main2e737b8. Спецификация: ../specs/2026-10-26-workspace-g
   hero320/360/390/430 при обычном/200% тексте, guide keyboard scroll,
   reduced и отказ Leaflet без pageErrors — PASS.
 - Визуально просмотрены1440/390; скриншоты локально tests/artifacts/workspace-after-*.
-- Регрессии mobile-feedback/workspace-interactions/palette: выполняются отдельно.
+- mobile-feedback, workspace-interactions, palette, contrast-intro: PASS. Прежний hover-lift рекомендаций восстановлен после RED ожидания движения; reduced motion по-прежнему без lift. Семантические тёплые поверхности заменили устаревшее ожидание белого в contrast-intro (RED→GREEN).
 
 ## Выявленные и исправленные регрессии
 
@@ -43,3 +43,8 @@ Chromium, desktop/touch-эмуляция. Физические телефоны 
 scenario-storage.js, saved-places.js, scenarios.js, report.js,
 scenario-report.js и vendor/. Новые модули не добавляют storage keys.
 API/геометрия/схема данных покрыты прежними Python/Node tests.
+
+
+Быстрый open/close/open обоих новых disclosure, Escape с возвратом фокуса,
+смена района со штатным одним auto-calculate и обновлением контекста — PASS.
+Представительский тест KPI повторён после hover-fix: PASS, pageErrors[].

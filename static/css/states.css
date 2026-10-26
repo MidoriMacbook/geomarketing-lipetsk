@@ -13,7 +13,7 @@ button:active:not(:disabled),.place-actions a:active { transform:translateY(var(
  .saved-card:hover,.scenario-card:hover { border-color:var(--color-primary); box-shadow:0 12px 32px var(--color-glow); }
 }
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
- .saved-card:hover,.scenario-card:hover { transform:translateY(var(--motion-hover-lift)); }
+ .recommendation:not(.selected):hover,.saved-card:hover,.scenario-card:hover { transform:translateY(var(--motion-hover-lift)); }
 }
 .recommendation-pin.is-preview { outline:var(--line-strong) solid var(--color-map-primary); box-shadow:0 0 16px var(--color-glow),var(--shadow-control); }
 .recommendation.selected { border-color:var(--color-line); border-inline-start-color:var(--color-recommendation-line); box-shadow:none; background:var(--color-selected); }

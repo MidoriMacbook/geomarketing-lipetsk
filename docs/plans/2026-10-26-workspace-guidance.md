@@ -38,13 +38,14 @@ localStorage, сценарии/исследования, saved-код, CSV/print
 - [x] 3. CSS worker: тон/иерархия/состояния/hero/доступная мобильная типографика.
 - [x] 4. Recommendation worker: сводка, preview/select, подтверждение сохранения.
 - [x] 5. Root: disclosure overlay/grid, KPIcontroller/keyboard/touch/lifecycle/context.
-- [ ] 6. Integration QA: новые тесты, workspace/interactions/storage/CSV/print,
+- [x] 6. Integration QA: новые тесты, workspace/interactions/storage/CSV/print,
   API/ключиunchanged,матрица4ширины/200%/320hero/reduced/rapid.
-- [ ] 7. Одно объединённое ревью на волну (spec+quality); исправить значимые замечания.
+- [x] 7. Одно объединённое ревью на волну (spec+quality); исправить значимые замечания.
 - [ ] 8. Документация, main/push, CI/Render live/public QA/asset hashes; чистое дерево.
 
 Review Focus: отключённый слой при activeKPI; быстрый toggle в fade; reset/archive/error
 контекст; noLeaflet;200%guide/hero; сохранение после смены анализа; noAPI при KPI.
 Verification: python unittest discover; node --test tests/unit/*.test.js;
 python scripts/validate_project.py; Playwright workspace-guidance + функциональные сценарии.
+
 
