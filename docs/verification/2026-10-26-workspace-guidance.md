@@ -1,7 +1,7 @@
 # Приёмка рабочего пространства — 26 октября 2026
 
 Baseline: main2e737b8. Спецификация: ../specs/2026-10-26-workspace-guidance.md.
-Независимое combined review: Critical/Important нет; Minor в историческом тесте исправлен. Публикация ожидается.
+Независимое combined review: Critical/Important нет; Minor в историческом тесте исправлен. Публикация и публичная приёмка завершены; детали ниже.
 
 ## Проверки
 
@@ -48,3 +48,62 @@ API/геометрия/схема данных покрыты прежними P
 Быстрый open/close/open обоих новых disclosure, Escape с возвратом фокуса,
 смена района со штатным одним auto-calculate и обновлением контекста — PASS.
 Представительский тест KPI повторён после hover-fix: PASS, pageErrors[].
+
+## Изменённые файлы
+
+- .github/workflows/test.yml
+- CHANGELOG.md
+- docs/architecture/frontend.md
+- docs/design/design-system.md
+- docs/design/redesign-spec.md
+- docs/plans/2026-10-26-workspace-guidance.md
+- docs/specs/2026-10-26-workspace-guidance.md
+- docs/verification/2026-10-26-workspace-guidance.md
+- scripts/validate_project.py
+- session-log.md
+- state.md
+- static/css/components.css
+- static/css/hero.css
+- static/css/layout.css
+- static/css/map.css
+- static/css/responsive.css
+- static/css/states.css
+- static/css/tokens.css
+- static/index.html
+- static/js/analysis-focus.js
+- static/js/app.js
+- static/js/kpi-interactions.js
+- static/js/map.js
+- static/js/recommendation-brief.js
+- static/js/recommendations.js
+- static/js/ui.js
+- static/js/workspace-disclosure.js
+- tests/browser/contrast-intro.js
+- tests/browser/palette.js
+- tests/browser/workspace-guidance-fallbacks.js
+- tests/browser/workspace-guidance.js
+- tests/unit/analysis-focus.test.js
+- tests/unit/recommendation-brief.test.js
+
+## Внешние данные вне этой UI-итерации
+
+Последний плановый запуск Daily Lipetsk OSM data (40297274617,26октября)
+завершился failure на Collect complete city data. Pipeline этой задачей не менялся.
+Проверяется сохранение последней корректной копии25октября и её исходной даты,
+а не успешность нового сбора. Статус запуска:
+https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/40297274617
+
+## Публикация
+
+Runtime f31ee4e975b51ee3ebe64266a2ca810f670a55b8 опубликован в main.
+Render dep-dbfmv5o473hc73aa8vp0 live26октября15:21:18UTC.
+CI40348255264 success. Все47 публичных ресурсов совпадают SHA256 с Git.
+На публичном сайте workspace-guidance PASS:390/768/1024/1440,200%,keyboard,
+KPI/layers/guide/save denial/scenario/CSV/print/calculate/refresh/reduce;
+pageErrors[]. Error/critical логов Render после live на15:22:21UTC нет.
+
+Публичные workspace-guidance-fallbacks PASS:touch/320–430hero/200%/reduce,
+отказ Leaflet без JSошибок. Контекст: «мкр. Елецкий · Кофейня · данные от25.10.2026».
+Финальные публичные снимки1440/390 (hero и map) просмотрены; горизонтального
+переполнения нет. Изменённые файлы перечислены выше (33). Физические устройства,
+Safari, реальные screen reader и PDF-пагинация остаются непроверенными.

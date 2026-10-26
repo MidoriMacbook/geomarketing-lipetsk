@@ -41,11 +41,9 @@ localStorage, сценарии/исследования, saved-код, CSV/print
 - [x] 6. Integration QA: новые тесты, workspace/interactions/storage/CSV/print,
   API/ключиunchanged,матрица4ширины/200%/320hero/reduced/rapid.
 - [x] 7. Одно объединённое ревью на волну (spec+quality); исправить значимые замечания.
-- [ ] 8. Документация, main/push, CI/Render live/public QA/asset hashes; чистое дерево.
+- [x] 8. Документация, main/push, CI/Render live/public QA/asset hashes; чистое дерево.
 
 Review Focus: отключённый слой при activeKPI; быстрый toggle в fade; reset/archive/error
 контекст; noLeaflet;200%guide/hero; сохранение после смены анализа; noAPI при KPI.
 Verification: python unittest discover; node --test tests/unit/*.test.js;
 python scripts/validate_project.py; Playwright workspace-guidance + функциональные сценарии.
-
-
