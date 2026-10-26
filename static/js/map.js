@@ -3,6 +3,8 @@ import { $, fmt, node, animateUI, cancelUI, setRevealed, motionReduced, reveal }
 
 let map = null, tiles = null, tileTimer = null, tileFailures = 0;
 let pointsRenderer = null, zonesRenderer = null;
+const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
+let emphasized = new Set(), previewRank = null;
 const layers = {}, markers = new Map();
 const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const color = role => token(`--color-map-${role}`);
@@ -67,6 +69,15 @@ export function initMap() {
   map.getPane('zones').style.zIndex = token('--z-zones');
   map.createPane('points');
   map.getPane('points').style.zIndex = token('--z-points');
+  ['houses','competitors','centroids'].forEach((key,index)=>{
+    map.createPane(key);map.getPane(key).style.zIndex=String(parseInt(token('--z-points'),10)+index+1);
+    dataRenderers[key]=L.canvas({pane:key,padding:.5});
+  });
+  ['houses','competitors','centroids','zones','recommendations'].forEach(key=>{
+    const pane=map.getPane(key==='recommendations'?'markerPane':key);
+    pane.dataset.focusPane=key;
+    preferences[key]=key==='recommendations'||$('layer-'+key).checked;
+  });
   // Leaflet keeps renderers on the map after paths are cleared; reuse these across redraws.
   pointsRenderer = L.canvas({
     pane: 'points',
@@ -101,7 +112,7 @@ export function initMap() {
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resizeMap).observe(map.getContainer());
   window.addEventListener('resize', resizeMap);
   matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
-    if (event.matches) map.stop();
+    if (event.matches) { map.stop(); syncMapLayers(false); }
   });
   animateUI($('map'), [{ opacity: 0 }, { opacity: 1 }], 'map-reveal', { duration: 'slow' });
 }
@@ -168,7 +179,7 @@ export function drawMap(data) {
     fill: false
   }).addTo(layers.boundary);
   data.houses.forEach(h => L.circleMarker([h.lat, h.lng], {
-    renderer,
+    renderer: dataRenderers.houses,
     radius: 2.5+Math.sqrt(h.residents)/6,
     color: palette.outline,
     weight: 1,
@@ -176,7 +187,7 @@ export function drawMap(data) {
     fillOpacity: .78
   }).bindTooltip(`Жителей: ≈ ${fmt(h.residents)}`).addTo(layers.houses));
   data.competitors.forEach(c => L.circleMarker([c.lat, c.lng], {
-    renderer,
+    renderer: dataRenderers.competitors,
     radius: 6,
     color: palette['competitor-outline'],
     weight: 2,
@@ -184,7 +195,7 @@ export function drawMap(data) {
     fillOpacity: 1
   }).bindTooltip('Конкурент').addTo(layers.competitors));
   data.centroids.forEach(c => L.circleMarker([c.lat, c.lng], {
-    renderer,
+    renderer: dataRenderers.centroids,
     radius: 9,
     color: palette.centroid,
     weight: 3,
@@ -206,6 +217,7 @@ export function drawMap(data) {
     markers.set(r.rank, marker);
   });
   animateUI(map.getPane('points'), [{ opacity: .3 }, { opacity: 1 }], 'map-points');
+  syncMapLayers(false);
 }
 const mix = (a, b, t) => '#'+[1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i+2), 16)+(parseInt(b.slice(i, i+2), 16)-parseInt(a.slice(i, i+2), 16))*t).toString(16).padStart(2, '0')).join('');
 
@@ -227,6 +239,7 @@ export function drawZones() {
     }).addTo(layers.zones);
   });
   animateUI(map.getPane('zones'), [{ opacity: .25 }, { opacity: 1 }], 'map-zones');
+  syncMapLayers(false);
 }
 
 export function fitArea(data) {
@@ -240,10 +253,13 @@ export function fitArea(data) {
 }
 
 export function clearAnalysisMap() {
+  emphasized=new Set();previewRank=null;
+  Object.keys(layerTimers).forEach(key=>{clearTimeout(layerTimers[key]);layerRevisions[key]=(layerRevisions[key]||0)+1;});
   markers.clear();
   Object.entries(layers).forEach(([key, layer]) => {
     if (key !== 'preview') layer.clearLayers();
   });
+  syncMapLayers(false);
 }
 
 export function clearPreview() {
@@ -251,6 +267,7 @@ export function clearPreview() {
 }
 
 export function selectMarker(rank, pan, changed = false) {
+  previewRank=null;
   markers.forEach((marker, r) => {
     const pin = marker.getElement()?.querySelector('.recommendation-pin');
     pin?.classList.toggle('is-selected', r === rank);
@@ -265,18 +282,52 @@ export function selectMarker(rank, pan, changed = false) {
   if (map&&rec&&pan) map.panTo([rec.lat, rec.lng], {
     animate: !motionReduced()
   });
+  syncMapLayers();
 }
 
 export function hoverPlace(rank, active) {
+  previewRank=active?rank:null;
   markers.forEach((marker, currentRank) => {
     marker.getElement()?.querySelector('.recommendation-pin')?.classList.toggle('is-preview',
       active && currentRank === rank && currentRank !== state.selectedRank);
   });
+  syncMapLayers();
 }
 
 export function toggleLayer(key, enabled) {
-  if (!map) return;
-  enabled ? layers[key].addTo(map) : map.removeLayer(layers[key]);
-  const pane = key === 'zones' ? 'zones' : key === 'recommendations' ? 'markerPane' : 'points';
-  animateUI(map.getPane(pane), [{ opacity: .6 }, { opacity: 1 }], `map-${key === 'zones' ? 'zones' : 'points'}`, {duration:220});
+  preferences[key]=enabled;
+  syncMapLayers();
+}
+
+// Only presentation groups change. Checkbox preferences, data and map view stay intact.
+export function setMapEmphasis(keys=[],{animate=true}={}) {
+  emphasized=new Set(keys);previewRank=null;syncMapLayers(animate);
+}
+
+function syncLegend() {
+  const active=new Set([...emphasized].map(key=>({zones:'demand',centroids:'demand',recommendations:'places'})[key]||key));
+  if(previewRank || (!active.size && state.current?.recommendations?.length))active.add('places');
+  document.querySelectorAll('.map-legend>[data-layer]').forEach(item=>{
+    const selected=active.has(item.dataset.layer);item.dataset.active=String(selected);
+    if(selected)item.setAttribute('aria-current','true');else item.removeAttribute('aria-current');
+  });
+}
+
+function syncMapLayers(animate=true) {
+  syncLegend();if(!map)return;
+  const duration=animate&&!motionReduced()?parseFloat(token('--motion-map-focus'))||400:0;
+  ['houses','competitors','centroids','zones','recommendations'].forEach(key=>{
+    const pane=map.getPane(key==='recommendations'?'markerPane':key),layer=layers[key];
+    if(!layer)return;
+    const wanted=preferences[key]!==false||emphasized.has(key);
+    const revision=layerRevisions[key]=(layerRevisions[key]||0)+1;
+    clearTimeout(layerTimers[key]);
+    pane.style.transitionDuration=duration?'':'0ms';
+    if(wanted&&!map.hasLayer(layer))layer.addTo(map);
+    pane.style.opacity=String(!wanted?0:(!emphasized.size||emphasized.has(key)||(key==='recommendations'&&previewRank))?1:.28);
+    if(!wanted&&map.hasLayer(layer)){
+      const remove=()=>{if(layerRevisions[key]===revision && preferences[key]===false && !emphasized.has(key))map.removeLayer(layer);};
+      if(duration)layerTimers[key]=setTimeout(remove,duration);else remove();
+    }
+  });
 }

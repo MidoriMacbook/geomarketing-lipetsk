@@ -18,6 +18,6 @@ async page => {
       return { houses:state.current.houses.length, gridCells:state.current.grid.scores.length, recommendations:state.current.recommendations.length, mapReads, zoneReads:reads, canvases:document.querySelectorAll('#map canvas').length };
     } finally { window.getComputedStyle = original; }
   });
-  if(measurements.mapReads !== measurements.recommendations + 1 || measurements.zoneReads !== 1 || measurements.canvases !== 2) throw new Error(JSON.stringify(measurements));
+  if(measurements.mapReads !== measurements.recommendations + 1 || measurements.zoneReads !== 1 || measurements.canvases !== 5) throw new Error(JSON.stringify(measurements));
   return { passed:'CSS palette reads bounded by renders, shared canvas reused', measurements };
 }

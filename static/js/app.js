@@ -1,5 +1,6 @@
 import { state } from './state.js';
 import { refreshMessage } from './data-delivery.js';
+import { clearKpiFocus } from './kpi-interactions.js';
 import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog, cancelRevealsWithin, motionReduced } from './ui.js';
 import { configureSaved, loadSaved, renderSaved, updateSaveButtons } from './saved-places.js';
 import { exportCSV, printReport, updateReportAvailability } from './report.js';
@@ -22,6 +23,7 @@ function bootstrap() {
     $('refresh-label').textContent = busy ? 'Проверяем…' : 'Проверить обновления';
   }
   function resetSelection() {
+    clearKpiFocus({immediate:true});
     cancelRequest();
     refreshFeedback();
     state.current = null;
@@ -228,9 +230,10 @@ function bootstrap() {
     drawPreview();
   });
   $('refresh-data').addEventListener('click', () => run(true));
-  ['houses', 'competitors', 'centroids', 'zones'].forEach(key => $('layer-'+key).addEventListener('change', e => toggleLayer(key, e.target.checked)));
+  ['houses', 'competitors', 'centroids', 'zones'].forEach(key => $('layer-'+key).addEventListener('change', e => {clearKpiFocus();toggleLayer(key, e.target.checked);}));
   let raf = null;
   $('thr').addEventListener('input', e => {
+    clearKpiFocus();
     $('thr-out').textContent = `${e.target.value}%`;
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(drawZones);

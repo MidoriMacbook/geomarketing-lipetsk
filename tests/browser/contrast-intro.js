@@ -52,7 +52,7 @@ async original=>{
   });
   const rgb=color=>[1,3,5].map(i=>parseInt(color.slice(i,i+2),16));
   assert(map.colors.every((color,i)=>map.colors.slice(i+1).every(other=>Math.hypot(...rgb(color).map((v,j)=>v-rgb(other)[j]))>=20)),'Map roles need different colours and distinguishing rings');
-  assert(map.ring&&map.opacity<=.45&&map.canvases===2,'Map styles/renderers regressed');
+  assert(map.ring&&map.opacity<=.45&&map.canvases===5,'Map styles/renderers regressed');
   assert(await page.locator('.sw.centroids').evaluate(n=>parseFloat(getComputedStyle(n).borderTopWidth)>=2),'Centroid legend lacks ring');
   for(const mode of ['reduce','print']){
    await page.reload();

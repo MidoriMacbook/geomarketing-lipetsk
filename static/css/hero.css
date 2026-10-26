@@ -22,7 +22,7 @@
 /* At enlarged text sizes choose stable word rows in either display font.
    The em threshold follows this heading's font size rather than device width. */
 @container hero-title (width < 6em) { .hero-title-word { display:block; } }
-.hero-title em { font-weight:500; color:var(--color-primary); }
+.hero-title em { font-weight:500; color:var(--color-primary); margin-inline-start:.055em; }
 .intro .hero-description { max-width:30rem; font-size:var(--text-base); line-height:1.65; color:var(--color-muted); }
 .hero-links { display:flex; align-items:center; flex-wrap:wrap; gap:var(--space-3) var(--space-5); margin-top:var(--space-5); }
 .hero-links .primary { padding-inline:var(--space-5); min-height:48px; }
@@ -171,7 +171,8 @@
  .site-header:not([data-navigation-ready]) .nav-items>* { opacity:1; transform:none; }
  .hero-meta { display:none; }
 }
-.section-heading h2,#map-title,#data-title { font-family:var(--font-display); font-size:clamp(1.5rem,2vw,1.875rem); font-weight:500; letter-spacing:-.025em; line-height:1.2; }
+.section-heading h2,#map-title,#data-title { font-family:var(--font-display); font-size:clamp(1.625rem,2vw,2rem); font-weight:500; letter-spacing:-.025em; line-height:1.2; }
+@media (min-width:1280px) { #settings-title { font-size:1.5rem; } }
 .kpis strong,.place-metrics strong,.score,td { font-family:var(--font-mono); }
 @media (max-width:600px) {
  .intro .hero-description,.hint,.section-note,.empty p,.data-section p,.saved-heading p:last-child,.scenarios-heading p,.choice-trigger,.choice-menu,.field-label { font-size:1rem; line-height:1.55; }
