@@ -39,8 +39,13 @@ async original=>{
   await page.setViewportSize({width:1440,height:1000});
   await page.reload();
   await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
-  const surfaces=await page.evaluate(()=>['settings','map-card','recommendations'].map(id=>getComputedStyle(document.getElementById(id)).backgroundColor));
-  assert(surfaces.every(color=>color==='rgb(255, 255, 255)'),'Editorial work panels should use white surfaces');
+  const surfaces=await page.evaluate(()=>[['settings','--color-settings-panel'],['map-card','--color-surface'],['recommendations','--color-results']].map(([id,token])=>{
+   const panel=document.getElementById(id),probe=document.createElement('span');
+   probe.hidden=true;probe.style.backgroundColor=`var(${token})`;panel.append(probe);
+   const expected=getComputedStyle(probe).backgroundColor;probe.remove();
+   return {id,actual:getComputedStyle(panel).backgroundColor,expected};
+  }));
+  assert(surfaces.every(({actual,expected})=>actual===expected),'Work panels must use their semantic warm surfaces');
   const map=await page.evaluate(async()=>{
    const {drawMap,drawZones}=await import('/static/js/map.js'),{state}=await import('/static/js/state.js');
    const circles=[],zones=[],circle=L.circleMarker,rectangle=L.rectangle;
