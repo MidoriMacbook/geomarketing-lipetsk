@@ -39,7 +39,7 @@ project-root/
     └── plans/2026-10-12-architecture-redesign.md
 ```
 
-QA-артефакты в tests/artifacts и временные проверка игнорируются Git.
+QA-артефакты в tests/artifacts и временные проверки игнорируются Git.
 Пустой assets/images не создавался, поскольку изображения не понадобились.
 
 ## Перемещённые и разделённые файлы
@@ -50,10 +50,10 @@ QA-артефакты в tests/artifacts и временные проверка 
 | app.py | app.py + src/routes, services/analysis_service, domain/scoring, utils | В корне только сборка Flask; HTTP и модель разделены |
 | businesses.py | src/domain/businesses.py | Корневой файл оставлен совместимым экспортом |
 | osm.py | services/cache_service, osm_service; utils/geo; config; models | Корневой файл оставлен совместимым экспортом |
-| static/workspace.js | Восемь static/js/*.js | Старый файл удалён после полного browser-workspace |
+| static/workspace.js | Восемь static/js/*.js | Старый файл удалён после полной браузерной проверки |
 | static/workspace.css | Семь static/css/*.css | Порядок загрузки указан в index.html |
-| tests/browser-smoke.js | tests/browser/smoke.js | Прежние assertions, новые пути артефактов |
-| tests/browser-workspace.js | tests/browser/workspace.js | Прежние assertions, новые пути артефактов |
+| tests/browser-smoke.js | tests/browser/smoke.js | Прежние проверки, новые пути артефактов |
+| tests/browser-workspace.js | tests/browser/workspace.js | Прежние проверки, новые пути артефактов |
 | tests/test_reliability.py | integration/test_api.py + unit/test_cache.py | Разделены HTTP и файловый кэш |
 | tests/test_business_data.py | unit/test_osm.py + integration/test_importer.py | Разделены запросы OSM и CLI-импорт |
 | tests/test_workspace.py | integration/test_workspace.py | Исправлены адреса mock, ожидаемые результаты сохранены |
@@ -105,14 +105,14 @@ geomarketing.saved.v1 не мигрирует, прежние записи во�
 ## Проверка и ограничения
 
 51 unittest, py_compile, восемь node --check и структурный валидатор проходят.
-Все 37 исходных тестовых методов/assertions сохранены. Независимое сравнение
+Все 37 исходных тестовых методов и проверок сохранены. Независимое сравнение
 33 ответов с исходным кодом подтверждает JSON/HTTP/числа, кроме уникального analysis_id.
 Браузерные smoke/workspace/responsive/catalog-matrix/palette проходят.
 Все шесть ширин без переполнения; карты 420/560/660 px, тайлы в финальных
-снимках загружены без pending/failed. Проверены гонки, ошибки и прежние сохранения.
+снимках загружены без незавершённой загрузки или ошибок. Проверены гонки, ошибки и прежние сохранения.
 Команды — в README; детали и результаты публикации — в CHANGELOG.
 
-13 октября 2026 версия приложения b82c87b опубликован на
+13 октября 2026 версия приложения b82c87b опубликована на
 https://geomarketing-lipetsk.onrender.com. CI main успешно; все пять браузерных
 наборов повторены публично, включая шесть ширин и 200% текста на четырёх ширинах.
 

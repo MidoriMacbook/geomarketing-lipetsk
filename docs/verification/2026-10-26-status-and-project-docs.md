@@ -60,3 +60,93 @@ Python106,JavaScript86,структурный валидатор87 — успе�
 Сторонние библиотеки, lock-файлы, локальные результаты проверок и Git-метаданные
 не редактировались. Поиск удалённых элементов, связей и обработчиков пуст.
 API, модель, геоданные, ежедневный сбор, модули хранилища и отчётов не имеют изменений.
+
+## Проверка документации
+
+27 октября завершена проверка исправлений: исходники, актуальные правила,
+спецификации и планы соответствуют заданию. Замечания к русским формулировкам
+исправлены, исторические отчёты вычитаны с сохранением фактов. Комментарий
+конфигурации исключений также переведён на русский. Опубликованные SHA не изменялись.
+
+## Изменённые файлы
+
+- .gitignore
+- CHANGELOG.md
+- DEPLOYMENT.md
+- README.md
+- docs/architecture/backend.md
+- docs/architecture/change-map.md
+- docs/architecture/data-flow.md
+- docs/architecture/frontend.md
+- docs/architecture/overview.md
+- docs/design/design-system.md
+- docs/design/material-web.md
+- docs/design/redesign-spec.md
+- docs/design/ui-audit.md
+- docs/maintenance/git-history-cleanup-plan.md
+- docs/plans/2026-10-12-architecture-redesign.md
+- docs/plans/2026-10-12-workspace.md
+- docs/plans/2026-10-16-cartography-motion.md
+- docs/plans/2026-10-17-contrast-intro.md
+- docs/plans/2026-10-17-dark-motion.md
+- docs/plans/2026-10-17-map-harmony.md
+- docs/plans/2026-10-17-number-counters.md
+- docs/plans/2026-10-18-catalog-and-map-colors.md
+- docs/plans/2026-10-18-choice-menus.md
+- docs/plans/2026-10-18-scenarios-and-explainability.md
+- docs/plans/2026-10-19-workspace-flow-and-field-checks.md
+- docs/plans/2026-10-22-editorial-map-hero.md
+- docs/plans/2026-10-25-city-data-delivery.md
+- docs/plans/2026-10-26-status-and-project-docs.md
+- docs/plans/2026-10-26-workspace-guidance.md
+- docs/specs/2026-10-12-workspace-design.md
+- docs/specs/2026-10-16-cartography-motion-design.md
+- docs/specs/2026-10-17-dark-motion-design.md
+- docs/specs/2026-10-17-number-counters-design.md
+- docs/specs/2026-10-18-catalog-and-map-colors.md
+- docs/specs/2026-10-18-choice-menus-design.md
+- docs/specs/2026-10-18-scenarios-and-explainability.md
+- docs/specs/2026-10-19-workspace-flow-and-field-checks.md
+- docs/specs/2026-10-22-editorial-map-hero.md
+- docs/specs/2026-10-23-warm-motion-polish.md
+- docs/specs/2026-10-24-touch-motion-polish.md
+- docs/specs/2026-10-26-status-and-project-docs.md
+- docs/specs/2026-10-26-workspace-guidance.md
+- docs/verification/2026-10-17-contrast-intro.md
+- docs/verification/2026-10-17-dark-motion.md
+- docs/verification/2026-10-17-map-harmony.md
+- docs/verification/2026-10-17-number-counters.md
+- docs/verification/2026-10-17-publication.md
+- docs/verification/2026-10-18-catalog-and-map-colors.md
+- docs/verification/2026-10-18-choice-menus.md
+- docs/verification/2026-10-18-district-auto.md
+- docs/verification/2026-10-18-scenarios-and-explainability.md
+- docs/verification/2026-10-19-workspace-flow-and-field-checks.md
+- docs/verification/2026-10-21-research-open-motion.md
+- docs/verification/2026-10-22-editorial-map-hero.md
+- docs/verification/2026-10-23-warm-motion-polish.md
+- docs/verification/2026-10-24-mobile-feedback-fixes.md
+- docs/verification/2026-10-24-touch-motion-polish.md
+- docs/verification/2026-10-25-daily-city-data.md
+- docs/verification/2026-10-25-data-refresh.md
+- docs/verification/2026-10-26-status-and-project-docs.md
+- docs/verification/2026-10-26-workspace-guidance.md
+- scripts/validate_project.py
+- session-log.md
+- state.md
+- static/assets/apple-touch-icon.png
+- static/assets/favicon-32.png
+- static/assets/favicon.svg
+- static/css/components.css
+- static/css/map.css
+- static/css/responsive.css
+- static/css/tokens.css
+- static/index.html
+- static/js/analysis-focus.js
+- static/js/kpi-interactions.js
+- static/js/workspace-disclosure.js
+- tests/browser/workspace-guidance-fallbacks.js
+- tests/browser/workspace-guidance.js
+- tests/browser/workspace-interactions.js
+- tests/browser/workspace.js
+- tests/unit/analysis-focus.test.js

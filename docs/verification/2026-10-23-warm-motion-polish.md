@@ -1,70 +1,84 @@
 # Проверка тёплой палитры и анимации — 23 октября 2026
 
-База: main 2f52942429eefc8aeceb0ca24f218bd18d0e884a.
+База — main 2f52942429eefc8aeceb0ca24f218bd18d0e884a.
 Спецификация: docs/specs/2026-10-23-warm-motion-polish.md.
 
-## Реализовано
+## Реализация
 
-Удалён --palette-white и его экранные ссылки. Карточки #FEF1E3, вторичные
-поверхности #F1EDDA, выбранный #FCE6DE, notice #EAE7D0; текст на CTA/карте Cream.
-Границы Midnight Lagoon .57/.18, тени Rosewood Deep .09/.20. UA-белый фон
-range заменён transparent. #FFFFFF остаётся только в @media print.
+Удалены --palette-white и его экранные применения. Карточки — #FEF1E3,
+вторичные поверхности — #F1EDDA, выбранные — #FCE6DE, уведомления — #EAE7D0;
+текст CTA и карты — Cream. Границы используют Midnight Lagoon .57/.18,
+тени — Rosewood Deep .09/.20. Белый фон range из стилей браузера заменён
+на transparent; #FFFFFF остаётся только в @media print.
 
-SplitText32px/740ms/stagger85ms, BlurText8px/14px/750ms/delay480ms;
-ScrollReveal24px/700ms для пяти блоков. Ранний import без load/idle. SVG имеет
-route24s/radius9s, однократный pin response и pause. мобильный SVG70px сохранён.
-Magnet адаптирован из той же закреплённой React Bits ревизии, без новых deps.
+SplitText: 32 px, 740 ms, последовательная задержка 85 ms;
+BlurText: 8 px/14 px, 750 ms, задержка 480 ms; ScrollReveal: 24 px/700 ms
+для пяти блоков. Импорт запускается рано, без ожидания load/idle.
+SVG: маршрут 24 s, радиус 9 s, однократный отклик маркера и пауза;
+мобильная схема высотой 70 px сохранена. Magnet адаптирован из той же
+закреплённой ревизии React Bits, новых зависимостей нет.
 
 ## Исправления по фактическим сбоям
 
-- RED: при первом клике на мобильную рекомендацию фокус завершал entrance,
-  control сдвигался, click приходил на ARTICLE вместо BUTTON, выбранный ранг
-  оставался1. Исправление удерживает геометрию через down/up/click.
-- RED: касания без WAAPI/ResizeObserver отправлял pointerdown/up на SUMMARY,
-  затем фокус завершал движение, click попадал на ARTICLE. GREEN: все события
-  приходят на SUMMARY, details.open=true. Hold учитывает compatibility events
-  после pointerup, освобождается после click; fallback500ms и cancel/teardown.
-- Клавиатурный фокус завершает вход сразу. Раскрытие использует clip-path и версия,
-  быстрые повторные действия/print/reduce не оставляют inert/обрезку.
+- При первом нажатии мобильной рекомендации фокус завершал вход,
+  кнопка сдвигалась, click приходил на ARTICLE вместо BUTTON,
+  выбранный ранг оставался 1. Ошибка воспроизведена; геометрия удерживается
+  на протяжении down/up/click.
+- Без WAAPI/ResizeObserver касание отправляло pointerdown/up на SUMMARY,
+  фокус завершал движение, click попадал на ARTICLE. После исправления
+  все события приходят на SUMMARY, details.open=true. Удержание учитывает
+  совместимые события после pointerup и снимается после click;
+  резервное завершение — 500 ms, отмена и отключение контроллера обработаны.
+- Клавиатурный фокус сразу завершает вход. Раскрытие использует clip-path
+  и проверку версии; быстрые действия, печать и уменьшение движения
+  не оставляют inert или обрезанное содержимое.
 
 ## Выполненные проверки
 
-- Python unittest:84/84. Node хранилище:75/75. Validator:78 файлов, DOM/import DAG.
-- Deterministic первый экран build и исходный проект hashes: PASS. Before312337raw/103506gzip,
-  after316045raw/104413gzip bytes (+3708raw/+907gzip, +0.88% gzip).
-- warm-motion:390/768/1024/1440, no overflow, white=[], CTA44px/без рамки,
-  мобильный schematic, pause, Magnet≤6px/reset/keyboard, reduce/print, early отдельный модуль
-  при удержанном window.load. pageErrors[].
-- первый экран heights390/768/1024/1440:505.875/490.90625/505.015625/484.5px.
-- workspace: успешно (расчёт, холст reuse, хранилище, CSV/print, race/error/fallback).
-- field-checks: успешно (persisted обратная связь, keyboard/touch, cross-tab, quota,
-  corrupt/recovery/legacy, CSV/print и отсутствие изменения модели).
-- workspace-interactions: успешно после исправления касания; trust/error/archive,
-  rapid/keyboard/dynamic раскрывающиеся блоки, предварительное выделение, resize резервный режим, reduce, print.
-- Ранние style/hero-island/header-anchor/header-focus/choice-menus/scenarios-ui
-  также успешно; финальная профильная матрица также успешно: editorial-style, hero-island,
-  header-anchor, header-focus, hero-font-fallback (19 вариантов),
-  research-open-motion и warm-motion.
+- Python 84/84, Node-хранилище 75/75, валидатор 78 файлов,
+  DOM и граф импортов — успешно.
+- Воспроизводимая сборка первого экрана и хеши исходников совпали.
+  До: 312337 байт без сжатия / 103506 gzip; после: 316045 / 104413.
+  Прирост: 3708 / 907 байт, +0.88% gzip.
+- warm-motion на 390/768/1024/1440: без переполнения, white=[],
+  CTA высотой 44 px без рамки, мобильная схема, пауза, Magnet ≤6 px
+  со сбросом и клавиатурой, уменьшение движения, печать и ранний запуск
+  при удержанном window.load; pageErrors: [].
+- Высоты первого экрана на 390/768/1024/1440:
+  505.875/490.90625/505.015625/484.5 px.
+- workspace: расчёт, переиспользование холстов, хранилище, CSV, печать,
+  гонки, ошибки и резервный режим — успешно.
+- field-checks: отклик после записи, клавиатура, касания, две вкладки,
+  квота, повреждение, восстановление, старые записи, CSV, печать
+  и отсутствие изменения модели — успешно.
+- workspace-interactions после исправления касаний: статус данных,
+  ошибка, архив, быстрые, клавиатурные и динамические раскрытия,
+  предварительное выделение, резервное изменение размера,
+  уменьшение движения и печать — успешно.
+- Прежние style, hero-island, header-anchor, header-focus, choice-menus
+  и scenarios-ui прошли. Финальная профильная матрица также прошла:
+  editorial-style, hero-island, header-anchor, header-focus,
+  hero-font-fallback (19 вариантов), research-open-motion, warm-motion.
 
 ## Границы
 
-Chrome настольный и mobile/touch emulation. Физические телефоны, другие движки,
-нативная PDF-пагинация и серверная нагрузка отдельно не проверялись.
-API/Flask/математика/каталог/форматы localStorage не изменены.
+Chrome на компьютере с эмуляцией мобильных экранов и касаний.
+Физические телефоны, другие движки, системная пагинация PDF и серверная
+нагрузка не проверялись. Flask, API, математика, каталог и форматы
+localStorage не изменены.
 
 ## Публикация
 
-Версия приложения f1b0b7859e3735024920da60460c1fe4edafa52a в main.
-CI исходной версии40014554183 и CI основной версии40014779563: успешно для точного SHA.
-Render dep-dbdrlp8473hc73beq8ug: live с 23 октября22:53:28 Москва,
-trigger new_commit. Никаких новых ресурсов или изменений сервера.
-Публичные40 ресурсов совпадают с Git по SHA256; healthz={"status":"ok"}.
-App error/critical logs с начала deploy пусты.
+В main опубликован f1b0b7859e3735024920da60460c1fe4edafa52a.
+CI исходной версии 40014554183 и основной версии 40014779563 прошли
+для точного SHA. Render dep-dbdrlp8473hc73beq8ug опубликован 23 октября
+в 22:53:28 по Москве, trigger=new_commit. Новых ресурсов и серверных
+изменений нет. SHA-256 всех 40 публичных ресурсов совпали с Git;
+/healthz={"status":"ok"}, журналы error/critical с начала публикации пусты.
 
-
-Публичные warm-motion, hero-island, workspace и research-open-motion: PASS.
-Подтверждены карта/расчёт/layers/saved/CSV/print/архив, mobile/touch/keyboard,
-noJS/failure/noObserver/slow load, включение режима уменьшения движения во время работы. pageErrors[].
-Public отдельный модуль CLS0; начальный CLS0.001164111267843364.
-Локальный проверка Python4088/30260 остановлен; CLI браузер закрывается после аудита.
-Аудит документации публикуется с [skip render], версия приложения остаётся f1b0b78.
+Публичные warm-motion, hero-island, workspace и research-open-motion прошли.
+Проверены карта, расчёт, слои, сохранения, CSV, печать, архив, мобильный режим,
+касания, клавиатура, отсутствие JS, ошибки, отсутствие Observer, медленная
+загрузка и изменение уменьшения движения во время работы; pageErrors: [].
+CLS контроллера — 0, начальный CLS — 0.001164111267843364.
+Итоговая документация использует [skip render], версия остаётся f1b0b78.
