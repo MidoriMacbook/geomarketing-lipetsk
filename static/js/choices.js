@@ -26,8 +26,9 @@ function enhance(select) {
     if(!opened)return;
     opened=false;
     cancelRevealsWithin(menu);
-    if(animate)exitSnapshot(menu,'choice-close');
+    if(animate&&!select.closest('dialog[open]'))exitSnapshot(menu,'choice-close');
     menu.hidden=true;
+    if(menu.parentElement!==document.body)document.body.append(menu);
     trigger.setAttribute('aria-expanded','false');trigger.removeAttribute('aria-activedescendant');
     if(current===controller)current=null;
     if(focus&&!trigger.disabled)trigger.focus({preventScroll:true});
@@ -65,6 +66,8 @@ function enhance(select) {
     if(opened||trigger.disabled||trigger.closest('[hidden]'))return;
     current?.close(false);
     clearSnapshot(menu);
+    const host=select.closest('dialog[open]')||document.body;host.append(menu);
+    if(host!==document.body)cancelUI(host);
     cancelUI(trigger.closest('.settings'));
     trigger.focus({preventScroll:true});
     window.scrollTo({left:scrollX,top:scrollY,behavior:'instant'});
@@ -147,3 +150,5 @@ export function initChoiceMenus() {
     if(select)enhance(select);
   }
 }
+
+export function closeChoiceMenus(){current?.close(false,false);}

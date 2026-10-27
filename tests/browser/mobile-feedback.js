@@ -9,7 +9,8 @@ async page => {
  check(await p.locator('#nav-menu a').first().evaluate(e=>+getComputedStyle(e).opacity===1),'Menu links remain transparent');
  check(await p.locator('#nav-menu').evaluate(e=>e.querySelector('a').getBoundingClientRect().width>e.clientWidth*.8),'Menu rows do not fill panel');
  await p.locator('#nav-toggle').tap();await p.waitForTimeout(350);
- check(await p.locator('.kpi-replay').first().textContent()==='','Visible replay label');
+ check((await p.locator('.kpi-action-label').first().textContent()).includes('Показать на карте'),'Missing visible KPI action');
+ await p.locator('#area-details>summary').click();
  for(const key of ['competitors','places']){
   await p.locator('#kpi-'+key).scrollIntoViewIfNeeded();await p.waitForTimeout(1200);
   const sample=await p.locator('#kpi-'+key).evaluate(e=>{e.parentElement.querySelector('button').click();return {target:Number(e.dataset.counterTarget),display:e.querySelector('.counter-visual').dataset.display};});
@@ -52,6 +53,7 @@ async page => {
  await summary.click();await p.waitForTimeout(500);
  check(await body.evaluate(e=>!e.inert&&Math.abs(e.getBoundingClientRect().height-e.scrollHeight)<2),'Rapid disclosure reversal clipped content');
  await p.locator('#scenario-save').click();await p.locator('#scenario-name').fill('Проверка дат');await p.locator('#scenario-submit').click();await p.waitForFunction(()=>!document.getElementById('scenario-dialog').open);
+ await p.locator('#scenarios-section').locator('..').locator(':scope>summary').click();
  const nested=p.locator('#scenario-list .quality-details>summary').first();await nested.click();await p.waitForTimeout(70);
  check(await nested.evaluate(e=>e.nextElementSibling.getAnimations().some(a=>a.id==='gm:disclosure')),'Nested dates do not animate');
  await p.emulateMedia({reducedMotion:'reduce'});await summary.click();

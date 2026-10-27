@@ -1,4 +1,5 @@
 import { state } from './state.js';
+import { initMobileWorkspace } from './mobile-workspace.js';
 import { refreshMessage } from './data-delivery.js';
 import { clearKpiFocus } from './kpi-interactions.js';
 import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog, cancelRevealsWithin, motionReduced } from './ui.js';
@@ -267,6 +268,7 @@ function bootstrap() {
   loadSaved();
   renderSaved();
   initMap();
+  initMobileWorkspace();
   loadCatalog();
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootstrap, {

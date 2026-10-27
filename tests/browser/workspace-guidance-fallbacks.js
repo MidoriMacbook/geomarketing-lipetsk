@@ -6,15 +6,18 @@ async original=>{
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base);await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1400);
   const kpi=key=>page.locator('#kpi-'+key).locator('..').locator('.kpi-replay');
+  await page.locator('#area-details>summary').tap();
   await kpi('competitors').tap();await page.waitForTimeout(350);
   check(await kpi('competitors').getAttribute('aria-pressed')==='true','Touch KPI focus absent');
   check((await page.locator('#analysis-status').textContent()).startsWith('Конкуренты:'),'Touch category status');
   const id=await page.evaluate(async()=>(await import('/static/js/state.js')).state.current.analysis_id);
+  await page.locator('#mobile-settings-open').tap();
   await page.locator('#business-trigger').click();await page.getByRole('option').nth(1).click();
   await page.waitForTimeout(50);
   check(await page.locator('.kpi-replay[aria-pressed=true]').count()===0,'Filter reset retains focus');
   check((await page.locator('#analysis-context').textContent()).includes('не выполнен'),'Filter reset keeps old date');
   await page.locator('#run').click();await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+  await page.waitForFunction(()=>!document.getElementById('mobile-settings-dialog').open);
   check(await page.evaluate(async()=>(await import('/static/js/state.js')).state.current.analysis_id)!==id,'New category did not calculate');
   for(const scale of [1,2])for(const width of [320,360,390,430]){
    await page.setViewportSize({width,height:1000});await page.evaluate(scale=>document.documentElement.style.fontSize=scale===2?'200%':'',scale);await page.waitForTimeout(80);

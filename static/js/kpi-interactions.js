@@ -70,6 +70,7 @@ document.querySelectorAll('.kpis>div').forEach((card,index)=>{
  const hint=node('span','',`Показать связь показателя «${label}» с картой. Повторное нажатие снимает выделение.`);
  hint.id='kpi-action-'+key;hint.hidden=true;
  indicator.setAttribute('aria-hidden','true');progress.setAttribute('aria-hidden','true');
+ const action=node('span','kpi-action-label','Показать на карте');action.setAttribute('aria-hidden','true');button.append(action);
  button.type='button';button.setAttribute('aria-pressed','false');button.setAttribute('aria-controls','analysis-status');button.setAttribute('aria-describedby',hint.id);
  card.dataset.kpi=key;card.dataset.active='false';card.append(indicator,progress,hint,button);
  cards.set(key,{card,number,button,label});

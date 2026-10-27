@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { deliverySummary } from './data-delivery.js';
-import { $, fmt, coords, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin } from './ui.js';
+import { $, fmt, coords, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin, animateUI, cancelUI, motionReduced } from './ui.js';
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker, hoverPlace } from './map.js';
 import { updateReportAvailability } from './report.js';
@@ -10,6 +10,45 @@ import { recommendationBrief } from './recommendation-brief.js';
 
 let renderedAnalysisId = null;
 let previewCard = null;
+const mobileRecommendations = matchMedia('(max-width:600px), (max-width:950px) and (max-height:500px) and (pointer:coarse)');
+const mobileCards = new Map();
+
+function expandMobileCard(entry, expanded, animate = false) {
+  const { card, body, toggle } = entry;
+  if (!expanded && body.contains(document.activeElement)) toggle.focus({ preventScroll: true });
+  cancelUI(body);
+  card.dataset.mobileExpanded = String(expanded);
+  toggle.setAttribute('aria-expanded', String(expanded));
+  body.inert = mobileRecommendations.matches && !expanded;
+  if (expanded && animate && mobileRecommendations.matches) {
+    animateUI(body, [{ opacity: 0, transform: 'translateY(var(--motion-distance-small))' }, { opacity: 1, transform: 'translateY(0)' }], 'recommendation-expand', { duration: 260 });
+  }
+}
+
+function arrangeMobileCard(entry) {
+  const { body, heading, coordinate, metrics, brief, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, briefDetails } = entry;
+  cancelUI(body);
+  if (mobileRecommendations.matches) {
+    placeContent.append(coordinate, entry.linkActions);
+    entry.linkActions.append(copy, osm);
+    briefDetails.append(brief);
+    body.append(heading, metrics, showOnMap, actions, confirmation, placeDetails, briefDetails, explanation);
+    placeDetails.open = false;
+    briefDetails.open = false;
+  } else {
+    actions.append(save, copy, osm);
+    body.append(heading, coordinate, metrics, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails);
+    placeDetails.open = true;
+    briefDetails.open = true;
+  }
+  showOnMap.hidden = !mobileRecommendations.matches;
+  placeDetails.hidden = !mobileRecommendations.matches;
+  briefDetails.hidden = !mobileRecommendations.matches;
+  expandMobileCard(entry, entry.card.dataset.mobileExpanded === 'true');
+}
+
+// Один обработчик использует только текущие карточки, включая повторный расчёт.
+mobileRecommendations.addEventListener('change', () => mobileCards.forEach(arrangeMobileCard));
 
 function previewPlace(card, rank, active) {
   if (active) {
@@ -63,6 +102,10 @@ export function selectPlace(rank, pan = false) {
     c.classList.toggle('selected', active);
     c.querySelector('.place-select').setAttribute('aria-pressed', active);
   });
+  if (changed && mobileRecommendations.matches) {
+    const entry = mobileCards.get(rank);
+    if (entry && entry.card.dataset.mobileExpanded !== 'true') expandMobileCard(entry, true, true);
+  }
   document.dispatchEvent(new CustomEvent('gm:recommendation-selected', { detail: { rank } }));
   selectMarker(rank, pan, changed);
 }
@@ -70,12 +113,14 @@ export function selectPlace(rank, pan = false) {
 export function showResult(data) {
   const newAnalysis = renderedAnalysisId !== data.analysis_id;
   renderedAnalysisId = data.analysis_id;
+  const previousExpanded = new Map([...mobileCards.values()].map(({ card }) => [card.dataset.counterKey, card.dataset.mobileExpanded === 'true']));
   const previousValues = new Map([...$('recommendation-list').children].map(card => [
     card.dataset.counterKey, [...card.querySelectorAll('.score,.place-metrics strong')].map(counterValue)
   ]));
   cancelRevealsWithin($('recommendation-list'));
   resetCounters($('recommendation-list'));
   if (previewCard) previewPlace(previewCard, +previewCard.dataset.rank, false);
+  mobileCards.clear();
   $('recommendation-list').replaceChildren();
   setRevealed($('result-empty'), !data.recommendations.length, 'empty');
   $('result').hidden = !data.recommendations.length;
@@ -88,7 +133,19 @@ export function showResult(data) {
     card.dataset.testid = 'recommendation-card';
     card.dataset.rank = rec.rank;
     card.dataset.counterKey = `${rec.lat}:${rec.lng}:${rec.radius_m}`;
+    card.dataset.mobileExpanded = String(!newAnalysis && previousExpanded.has(card.dataset.counterKey) ? previousExpanded.get(card.dataset.counterKey) : index === 0);
     connectCardPreview(card, rec.rank);
+    const body = node('div', 'recommendation-body');
+    body.id = `recommendation-body-${rec.rank}`;
+    const toggle = button('', 'mobile-rec-toggle', () => {
+      if (!mobileRecommendations.matches) return;
+      const entry = mobileCards.get(rec.rank);
+      const expanded = card.dataset.mobileExpanded !== 'true';
+      selectPlace(rec.rank, false);
+      expandMobileCard(entry, expanded, true);
+    });
+    toggle.setAttribute('aria-controls', body.id);
+    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`), node('span', 'mobile-rec-score', `${Math.round(rec.score * 100)}%`), node('span', 'mobile-rec-difference', `≈ ${fmt(rec.residents_in_radius)} жителей · конкурентов: ${fmt(rec.competitors_in_radius)}`));
     const previous = previousValues.get(card.dataset.counterKey) || [];
     const heading = node('div', 'place-title'), select = button(`Место ${rec.rank}`, 'place-select', () => selectPlace(rec.rank));
     select.setAttribute('aria-pressed', rec.rank === state.selectedRank);
@@ -100,6 +157,12 @@ export function showResult(data) {
     people.append(node('strong', '', `≈ ${fmt(rec.residents_in_radius)}`), node('small', '', `жителей в ${fmt(rec.radius_m)} м`));
     competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов в радиусе'));
     metrics.append(people, competition);
+    const showOnMap = button('Показать на карте', 'button secondary mobile-show-place', () => {
+      selectPlace(rec.rank, false);
+      const title = $('map-title');
+      if (title) { title.tabIndex = -1; title.focus({ preventScroll: true }); }
+      $('map-card')?.scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'start' });
+    });
     const brief = node('dl', 'recommendation-brief'), summary = recommendationBrief(rec);
     for (const [key, label] of [['demand', 'Спрос'], ['competition', 'Конкуренция'], ['nearest', 'Ближайший конкурент'], ['check', 'Проверить на месте']]) {
       const row = node('div');
@@ -138,7 +201,15 @@ export function showResult(data) {
     osm.setAttribute('aria-label', `Открыть место ${rec.rank} в OpenStreetMap`);
     if (!index)osm.id = 'osm-link';
     actions.append(save, copy, osm);
-    card.append(heading, coordinate, metrics, brief, actions, confirmation, explanationBlock(rec));
+    const placeDetails = node('details', 'mobile-place-details'), placeContent = node('div', 'mobile-place-content'), linkActions = node('div', 'place-actions');
+    placeDetails.append(node('summary', '', 'Координаты и ссылки'), placeContent);
+    const briefDetails = node('details', 'mobile-rec-details');
+    briefDetails.append(node('summary', '', 'Подробнее о месте'));
+    const explanation = explanationBlock(rec);
+    card.append(toggle, body);
+    const entry = { card, body, toggle, heading, coordinate, metrics, brief, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
+    mobileCards.set(rec.rank, entry);
+    arrangeMobileCard(entry);
     $('recommendation-list').append(card);
     countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: '%', from: previous[0] });
     countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ', from: previous[1] });
