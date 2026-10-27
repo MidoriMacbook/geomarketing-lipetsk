@@ -69,7 +69,7 @@ function bootstrap() {
     return structuredClone({
       selection:{district:custom?'custom':data.district,business:data.business,
         custom_point:custom?(data.analysis_context?.center||data.center):null,
-        area_radius_m:data.analysis_context?.requested_radius_m || (custom?+$('radius').value:state.catalog.districts.find(d=>d.key===data.district)?.radius_m||data.half_m)},
+        area_radius_m:data.analysis_context?.requested_radius_m || (custom?Number(new URLSearchParams(state.currentRequestKey||'').get('radius'))||data.half_m:state.catalog.districts.find(d=>d.key===data.district)?.radius_m||data.half_m)},
       view:{threshold:+$('thr').value,selected_rank:state.selectedRank,
         layers:Object.fromEntries(['houses','competitors','centroids','zones'].map(key=>[key,$('layer-'+key).checked]))},
       analysis:data

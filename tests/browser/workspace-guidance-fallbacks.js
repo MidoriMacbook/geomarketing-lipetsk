@@ -15,7 +15,8 @@ async original=>{
   await page.locator('#business-trigger').click();await page.getByRole('option').nth(1).click();
   await page.waitForTimeout(50);
   check(await page.locator('.kpi-replay[aria-pressed=true]').count()===0,'Filter reset retains focus');
-  check((await page.locator('#analysis-context').textContent()).includes('не выполнен'),'Filter reset keeps old date');
+  check((await page.locator('#analysis-context').textContent()).includes('предыдущий расчёт'),'Parameter edit does not explain retained result');
+  check(await page.evaluate(async()=>(await import('/static/js/state.js')).state.current.analysis_id)===id,'Parameter edit replaced retained data');
   await page.locator('#run').click();await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
   await page.waitForFunction(()=>!document.getElementById('mobile-settings-dialog').open);
   check(await page.evaluate(async()=>(await import('/static/js/state.js')).state.current.analysis_id)!==id,'New category did not calculate');

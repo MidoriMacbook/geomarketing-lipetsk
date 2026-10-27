@@ -86,7 +86,7 @@ export function initMobileWorkspace() {
  });
  byId('run').addEventListener('click',()=>{collapseAfterRun=mobile.matches&&dialog.open;},{capture:true});
  byId('mobile-custom-map').addEventListener('click',()=>{
-  closeSettings({immediate:true});const target=byId('map-title');target.tabIndex=-1;target.focus({preventScroll:true});map.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'start'});
+  closeSettings({immediate:true});const target=byId('map');if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'center'});
  });
  document.addEventListener('click',event=>{
   const link=event.target.closest('a[href^="#"]');if(!mobile.matches||!link)return;
