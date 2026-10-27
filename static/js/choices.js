@@ -126,6 +126,9 @@ function enhance(select) {
     }
   });
   menu.addEventListener('pointerdown',event=>{if(event.pointerType==='mouse')event.preventDefault();});
+  // Совместимое событие мыши после касания не должно уводить фокус из combobox.
+  // Само касание не отменяется: длинный список остаётся прокручиваемым.
+  menu.addEventListener('mousedown',event=>event.preventDefault());
   menu.addEventListener('pointermove',event=>{const row=event.target.closest('.choice-option');if(row&&options[+row.dataset.index]&&!options[+row.dataset.index].disabled)setActive(+row.dataset.index);});
   menu.addEventListener('click',event=>{const row=event.target.closest('.choice-option');if(row)choose(+row.dataset.index);});
   document.addEventListener('pointerdown',event=>{if(opened&&!trigger.contains(event.target)&&!menu.contains(event.target))close();});

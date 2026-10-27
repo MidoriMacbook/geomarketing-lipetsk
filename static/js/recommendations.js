@@ -158,7 +158,7 @@ export function showResult(data) {
     competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов в радиусе'));
     metrics.append(people, competition);
     const showOnMap = button('Показать на карте', 'button secondary mobile-show-place', () => {
-      selectPlace(rec.rank, false);
+      selectPlace(rec.rank, true);
       const title = $('map-title');
       if (title) { title.tabIndex = -1; title.focus({ preventScroll: true }); }
       $('map-card')?.scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'start' });
