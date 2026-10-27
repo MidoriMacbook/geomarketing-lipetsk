@@ -21,6 +21,7 @@ export function initMobileWorkspace() {
   const district=byId('district'),business=byId('business');
   byId('mobile-settings-selection').textContent=[district.selectedOptions[0]?.textContent,business.selectedOptions[0]?.textContent].filter(Boolean).join(' · ');
   const phase=document.documentElement.dataset.analysisState;
+  opener.querySelector('.mobile-settings-label').textContent=phase==='error'?'Проверить параметры':state.current?'Изменить параметры':'Настроить анализ';
   byId('mobile-settings-state').textContent=!state.catalog?'Настройте параметры':district.value==='custom'&&!state.customPoint?'Выберите центр на карте':phase==='error'?'Проверьте параметры и повторите расчёт':phase==='calculating'||phase==='refreshing'?'Выполняется расчёт…':'Готово к расчёту';
   document.documentElement.dataset.mobileHasResult=String(!!state.current);
   for(const item of sections){
@@ -32,6 +33,7 @@ export function initMobileWorkspace() {
  function finishClose(token,restoreFocus=true) {
   if(token!==revision)return;
   cancelUI(dialog);closing=false;
+  delete dialog.dataset.closing;
   if(dialog.open)dialog.close();
   delete document.documentElement.dataset.mobileSheetOpen;
   opener.setAttribute('aria-expanded','false');
@@ -40,19 +42,21 @@ export function initMobileWorkspace() {
  function closeSettings({immediate=false,restoreFocus=true}={}) {
   if(!dialog.open)return;
   closeChoiceMenus();collapseAfterRun=false;closing=true;
+  dialog.dataset.closing='true';
   const token=++revision;cancelUI(dialog);
   if(immediate||motionReduced()){finishClose(token,restoreFocus);return;}
-  const animation=animateUI(dialog,[{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(24px)'}],'mobile-settings-close',{duration:260});
+  const animation=animateUI(dialog,[{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(24px)'}],'mobile-settings-close',{duration:'fast',easing:'emphasized'});
   if(animation)animation.finished.then(()=>finishClose(token,restoreFocus),()=>{});else finishClose(token,restoreFocus);
  }
  function openSettings(trigger=opener) {
   if(!mobile.matches)return;
   ++revision;closing=false;collapseAfterRun=false;cancelUI(dialog);returnTo=trigger;
+  delete dialog.dataset.closing;
   document.documentElement.dataset.mobileSheetOpen='true';opener.setAttribute('aria-expanded','true');
   if(!dialog.open)dialog.showModal();
   // Поля остаются теми же элементами; фокус не меняет положение страницы.
   (byId('district-trigger')||byId('district')).focus({preventScroll:true});
-  animateUI(dialog,[{opacity:0,transform:'translateY(24px)'},{opacity:1,transform:'translateY(0)'}],'mobile-settings-open',{duration:260});
+  animateUI(dialog,[{opacity:0,transform:'translateY(24px)'},{opacity:1,transform:'translateY(0)'}],'mobile-settings-open',{duration:'workspace',easing:'emphasized'});
  }
  function syncLayout() {
   closeSettings({immediate:true,restoreFocus:false});
@@ -76,6 +80,7 @@ export function initMobileWorkspace() {
  dialog.addEventListener('cancel',event=>{event.preventDefault();closeSettings();});
  dialog.addEventListener('close',()=>{
   if(dialog.open)return;
+  delete dialog.dataset.closing;
   cancelUI(dialog);
   closeChoiceMenus();closing=false;delete document.documentElement.dataset.mobileSheetOpen;opener.setAttribute('aria-expanded','false');
  });

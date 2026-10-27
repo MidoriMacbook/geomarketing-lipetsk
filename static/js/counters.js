@@ -92,6 +92,13 @@ export function countTo(element, target, { animate = true, prefix = '', suffix =
   }
 }
 
+export function finishCounters(container) {
+  if(!container)return;
+  const elements=[...container.querySelectorAll('.counter-number')];
+  if(container.classList.contains('counter-number'))elements.push(container);
+  elements.forEach(settle);
+}
+
 export function resetCounters(container) {
   if (!container) return;
   const elements = [...container.querySelectorAll('.counter-number')];

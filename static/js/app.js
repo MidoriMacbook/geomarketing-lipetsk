@@ -7,7 +7,7 @@ import { configureSaved, loadSaved, renderSaved, updateSaveButtons } from './sav
 import { exportCSV, printReport, updateReportAvailability } from './report.js';
 import { configureMap, initMap, clearAnalysisMap, clearPreview, updateCustomUI, drawPreview, drawMap, drawZones, fitArea, toggleLayer } from './map.js';
 import { selectPlace, showResult } from './recommendations.js';
-import { resetCounters } from './counters.js';
+import { resetCounters, finishCounters } from './counters.js';
 import { configureScenarios, initScenarios, updateScenarioAvailability } from './scenarios.js';
 import { validateScenario } from './scenario-storage.js';
 import { cancelRequest, fetchCatalog, fetchCalculation, beginCatalogRequest, beginCalculationRequest, finishCatalogRequest, finishCalculationRequest } from './api.js';
@@ -23,10 +23,18 @@ function bootstrap() {
     $('refresh-data').setAttribute('aria-busy', String(busy));
     $('refresh-label').textContent = busy ? 'Проверяем…' : 'Проверить обновления';
   }
-  function resetSelection() {
+  function resetSelection({preserveResult=false}={}) {
     clearKpiFocus({immediate:true});
     cancelRequest();
     refreshFeedback();
+    if(preserveResult&&state.current){
+      document.querySelectorAll('.kpis,.area-details-grid,#recommendation-list').forEach(container=>{finishCounters(container);cancelRevealsWithin(container);});
+      $('error').hidden=true;$('loading-hint').hidden=true;
+      $('run').disabled=!state.catalog;$('refresh-data').disabled=false;$('run').textContent='Найти места →';
+      $('map-context').textContent=`Предыдущий расчёт · ${state.current.district_name} · ${state.current.business_name}`;
+      setAnalysisState('initial','Параметры изменены · показан предыдущий расчёт');
+      updateReportAvailability();updateScenarioAvailability();return;
+    }
     state.current = null;
     state.currentRequestKey = null;
     state.openedScenarioId = null;
@@ -109,7 +117,7 @@ function bootstrap() {
     if (!state.catalog) return;
     const b = state.catalog.businesses.find(b => b.key === $('business').value);
     $('business-parameters').textContent = `Радиус доступности ${fmt(b.radius_m)} м · коэффициент конкуренции ${b.alpha}. Стартовые эвристики модели, не прогноз выручки.`;
-    $('kpi-business').textContent = b.name;
+    $('kpi-business').textContent = state.current?.business_name || b.name;
   }
   async function loadCatalog() {
     const controller = beginCatalogRequest();
@@ -151,7 +159,7 @@ function bootstrap() {
       return;
     }
     const params = requestParams();
-    const requestKey = params.toString(), preserveResult = !!state.current && state.currentRequestKey === requestKey;
+    const requestKey = params.toString(), preserveResult = !!state.current;
     if (refresh) params.set('refresh', '1');
     if (preserveResult) {
       cancelRequest();
@@ -164,7 +172,7 @@ function bootstrap() {
     refreshFeedback(refresh ? (state.current?.data_delivery?.mode === 'daily'
       ? 'Проверяем новую версию ежедневной выгрузки. Пока показан предыдущий расчёт.'
       : 'Запрашиваем свежие дома и конкурентов в OpenStreetMap. Это может занять до полутора минут.') : '', refresh);
-    $('run').textContent = 'Рассчитываем…';
+    $('run').textContent = 'Ищем места…';
     $('loading-hint').hidden = false;
     $('loading-hint').textContent = preserveResult?'Обновляем расчёт. Пока показан предыдущий успешный результат.': 'Загрузка и расчёт могут занять до полутора минут.';
     setAnalysisState(preserveResult ? 'refreshing' : 'calculating');
@@ -183,7 +191,7 @@ function bootstrap() {
       clearPreview();
       drawMap(data);
       drawZones();
-      showResult(data);
+      showResult(data,{freshCalculation:true});
       fitArea(data);
       setAnalysisState('success', data.recommendations.length ? 'Расчёт готов · выберите место на карте' : 'Расчёт готов · подходящих мест не найдено');
       if (refresh) {
@@ -217,17 +225,17 @@ function bootstrap() {
   $('run').addEventListener('click', () => run(false));
   $('retry-catalog').addEventListener('click', loadCatalog);
   $('district').addEventListener('change', () => {
-    resetSelection();
+    resetSelection({preserveResult:true});
     updateCustomUI();
     if ($('district').value !== 'custom') run(false);
     else $('map-context').textContent = 'Выберите центр своей области на карте';
   });
   $('business').addEventListener('change', () => {
-    resetSelection();
+    resetSelection({preserveResult:true});
     updateParams();
   });
   $('radius').addEventListener('change', () => {
-    resetSelection();
+    resetSelection({preserveResult:true});
     drawPreview();
   });
   $('refresh-data').addEventListener('click', () => run(true));
@@ -262,7 +270,7 @@ function bootstrap() {
   configureScenarios({captureCurrent,restoreScenario});
   initScenarios();
   configureMap({
-    resetSelection,
+    resetSelection:()=>resetSelection({preserveResult:true}),
     selectPlace
   });
   loadSaved();

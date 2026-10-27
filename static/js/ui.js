@@ -51,7 +51,7 @@ function tokens() {
   };
   motionTokens = {
     fast: milliseconds('--motion-fast', 140), base: milliseconds('--motion-base', 220),
-    slow: milliseconds('--motion-slow', 420), stagger: milliseconds('--motion-stagger', 75),
+    slow: milliseconds('--motion-slow', 420), workspace: milliseconds('--motion-workspace', 300), stagger: milliseconds('--motion-stagger', 75),
     standard: styles.getPropertyValue('--ease-standard').trim() || 'cubic-bezier(.2,0,0,1)',
     emphasized: styles.getPropertyValue('--ease-emphasized').trim() || 'cubic-bezier(.2,0,0,1)',
     spring: styles.getPropertyValue('--ease-spring').trim() || 'cubic-bezier(.2,.8,.2,1)'
@@ -226,6 +226,9 @@ function syncProgress() {
 export function setAnalysisState(value, message) {
   document.documentElement.dataset.analysisState = value;
   const busy = value === 'calculating' || value === 'refreshing';
+  if ($('recommendation-loading')) $('recommendation-loading').hidden=!busy;
+  if ($('recommendations')) $('recommendations').setAttribute('aria-busy',String(busy));
+  if ($('result')) $('result').inert=busy;
   if ($('analysis-progress')) $('analysis-progress').hidden = !busy;
   $('map')?.setAttribute('aria-busy', String(busy));
   if ($('analysis-status')) $('analysis-status').textContent = message || ({
@@ -238,6 +241,7 @@ export function setAnalysisState(value, message) {
     const summary = trust.dataset.resultSummary || '';
     trust.textContent = value === 'refreshing' ? `Обновляем данные · предыдущий расчёт. ${summary}`
       : value === 'error' && summary ? `Обновление не удалось · предыдущий расчёт. ${summary}`
+      : value === 'initial' && summary ? `Параметры изменены · показан предыдущий расчёт. ${summary}`
       : value === 'initial' || value === 'calculating' ? 'Данные ещё не оценены · выполните расчёт'
       : summary || 'Данные ещё не оценены';
   }

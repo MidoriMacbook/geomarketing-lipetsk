@@ -80,12 +80,13 @@ async original => {
     const interruptedFrom=Number(await refreshedPeople.getAttribute('data-counter-from'));
     assert(interruptedFrom>37&&interruptedFrom<Math.round(payload.recommendations[0].residents_in_radius),'Interrupted card refresh did not retain displayed intermediate value');
     await page.locator('#business').selectOption({index:1}, {force:true});
-    assert(await counter.textContent()==='—','Filter reset retained old counter markup');
+    assert(await counter.textContent()==='37','Parameter edit lost the previous exact result');
+    assert(!await counter.evaluate(e=>e.classList.contains('is-counting')),'Parameter edit left the previous counter running');
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-    assert(await counter.textContent()==='—','Cancelled counter overwrote filter reset');
+    assert(await counter.textContent()==='37','Interrupted counter overwrote the previous exact result');
     await page.locator('#run').click();
     await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
-    assert(Number(await counter.getAttribute('data-counter-from'))===0,'New area continued old analysis number');
+    assert(Number(await counter.getAttribute('data-counter-from'))===37,'Next calculation lost the settled previous number');
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.waitForFunction(()=>!document.querySelector('.is-counting'));
     assert(await counter.textContent()==='37','Reduced motion result is not exact');
