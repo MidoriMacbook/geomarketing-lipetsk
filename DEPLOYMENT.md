@@ -11,12 +11,12 @@
 - Запуск: `python serve.py`, Waitress использует PORT и слушает 0.0.0.0.
 - Проверка: `GET /healthz` возвращает HTTP 200 и `{"status":"ok"}`.
 
-Последний подтверждённый выпуск до текущего этапа:
-`f31ee4e975b51ee3ebe64266a2ca810f670a55b8`, развёртывание
-`dep-dbfmv5o473hc73aa8vp0`,26 октября 2026,15:21:18UTC.
-[Проверка выпуска](docs/verification/2026-10-26-workspace-guidance.md).
-Публикация текущих изменений фиксируется в
-[новом отчёте](docs/verification/2026-10-26-status-and-project-docs.md).
+Текущий подтверждённый выпуск:
+`be7d13b8f319fea235a7b855d6564bff829e3c4c`, развёртывание
+`dep-dbg4v2jrjlhs73cpmfs0`, 27 октября 2026, 07:17:00 UTC.
+[Проверка текущего выпуска](docs/verification/2026-10-26-status-and-project-docs.md).
+Предыдущая подтверждённая приёмка сохранена в
+[отчёте 26 октября](docs/verification/2026-10-26-workspace-guidance.md).
 
 ## Порядок публикации
 
