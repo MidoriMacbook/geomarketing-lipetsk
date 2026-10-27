@@ -4,6 +4,8 @@ import { checkedQuality, checkedExplanation } from './data-quality.js';
 import { fieldChecksBlock, removeFieldChecks, refreshFieldChecks } from './field-checks.js';
 
 let updateReportAvailability = () => {};
+const mobileSaving=matchMedia('(max-width:600px), (max-width:950px) and (max-height:500px) and (pointer:coarse)');
+mobileSaving.addEventListener('change',()=>updateSaveButtons());
 
 export function configureSaved(callbacks) {
   updateReportAvailability = callbacks.updateReportAvailability;
@@ -134,11 +136,13 @@ export function updateSaveButtons(feedback = false) {
     const newlySaved = exists && !b.classList.contains('is-saved');
     b.classList.toggle('is-saved', exists);
     b.setAttribute('aria-pressed', String(exists));
-    if (b.textContent !== (exists ? 'Сохранено ✓' : 'Сохранить')) {
-      b.replaceChildren(node('span', 'save-label', exists ? 'Сохранено' : 'Сохранить'));
+    const selected=exists&&state.comparison.has(`${state.current?.analysis_id}:${b.dataset.rank}`);
+    const label=mobileSaving.matches?(selected?'В сравнении':exists?(state.comparison.size>=3?'Сохранено':'Добавить в сравнение'):'Сохранить для сравнения'):(exists?'Сохранено':'Сохранить');
+    if (b.textContent !== label+(exists?' ✓':'')) {
+      b.replaceChildren(node('span', 'save-label', label));
       if (exists) { const check = node('span', 'save-check', ' ✓'); check.setAttribute('aria-hidden', 'true'); b.append(check); }
     }
-    b.setAttribute('aria-label', exists ? `Место ${b.dataset.rank} сохранено` : `Сохранить место ${b.dataset.rank}`);
+    b.setAttribute('aria-label',mobileSaving.matches?(selected?`Место ${b.dataset.rank} сохранено в сравнении`:exists?(state.comparison.size>=3?`Место ${b.dataset.rank} сохранено. Выбор сравнения заполнен`:`Место ${b.dataset.rank} сохранено. Добавить в сравнение`):`Сохранить место ${b.dataset.rank} для сравнения`):(exists ? `Место ${b.dataset.rank} сохранено` : `Сохранить место ${b.dataset.rank}`));
     if (feedback && newlySaved) reveal(b, 'save-feedback', { duration: 'fast' });
   });
 }
@@ -178,6 +182,7 @@ export function renderSaved() {
       }
       checkbox.checked ? state.comparison.add(item.id) : state.comparison.delete(item.id);
       renderComparison();
+      updateSaveButtons();
     });
     label.append(checkbox, node('span', '', 'Сравнить'));
     const remove = button('Удалить', '', () => mutateSaved(latest => ({
@@ -220,8 +225,15 @@ export function fillTable(body, items) {
 export function renderComparison() {
   const rows = comparisonRows();
   const comparison = $('comparison'), wasVisible = !comparison.hidden;
+  const focusHidden=!rows.length&&comparison.contains(document.activeElement);
   setRevealed(comparison, !!rows.length, 'comparison');
   fillTable($('comparison').querySelector('tbody'), rows);
   if (wasVisible && rows.length) reveal(comparison.querySelector('table'), 'comparison-update', { duration: 'fast' });
   updateReportAvailability();
+  document.dispatchEvent(new CustomEvent('gm:comparison-changed'));
+  if(focusHidden){
+    const target=[...document.querySelectorAll('#saved-list [data-testid="compare-place"]')].at(-1)||$('saved-title');
+    if(target.tagName!=='INPUT')target.tabIndex=-1;
+    target.focus({preventScroll:true});
+  }
 }
