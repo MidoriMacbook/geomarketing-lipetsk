@@ -33,7 +33,7 @@ function bootstrap() {
     clearAnalysisMap();
     cancelRevealsWithin($('result'));
     resetCounters($('recommendation-list'));
-    resetCounters(document.querySelector('.kpis'));
+    document.querySelectorAll('.kpis,.area-details-grid').forEach(resetCounters);
     $('result').hidden = true;
     setRevealed($('result-empty'), true, 'empty');
     $('data-section').hidden = false;

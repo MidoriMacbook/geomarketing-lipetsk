@@ -1,0 +1,7 @@
+async original=>{
+ const ctx=await original.context().browser().newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true}),p=await ctx.newPage();const check=(v,s)=>{if(!v)throw Error(s)};
+ try{await p.goto(new URL(original.url()).origin);await p.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');await p.locator('#mobile-settings-open').tap();await p.locator('#business-trigger').tap();const menu=p.locator('#business-listbox'),r=await menu.boundingBox(),cdp=await ctx.newCDPSession(p),x=r.x+r.width/2,y=r.y+r.height-25;
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});for(let i=1;i<=6;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:y-i*25}]});await p.waitForTimeout(25)}await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await p.waitForTimeout(300);
+ const scroll=await menu.evaluate(e=>e.scrollTop);check(scroll>0,'Список не прокручивается касанием');check(await menu.isVisible(),'Прокрутка закрыла список');check(await p.locator('#business').inputValue()==='cafe','Прокрутка применила случайный выбор');await p.getByRole('option',{name:'Стоматология',exact:true}).tap();check(await p.locator('#business').inputValue()==='dentist','Касание после прокрутки не применилось');return {ok:true,scroll,business:await p.locator('#business').inputValue()};
+ }finally{await ctx.close()}
+}
