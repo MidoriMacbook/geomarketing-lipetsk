@@ -38,6 +38,7 @@
 .hero-art .city-pin-core { fill:var(--color-page); }
 .hero-art .city-note { fill:var(--color-ink); font-family:var(--font-mono); font-size:11px; letter-spacing:.03em; }
 .hero-art-caption { display:flex; justify-content:space-between; gap:var(--space-4); margin-top:var(--space-3); padding-top:var(--space-3); border-top:var(--line) solid var(--color-line); color:var(--color-muted); font-family:var(--font-mono); font-size:.6875rem; letter-spacing:.04em; text-transform:uppercase; }
+.hero-mobile-caption { display:none; }
 #hero-motion-root { display:contents; }
 .intro.editorial-hero .eyebrow,.intro.editorial-hero h1,.intro.editorial-hero .hero-description { animation:none; }
 .saved-heading h2,.scenarios-heading h2 { font-family:var(--font-display); font-size:clamp(1.75rem,2.6vw,2.5rem); font-weight:500; line-height:1.2; letter-spacing:-.025em; }
@@ -194,7 +195,15 @@
  .intro .hero-title { font-size:clamp(2rem,8.5vw,2.4rem); line-height:1.12; margin-block:var(--space-3); letter-spacing:-.035em; }
  .intro .hero-title :is(.hero-title-word,.hero-title-business) { display:inline; }
  .intro .hero-description { font-size:var(--text-base); line-height:1.5; }
- .hero-art,.hero-meta,.hero-links .hero-text-action { display:none; }
+ .hero-meta,.hero-links .hero-text-action { display:none; }
+ .hero-art { display:block; margin-top:var(--space-4); padding-top:var(--space-2); border-top:var(--line) solid var(--color-line); }
+ .hero-art .city-desktop,.hero-art-caption { display:none; }
+ .hero-art .city-mobile { display:block; width:100%; height:clamp(6rem,30vw,7.5rem); max-height:none; }
+ .hero-mobile-caption { display:flex; justify-content:space-between; gap:var(--space-3); color:var(--color-muted); font-family:var(--font-mono); font-size:.625rem; letter-spacing:.05em; text-transform:uppercase; }
  .hero-links { margin-top:var(--space-3); }
  .hero-links .primary { min-height:var(--size-target); font-size:var(--text-base); white-space:normal; }
+}
+@media (min-width:601px) and (max-width:950px) and (max-height:500px) and (pointer:coarse) {
+ .intro.editorial-hero { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:var(--space-6); }
+ .hero-art { align-self:center; margin-top:0; padding-top:0; border-top:0; }
 }
