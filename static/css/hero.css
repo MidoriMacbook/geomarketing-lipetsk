@@ -43,7 +43,7 @@
 .saved-heading h2,.scenarios-heading h2 { font-family:var(--font-display); font-size:clamp(1.75rem,2.6vw,2.5rem); font-weight:500; line-height:1.2; letter-spacing:-.025em; }
 .saved-heading>div,.scenarios-heading>div { min-width:0; }
 .saved-heading h2,.scenarios-heading h2 { overflow-wrap:anywhere; }
-.kpis>div { border-radius:var(--radius-control); padding-block:var(--space-5); }
+:is(.kpis,.area-details-grid)>div { border-radius:var(--radius-control); padding-block:var(--space-5); }
 .kpis { gap:var(--space-3); }
 .map-heading { background:var(--color-surface); }
 .saved-section,.scenarios-section { box-shadow:none; }
@@ -182,4 +182,19 @@
  .site-header #nav-menu,.site-header .nav-items>a,.site-header .nav-items>button { transition:none!important; transform:none!important; }
  .menu-icon i { transition:none!important; }
  .site-header .nav-indicator { transition:none!important; }
+}
+
+/* Краткое вступление оставляет основной акцент рабочей карте. */
+@media (max-width:600px), (max-width:950px) and (max-height:500px) and (pointer:coarse) {
+ .site-header .brand { flex:1; min-width:0; }
+ .site-header .brand>span:last-child { min-width:0; }
+ .site-header .brand small { white-space:normal; }
+ .site-header #nav-toggle { flex-shrink:0; }
+ .intro.editorial-hero { display:block; min-height:0; padding:var(--space-4) 0; margin-bottom:var(--space-3); }
+ .intro .hero-title { font-size:clamp(2rem,8.5vw,2.4rem); line-height:1.12; margin-block:var(--space-3); letter-spacing:-.035em; }
+ .intro .hero-title :is(.hero-title-word,.hero-title-business) { display:inline; }
+ .intro .hero-description { font-size:var(--text-base); line-height:1.5; }
+ .hero-art,.hero-meta,.hero-links .hero-text-action { display:none; }
+ .hero-links { margin-top:var(--space-3); }
+ .hero-links .primary { min-height:var(--size-target); font-size:var(--text-base); white-space:normal; }
 }

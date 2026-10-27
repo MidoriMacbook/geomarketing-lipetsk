@@ -39,6 +39,8 @@ async original => {
     await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
     const cardNumber=page.locator('[data-testid="recommendation-card"]').first().locator('.score');
     assert(!await cardNumber.evaluate(node=>node.classList.contains('is-counting')),'Offscreen card count started before viewing');
+    assert(await page.locator('.mobile-rec-score').first().textContent()==='100%','Mobile summary loses exact score');
+    await page.setViewportSize({width:1440,height:1000});
     await cardNumber.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>document.querySelector('.recommendation .score').classList.contains('is-counting'));
     const cardFinal=await cardNumber.textContent();
@@ -77,7 +79,7 @@ async original => {
     await page.waitForFunction(()=>document.querySelector('.recommendation .place-metrics strong')?.dataset.counterTarget==='10000');
     const interruptedFrom=Number(await refreshedPeople.getAttribute('data-counter-from'));
     assert(interruptedFrom>37&&interruptedFrom<Math.round(payload.recommendations[0].residents_in_radius),'Interrupted card refresh did not retain displayed intermediate value');
-    await page.locator('#district').selectOption('center', {force:true});
+    await page.locator('#business').selectOption({index:1}, {force:true});
     assert(await counter.textContent()==='—','Filter reset retained old counter markup');
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     assert(await counter.textContent()==='—','Cancelled counter overwrote filter reset');

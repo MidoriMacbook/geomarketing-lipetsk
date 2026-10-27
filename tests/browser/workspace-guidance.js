@@ -61,6 +61,7 @@ async original=>{
   for(const scale of [1,2])for(const width of [390,768,1024,1440]){
    await page.setViewportSize({width,height:1000});await page.evaluate(scale=>document.documentElement.style.fontSize=scale===2?'200%':'',scale);await page.waitForTimeout(150);
    check(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'Overflow at '+width+'/'+scale);
+   if(width<=600&&!await page.locator('#area-details').evaluate(e=>e.open))await page.locator('#area-details>summary').click();
    await page.keyboard.press('Escape');await page.waitForTimeout(450);
    const beforeSize=await page.locator('#map-card').boundingBox(),mapSize=await page.locator('#map').boundingBox();
    for(const key of ['residents','houses','competitors','places']){
