@@ -17,11 +17,11 @@ async original => {
     await focusPage.getByTestId('scenario-delete').first().click(); await focusPage.locator('#scenario-delete-confirm').click();
     await focusPage.waitForFunction(() => document.querySelectorAll('[data-testid="scenario-card"]').length === 1);
     regressionCheck(await focusPage.evaluate(() => !!document.activeElement?.closest('[data-testid="scenario-card"]')), 'Surviving research card does not receive focus when deletion completes');
-    await focusPage.locator('#business').selectOption({ index: 1 }, { force: true });
-    regressionCheck(await focusPage.locator('#scenario-save').isDisabled(), 'Filter-clear fixture did not disable research save');
+    await focusPage.route('**/api/calculate?**',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({message:'Нет первого результата'})}));await focusPage.reload();await focusPage.waitForFunction(()=>document.documentElement.dataset.analysisState==='error');
+    regressionCheck(await focusPage.locator('#scenario-save').isDisabled(), 'Initial-error fixture did not disable research save');
     await focusPage.getByTestId('scenario-delete').click(); await focusPage.locator('#scenario-delete-confirm').click();
     await focusPage.waitForFunction(() => document.querySelector('#scenarios-section').hidden);
-    regressionCheck(await focusPage.locator('#map-title').evaluate(el => document.activeElement === el), 'Last deletion after filter clear loses workspace focus');
+    regressionCheck(await focusPage.locator('#map-title').evaluate(el => document.activeElement === el), 'Last deletion without a result loses workspace focus');
     regressionCheck(await focusPage.locator('#scenario-status').isVisible() && (await focusPage.locator('#scenario-status').innerText()).includes('удалено'), 'Last deletion completion feedback is hidden');
     await focusPage.evaluate(raw => localStorage.setItem('geomarketing.scenarios.v1', raw), originalResearch);
     await focusPage.route('**/api/catalog', route => route.abort()); await focusPage.reload();

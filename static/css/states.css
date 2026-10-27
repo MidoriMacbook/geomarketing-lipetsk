@@ -71,11 +71,12 @@ html[data-analysis-state=error] .status-dot { background:var(--color-on-dark); }
 :is(.kpis,.area-details-grid)>div[data-active=true]>.kpi-indicator { opacity:1; }
 :is(.kpis,.area-details-grid)>div[data-kpi=places]>.kpi-indicator { background:var(--color-opportunity); }
 @media (hover:hover) and (pointer:fine) { :is(.kpis,.area-details-grid)>div:has(.kpi-replay:hover:not(:disabled)):not([data-active=true]) { background:var(--color-featured); } }
-.kpi-replay { position:absolute; inset:0; width:100%; border:0; background:transparent; border-radius:inherit; color:var(--color-muted); text-align:right; }
+.kpi-replay { position:absolute; inset:0; width:100%; border:0; background:transparent; border-radius:inherit; color:var(--color-muted); text-align:right; overflow:hidden; }
 .kpi-replay:disabled { visibility:hidden; }
 .kpi-replay:focus-visible { outline-offset:-4px; }
 .kpi-replay:hover,.kpi-replay:active { background:transparent; transform:none; }
-.kpi-wave { position:absolute; border-radius:50%; background:var(--kpi-accent); opacity:0; pointer-events:none; z-index:-1; }
+.kpi-wave { position:absolute; border-radius:50%; background:var(--color-primary); opacity:0; pointer-events:none; z-index:0; }
+.kpi-action-label { position:relative; z-index:1; }
 .kpi-progress { position:absolute; left:var(--space-4); width:var(--space-9); max-width:calc(100% - var(--space-7)); bottom:0; height:var(--line-strong); transform:scaleX(0); transform-origin:left; background:var(--color-primary); opacity:0; pointer-events:none; transition:transform var(--motion-workspace) var(--ease-emphasized),opacity var(--motion-workspace); }
 :is(.kpis,.area-details-grid)>div[data-active=true]>.kpi-progress { opacity:1; transform:scaleX(1); }
 :is(.kpis,.area-details-grid)>div[data-kpi=places]>.kpi-progress { background:var(--color-opportunity); }
@@ -91,7 +92,10 @@ html[data-analysis-state=calculating] #result-empty::after,html[data-analysis-st
 @keyframes choice-mark-in { from { transform:scale(.85); } to { transform:scale(1); } }
 @keyframes save-line { from { transform:scaleX(0); } to { transform:scaleX(1); } }
 @keyframes loading-enter { from { opacity:.3; transform:translateY(4px); } to { opacity:1; transform:none; } }
+@keyframes mobile-scrim-in { from { opacity:0; } to { opacity:1; } }
+@keyframes mobile-scrim-out { from { opacity:1; } to { opacity:0; } }
 @media (prefers-reduced-motion:reduce) {
+ #mobile-settings-dialog::backdrop { animation:none!important; }
  .choice-trigger,.layers label,#run,:is(.kpis,.area-details-grid)>div { transform:none!important; }
  .choice-check,.choice-option-mark,.recommendation.selected::before,.place-actions .save::after,#catalog-status,#result-empty::after { animation:none!important; }
 }

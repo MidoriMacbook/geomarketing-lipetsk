@@ -20,24 +20,24 @@ function expandMobileCard(entry, expanded, animate = false) {
   card.dataset.mobileExpanded = String(expanded);
   toggle.setAttribute('aria-expanded', String(expanded));
   body.inert = mobileRecommendations.matches && !expanded;
-  if (expanded && animate && mobileRecommendations.matches) {
-    animateUI(body, [{ opacity: 0, transform: 'translateY(var(--motion-distance-small))' }, { opacity: 1, transform: 'translateY(0)' }], 'recommendation-expand', { duration: 260 });
-  }
+  body.classList.toggle('is-transitioning', animate && mobileRecommendations.matches);
+  if (mobileRecommendations.matches) body.setAttribute('aria-hidden', String(!expanded));
+  else body.removeAttribute('aria-hidden');
 }
 
 function arrangeMobileCard(entry) {
-  const { body, heading, coordinate, metrics, brief, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, briefDetails } = entry;
+  const { body, content, heading, coordinate, metrics, brief, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, briefDetails } = entry;
   cancelUI(body);
   if (mobileRecommendations.matches) {
     placeContent.append(coordinate, entry.linkActions);
     entry.linkActions.append(copy, osm);
     briefDetails.append(brief);
-    body.append(heading, metrics, showOnMap, actions, confirmation, placeDetails, briefDetails, explanation);
+    content.append(heading, metrics, showOnMap, actions, confirmation, placeDetails, briefDetails, explanation);
     placeDetails.open = false;
     briefDetails.open = false;
   } else {
     actions.append(save, copy, osm);
-    body.append(heading, coordinate, metrics, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails);
+    content.append(heading, coordinate, metrics, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails);
     placeDetails.open = true;
     briefDetails.open = true;
   }
@@ -49,6 +49,10 @@ function arrangeMobileCard(entry) {
 
 // Один обработчик использует только текущие карточки, включая повторный расчёт.
 mobileRecommendations.addEventListener('change', () => mobileCards.forEach(arrangeMobileCard));
+const settleMobileTransitions=()=>mobileCards.forEach(({body})=>body.classList.remove('is-transitioning'));
+matchMedia('(prefers-reduced-motion:reduce)').addEventListener('change',event=>{if(event.matches)settleMobileTransitions();});
+window.addEventListener('beforeprint',settleMobileTransitions);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)settleMobileTransitions();});
 
 function previewPlace(card, rank, active) {
   if (active) {
@@ -92,7 +96,7 @@ function connectCardPreview(card, rank) {
   });
 }
 
-export function selectPlace(rank, pan = false) {
+export function selectPlace(rank, pan = false, feedback = false) {
   const changed = state.selectedRank !== rank;
   state.selectedRank = rank;
   previewCard?.classList.remove('is-preview');
@@ -107,11 +111,11 @@ export function selectPlace(rank, pan = false) {
     if (entry && entry.card.dataset.mobileExpanded !== 'true') expandMobileCard(entry, true, true);
   }
   document.dispatchEvent(new CustomEvent('gm:recommendation-selected', { detail: { rank } }));
-  selectMarker(rank, pan, changed);
+  selectMarker(rank, pan, changed || feedback);
 }
 
-export function showResult(data) {
-  const newAnalysis = renderedAnalysisId !== data.analysis_id;
+export function showResult(data, { freshCalculation=false } = {}) {
+  const newAnalysis = freshCalculation || renderedAnalysisId !== data.analysis_id;
   renderedAnalysisId = data.analysis_id;
   const previousExpanded = new Map([...mobileCards.values()].map(({ card }) => [card.dataset.counterKey, card.dataset.mobileExpanded === 'true']));
   const previousValues = new Map([...$('recommendation-list').children].map(card => [
@@ -128,6 +132,11 @@ export function showResult(data) {
     $('result-empty').querySelector('h3').textContent = 'Подходящих мест не найдено';
     $('result-empty').querySelector('p').textContent = 'В области не хватает спроса для рекомендации. Попробуйте другую область или увеличьте её радиус.';
   }
+  countTo($('kpi-residents'), Math.round(data.stats.residents), { animate: newAnalysis });
+  countTo($('kpi-houses'), data.stats.houses, { animate: newAnalysis });
+  countTo($('kpi-competitors'), data.stats.competitors, { animate: newAnalysis });
+  countTo($('kpi-places'), data.recommendations.length, { animate: newAnalysis });
+  if (newAnalysis) ['residents', 'houses', 'competitors', 'places'].forEach(key => animateUI($('kpi-'+key),[{opacity:.45},{opacity:1}],'calculation-kpi',{duration:'fast'}));
   data.recommendations.forEach((rec, index) => {
     const card = node('article', `recommendation${rec.rank===state.selectedRank?' selected':''}`);
     card.dataset.testid = 'recommendation-card';
@@ -136,12 +145,14 @@ export function showResult(data) {
     card.dataset.mobileExpanded = String(!newAnalysis && previousExpanded.has(card.dataset.counterKey) ? previousExpanded.get(card.dataset.counterKey) : index === 0);
     connectCardPreview(card, rec.rank);
     const body = node('div', 'recommendation-body');
+    const clip = node('div', 'recommendation-clip'), content = node('div', 'recommendation-content');
+    clip.append(content);body.append(clip);
     body.id = `recommendation-body-${rec.rank}`;
     const toggle = button('', 'mobile-rec-toggle', () => {
       if (!mobileRecommendations.matches) return;
       const entry = mobileCards.get(rec.rank);
       const expanded = card.dataset.mobileExpanded !== 'true';
-      selectPlace(rec.rank, false);
+      selectPlace(rec.rank, false, expanded);
       expandMobileCard(entry, expanded, true);
     });
     toggle.setAttribute('aria-controls', body.id);
@@ -179,6 +190,7 @@ export function showResult(data) {
       await savePlace(rec);
       if (!alreadySaved && state.current?.analysis_id === analysisId && renderedAnalysisId === analysisId && card.isConnected && state.saved.some(item => item.id === savedId)) {
         confirmation.textContent = 'Сохранено для сравнения';
+        animateUI(confirmation,[{opacity:0},{opacity:1}],'save-confirmation',{duration:'fast'});
       }
     });
     save.dataset.testid = 'save-place';
@@ -207,22 +219,17 @@ export function showResult(data) {
     briefDetails.append(node('summary', '', 'Подробнее о месте'));
     const explanation = explanationBlock(rec);
     card.append(toggle, body);
-    const entry = { card, body, toggle, heading, coordinate, metrics, brief, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
+    const entry = { card, body, content, toggle, heading, coordinate, metrics, brief, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
     mobileCards.set(rec.rank, entry);
     arrangeMobileCard(entry);
     $('recommendation-list').append(card);
     countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: '%', from: previous[0] });
     countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ', from: previous[1] });
     countTo(competition.querySelector('strong'), rec.competitors_in_radius, { animate: newAnalysis, from: previous[2] });
-    if (newAnalysis) reveal(card, 'recommendation', { delay: index * motionStagger(), duration: 'slow', easing: 'emphasized' });
+    if (newAnalysis) animateUI(card,[{opacity:0,transform:'translateY(var(--motion-distance-small))'},{opacity:1,transform:'translateY(0)'}],'calculation-result',{delay:motionStagger()*(3+index*2/3),duration:'workspace',easing:'emphasized'});
   });
   updateSaveButtons();
-  countTo($('kpi-residents'), Math.round(data.stats.residents), { animate: newAnalysis });
-  countTo($('kpi-houses'), data.stats.houses, { animate: newAnalysis });
-  countTo($('kpi-competitors'), data.stats.competitors, { animate: newAnalysis });
-  countTo($('kpi-places'), data.recommendations.length, { animate: newAnalysis });
   $('kpi-business').textContent = data.business_name;
-  if (newAnalysis) ['residents', 'houses', 'competitors', 'places'].forEach(key => reveal($('kpi-'+key), 'kpi'));
   $('map-context').textContent = `${data.district_name} · ${data.business_name}`;
   if ($('analysis-context')) $('analysis-context').textContent = `${data.district_name} · ${data.business_name}`;
   $('source').textContent = `Источник: ${sourceText(data.source)}. Дата самой ранней копии: ${dateText(dataDate(data))}. Население оценено по площади и этажности домов. ${deliverySummary(data)}`.trim();

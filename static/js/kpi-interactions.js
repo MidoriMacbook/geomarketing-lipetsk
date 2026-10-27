@@ -8,6 +8,15 @@ import { initWorkspaceDisclosure } from './workspace-disclosure.js';
 const keys=['residents','houses','competitors','places'];
 const cards=new Map(),byId=id=>document.getElementById(id);
 let active=null,baseStatus=null,focusedStatus=null;
+function clearWaves(){document.querySelectorAll('.kpi-wave').forEach(wave=>{cancelUI(wave);wave.remove();});}
+function showWave(button,event){
+ clearWaves();if(motionReduced())return;
+ const rect=button.getBoundingClientRect(),size=Math.max(rect.width,rect.height)*2;
+ const x=event.detail?event.clientX-rect.left:rect.width/2,y=event.detail?event.clientY-rect.top:rect.height/2;
+ const wave=node('span','kpi-wave');wave.setAttribute('aria-hidden','true');
+ Object.assign(wave.style,{width:size+'px',height:size+'px',left:x-size/2+'px',top:y-size/2+'px'});button.append(wave);
+ animateUI(wave,[{transform:'scale(.05)',opacity:.16},{transform:'scale(1)',opacity:0}],'kpi-wave',{duration:'workspace',easing:'emphasized',cleanup:()=>wave.remove()});
+}
 
 function reserveStatusHeight() {
  const status=byId('analysis-status');if(!status)return;
@@ -43,13 +52,14 @@ document.fonts?.ready.then(reserveStatusHeight);
 export function updateAnalysisContext(phase=document.documentElement.dataset.analysisState) {
  const target=byId('analysis-context');if(!target)return;
  const selection=state.catalog?{district_name:byId('district')?.selectedOptions[0]?.textContent,business_name:byId('business')?.selectedOptions[0]?.textContent}:{};
- target.textContent=analysisContext(state.current,state.openedScenarioId&&phase==='success'?'archive':phase,selection);
+ target.textContent=analysisContext(state.current,state.openedScenarioId&&phase==='success'?'archive':phase,selection)+(state.current&&phase==='initial'?' · предыдущий расчёт, параметры изменены':'');
 }
 export function clearKpiFocus({immediate=false}={}) {
+ clearWaves();
  const status=byId('analysis-status');
  if(active&&status?.textContent===focusedStatus)status.textContent=baseStatus;
  active=null;baseStatus=null;focusedStatus=null;
- cards.forEach(({card,button})=>{card.dataset.active='false';button.setAttribute('aria-pressed','false');});
+ cards.forEach(({card,button})=>{card.dataset.active='false';button.setAttribute('aria-pressed','false');button.querySelector('.kpi-action-label').textContent='Показать на карте';});
  if(byId('map-card'))delete byId('map-card').dataset.kpiFocus;
  if(byId('recommendations'))delete byId('recommendations').dataset.kpiFocus;
  setMapEmphasis([],{animate:!immediate});
@@ -75,15 +85,16 @@ document.querySelectorAll('.kpis>div').forEach((card,index)=>{
  card.dataset.kpi=key;card.dataset.active='false';card.append(indicator,progress,hint,button);
  cards.set(key,{card,number,button,label});
  new MutationObserver(syncButtons).observe(number,{childList:true,attributes:true,attributeFilter:['data-counter-target']});
- button.addEventListener('click',()=>{
+ button.addEventListener('click',event=>{
   const wanted=nextFocus(active,key,!button.disabled);
-  if(!wanted){clearKpiFocus();replayCounter(number);return;}
+  if(!wanted){clearKpiFocus();replayCounter(number);showWave(button,event);return;}
   if(!active)baseStatus=byId('analysis-status')?.textContent;
   active=wanted;
-  cards.forEach(item=>{const selected=item.card===card;item.card.dataset.active=String(selected);item.button.setAttribute('aria-pressed',String(selected));});
+  cards.forEach(item=>{const selected=item.card===card;item.card.dataset.active=String(selected);item.button.setAttribute('aria-pressed',String(selected));item.button.querySelector('.kpi-action-label').textContent=selected?'Снять выделение':'Показать на карте';});
   byId('map-card').dataset.kpiFocus=key;byId('recommendations').dataset.kpiFocus=key;
   setMapEmphasis(focusDescription(key,state.current).layers);updateKpiStatus();
   replayCounter(number);
+  showWave(button,event);
   if(!motionReduced())animateUI(card,[{transform:'scale(1)'},{transform:'scale(.985)',offset:.45},{transform:'scale(1)'}],'kpi-press',{duration:220});
  });
 });
