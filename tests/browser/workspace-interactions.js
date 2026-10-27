@@ -286,6 +286,7 @@ async original => {
       await touch.addInitScript(() => { window.ResizeObserver = undefined; Element.prototype.animate = undefined; });
       await trackMap(touch); await touch.goto(base);
       await touch.waitForFunction(() => document.documentElement.dataset.analysisState === 'success');
+      await touch.locator('.mobile-rec-details>summary').first().tap();
       const touchSummary = touch.locator('.explanation-block summary').first();
       await touchSummary.tap();
       assert(await touch.locator('.explanation-block details').first().getAttribute('open') !== null, 'Touch/no-WAAPI disclosure does not open');

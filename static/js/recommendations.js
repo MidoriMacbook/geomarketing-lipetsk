@@ -6,7 +6,8 @@ import { selectMarker, hoverPlace } from './map.js';
 import { updateReportAvailability } from './report.js';
 import { countTo, counterValue, resetCounters } from './counters.js';
 import { qualityBlock, qualitySummary, explanationBlock } from './data-quality.js';
-import { recommendationBrief } from './recommendation-brief.js';
+import { recommendationBrief, recommendationDecision } from './recommendation-brief.js';
+import { offerSavedComparison, openSavedComparison } from './comparison-guide.js';
 
 let renderedAnalysisId = null;
 let previewCard = null;
@@ -26,22 +27,25 @@ function expandMobileCard(entry, expanded, animate = false) {
 }
 
 function arrangeMobileCard(entry) {
-  const { body, content, heading, coordinate, metrics, brief, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, briefDetails } = entry;
+  const { body, content, heading, coordinate, metrics, brief, reasons, secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, briefDetails } = entry;
   cancelUI(body);
   if (mobileRecommendations.matches) {
     placeContent.append(coordinate, entry.linkActions);
     entry.linkActions.append(copy, osm);
-    briefDetails.append(brief);
-    content.append(heading, metrics, showOnMap, actions, confirmation, placeDetails, briefDetails, explanation);
+    briefDetails.append(brief,placeDetails,explanation);
+    secondaryActions.prepend(showOnMap);
+    content.append(heading,metrics,reasons,actions,confirmation,secondaryActions,briefDetails);
     placeDetails.open = false;
     briefDetails.open = false;
   } else {
     actions.append(save, copy, osm);
-    content.append(heading, coordinate, metrics, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails);
+    content.append(heading, coordinate, metrics, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,reasons,secondaryActions);
     placeDetails.open = true;
     briefDetails.open = true;
   }
   showOnMap.hidden = !mobileRecommendations.matches;
+  save.classList.toggle('primary',mobileRecommendations.matches);save.classList.toggle('secondary',!mobileRecommendations.matches);
+  briefDetails.querySelector('summary').textContent=mobileRecommendations.matches?'Подробности места':'Подробнее о месте';
   placeDetails.hidden = !mobileRecommendations.matches;
   briefDetails.hidden = !mobileRecommendations.matches;
   expandMobileCard(entry, entry.card.dataset.mobileExpanded === 'true');
@@ -111,6 +115,7 @@ export function selectPlace(rank, pan = false, feedback = false) {
     if (entry && entry.card.dataset.mobileExpanded !== 'true') expandMobileCard(entry, true, true);
   }
   document.dispatchEvent(new CustomEvent('gm:recommendation-selected', { detail: { rank } }));
+  if(state.current?.recommendations.some(rec=>rec.rank===rank))$('analysis-status').textContent=typeof L==='undefined'?`Выбрано место ${rank} · карта недоступна`:`Выбрано место ${rank} · выделено на карте`;
   selectMarker(rank, pan, changed || feedback);
 }
 
@@ -156,7 +161,10 @@ export function showResult(data, { freshCalculation=false } = {}) {
       expandMobileCard(entry, expanded, true);
     });
     toggle.setAttribute('aria-controls', body.id);
-    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`), node('span', 'mobile-rec-score', `${Math.round(rec.score * 100)}%`), node('span', 'mobile-rec-difference', `≈ ${fmt(rec.residents_in_radius)} жителей · конкурентов: ${fmt(rec.competitors_in_radius)}`));
+    const decision=recommendationDecision(rec),score=node('span','mobile-rec-score',`${Math.round(rec.score*100)}%`);
+    score.setAttribute('aria-label',`${Math.round(rec.score*100)}% — относительная оценка внутри этого расчёта`);
+    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference',decision.headline));
+    const reasons=node('section','mobile-reasons'),reasonList=node('ul');reasons.append(node('h4','','Почему это место'),reasonList);decision.reasons.forEach(text=>reasonList.append(node('li','',text)));reasons.hidden=!decision.reasons.length;
     const previous = previousValues.get(card.dataset.counterKey) || [];
     const heading = node('div', 'place-title'), select = button(`Место ${rec.rank}`, 'place-select', () => selectPlace(rec.rank));
     select.setAttribute('aria-pressed', rec.rank === state.selectedRank);
@@ -170,9 +178,8 @@ export function showResult(data, { freshCalculation=false } = {}) {
     metrics.append(people, competition);
     const showOnMap = button('Показать на карте', 'button secondary mobile-show-place', () => {
       selectPlace(rec.rank, true);
-      const title = $('map-title');
-      if (title) { title.tabIndex = -1; title.focus({ preventScroll: true }); }
-      $('map-card')?.scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'start' });
+      const map = $('map');
+      if (map) { if(!map.hasAttribute('tabindex'))map.tabIndex=-1;map.focus({ preventScroll: true });map.scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'center' }); }
     });
     const brief = node('dl', 'recommendation-brief'), summary = recommendationBrief(rec);
     for (const [key, label] of [['demand', 'Спрос'], ['competition', 'Конкуренция'], ['nearest', 'Ближайший конкурент'], ['check', 'Проверить на месте']]) {
@@ -188,8 +195,9 @@ export function showResult(data, { freshCalculation=false } = {}) {
       confirmation.textContent = '';
       if (!analysisId || analysisId !== data.analysis_id) return;
       await savePlace(rec);
+      if(mobileRecommendations.matches&&state.current?.analysis_id===analysisId&&card.isConnected&&state.saved.some(item=>item.id===savedId))offerSavedComparison(card,savedId);
       if (!alreadySaved && state.current?.analysis_id === analysisId && renderedAnalysisId === analysisId && card.isConnected && state.saved.some(item => item.id === savedId)) {
-        confirmation.textContent = 'Сохранено для сравнения';
+        if(!mobileRecommendations.matches)confirmation.textContent = 'Сохранено для сравнения';
         animateUI(confirmation,[{opacity:0},{opacity:1}],'save-confirmation',{duration:'fast'});
       }
     });
@@ -218,8 +226,10 @@ export function showResult(data, { freshCalculation=false } = {}) {
     const briefDetails = node('details', 'mobile-rec-details');
     briefDetails.append(node('summary', '', 'Подробнее о месте'));
     const explanation = explanationBlock(rec);
+    const secondaryActions=node('div','mobile-save-secondary'),compare=button('Сравнить','compare-saved-link',openSavedComparison);compare.hidden=true;secondaryActions.append(compare);
+    const savedId=`${data.analysis_id}:${rec.rank}`;if(state.saved.some(item=>item.id===savedId))card.dataset.savedFeedbackId=savedId;
     card.append(toggle, body);
-    const entry = { card, body, content, toggle, heading, coordinate, metrics, brief, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
+    const entry = { card, body, content, toggle, heading, coordinate, metrics, brief,reasons,secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
     mobileCards.set(rec.rank, entry);
     arrangeMobileCard(entry);
     $('recommendation-list').append(card);

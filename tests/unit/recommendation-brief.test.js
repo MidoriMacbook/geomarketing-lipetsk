@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { recommendationBrief } from '../../static/js/recommendation-brief.js';
+import * as presentation from '../../static/js/recommendation-brief.js';
+const { recommendationBrief, recommendationDecision }=presentation;
 
 const explanation = overrides => ({
   version: 1,
@@ -13,6 +14,22 @@ const explanation = overrides => ({
   ...overrides
 });
 const recommendation = overrides => ({ residents_in_radius: 1200, competitors_in_radius: 2, radius_m: 300, nearest_competitor_m: 123.6, explanation: explanation(), ...overrides });
+
+test('decision uses assessed relative demand and distinct houses/centre facts without promises',()=>{
+ assert.equal(typeof recommendationDecision,'function','Нет краткого объяснения решения');
+ const value=recommendationDecision(recommendation({competitors_in_radius:0}));
+ assert.equal(value.headline,'Спрос выше · Без учтённых конкурентов');
+ assert.deepEqual(value.reasons,['Учтено домов: 35','Центр спроса: 40 м']);
+});
+test('decision does not invent assessed demand for old or damaged enrichment',()=>{
+ for(const value of [undefined,explanation({metrics:{houses_in_radius:-1}})]){
+  const decision=recommendationDecision(recommendation({explanation:value,nearest_competitor_m:0}));
+  assert.match(decision.headline,/Спрос не оценён/);assert.ok(decision.reasons.includes('Ближайший конкурент: 0 м'));
+  assert.ok(!decision.reasons.some(text=>text.includes('центр')||text.includes('35')));
+ }
+ const empty=recommendationDecision({residents_in_radius:'1200',competitors_in_radius:-1,radius_m:null});
+ assert.equal(empty.headline,'Спрос не оценён · Конкуренция не оценена');assert.deepEqual(empty.reasons,[]);
+});
 
 test('brief describes existing model levels, exact nearest distance and first field check', () => {
   assert.deepEqual(recommendationBrief(recommendation()), {

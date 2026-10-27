@@ -24,3 +24,18 @@ export function recommendationBrief(rec) {
     check: explanation?.field_checks.find(text => text.trim()) || 'Проверьте помещение, доступ и поток посетителей.'
   };
 }
+
+export function recommendationDecision(rec) {
+  const explanation=assessed(rec?.explanation)?rec.explanation:null;
+  const levels={higher:'Спрос выше',similar:'Спрос средний',lower:'Спрос ниже',unknown:'Спрос не оценён'};
+  const count=rec?.competitors_in_radius;
+  const competition=Number.isSafeInteger(count)&&count>=0?(count===0?'Без учтённых конкурентов':'Есть конкуренты'):'Конкуренция не оценена';
+  const reasons=[],format=value=>Math.round(value).toLocaleString('ru-RU');
+  const metrics=explanation?.metrics;
+  if(Number.isSafeInteger(metrics?.houses_in_radius)&&metrics.houses_in_radius>=0)reasons.push(`Учтено домов: ${format(metrics.houses_in_radius)}`);
+  if(Number.isFinite(metrics?.nearest_demand_center_m)&&metrics.nearest_demand_center_m>=0)reasons.push(`Центр спроса: ${format(metrics.nearest_demand_center_m)} м`);
+  if(reasons.length<2&&Number.isFinite(rec?.nearest_competitor_m)&&rec.nearest_competitor_m>=0)reasons.push(`Ближайший конкурент: ${format(rec.nearest_competitor_m)} м`);
+  if(reasons.length<2&&Number.isFinite(rec?.radius_m)&&rec.radius_m>0)reasons.push(`Радиус оценки: ${format(rec.radius_m)} м`);
+  if(reasons.length<2&&Number.isFinite(rec?.residents_in_radius)&&rec.residents_in_radius>=0)reasons.push(`Оценка жителей: ≈ ${format(rec.residents_in_radius)}`);
+  return {headline:`${levels[explanation?.demand_level]||levels.unknown} · ${competition}`,reasons:reasons.slice(0,2)};
+}
