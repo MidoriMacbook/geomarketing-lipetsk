@@ -1,3 +1,10 @@
+export function focusWorkspaceMap() {
+  const target=document.getElementById('map-title');
+  if(!target)return;
+  target.tabIndex=-1;target.focus({preventScroll:true});
+  target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth',block:'start'});
+}
+
 const header = document.getElementById('site-header');
 const menu = document.getElementById('nav-menu');
 const toggle = document.getElementById('nav-toggle');
@@ -61,7 +68,7 @@ if (header && menu && toggle) {
   document.addEventListener('focusin', event => {
     if (!header.contains(event.target) && header.classList.contains('nav-open')) close();
   });
-  document.querySelectorAll('#nav-menu a[href^="#"], .hero-links a[href^="#"], .skip-link[href^="#"]').forEach(link => link.addEventListener('click', event => {
+  document.querySelectorAll('#nav-menu a[href^="#"], .hero-links a[href^="#"], .workspace-return a[href^="#"], .skip-link[href^="#"]').forEach(link => link.addEventListener('click', event => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     const target = document.getElementById(link.hash.slice(1));
     if (!target) return;
@@ -70,10 +77,13 @@ if (header && menu && toggle) {
     close();
     const navigate = () => {
       pendingNavigation = null;
-      if (!target.hasAttribute('tabindex')) target.tabIndex = -1;
       history.pushState(null, '', link.hash);
-      target.focus({ preventScroll:true });
-      target.scrollIntoView({ behavior:reduce.matches ? 'instant' : 'smooth', block:'start' });
+      if(target.id==='map-title')focusWorkspaceMap();
+      else {
+        if (!target.hasAttribute('tabindex')) target.tabIndex = -1;
+        target.focus({ preventScroll:true });
+        target.scrollIntoView({ behavior:reduce.matches ? 'instant' : 'smooth', block:'start' });
+      }
       if (links.includes(link)) setActive(link);
     };
     if (wait) { pendingNavigation = navigate; navigationTimer = setTimeout(navigate, 300); }

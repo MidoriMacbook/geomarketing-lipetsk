@@ -39,7 +39,7 @@ function arrangeMobileCard(entry) {
     briefDetails.open = false;
   } else {
     actions.append(save, copy, osm);
-    content.append(heading, coordinate, metrics, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,reasons,secondaryActions);
+    content.append(heading, coordinate, metrics, reasons, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,secondaryActions);
     placeDetails.open = true;
     briefDetails.open = true;
   }
@@ -163,8 +163,12 @@ export function showResult(data, { freshCalculation=false } = {}) {
     toggle.setAttribute('aria-controls', body.id);
     const decision=recommendationDecision(rec),score=node('span','mobile-rec-score',`${Math.round(rec.score*100)}%`);
     score.setAttribute('aria-label',`${Math.round(rec.score*100)}% — относительная оценка внутри этого расчёта`);
-    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference',decision.headline));
-    const reasons=node('section','mobile-reasons'),reasonList=node('ul');reasons.append(node('h4','','Почему это место'),reasonList);decision.reasons.forEach(text=>reasonList.append(node('li','',text)));reasons.hidden=!decision.reasons.length;
+    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference','Оценка внутри расчёта'));
+    const reasons=node('section','mobile-reasons decision-reasons'),reasonList=node('ul');
+    reasons.append(node('h4','','Почему это место'),node('p','decision-headline',decision.headline),reasonList);
+    // Население уже показано крупно в метриках: это та же фактическая причина,
+    // а не второй экземпляр числа в списке. Остальные причины — максимум две.
+    decision.reasons.filter(text=>!text.startsWith('≈ ')).forEach(text=>reasonList.append(node('li','',text)));
     const previous = previousValues.get(card.dataset.counterKey) || [];
     const heading = node('div', 'place-title'), select = button(`Место ${rec.rank}`, 'place-select', () => selectPlace(rec.rank));
     select.setAttribute('aria-pressed', rec.rank === state.selectedRank);
@@ -189,15 +193,17 @@ export function showResult(data, { freshCalculation=false } = {}) {
     }
     const confirmation = node('p', 'save-confirmation');
     confirmation.setAttribute('role', 'status');
+    const confirmationSpace=node('span','confirmation-space');confirmationSpace.dataset.text='Сохранено · добавьте ещё одно для сравнения';confirmationSpace.setAttribute('aria-hidden','true');
+    const confirmationLabel=node('span','confirmation-label');confirmation.append(confirmationSpace,confirmationLabel);
     const actions = node('div', 'place-actions'), save = button('Сохранить', 'button secondary save', async () => {
       const analysisId = state.current?.analysis_id, savedId = `${analysisId}:${rec.rank}`;
       const alreadySaved = state.saved.some(item => item.id === savedId);
-      confirmation.textContent = '';
+      confirmationLabel.textContent = '';
       if (!analysisId || analysisId !== data.analysis_id) return;
       await savePlace(rec);
       if(mobileRecommendations.matches&&state.current?.analysis_id===analysisId&&card.isConnected&&state.saved.some(item=>item.id===savedId))offerSavedComparison(card,savedId);
       if (!alreadySaved && state.current?.analysis_id === analysisId && renderedAnalysisId === analysisId && card.isConnected && state.saved.some(item => item.id === savedId)) {
-        if(!mobileRecommendations.matches)confirmation.textContent = 'Сохранено для сравнения';
+        if(!mobileRecommendations.matches){card.dataset.savedFeedbackId=savedId;document.dispatchEvent(new CustomEvent('gm:comparison-changed'));}
         animateUI(confirmation,[{opacity:0},{opacity:1}],'save-confirmation',{duration:'fast'});
       }
     });

@@ -26,7 +26,7 @@ REQUIRED = [
     *[f'static/css/{name}.css' for name in
       ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios', 'field-checks', 'hero')],
     *[f'static/js/{name}.js' for name in
-      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage', 'navigation', 'hero-loader', 'kpi-interactions', 'data-delivery', 'analysis-focus', 'recommendation-brief', 'workspace-disclosure', 'mobile-workspace', 'comparison-guide')],
+      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage', 'navigation', 'hero-loader', 'kpi-interactions', 'data-delivery', 'analysis-focus', 'recommendation-brief', 'workspace-disclosure', 'mobile-workspace', 'comparison-guide', 'workspace-return')],
     'static/vendor/hero/hero-motion.js', 'scripts/frontend/hero-entry.js',
     'tests/unit/__init__.py', 'tests/integration/__init__.py',
     'tests/browser/smoke.js', 'tests/browser/workspace.js',
@@ -54,6 +54,7 @@ REQUIRED_IDS = {
     'mobile-settings-dialog', 'mobile-settings-title', 'mobile-settings-close', 'mobile-settings-content',
     'saved-title', 'comparison-title', 'model-title', 'print-report-content',
     'comparison-guide', 'comparison-guide-count', 'comparison-guide-open', 'comparison-guide-caption',
+    'hero-return-context', 'hero-map-link', 'comparison-map-link', 'comparison-settings-link', 'comparison-research-button',
 }
 
 

@@ -26,6 +26,12 @@
 .intro .hero-description { max-width:30rem; font-size:var(--text-base); line-height:1.65; color:var(--color-muted); }
 .hero-links { display:flex; align-items:center; flex-wrap:wrap; gap:var(--space-3) var(--space-5); margin-top:var(--space-5); }
 .hero-links .primary { padding-inline:var(--space-5); min-height:48px; }
+.hero-return-slot { height:3em; margin-top:var(--space-3); max-width:30rem; font-size:var(--text-xs); line-height:1.5; }
+#hero-return-context { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; max-height:3em; overflow:hidden; margin:0; font-size:inherit; line-height:inherit; color:var(--color-primary); overflow-wrap:anywhere; }
+.hero-links #hero-map-link { display:inline-grid; grid-template-columns:minmax(0,1fr); max-width:100%; white-space:normal; }
+#hero-map-link::before { content:'Вернуться к карте'; visibility:hidden; grid-area:1/1; }
+#hero-map-link>span { grid-area:1/1; transform:none; }
+.hero-return-slot+.hero-links { margin-top:var(--space-2); }
 
 .hero-meta { display:flex; align-items:center; flex-wrap:wrap; gap:var(--space-2) var(--space-4); margin-top:var(--space-5); color:var(--color-muted); font-family:var(--font-mono); font-size:.6875rem; letter-spacing:.015em; }
 .hero-art { position:relative; align-self:stretch; display:flex; flex-direction:column; justify-content:center; min-width:0; max-width:100%; color:var(--color-ink); }

@@ -11,7 +11,7 @@ export function initMobileWorkspace() {
  settings.before(home);byId('run').before(runHome);
  const kpis=document.querySelector('.kpis'),area=byId('area-details'),secondary=area.querySelector('.area-details-grid');
  const cards=Object.fromEntries(['residents','houses','competitors','places'].map(key=>[key,byId('kpi-'+key).parentElement]));
- const sections=[['saved-section','Сохранённые места'],['scenarios-section','Исследования']].map(([id,title])=>{
+ const sections=[['saved-section','Сохранённые места'],['scenarios-section','Архив исследований']].map(([id,title])=>{
   const section=byId(id),marker=document.createComment(id+'-home'),details=document.createElement('details'),summary=document.createElement('summary');
   details.className='mobile-secondary-details';summary.textContent=title;details.append(summary);section.before(marker);
   return {section,marker,details,summary,title};
@@ -59,6 +59,7 @@ export function initMobileWorkspace() {
   animateUI(dialog,[{opacity:0,transform:'translateY(24px)'},{opacity:1,transform:'translateY(0)'}],'mobile-settings-open',{duration:'workspace',easing:'emphasized'});
  }
  function syncLayout() {
+  const focused=document.activeElement,focusedSection=sections.find(item=>item.section.contains(focused));
   closeSettings({immediate:true,restoreFocus:false});
   if(mobile.matches){
    byId('mobile-settings-content').append(settings);
@@ -74,6 +75,10 @@ export function initMobileWorkspace() {
    if(dialog.contains(document.activeElement))byId('settings-title').focus({preventScroll:true});
   }
   document.documentElement.dataset.mobileLayout=mobile.matches?'phone':'wide';syncSummary();
+  if(focusedSection&&!focusedSection.section.hidden){
+   if(mobile.matches)focusedSection.details.open=true;
+   if(focused.isConnected)focused.focus({preventScroll:true});
+  }
  }
  opener.addEventListener('click',()=>openSettings(opener));
  byId('mobile-settings-close').addEventListener('click',()=>closeSettings());
