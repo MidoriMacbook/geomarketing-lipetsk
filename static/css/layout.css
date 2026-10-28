@@ -41,6 +41,7 @@
 .workspace-actions p { max-width:var(--size-copy-measure); }
 .data-section { display:block; margin-top:var(--space-9); padding:var(--space-5) 0; border-top:var(--line) solid var(--color-line); }
 .data-section h2 { margin-bottom:var(--space-2); }
+.data-section #data-title { font-family:var(--font-body); font-size:var(--text-lg); font-weight:600; letter-spacing:0; }
 .data-section p { font-size:var(--text-sm); color:var(--color-muted); max-width:var(--size-copy-measure); }
 #data-details { margin-top:var(--space-4); border:var(--line) solid var(--color-line); border-radius:var(--radius-panel); background:var(--color-surface); }
 #data-summary { display:grid; grid-template-columns:minmax(0,1fr) var(--space-4); align-items:center; gap:var(--space-4); cursor:pointer; min-height:56px; padding:var(--space-4); font-size:var(--text-sm); font-weight:600; border-radius:inherit; }

@@ -15,20 +15,30 @@ const explanation = overrides => ({
 });
 const recommendation = overrides => ({ residents_in_radius: 1200, competitors_in_radius: 2, radius_m: 300, nearest_competitor_m: 123.6, explanation: explanation(), ...overrides });
 
-test('decision uses assessed relative demand and distinct houses/centre facts without promises',()=>{
+test('decision prioritises observed competition, residents and centre facts without promises',()=>{
  assert.equal(typeof recommendationDecision,'function','Нет краткого объяснения решения');
  const value=recommendationDecision(recommendation({competitors_in_radius:0}));
- assert.equal(value.headline,'Спрос выше · Без учтённых конкурентов');
- assert.deepEqual(value.reasons,['Учтено домов: 35','Центр спроса: 40 м']);
+ assert.equal(value.headline,'Спрос выше среди точек расчёта; нет учтённых конкурентов');
+ assert.deepEqual(value.reasons,['≈ 1 200 жителей в радиусе','Центр спроса в 40 м']);
 });
 test('decision does not invent assessed demand for old or damaged enrichment',()=>{
  for(const value of [undefined,explanation({metrics:{houses_in_radius:-1}})]){
   const decision=recommendationDecision(recommendation({explanation:value,nearest_competitor_m:0}));
-  assert.match(decision.headline,/Спрос не оценён/);assert.ok(decision.reasons.includes('Ближайший конкурент: 0 м'));
+  assert.equal(decision.headline,'Учтено конкурентов в радиусе: 2');assert.deepEqual(decision.reasons,['≈ 1 200 жителей в радиусе']);
   assert.ok(!decision.reasons.some(text=>text.includes('центр')||text.includes('35')));
  }
  const empty=recommendationDecision({residents_in_radius:'1200',competitors_in_radius:-1,radius_m:null});
- assert.equal(empty.headline,'Спрос не оценён · Конкуренция не оценена');assert.deepEqual(empty.reasons,[]);
+ assert.equal(empty.headline,'Причина не определена по доступным данным');assert.deepEqual(empty.reasons,[]);
+});
+
+test('decision keeps priorities and does not classify missing facts or invent low competition',()=>{
+ assert.equal(recommendationDecision(recommendation({competitors_in_radius:1})).headline,'Учтено конкурентов в радиусе: 1');
+ const rec=recommendation({competitors_in_radius:NaN,residents_in_radius:null});
+ assert.deepEqual(recommendationDecision(rec),{headline:'Центр спроса в 40 м',reasons:['Плотность домов: 60 на км²']});
+ assert.deepEqual(recommendationDecision({competitors_in_radius:0}),{headline:'Нет учтённых конкурентов в радиусе',reasons:[]});
+ assert.deepEqual(recommendationDecision({residents_in_radius:0}),{headline:'≈ 0 жителей в радиусе',reasons:[]});
+ const value=recommendationDecision(recommendation({explanation:explanation({demand_level:'lower'}),competitors_in_radius:0}));
+ assert.ok(!value.headline.includes('Спрос выше'));
 });
 
 test('brief describes existing model levels, exact nearest distance and first field check', () => {

@@ -295,6 +295,8 @@
  #result-empty p { margin-top:var(--space-2); }
  .mobile-secondary-details { margin-top:var(--space-4); border-top:var(--line) solid var(--color-line); }
  .mobile-secondary-details>summary { padding-block:var(--space-3); font-weight:600; }
+ .mobile-secondary-details:has(#saved-section)>summary { color:var(--color-primary); }
+ .mobile-secondary-details:has(#scenarios-section)>summary { color:var(--color-muted); font-weight:500; }
  .mobile-secondary-details :is(.saved-section,.scenarios-section) { margin-top:0; padding:var(--space-3); }
  .data-section { margin-top:var(--space-5); padding-block:var(--space-4); }
  .mobile-secondary-details :is(button,.button),.workspace-actions .button { min-height:var(--size-target); white-space:normal; }

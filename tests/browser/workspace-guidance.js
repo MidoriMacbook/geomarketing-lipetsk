@@ -52,11 +52,11 @@ async original=>{
   await card.locator('.place-select').click();await page.waitForTimeout(450);
   check(await page.evaluate(()=>JSON.stringify({center:window.__guidanceMap.getCenter(),zoom:window.__guidanceMap.getZoom()}))===view,'Recommendation selection panned map');
   check(await card.locator('.recommendation-brief>div').count()===4,'Missing structured explanation');
-  const save=card.getByTestId('save-place'),saveBox=await save.boundingBox();await save.click();await page.waitForFunction(rank=>document.querySelector(`[data-testid="recommendation-card"][data-rank="${rank}"] .save-confirmation`).textContent.includes('Сохранено для сравнения'),rank);
+  const save=card.getByTestId('save-place'),saveBox=await save.boundingBox();await save.click();await page.waitForFunction(rank=>document.querySelector(`[data-testid="recommendation-card"][data-rank="${rank}"] .confirmation-label`).textContent.includes('Сохранено · выберите место для сравнения'),rank);
   check(Math.abs((await save.boundingBox()).width-saveBox.width)<1,'Save changed button width');
   await page.evaluate(()=>Object.defineProperty(navigator,'locks',{configurable:true,value:undefined}));
   const denied=page.getByTestId('recommendation-card').first();await denied.getByTestId('save-place').click();await page.waitForTimeout(250);
-  check(!(await denied.locator('.save-confirmation').textContent()).includes('Сохранено'),'Failed storage showed save success');await page.evaluate(()=>delete navigator.locks);
+  check(!(await denied.locator('.confirmation-label').textContent()).includes('Сохранено'),'Failed storage showed save success');await page.evaluate(()=>delete navigator.locks);
   const widths=[];
   for(const scale of [1,2])for(const width of [390,768,1024,1440]){
    await page.setViewportSize({width,height:1000});await page.evaluate(scale=>document.documentElement.style.fontSize=scale===2?'200%':'',scale);await page.waitForTimeout(150);
@@ -93,6 +93,10 @@ async original=>{
   await page.locator('#run').click();await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
   check(calls===apiBeforeArchive+1,'New calculation request count');
   check(!(await page.locator('#analysis-context').textContent()).includes('сохранённый'),'New result retains archive context');
+  // This is a UI regression, not an availability check of public Overpass.
+  // Refresh copy/provenance contracts have independent pure tests.
+  const refreshed=await page.evaluate(async()=>({...structuredClone((await import('/static/js/state.js')).state.current),data_delivery:{mode:'daily',status:'unchanged'}}));
+  await page.route('**/api/calculate?**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(refreshed)}));
   if(!await page.locator('#data-details').evaluate(e=>e.open))await page.locator('#data-summary').click();
   await page.waitForTimeout(500);await page.locator('#refresh-data').click();await page.waitForFunction(()=>!document.getElementById('refresh-data').disabled);
   check((await page.locator('#refresh-status').textContent()).includes('данных')||(await page.locator('#refresh-status').textContent()).includes('версия'),'Refresh lost feedback');

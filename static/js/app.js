@@ -1,6 +1,7 @@
 import { state } from './state.js';
 import { initMobileWorkspace } from './mobile-workspace.js';
 import { initComparisonGuide } from './comparison-guide.js';
+import { initWorkspaceReturn } from './workspace-return.js';
 import { refreshMessage } from './data-delivery.js';
 import { clearKpiFocus } from './kpi-interactions.js';
 import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog, cancelRevealsWithin, motionReduced } from './ui.js';
@@ -279,6 +280,7 @@ function bootstrap() {
   initMap();
   initMobileWorkspace();
   initComparisonGuide();
+  initWorkspaceReturn();
   loadCatalog();
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootstrap, {

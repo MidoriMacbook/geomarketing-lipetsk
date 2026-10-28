@@ -130,3 +130,20 @@ details[data-workspace-disclosure][open]:not([data-expanded=false])>.workspace-d
 .recommendation-brief dd { min-width:0; margin:0; font-size:var(--text-sm); line-height:1.55; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
 .recommendation-brief dd.nearest { margin:0; color:var(--color-ink); }
 .save-confirmation { min-height:1.55em; margin-top:var(--space-2); color:var(--color-opportunity); font-size:var(--text-xs); line-height:1.55; overflow-wrap:anywhere; }
+.save-confirmation,#comparison-guide-caption { display:grid; grid-template-columns:minmax(0,1fr); }
+.save-confirmation>span,#comparison-guide-caption>span { grid-area:1/1; }
+.confirmation-space,.comparison-caption-space { visibility:hidden; }
+.confirmation-space::before,.comparison-caption-space::before { content:attr(data-text); }
+.recommendation .decision-reasons { display:block; margin-top:var(--space-3); font-size:var(--text-xs); line-height:1.5; }
+.decision-reasons h4 { margin:0; font-size:inherit; line-height:inherit; font-weight:600; }
+.decision-headline { margin-top:var(--space-1); font-weight:500; }
+.decision-reasons ul { list-style:none; padding:0; margin:var(--space-1) 0 0; }
+.decision-reasons li { color:var(--color-muted); }
+#comparison-guide { display:flex; flex-shrink:0; flex-wrap:wrap; align-items:center; gap:var(--space-2) var(--space-3); margin-top:var(--space-3); padding:var(--space-3); border:var(--line) solid var(--color-line); border-radius:var(--radius-control); background:var(--color-kpi); }
+#comparison-guide-count { flex:1 1 8rem; min-width:0; font-size:var(--text-sm); line-height:1.45; transform-origin:left; }
+#comparison-guide-open { min-height:var(--size-target); max-width:100%; font-size:var(--text-sm); white-space:normal; }
+#comparison-guide-caption { flex-basis:100%; margin:0; min-height:3em; font-size:var(--text-xs); line-height:1.5; color:var(--color-muted); }
+#comparison-guide[data-ready=true] { border-color:var(--color-primary); }
+#comparison-guide[data-ready=true] #comparison-guide-open { background:var(--color-primary); color:var(--color-on-primary); border-color:var(--color-primary); }
+.workspace-return { display:flex; flex-wrap:wrap; gap:var(--space-2); margin-top:var(--space-4); }
+.workspace-return>.button { max-width:100%; white-space:normal; }

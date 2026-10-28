@@ -9,7 +9,7 @@ async original=>{
    check(await card.locator('.mobile-reasons').isVisible(),'Нет кратких причин');check(await card.getByTestId('save-place').evaluate(e=>e.getBoundingClientRect().height>=44),'Малая цель сохранения');
    const toggle=card.locator('.mobile-rec-toggle');await toggle.evaluate(e=>{e.click();e.click()});await p.waitForTimeout(330);check(await toggle.getAttribute('aria-expanded')==='true','Быстрый повтор сломал карточку');
    if(width===390&&scale===1){await p.locator('#recommendations').evaluate(e=>e.scrollIntoView({block:'start',behavior:'instant'}));await p.waitForTimeout(700);await p.screenshot({path:'tests/artifacts/decision-card-390.png'});}
-  }else{check(await card.locator('.place-title').isVisible()&&await card.locator('.recommendation-brief').isVisible(),'Широкие данные скрыты');check(!await card.locator('.mobile-reasons').isVisible(),'Мобильный блок продублирован на компьютере');}
+  }else{check(await card.locator('.place-title').isVisible()&&await card.locator('.recommendation-brief').isVisible(),'Широкие данные скрыты');check(await card.locator('.decision-reasons').isVisible(),'Причина недоступна на компьютере');}
   matrix.push({width,height,scale});
  }
  await p.evaluate(()=>document.documentElement.style.fontSize='');await p.getByTestId('recommendation-card').first().getByTestId('save-place').tap();await p.waitForFunction(async()=>(await import('/static/js/state.js')).state.saved.length===1);check(await p.evaluate(async()=>(await import('/static/js/state.js')).state.comparison.size)===0,'Широкая версия самовольно выбрала место');

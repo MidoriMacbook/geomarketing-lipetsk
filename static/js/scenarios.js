@@ -99,6 +99,7 @@ function toggleCompare(item) {
   control?.setAttribute('aria-pressed', String(state.scenarioComparison.has(item.id)));
   control?.closest('article')?.classList.toggle('is-compared', state.scenarioComparison.has(item.id));
   renderComparison(); updateScenarioAvailability();
+  document.dispatchEvent(new CustomEvent('gm:scenarios-changed'));
 }
 function renderComparison() {
   const container = $('scenario-comparison'), items = selected();
@@ -175,6 +176,7 @@ function render() {
     card.append(actions); $('scenario-list').append(card); reveal(card, 'scenario');
   });
   renderComparison(); updateScenarioAvailability();
+  document.dispatchEvent(new CustomEvent('gm:scenarios-changed'));
 }
 
 export function updateScenarioAvailability() {

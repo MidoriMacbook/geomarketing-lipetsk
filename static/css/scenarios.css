@@ -1,4 +1,5 @@
-.scenarios-section { min-width:0; margin-top:var(--space-9); padding:var(--space-7); border:var(--line) solid var(--color-line); border-radius:var(--radius-panel); background:var(--color-saved); }
+.scenarios-section { min-width:0; margin-top:var(--space-8); padding:var(--space-5) 0; border:0; border-top:var(--line) solid var(--color-line); border-radius:0; background:transparent; }
+.scenarios-section .scenarios-heading h2 { font-size:1.625rem; }
 .scenarios-heading { display:flex; flex-wrap:wrap; justify-content:space-between; gap:var(--space-5); align-items:flex-start; }
 .scenarios-heading h2 { margin:var(--space-2) 0; }
 .scenarios-heading p { max-width:var(--size-copy-measure); font-size:var(--text-sm); color:var(--color-muted); line-height:1.6; }
@@ -32,7 +33,7 @@
 .scenario-dialog-actions { display:flex; flex-wrap:wrap; gap:var(--space-3); margin-top:var(--space-5); }
 #scenario-repair { margin-top:var(--space-3); }
 @media (max-width:768px) {
- .scenarios-section { padding:var(--space-4); margin-top:var(--space-7); }
+ .scenarios-section { padding:var(--space-3) 0; margin-top:var(--space-6); }
  .scenario-list { grid-template-columns:minmax(0,1fr); }
  .scenarios-heading,.scenarios-heading>div,.scenario-toolbar { min-width:0; width:100%; }
  .scenario-toolbar .button { flex:1 1 160px; }
