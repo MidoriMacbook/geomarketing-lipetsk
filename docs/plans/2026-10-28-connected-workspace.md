@@ -27,7 +27,7 @@
   Файлы: layout.css, scenarios.css, static/index.html; tests/browser/connected-layout.js.
   Проверки: scripts/validate_project.py; Node --test tests/unit/*.test.js;
   Python -m unittest discover -v; новые и связанные browser-regression наборы.
-- [ ] 5. Независимое ревью полного diff; исправить значимые замечания, обновить
+- [x] 5. Независимое ревью полного diff; исправить значимые замечания, обновить
   README/CHANGELOG/architecture/state/verification, публикация в существующие Git/Render
   и проверка публичных файлов/health/CI.
 
