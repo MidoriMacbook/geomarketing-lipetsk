@@ -14,7 +14,7 @@
 - [x] 3. Матрица пяти размеров, текст 200%, keyboard и reduced motion; hover только
   fine, press без изменения размера, контроль 44px и overflow. Снимки после тем же
   скриптом; сравнить реальную композицию и регрессии connected/workspace/choices.
-- [ ] 4. Независимое ревью полного diff, исправления, отчёт/README/CHANGELOG/state,
+- [x] 4. Независимое ревью полного diff, исправления, отчёт/README/CHANGELOG/state,
   публикация в существующие GitHub/Render и проверка live, хешей, CI и браузера.
 
 ## Review Focus

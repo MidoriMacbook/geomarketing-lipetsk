@@ -77,7 +77,7 @@ CSV/печать, форматы хранения, зависимости/vendor
 
 ## Проверка
 
-- Структура 91 файлов,89 Node-тестов,106 Python-тестов, JS syntax/diff check.
+- Структура: 91 файл; 89 Node-тестов, 106 Python-тестов, JS syntax/diff check.
 - visual-polish:15 раскрытий; единые маски/размеры; native markers отсутствуют;
   Enter/Space, coarse hover, reduced motion, press, реальные внешние роли,
   быстрые повторы, программное открытие и смена reduced motion при закрытии.
@@ -121,5 +121,19 @@ CSV/печать, форматы хранения, зависимости/vendor
 
 ## Публикация и ограничения
 
-Публичная проверка будет зафиксирована после выпуска. Chromium-эмуляция не
-подтверждает физические телефоны, Safari/Firefox и реальный screen reader.
+Выпуск опубликован на [публичном сайте](https://geomarketing-lipetsk.onrender.com/).
+Коммит приложения: `158c12dd7830ed555e4e59a3e501451ca16825cc`.
+Render `dep-dbhkvo8u01pc73afcrjg` — live, завершён 29 октября 2026 в 16:55 МСК.
+[GitHub Actions](https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/runs/40886149079)
+— completed/success.
+
+На публичном домене повторно прошли visual-polish (15 раскрытий),
+visual-polish-layout (все 10 сочетаний размеров и масштаба текста),
+workspace-interactions (обновление/ошибка, сохранение/архив, раскрытия,
+печать и восстановление). Оба визуальных набора вернули пустой список
+ошибок JavaScript. Все 60 статических файлов совпали с байтами коммита,
+`/healthz` вернул `status: ok`. После переключения Render журналы уровня
+error/critical пусты в проверенном интервале до 16:56 МСК.
+
+Chromium-эмуляция не подтверждает физические телефоны, Safari/Firefox
+и реальный screen reader. Оговорка о старом choice-menus.js приведена выше.
