@@ -1,7 +1,7 @@
 import { node, sourceText, initDisclosure, fmt, distance, LIMITATIONS } from './ui.js';
 
 const freshnessLabels = { fresh: 'За последние 24 часа', recent: 'От 24 часов до 7 дней', stale: 'Старше 7 дней', unknown: 'Свежесть неизвестна', demo: 'Демонстрационные данные' };
-const completenessLabels = { limited: 'Ограниченные данные', needs_review: 'Нужна проверка данных', usable_for_model: 'Данных достаточно для модели' };
+const completenessLabels = { limited: 'Ограниченные данные', needs_review: 'Нужна проверка данных', usable_for_model: 'Базовые пороги расчёта соблюдены' };
 const osmLimitation = 'Разметка OpenStreetMap добровольная: полнота и актуальность объектов не гарантированы.';
 const dateLabel = value => new Date(value).toLocaleString('ru-RU');
 

@@ -185,7 +185,7 @@ export function renderSaved() {
       updateSaveButtons();
     });
     label.append(checkbox, node('span', '', 'Сравнить'));
-    const remove = button('Удалить', '', () => mutateSaved(latest => ({
+    const remove = button('Удалить', 'action-tertiary', () => mutateSaved(latest => ({
       next: latest.filter(p => p.id !== item.id),
       message: 'Место удалено из этого браузера.'
     }), false, item.id));

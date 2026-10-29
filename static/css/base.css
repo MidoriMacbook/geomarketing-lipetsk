@@ -9,7 +9,7 @@
 html { scroll-behavior:smooth; color-scheme:light; scroll-padding-top:calc(var(--header-offset,var(--size-header)) + var(--space-5)); }
 body { margin:0; background:var(--color-page); color:var(--color-ink); font-family:var(--font-body); font-size:var(--text-base); line-height:1.5; -webkit-font-smoothing:antialiased; }
 button,input,select { font:inherit; color:inherit; }
-button,a,input,select { -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+button,a,input,select,summary { -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
 button { cursor:pointer; }
 a { color:inherit; }
 h1,h2,h3,p { margin:0; }
