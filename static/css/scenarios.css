@@ -19,7 +19,7 @@
 .quality-summary { font-weight:600; }
 .quality-details ul,.explanation-block ul { margin:var(--space-2) 0; padding-left:var(--space-5); }
 .quality-details p { margin-top:var(--space-1); }
-.quality-details summary,.explanation-block summary { cursor:pointer; min-height:var(--size-target); display:list-item; align-content:center; padding:var(--space-2) 0; font-weight:600; }
+.quality-details summary,.explanation-block summary { cursor:pointer; min-height:var(--size-target); display:block; align-content:center; padding-block:var(--space-2); font-weight:600; }
 .explanation-block { font-size:var(--text-xs); line-height:1.65; margin-top:var(--space-3); }
 .explanation-block h4 { margin-top:var(--space-3); font-size:var(--text-xs); }
 .explanation-strength { font-weight:600; }

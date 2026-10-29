@@ -256,6 +256,7 @@ export function initDisclosure(details, options = {}) {
   const summary = details.querySelector(':scope > summary');
   if (!summary) return details;
   details.dataset.expanded = String(details.open);
+  summary.setAttribute('aria-expanded',String(details.open));
   const existingBody = details.querySelector(':scope > .disclosure-body');
   const body = existingBody || node('div', 'disclosure-body'), content = node('div', 'disclosure-content');
   [...(existingBody || details).childNodes].filter(child => child !== summary).forEach(child => content.append(child));
@@ -272,6 +273,7 @@ export function initDisclosure(details, options = {}) {
     body.inert = !open;
     details.open = true;
     details.dataset.expanded = String(open);
+    summary.setAttribute('aria-expanded',String(open));
     active = true;
     animateUI(body, [{ height: `${from}px`, opacity }, { height: `${open ? content.getBoundingClientRect().height : 0}px`, opacity: open ? 1 : 0 }], 'disclosure', {
       duration: options.duration || (open ? 400 : 300),
@@ -288,7 +290,7 @@ export function initDisclosure(details, options = {}) {
   });
   details.addEventListener('toggle', () => {
     if (active || details.open === wanted) return;
-    wanted = details.open; details.dataset.expanded = String(wanted);
+    wanted = details.open; details.dataset.expanded = String(wanted);summary.setAttribute('aria-expanded',String(wanted));
     if (wanted) transition(true);
     else { ++revision; cancelUI(body); body.inert = false; }
   });
@@ -320,6 +322,16 @@ export function initMotion() {
   setAnalysisState('initial');
   ['settings', 'map-card', 'recommendations', 'saved-section', 'data-section'].forEach((id, index) => reveal($(id), 'section', { duration: 'slow', easing: 'emphasized', delay: Math.min(index * 30, 90) }));
   document.querySelectorAll('details').forEach(details => initDisclosure(details));
+  // Native dynamic details keep their own keyboard/toggle behaviour. Only the
+  // accessible state is synchronised; no second disclosure controller is added.
+  const syncNativeDetails=details=>details.querySelector(':scope>summary')?.setAttribute('aria-expanded',details.dataset.expanded||String(details.open));
+  document.querySelectorAll('details').forEach(syncNativeDetails);
+  document.addEventListener('toggle',event=>{if(event.target.matches?.('details'))syncNativeDetails(event.target);},true);
+  new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(element=>{
+    if(!(element instanceof HTMLElement))return;
+    if(element.matches('details'))syncNativeDetails(element);
+    element.querySelectorAll('details').forEach(syncNativeDetails);
+  }))).observe(document.body,{childList:true,subtree:true});
   $('trust-details-link')?.addEventListener('click', event => {
     const details = $('data-details'), summary = $('data-summary');
     if (!details || !summary) return;

@@ -1,6 +1,6 @@
 #map { width:100%; height:auto; min-height:var(--size-map-desktop); flex:1 0 var(--size-map-desktop); background:var(--color-map-canvas); z-index:var(--z-map); }
 #map .leaflet-tile-pane { filter:var(--map-tile-filter); }
-.map-heading { padding:var(--space-4) var(--space-5); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--space-3); border-radius:var(--radius-panel) var(--radius-panel) 0 0; background:var(--color-saved); border-bottom:var(--line) solid var(--color-line); }
+.map-heading { padding:var(--space-4) var(--space-5); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--space-3); border-radius:var(--radius-panel) var(--radius-panel) 0 0; background:var(--color-saved); border-bottom:0; }
 .map-heading p { font-size:var(--text-xs); color:var(--color-muted); margin-top:var(--space-1); }
 .map-badge { font-family:var(--font-mono); font-size:var(--text-xs); color:var(--color-muted); white-space:nowrap; }
 .map-badge i { display:inline-block; width:var(--space-2); height:var(--space-2); background:var(--color-map-zone-high); border-radius:var(--radius-round); margin-right:var(--space-1); }
@@ -22,7 +22,9 @@ md-linear-progress:defined + .progress-fallback { display:none; }
 .leaflet-container { font-family:var(--font-body); }
 .leaflet-bar { box-shadow:var(--shadow-control); border:var(--line) solid var(--color-border); border-radius:var(--radius-control); }
 .leaflet-bar a,.leaflet-bar a:first-child,.leaflet-bar a:last-child { width:var(--size-target); height:var(--size-target); line-height:var(--size-target); background:var(--color-surface); color:var(--color-ink); }
-.leaflet-bar a:hover,.leaflet-bar a:focus { background:var(--color-subtle); color:var(--color-ink); }
+.leaflet-bar a:focus-visible { background:var(--color-subtle); color:var(--color-ink); }
+@media (hover:hover) and (pointer:fine) { .leaflet-bar a:hover { background:var(--color-subtle); color:var(--color-ink); } }
+.leaflet-bar a.leaflet-disabled { opacity:var(--opacity-disabled); cursor:default; }
 .leaflet-container .leaflet-control-attribution { font-size:var(--text-xs); background:var(--color-surface); color:var(--color-muted); }
 .leaflet-control-attribution a { color:var(--color-primary); }
 .leaflet-tooltip { font-family:var(--font-body); color:var(--color-ink); background:var(--color-surface); border-color:var(--color-border); box-shadow:var(--shadow-control); }
