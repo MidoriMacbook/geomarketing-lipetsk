@@ -180,7 +180,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     people.append(node('strong', '', `≈ ${fmt(rec.residents_in_radius)}`), node('small', '', `жителей в ${fmt(rec.radius_m)} м`));
     competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов в радиусе'));
     metrics.append(people, competition);
-    const showOnMap = button('Показать на карте', 'button secondary mobile-show-place', () => {
+    const showOnMap = button('Показать на карте', 'button secondary action-tertiary mobile-show-place', () => {
       selectPlace(rec.rank, true);
       const map = $('map');
       if (map) { if(!map.hasAttribute('tabindex'))map.tabIndex=-1;map.focus({ preventScroll: true });map.scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'center' }); }

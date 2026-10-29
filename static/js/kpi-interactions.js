@@ -11,7 +11,7 @@ let active=null,baseStatus=null,focusedStatus=null;
 function clearWaves(){document.querySelectorAll('.kpi-wave').forEach(wave=>{cancelUI(wave);wave.remove();});}
 function showWave(button,event){
  clearWaves();if(motionReduced())return;
- const rect=button.getBoundingClientRect(),size=Math.max(rect.width,rect.height)*2;
+ const rect=button.parentElement.getBoundingClientRect(),size=Math.max(rect.width,rect.height)*2;
  const x=event.detail?event.clientX-rect.left:rect.width/2,y=event.detail?event.clientY-rect.top:rect.height/2;
  const wave=node('span','kpi-wave');wave.setAttribute('aria-hidden','true');
  Object.assign(wave.style,{width:size+'px',height:size+'px',left:x-size/2+'px',top:y-size/2+'px'});button.append(wave);
@@ -59,16 +59,18 @@ export function clearKpiFocus({immediate=false}={}) {
  const status=byId('analysis-status');
  if(active&&status?.textContent===focusedStatus)status.textContent=baseStatus;
  active=null;baseStatus=null;focusedStatus=null;
- cards.forEach(({card,button})=>{card.dataset.active='false';button.setAttribute('aria-pressed','false');button.querySelector('.kpi-action-label').textContent='Показать на карте';});
+ cards.forEach(({card,button})=>{card.dataset.active='false';button.setAttribute('aria-pressed','false');button.querySelector('.kpi-action-label').firstChild.textContent='Показать на карте';});
  if(byId('map-card'))delete byId('map-card').dataset.kpiFocus;
  if(byId('recommendations'))delete byId('recommendations').dataset.kpiFocus;
  setMapEmphasis([],{animate:!immediate});
+ syncButtons();
 }
 function syncButtons() {
  const available=!!state.current&&!['calculating','refreshing'].includes(document.documentElement.dataset.analysisState);
  cards.forEach(({number,button,label},key)=>{
   button.disabled=!available||!number.hasAttribute('data-counter-target');
-  button.setAttribute('aria-label',`Повторить анимацию: ${label.toLocaleLowerCase('ru')}, ${number.textContent}`);
+  const action=button.getAttribute('aria-pressed')==='true'?'Снять выделение':'Показать на карте';
+  button.setAttribute('aria-label',`${action}: ${label.toLocaleLowerCase('ru')}, ${number.textContent}. Повторить анимацию числа`);
   if(button.disabled&&active===key)clearKpiFocus({immediate:true});
  });
 }
@@ -76,13 +78,13 @@ function syncButtons() {
 document.querySelectorAll('.kpis>div').forEach((card,index)=>{
  const key=keys[index],number=card.querySelector('strong');if(!key||!number)return;
  const label=card.firstElementChild.textContent.replace('≈','').trim();
- const button=node('button','kpi-replay'),indicator=node('span','kpi-indicator'),progress=node('span','kpi-progress');
+ const button=node('button','kpi-replay');
  const hint=node('span','',`Показать связь показателя «${label}» с картой. Повторное нажатие снимает выделение.`);
  hint.id='kpi-action-'+key;hint.hidden=true;
- indicator.setAttribute('aria-hidden','true');progress.setAttribute('aria-hidden','true');
- const action=node('span','kpi-action-label','Показать на карте');action.setAttribute('aria-hidden','true');button.append(action);
+ const action=node('span','kpi-action-label','Показать на карте'),icon=node('span','directional-icon icon-forward kpi-action-icon');
+ action.setAttribute('aria-hidden','true');icon.setAttribute('aria-hidden','true');action.append(icon);button.append(action);
  button.type='button';button.setAttribute('aria-pressed','false');button.setAttribute('aria-controls','analysis-status');button.setAttribute('aria-describedby',hint.id);
- card.dataset.kpi=key;card.dataset.active='false';card.append(indicator,progress,hint,button);
+ card.dataset.kpi=key;card.dataset.active='false';card.append(hint,button);
  cards.set(key,{card,number,button,label});
  new MutationObserver(syncButtons).observe(number,{childList:true,attributes:true,attributeFilter:['data-counter-target']});
  button.addEventListener('click',event=>{
@@ -90,12 +92,12 @@ document.querySelectorAll('.kpis>div').forEach((card,index)=>{
   if(!wanted){clearKpiFocus();replayCounter(number);showWave(button,event);return;}
   if(!active)baseStatus=byId('analysis-status')?.textContent;
   active=wanted;
-  cards.forEach(item=>{const selected=item.card===card;item.card.dataset.active=String(selected);item.button.setAttribute('aria-pressed',String(selected));item.button.querySelector('.kpi-action-label').textContent=selected?'Снять выделение':'Показать на карте';});
+  cards.forEach(item=>{const selected=item.card===card;item.card.dataset.active=String(selected);item.button.setAttribute('aria-pressed',String(selected));item.button.querySelector('.kpi-action-label').firstChild.textContent=selected?'Снять выделение':'Показать на карте';});
   byId('map-card').dataset.kpiFocus=key;byId('recommendations').dataset.kpiFocus=key;
   setMapEmphasis(focusDescription(key,state.current).layers);updateKpiStatus();
   replayCounter(number);
   showWave(button,event);
-  if(!motionReduced())animateUI(card,[{transform:'scale(1)'},{transform:'scale(.985)',offset:.45},{transform:'scale(1)'}],'kpi-press',{duration:220});
+  syncButtons();
  });
 });
 syncButtons();

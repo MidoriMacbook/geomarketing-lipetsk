@@ -78,14 +78,14 @@ input[type=range] { width:100%; min-height:var(--size-target); accent-color:var(
 .saved-card .saved-stats { color:var(--color-ink); font-weight:500; margin:var(--space-3) 0; font-variant-numeric:tabular-nums; }
 .saved-card-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--space-3); margin-top:var(--space-3); border-top:var(--line) solid var(--color-line); }
 .saved-card-actions label { display:flex; align-items:center; gap:var(--space-2); min-height:var(--size-target); cursor:pointer; font-size:var(--text-sm); }
-.saved-card-actions button { min-height:var(--size-target); border:0; padding:var(--space-2); background:transparent; font-size:var(--text-sm); text-decoration:underline; border-radius:var(--radius-control); }
+.saved-card-actions button { min-height:var(--size-target); border:0; padding:var(--space-2); background:transparent; font-size:var(--text-sm); text-decoration:none; border-radius:var(--radius-control); }
 .comparison { margin-top:var(--space-6); min-width:0; }
 .comparison h3 { margin-bottom:var(--space-3); }
 .table-scroll { max-width:100%; overflow:auto; margin-top:var(--space-4); border:var(--line) solid var(--color-border); border-radius:var(--radius-control); background:var(--color-surface); }
 table { border-collapse:collapse; width:100%; min-width:var(--size-table); text-align:left; font-size:var(--text-xs); font-variant-numeric:tabular-nums; }
 th,td { padding:var(--space-4); border-bottom:var(--line) solid var(--color-line); vertical-align:top; }
 th { position:sticky; top:0; font-weight:600; background:var(--color-surface-muted); color:var(--color-ink); }td small { display:block; color:var(--color-muted); margin-top:var(--space-1); }
-dialog { width:min(var(--size-dialog),calc(100% - var(--space-7))); max-height:calc(100% - var(--space-7)); overflow:auto; border:var(--line) solid var(--color-border); border-radius:var(--radius-panel); background:var(--color-surface); color:var(--color-ink); padding:var(--space-6); box-shadow:var(--shadow-dialog); }
+dialog { width:min(var(--size-dialog),calc(100% - var(--space-7))); max-height:calc(100dvh - var(--space-7)); overflow:auto; border:var(--line) solid var(--color-border); border-radius:var(--radius-panel); background:var(--color-surface); color:var(--color-ink); padding:var(--space-6); box-shadow:var(--shadow-dialog); }
 dialog::backdrop { background:var(--color-overlay); }
 .dialog-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); margin-bottom:var(--space-4); }
 .dialog-heading h2 { font-size:var(--text-xl); }

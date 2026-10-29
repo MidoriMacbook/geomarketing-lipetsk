@@ -23,7 +23,11 @@ button:active:not(:disabled),.place-actions a:active { transform:translateY(var(
 .saved-card:has(input[data-testid="compare-place"]:checked) { border-color:var(--color-accent); box-shadow:inset var(--space-1) 0 0 var(--color-accent); background:var(--color-selected); }
 .notice { margin-top:var(--space-3); padding:var(--space-3); border-left:var(--line-strong) solid var(--color-primary); background:var(--color-notice-bg); border-radius:var(--radius-control); font-size:var(--text-xs); line-height:1.5; overflow-wrap:anywhere; }
 .notice.error { background:var(--color-error-bg); color:var(--color-error); border-color:var(--color-error); }
-.linkbtn { display:inline-block; min-height:var(--size-target); border:0; background:transparent; padding:var(--space-2) 0; text-decoration:underline; font-weight:600; }
+.action-tertiary,.linkbtn,.saved-card-actions button,.compare-saved-link,#trust-details-link { display:inline-flex; align-items:center; justify-content:center; gap:var(--space-2); min-height:var(--size-target); border:0; border-radius:var(--radius-control); background:transparent; color:var(--color-primary); padding:var(--space-2); text-decoration:none; font-size:var(--text-action); font-weight:600; line-height:1.5; }
+@media (hover:hover) and (pointer:fine) {
+ .action-tertiary:not(:disabled):hover,.linkbtn:not(:disabled):hover,.saved-card-actions button:not(:disabled):hover,.compare-saved-link:not(:disabled):hover,#trust-details-link:hover { background:var(--color-featured); color:var(--color-primary-hover); }
+}
+.action-tertiary:active:not(:disabled),.linkbtn:active:not(:disabled),.saved-card-actions button:active:not(:disabled),#trust-details-link:active { background:var(--color-featured); }
 .empty { padding:var(--space-7) var(--space-4); }
 .empty>span { display:grid; place-items:center; width:var(--space-9); height:var(--space-9); border:var(--line) solid var(--color-border); border-radius:var(--radius-round); font-size:var(--text-kpi); color:var(--color-primary); margin-bottom:var(--space-5); }
 .empty h3 { margin-bottom:var(--space-2); }.empty p,.empty-line { color:var(--color-muted); font-size:var(--text-sm); }
@@ -58,19 +62,16 @@ html[data-analysis-state=error] .status-dot { background:var(--color-on-dark); }
 :is(.kpis,.area-details-grid)>div[data-active=true] { background:var(--color-kpi-active); border-color:var(--color-recommendation-line); }
 :is(.kpis,.area-details-grid)>div[data-kpi=places][data-active=true] { background:var(--color-notice-bg); border-color:var(--color-opportunity); }
 :is(.kpis,.area-details-grid)>div:has(.kpi-replay:active:not(:disabled)) { background:var(--color-kpi-active); }
-:is(.kpis,.area-details-grid)>div>.kpi-indicator { position:absolute; top:var(--space-2); right:var(--space-2); width:var(--space-1); height:var(--space-1); border-radius:var(--radius-round); background:var(--color-primary); opacity:0; pointer-events:none; transition:opacity var(--motion-workspace); }
-:is(.kpis,.area-details-grid)>div[data-active=true]>.kpi-indicator { opacity:1; }
-:is(.kpis,.area-details-grid)>div[data-kpi=places]>.kpi-indicator { background:var(--color-opportunity); }
 @media (hover:hover) and (pointer:fine) { :is(.kpis,.area-details-grid)>div:has(.kpi-replay:hover:not(:disabled)):not([data-active=true]) { background:var(--color-featured); } }
-.kpi-replay { position:absolute; inset:0; width:100%; border:0; background:transparent; border-radius:inherit; color:var(--color-muted); text-align:right; overflow:hidden; }
+.kpi-replay { position:static; display:flex; align-items:center; width:100%; min-height:var(--size-target); margin-top:var(--space-2); padding:0; flex:1; border:0; background:transparent; border-radius:inherit; color:var(--color-primary); text-align:left; overflow:visible; }
+.kpi-replay::before { content:""; position:absolute; inset:0; }
 .kpi-replay:disabled { visibility:hidden; }
-.kpi-replay:focus-visible { outline-offset:-4px; }
-.kpi-replay:active { background:transparent; transform:none; }
+.kpi-card:has(.kpi-replay:focus-visible) { outline:var(--focus-width) solid var(--color-primary); outline-offset:var(--focus-offset); }
+.kpi-replay:focus-visible { outline:none; }
+.kpi-card .kpi-replay:active:not(:disabled) { background:transparent; transform:none; }
 .kpi-wave { position:absolute; border-radius:50%; background:var(--color-primary); opacity:0; pointer-events:none; z-index:0; }
-.kpi-action-label { position:relative; z-index:1; }
-.kpi-progress { position:absolute; left:var(--space-4); width:var(--space-9); max-width:calc(100% - var(--space-7)); bottom:0; height:var(--line-strong); transform:scaleX(0); transform-origin:left; background:var(--color-primary); opacity:0; pointer-events:none; transition:transform var(--motion-workspace) var(--ease-emphasized),opacity var(--motion-workspace); }
-:is(.kpis,.area-details-grid)>div[data-active=true]>.kpi-progress { opacity:1; transform:scaleX(1); }
-:is(.kpis,.area-details-grid)>div[data-kpi=places]>.kpi-progress { background:var(--color-opportunity); }
+.kpi-action-label { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:var(--space-1); width:100%; min-height:var(--size-target); font-size:var(--text-action); font-weight:600; line-height:1.4; text-decoration:none; }
+.kpi-card[data-active=true] .kpi-action-icon { visibility:hidden; }
 .choice-trigger:active:not(:disabled),#run:active:not(:disabled),.layers label:active { transform:translateY(var(--line)); }
 .layers label { transition:transform 180ms var(--ease-emphasized),background-color 180ms; border-radius:var(--radius-control); }
 .choice-option[aria-selected=true] .choice-check { animation:choice-check-in 300ms var(--ease-emphasized); }
@@ -97,7 +98,7 @@ details[data-expanded]>summary { transition:color 180ms,background-color 180ms; 
 details[data-expanded]>summary:active { background:var(--color-featured); }
 details[data-expanded=true]>summary { color:var(--color-primary); }
 .refresh-status { margin-top:var(--space-3); padding:var(--space-3); border-left:3px solid var(--color-primary); background:var(--color-notice-bg); }
-#refresh-data { min-width:12rem; }
+#refresh-data { min-width:min(12rem,100%); max-width:100%; }
 #refresh-data[aria-busy=true] .refresh-icon { animation:refresh-turn 1.2s linear infinite; }
 @keyframes refresh-turn { to { transform:rotate(360deg); } }
 @media (hover:hover) and (pointer:fine) { details[data-expanded]>summary:hover { color:var(--color-primary); background:var(--color-subtle); } }

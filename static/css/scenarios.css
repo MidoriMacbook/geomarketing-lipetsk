@@ -20,6 +20,11 @@
 .quality-details ul,.explanation-block ul { margin:var(--space-2) 0; padding-left:var(--space-5); }
 .quality-details p { margin-top:var(--space-1); }
 .quality-details summary,.explanation-block summary { cursor:pointer; min-height:var(--size-target); display:block; align-content:center; padding-block:var(--space-2); font-weight:600; }
+.quality-details>summary { padding:var(--space-3) calc(var(--space-3) + var(--direction-size) + var(--space-2)) var(--space-3) var(--space-4); font-size:var(--text-action); line-height:1.5; }
+.quality-details>summary::after { inset-inline-end:var(--space-3); }
+.quality-details>.disclosure-body>.disclosure-content { padding:var(--space-2) var(--space-4) var(--space-4); }
+.quality-details>.disclosure-body>.disclosure-content>p { margin-top:0; margin-bottom:var(--space-2); }
+.quality-details[data-expanded]>summary { background:transparent; }
 .explanation-block { font-size:var(--text-xs); line-height:1.65; margin-top:var(--space-3); }
 .explanation-block h4 { margin-top:var(--space-3); font-size:var(--text-xs); }
 .explanation-strength { font-weight:600; }
