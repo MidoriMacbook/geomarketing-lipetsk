@@ -220,7 +220,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
       }
     });
     if (!index)copy.id = 'copy';
-    const osm = node('a', '', '↗');
+    const osm = node('a'),externalIcon=node('span','directional-icon icon-external');externalIcon.setAttribute('aria-hidden','true');osm.append(externalIcon);
     osm.href = `https://www.openstreetmap.org/?mlat=${rec.lat}&mlon=${rec.lng}#map=18/${rec.lat}/${rec.lng}`;
     osm.target = '_blank';
     osm.rel = 'noopener';

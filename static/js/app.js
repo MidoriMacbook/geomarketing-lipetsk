@@ -32,7 +32,7 @@ function bootstrap() {
     if(preserveResult&&state.current){
       document.querySelectorAll('.kpis,.area-details-grid,#recommendation-list').forEach(container=>{finishCounters(container);cancelRevealsWithin(container);});
       $('error').hidden=true;$('loading-hint').hidden=true;
-      $('run').disabled=!state.catalog;$('refresh-data').disabled=false;$('run').textContent='Найти места →';
+      $('run').disabled=!state.catalog;$('refresh-data').disabled=false;$('run').textContent='Найти места';
       $('map-context').textContent=`Предыдущий расчёт · ${state.current.district_name} · ${state.current.business_name}`;
       setAnalysisState('initial','Параметры изменены · показан предыдущий расчёт');
       updateReportAvailability();updateScenarioAvailability();return;
@@ -58,7 +58,7 @@ function bootstrap() {
     if (state.catalog) $('map-context').textContent = `${$('district').selectedOptions[0].textContent} · ${$('business').selectedOptions[0].textContent}`;
     $('run').disabled = !state.catalog;
     $('refresh-data').disabled = false;
-    $('run').textContent = 'Найти места →';
+    $('run').textContent = 'Найти места';
     setAnalysisState('initial');
     if ($('analysis-context') && state.catalog) $('analysis-context').textContent = `${$('district').selectedOptions[0].textContent} · ${$('business').selectedOptions[0].textContent}`;
     ['residents', 'houses', 'competitors', 'places'].forEach(key => $('kpi-'+key).textContent = '—');
@@ -217,7 +217,7 @@ function bootstrap() {
         state.activeRequest = null;
         $('run').disabled = false;
         $('refresh-data').disabled = false;
-        $('run').textContent = 'Найти места →';
+        $('run').textContent = 'Найти места';
         $('loading-hint').hidden = true;
         updateReportAvailability();
         updateScenarioAvailability();

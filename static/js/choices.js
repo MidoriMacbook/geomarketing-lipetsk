@@ -10,7 +10,7 @@ function enhance(select) {
   trigger.type='button';trigger.id=`${id}-trigger`;
   trigger.setAttribute('role','combobox');trigger.setAttribute('aria-haspopup','listbox');
   trigger.setAttribute('aria-controls',`${id}-listbox`);trigger.setAttribute('aria-expanded','false');
-  const value=node('span','choice-value'),mark=node('span','choice-mark',id==='business'?'▦':'⌖'),arrow=node('span','choice-arrow','⌄');
+  const value=node('span','choice-value'),mark=node('span','choice-mark',id==='business'?'▦':'⌖'),arrow=node('span','choice-arrow');
   mark.setAttribute('aria-hidden','true');arrow.setAttribute('aria-hidden','true');
   value.id=`${id}-value`;
   trigger.setAttribute('aria-labelledby',`${label.id} ${value.id}`);

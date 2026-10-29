@@ -170,3 +170,14 @@ aria-describedby кнопки. Размеры действия зарезерв�
 
 [Спецификация](../specs/2026-10-28-connected-workspace.md) ·
 [Проверка](../verification/2026-10-28-connected-workspace.md)
+
+
+## Полировка представления — 29 октября
+
+`directional-icons.css` задаёт четыре локальные маски и единый поворот раскрытия.
+`choices.js` и OpenStreetMap-действие используют CSS-компонент без текстовых глифов.
+`ui.js` дополняет прежние контроллеры aria-expanded; один MutationObserver и
+capture toggle синхронизируют атрибут у динамических native details. Их нативное
+управление остаётся прежним. Модель, API, хранение и отчёты этим слоем не затронуты.
+
+[Полировка и проверка](../verification/2026-10-29-visual-polish.md).

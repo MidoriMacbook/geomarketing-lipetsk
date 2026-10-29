@@ -24,7 +24,7 @@ REQUIRED = [
     'static/index.html', 'static/assets/favicon.svg',
     'static/assets/favicon-32.png', 'static/assets/apple-touch-icon.png',
     *[f'static/css/{name}.css' for name in
-      ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios', 'field-checks', 'hero')],
+      ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios', 'field-checks', 'hero', 'directional-icons')],
     *[f'static/js/{name}.js' for name in
       ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage', 'navigation', 'hero-loader', 'kpi-interactions', 'data-delivery', 'analysis-focus', 'recommendation-brief', 'workspace-disclosure', 'mobile-workspace', 'comparison-guide', 'workspace-return')],
     'static/vendor/hero/hero-motion.js', 'scripts/frontend/hero-entry.js',
