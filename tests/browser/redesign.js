@@ -6,7 +6,7 @@ async page => {
   page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 1440, height: 1000 });
-  // Observe real browser animations without replacing their timing or behavior.
+  // Наблюдаем настоящие браузерные анимации, сохраняя их время и поведение.
   await page.addInitScript(() => {
     if (window.__urbanObserverVersion === 2) return;
     window.__urbanObserverVersion = 2;
@@ -36,7 +36,7 @@ async page => {
         .map(animation => ({ name: animation.animationName, timing: animation.effect.getTiming() }));
     }), { once: true });
   });
-  // Reuse a real API response; fixture variants exercise only presentation states.
+  // Используем настоящий ответ API; варианты фикстуры проверяют лишь состояния отображения.
   const payload = await page.evaluate(async () => {
     const response = await fetch('/api/calculate?district=eleytsky&type=cafe');
     if (!response.ok) throw new Error('Cannot prepare real calculation fixture');
@@ -65,8 +65,8 @@ async page => {
     await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) }).catch(() => {});
   });
   try {
-  // Version filtering also ignores old unguarded observers retained by a named
-  // browser from before this harness acquired its per-document install guard.
+  // Фильтр версий также игнорирует старые незащищённые наблюдатели, сохранившиеся
+  // в именованном браузере до добавления защиты от повторной установки в документе.
   const trace = () => page.evaluate(() => window.__urbanMotion.filter(item => item.observerVersion === 2));
   const clearTrace = () => page.evaluate(() => { window.__urbanMotion = []; });
   const nextFrame = () => page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
@@ -97,7 +97,7 @@ async page => {
   assert(await page.locator('#analysis-progress').isHidden(), 'Progress remained after successful calculation');
   assert(await page.locator('#map').getAttribute('aria-busy') === 'false', 'Busy state remained after success');
   assert(await page.locator('#kpi-residents').innerText() !== '—', 'Final KPI values are delayed behind motion');
-  // Entrances now wait until the user can see their content.
+  // Появление ожидает, пока пользователь сможет увидеть содержимое.
   await page.locator('#recommendation-list').scrollIntoViewIfNeeded();
   await page.waitForFunction(() => document.getElementById('hero-motion-root')?.dataset.heroReady === 'true');
   await page.locator('#data-details').evaluate(details => { details.open = true; });
@@ -115,7 +115,7 @@ async page => {
   assert(initialTrace.some(item => /notice/.test(item.id)), 'Inline notice has no reveal');
   assert(await page.locator('#data-warning').isVisible(), 'Notice reveal delayed or hid warning text');
 
-  // Rank changes pulse only the inner marker; they must never replay result reveals.
+  // Смена места подсвечивает только внутренний маркер без повторного появления результатов.
   await clearTrace();
   await page.locator('[data-testid="recommendation-card"]').nth(1).getByRole('button', { name: /Показать/ }).click();
   assert(await page.locator('[data-testid="recommendation-card"]').nth(1).locator('.place-select').getAttribute('aria-pressed') === 'true', 'Selection did not immediately update ARIA');
@@ -133,7 +133,7 @@ async page => {
   assert(!(await trace()).some(item => item.id === 'gm:recommendation'), 'Same analysis_id replayed recommendation stagger');
   sameId = false;
 
-  // Storage is held behind its real Web Lock: no success/reveal may precede write.
+  // Запись задержана настоящей Web Lock: успех и появление не могут опережать сохранение.
   await page.evaluate(() => { navigator.locks.request('geomarketing.saved.v1.write', () => new Promise(resolve => { window.__urbanUnlock = resolve; })); });
   await page.waitForFunction(() => typeof window.__urbanUnlock === 'function');
   await clearTrace();
@@ -178,7 +178,7 @@ async page => {
   assert(!(await trace()).some(item => /save-feedback|saved-enter/.test(item.id)), 'Failed write animated a successful save');
   await page.evaluate(() => { Storage.prototype.setItem = window.__urbanOriginalSetItem; });
 
-  // Native dialog close and focus restoration must happen before exit completes.
+  // Стандартное закрытие диалога и возврат фокуса происходят до завершения анимации ухода.
   await clearTrace();
   await page.locator('#model-button').click();
   assert(await page.locator('#model-dialog').evaluate(node => node.open && node.contains(document.activeElement)), 'Dialog did not immediately move focus inside');
@@ -210,7 +210,7 @@ async page => {
   assert((await trace()).some(item => /custom.*(close|exit|collapse)/.test(item.id)), 'Custom area has no collapse feedback');
   await page.locator('#run').click(); await ready();
 
-  // A failed refresh retains all of the previous result while progress stops.
+  // Неудачное обновление сохраняет весь предыдущий результат и останавливает индикатор.
   const previous = await page.locator('#recommendation-list').innerText();
   mode = 'failure';
   const failedRequest = holdRequest();
@@ -243,7 +243,7 @@ async page => {
   await page.locator('#district').selectOption('eleytsky', {force:true});
   await page.locator('#run').click(); await ready();
 
-  // Runtime preference changes cancel effects that are already running.
+  // Изменение предпочтений во время работы отменяет уже запущенные эффекты.
   await page.locator('#model-button').click();
   assert(await page.evaluate(() => document.getAnimations().some(animation => animation.id.startsWith('gm:') && animation.playState === 'running')), 'No active effect available for reduced-motion cancellation');
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -277,7 +277,7 @@ async page => {
   assert(await page.evaluate(() => !document.getAnimations().some(animation => animation.playState === 'running')), 'Reduced motion leaves CSS animations running');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 
-  // Actual rendered colors: light text, primary action, and dark analytical strip.
+  // Фактически отрисованные цвета: светлый текст, основное действие и тёмная полоса анализа.
   const contrast = await page.evaluate(() => {
     const rgb = value => (value.match(/[\d.]+/g) || []).map(Number);
     const blend = (front, back) => {
@@ -319,7 +319,7 @@ async page => {
   assert(pressed.layoutWidth === restLayout.width && pressed.layoutHeight === restLayout.height, `Button press changes layout: ${JSON.stringify({ restLayout, pressed })}`);
   assert(pressed.targetWidth >= 44 && pressed.targetHeight >= 44, `Settled button press shrinks target below 44px: ${JSON.stringify(pressed)}`);
   metrics.press = pressed;
-  // Release away from the button to avoid triggering an unrelated calculation.
+  // Отпускаем указатель вне кнопки, чтобы не запустить посторонний расчёт.
   await page.mouse.move(0, 0); await page.mouse.up();
 
   await page.evaluate(() => document.fonts.ready);
@@ -385,7 +385,7 @@ async page => {
   assert(await page.evaluate(() => [...document.querySelectorAll('[data-motion-snapshot],.motion-snapshot')].every(node => !node.getClientRects().length)), 'Print includes motion snapshots');
   await page.emulateMedia({ media: 'screen' });
 
-  // A fresh document with the local bundle blocked must still calculate normally.
+  // Новый документ должен выполнять расчёт и при заблокированной локальной сборке.
   const fallback = await page.context().newPage();
   fallback.on('pageerror', error => errors.push(error.message));
   let finishFallback;

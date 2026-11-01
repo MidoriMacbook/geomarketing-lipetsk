@@ -1,6 +1,6 @@
-"""Offline structural checks: python scripts/validate_project.py.
+"""Локальная проверка структуры: python scripts/validate_project.py.
 
-This complements the runtime tests; it does not fetch OSM or validate model quality.
+Дополняет проверки выполнения: не загружает OSM и не оценивает качество модели.
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ REQUIRED = [
     *[f'static/css/{name}.css' for name in
       ('tokens', 'base', 'layout', 'components', 'map', 'states', 'responsive', 'scenarios', 'field-checks', 'hero', 'directional-icons')],
     *[f'static/js/{name}.js' for name in
-      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage', 'navigation', 'hero-loader', 'kpi-interactions', 'data-delivery', 'analysis-focus', 'recommendation-brief', 'workspace-disclosure', 'mobile-workspace', 'comparison-guide', 'workspace-return')],
+      ('app', 'api', 'state', 'map', 'recommendations', 'saved-places', 'report', 'ui', 'result-format', 'counters', 'choices', 'scenarios', 'scenario-storage', 'scenario-report', 'data-quality', 'field-checks', 'field-check-storage', 'navigation', 'hero-loader', 'kpi-interactions', 'data-delivery', 'analysis-focus', 'recommendation-brief', 'workspace-disclosure', 'mobile-workspace', 'comparison-guide', 'workspace-return')],
     'static/vendor/hero/hero-motion.js', 'scripts/frontend/hero-entry.js',
     'tests/unit/__init__.py', 'tests/integration/__init__.py',
     'tests/browser/smoke.js', 'tests/browser/workspace.js',
@@ -150,7 +150,7 @@ def static_imports(issues: list[str]) -> None:
             else:
                 graph[path.name].add(resolved.name)
     issues.extend(find_cycles(graph))
-    # Palette is owned by tokens.css. Vendor assets are outside this rule.
+    # Палитра задаётся в tokens.css. Сторонние ресурсы исключены из этой проверки.
     for folder, pattern in [('static/css', '*.css'), ('static/js', '*.js')]:
         for path in (ROOT / folder).glob(pattern):
             if path.name == 'tokens.css':

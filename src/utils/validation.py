@@ -1,4 +1,4 @@
-"""Parameter and analysis-data validation independent of Flask."""
+"""Проверка параметров и исходных данных без зависимости от Flask."""
 import math
 from collections.abc import Mapping
 import numpy as np
@@ -12,7 +12,7 @@ class UserError(Exception):
 
 
 def validate_data(houses, competitors):
-    """Reject unusable rows before clustering or serializing numeric results."""
+    """Отклоняем непригодные строки до кластеризации и сериализации чисел."""
     houses = np.asarray(houses, dtype=float)
     competitors = np.asarray(competitors, dtype=float)
     if competitors.shape == (0,):

@@ -1,3 +1,4 @@
+import { scoreText } from './result-format.js';
 import { state } from './state.js';
 import { $, node, button, fmt, coords, distance, openDialog, closeDialog, initDialogMotion, reveal, cancelRevealsWithin } from './ui.js';
 import { SCENARIO_KEY, SCENARIO_LIMIT, readScenarios, mutateScenarios, clearDamagedScenarios, duplicateScenario } from './scenario-storage.js';
@@ -10,7 +11,7 @@ const writable = () => !!navigator.locks?.request && !storageProblem;
 const selected = () => state.scenarios.filter(item => state.scenarioComparison.has(item.id));
 const status = text => { $('scenario-status').textContent = text; $('scenario-status').hidden = !text; };
 const timestamp = value => value ? new Date(value).toLocaleString('ru-RU') : 'Не указана';
-const recText = rec => rec ? `Место ${rec.rank}: ${coords(rec)}; ≈ ${fmt(rec.residents_in_radius)} жителей в ${fmt(rec.radius_m)} м; ${fmt(rec.competitors_in_radius)} конкурентов; ближайший: ${distance(rec.nearest_competitor_m)}` : 'Не оценено';
+const recText = rec => rec ? `Место ${rec.rank}: ${scoreText(rec.score)} только внутри своего расчёта; ${coords(rec)}; ≈ ${fmt(rec.residents_in_radius)} жителей в ${fmt(rec.radius_m)} м; ${fmt(rec.competitors_in_radius)} конкурентов; ближайший: ${distance(rec.nearest_competitor_m)}` : 'Не оценено';
 
 function explainError(error) {
   return ({ invalid: 'Сохранённые исследования повреждены. Исходные данные сохранены; скачайте JSON перед очисткой.', unsupported: 'Версия сохранённых исследований не поддерживается. Исходные данные сохранены; доступна выгрузка JSON.', unavailable: 'Хранилище браузера недоступно или переполнено. Предыдущие исследования сохранены. Освободите место либо скачайте CSV.', no_locks: 'Этот браузер не поддерживает безопасную запись исследований. Чтение и экспорт доступны; для изменений используйте браузер с Web Locks.', limit: `Можно сохранить до ${SCENARIO_LIMIT} исследований. Удалите ненужный или скачайте CSV.`, size: 'Снимок превышает допустимый размер. Сохраните нужные сведения в CSV или выберите меньшую область.', conflict: 'Исследования изменились в другой вкладке. Список обновлён; повторите действие.' })[error.code] || 'Не удалось сохранить изменение. Предыдущие исследования сохранены.';
@@ -80,7 +81,7 @@ async function submit(event) {
     $('scenario-form-error').hidden = false; $('scenario-name').focus(); return;
   }
   const now = new Date().toISOString(), id = editingId;
-  // The complete draft was captured before opening the modal, before any lock wait.
+  // Полный черновик зафиксирован до открытия диалога и до ожидания блокировки.
   const record = id ? null : { ...draft, id: crypto.randomUUID(), name, note, saved_at: now, updated_at: now };
   const ok = await change(latest => {
     if (!id) return [...latest, record];

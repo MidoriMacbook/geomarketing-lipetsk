@@ -43,7 +43,7 @@ export function fieldChecksBlock(placeId, options = {}) {
       let message, persisted = false;
       try { await setFieldCheck(placeId,index,checked,options); persisted = true; message = 'Отметка сохранена в этом браузере.'; }
       catch (error) { message = messages[error.code] || messages.unavailable; }
-      // A deleted widget must never receive stale async feedback or be reinserted.
+      // Удалённый виджет не должен получать запоздалый отклик или вновь появляться в DOM.
       if (!details.isConnected) return;
       details.removeAttribute('aria-busy');
       refreshFieldChecks(); status.textContent = message;

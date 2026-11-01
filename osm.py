@@ -1,4 +1,4 @@
-"""Compatibility exports; implementation lives in src services and utilities."""
+"""Совместимые экспорты; реализация находится в сервисах и утилитах src."""
 from src.config import (
     APARTMENT_TYPES, PRIVATE_TYPES, DEFAULT_LEVELS, LIVING_SHARE, M2_PER_RESIDENT,
     PERSONS_PER_FLAT, PERSONS_PER_PRIVATE_HOUSE, MIN_FOOTPRINT_M2, COMPETITOR_MARGIN_M,

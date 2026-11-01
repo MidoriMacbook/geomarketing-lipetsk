@@ -1,12 +1,12 @@
 import { node, sourceText, initDisclosure, fmt, distance, LIMITATIONS } from './ui.js';
+import { localTimestamp, qualityReasons, OSM_LIMITATION } from './result-format.js';
 
 const freshnessLabels = { fresh: 'За последние 24 часа', recent: 'От 24 часов до 7 дней', stale: 'Старше 7 дней', unknown: 'Свежесть неизвестна', demo: 'Демонстрационные данные' };
 const completenessLabels = { limited: 'Ограниченные данные', needs_review: 'Нужна проверка данных', usable_for_model: 'Базовые пороги расчёта соблюдены' };
-const osmLimitation = 'Разметка OpenStreetMap добровольная: полнота и актуальность объектов не гарантированы.';
-const dateLabel = value => new Date(value).toLocaleString('ru-RU');
+const dateLabel = localTimestamp;
 
-// Optional enrichment may come from older or damaged saved-place records.
-// Keep their usable base facts, but never interpret malformed details as assessed.
+// Необязательное обогащение может поступить из старых или повреждённых сохранений.
+// Сохраняем пригодные основные факты, не выдавая повреждённые детали за оценённые.
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const strings = value => Array.isArray(value) && value.length <= 64 && value.every(text => typeof text === 'string' && text.length <= 2000);
 export function checkedQuality(value) {
@@ -31,10 +31,8 @@ export function qualitySummary(data, now = Date.now()) {
   const valid = timestamps.every(value => Number.isFinite(value) && value > 0 && value * 1000 <= now + 300000);
   const age = valid ? now - Math.min(...timestamps) * 1000 : null;
   const freshness = !quality ? 'Не оценено' : freshnessLabels[data.source === 'demo' ? 'demo' : !valid ? 'unknown' : age <= 86400000 ? 'fresh' : age <= 604800000 ? 'recent' : 'stale'];
-  const reasons = (quality?.completeness?.reasons || []).map(item => typeof item === 'string' ? item : item.text).filter(Boolean);
-  if (quality && data.source !== 'demo' && !valid) reasons.push('Неизвестна дата хотя бы одного набора геоданных.');
-  if (quality && valid && age > 604800000 && data.source !== 'demo') reasons.push('Снимок геоданных старше 7 дней; проверьте изменения на местности.');
-  for (const message of [data?.warning, data?.notice, osmLimitation]) if (message) reasons.push(message);
+  const reasons=qualityReasons(quality?.completeness?.reasons||[],[data?.warning,data?.notice],
+    !quality||data.source==='demo'?null:!valid?'unknown':age>604800000?'stale':null);
   return {
     source: ['osm', 'cache', 'demo'].includes(data?.source) ? sourceText(data.source) : 'Источник не указан',
     freshness,
@@ -44,16 +42,19 @@ export function qualitySummary(data, now = Date.now()) {
   };
 }
 
-export function qualityBlock(data, compact = false) {
+export function qualityBlock(data, compact = false, separateWarnings = false) {
   const summary = qualitySummary(data), block = node('section', 'quality-block');
   block.dataset.testid = 'data-quality-block';
   block.setAttribute('aria-label', 'Качество исходных данных');
   block.append(node('p', 'quality-summary', `${summary.source} · ${summary.freshness} · ${summary.completeness}`));
+  block.append(node('p', 'quality-limitation', OSM_LIMITATION));
   const details = node(compact ? 'details' : 'div', 'quality-details');
   if (compact) details.append(node('summary', '', 'Даты и ограничения данных'));
   summary.dates.forEach(date => details.append(node('p', '', date)));
   const list = node('ul');
-  summary.reasons.forEach(reason => list.append(node('li', '', reason)));
+  const warningKey=text=>typeof text==='string'?text.toLocaleLowerCase('ru').replace(/\s+/gu,' ').replace(/[.!;\s]+$/u,''):'';
+  const outside=new Set(separateWarnings?[data.warning,data.notice].map(warningKey):[]);
+  summary.reasons.filter(reason=>reason!==OSM_LIMITATION&&!outside.has(warningKey(reason))).forEach(reason => list.append(node('li', '', reason)));
   details.append(list);
   block.append(details);
   if (compact) initDisclosure(details);

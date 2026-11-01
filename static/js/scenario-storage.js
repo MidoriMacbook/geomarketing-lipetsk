@@ -1,4 +1,4 @@
-// This module has no UI dependencies: stored snapshots are untrusted domain input.
+// Модуль не зависит от интерфейса: сохранённые снимки считаются недоверенным входом.
 export const SCENARIO_KEY = 'geomarketing.scenarios.v1';
 export const SCENARIO_LIMIT = 6;
 const RECORD_SIZE = 250000;
@@ -25,8 +25,8 @@ function iso(value) {
   return month >= 1 && month <= 12 && day >= 1 && day <= new Date(Date.UTC(year, month, 0)).getUTCDate() && Number(value.slice(11, 13)) <= 23 && Number(value.slice(14, 16)) <= 59 && Number(value.slice(17, 19)) <= 59;
 }
 
-// JSON.stringify would silently turn NaN into null and omit undefined/functions.
-// Check the original value too, with bounded traversal and no sparse arrays.
+// JSON.stringify молча превратил бы NaN в null и пропустил undefined и функции.
+// Проверяем и исходное значение: ограничиваем обход и запрещаем разреженные массивы.
 function jsonTree(value, depth = 0, budget = { remaining: 30000 }) {
   if (depth > 30 || --budget.remaining < 0) return false;
   if (value === null || typeof value === 'boolean' || typeof value === 'string') return true;
@@ -65,8 +65,8 @@ function validRecommendation(value, radius, rank) {
 function validAnalysis(value, selection, view) {
   if (!object(value) || value.status !== 'success' || !label(value.analysis_id, 128) || !label(value.district, 128) || !label(value.district_name, 512) || !label(value.business, 128) || !label(value.business_name, 512) || value.business !== selection.business || !source(value.source) || !validMetadata(value.data_meta) || !nullableText(value.warning) || !nullableText(value.notice)) return false;
   if (!object(value.parameters) || !number(value.parameters.radius_m, 1, 100000) || !number(value.parameters.alpha, Number.MIN_VALUE, 100000) || !point(value.center) || !integer(value.half_m, 500, 1500)) return false;
-  // The custom control is named "custom", while the API preserves its rounded
-  // center and requested radius in an encoded area/cache key. Retain that key.
+  // Поле своей области называется "custom", а API сохраняет округлённый центр
+  // и запрошенный радиус в кодированном ключе области и кэша. Сохраняем этот ключ.
   if (selection.district === 'custom') {
     const encoded = `custom_${value.center[0].toFixed(4)}_${value.center[1].toFixed(4)}_${selection.area_radius_m}`;
     if (value.district !== 'custom' && (value.district !== encoded || !value.center.every(coordinate => coordinate === Number(coordinate.toFixed(4))))) return false;
@@ -155,7 +155,7 @@ export function mutateScenarios(mutate) {
     if (!next.every(validateScenario) || new Set(next.map(item => item.id)).size !== next.length) throw failure('invalid');
     try { globalThis.localStorage.setItem(SCENARIO_KEY, raw); }
     catch { throw failure('unavailable'); }
-    // Return the persisted copy so callers cannot mutate the stored transaction value.
+    // Возвращаем записанную копию, чтобы вызывающий код не изменил значение транзакции.
     return JSON.parse(raw).scenarios;
   });
 }

@@ -9,7 +9,7 @@
 project-root/
 ├── app.py, serve.py, osm.py, businesses.py
 ├── requirements.txt, render.yaml, Dockerfile
-├── README.md, PROJECT_ANALYSIS.md, DEPLOYMENT.md, CHANGELOG.md, state.md
+├── README.md, PROJECT_ANALYSIS.md, DEPLOYMENT.md, CHANGELOG.md
 ├── .gitignore, .github/workflows/test.yml
 ├── src/
 │   ├── __init__.py, config.py
@@ -75,7 +75,7 @@ QA-артефакты в tests/artifacts и временные проверки 
 
 app.py, serve.py, osm.py, businesses.py, static/index.html,
 scripts/import_osm_competitors.py, Dockerfile, .gitignore,
-.github/workflows/test.yml, README.md, DEPLOYMENT.md, data/README.md и state.md.
+.github/workflows/test.yml, README.md, DEPLOYMENT.md, data/README.md.
 requirements.txt, render.yaml, vendor Leaflet и исходные снимки не менялись.
 
 Точный машинный список для этой итерации:

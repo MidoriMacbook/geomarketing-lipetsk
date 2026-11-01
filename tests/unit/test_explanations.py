@@ -1,4 +1,4 @@
-"""Explanation facts must reproduce model kernels without changing recommendations."""
+"""Факты объяснения воспроизводят ядра модели, не изменяя рекомендации."""
 import json
 import math
 import unittest
@@ -61,8 +61,8 @@ class ExplanationTests(unittest.TestCase):
         self.assertEqual(self.explain(houses=zero)[0]['demand_level'], 'unknown')
 
     def test_demand_exact_ten_percent_boundaries_remain_similar(self):
-        # Separated houses with R=1 make cross-contributions underflow to exact zero,
-        # so the two demands equal their resident weights and their mean is exactly 100.
+        # У разнесённых домов при R=1 перекрёстные вклады округляются до точного нуля,
+        # поэтому спрос равен весам жителей, а среднее двух значений равно ровно 100.
         points = [self.point(0), self.point(100)]
         for weights, expected in [((90, 110), ['similar', 'similar']),
                                   ((89, 111), ['lower', 'higher']),

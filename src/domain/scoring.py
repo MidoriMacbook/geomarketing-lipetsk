@@ -1,4 +1,4 @@
-"""Weighted demand clustering and deterministic spaced recommendations."""
+"""Взвешенная кластеризация спроса и воспроизводимые разнесённые рекомендации."""
 import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans

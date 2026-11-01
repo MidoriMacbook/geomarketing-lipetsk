@@ -6,7 +6,7 @@ import config from '../../../rollup.config.js';
 
 const provenance=JSON.parse(await readFile(new URL('./upstream/PROVENANCE.json',import.meta.url),'utf8'));
 for (const [file,hash] of Object.entries(provenance.sha256)) {
-  // Preserve upstream LF hashes across Windows Git autocrlf checkouts.
+  // Сохраняем контрольные суммы исходников с LF при Windows-извлечении Git с autocrlf.
   const data=(await readFile(new URL(`./upstream/${file}`,import.meta.url),'utf8')).replace(/\r\n/g,'\n');
   if(createHash('sha256').update(data).digest('hex')!==hash)throw new Error(`Upstream source changed: ${file}`);
 }

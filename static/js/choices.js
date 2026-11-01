@@ -38,7 +38,7 @@ function enhance(select) {
     active=index;
     rows.forEach((row,i)=>row.classList.toggle('is-active',i===active));
     trigger.setAttribute('aria-activedescendant',rows[active].id);
-    // Rounded layout metrics need a pixel of margin at enlarged text sizes.
+    // Округлённым размерам разметки нужен запас в один пиксель при увеличенном тексте.
     const row=rows[active],top=row.offsetTop-1,bottom=row.offsetTop+row.offsetHeight+1;
     if(top<menu.scrollTop)menu.scrollTop=top;
     else if(bottom>menu.scrollTop+menu.clientHeight)menu.scrollTop=bottom-menu.clientHeight;

@@ -26,7 +26,7 @@ async page => {
   assert(initial.recommendations.length >= 1 && initial.recommendations.length <= 3, 'Recommendation count');
   assert(await page.locator('[data-testid="recommendation-marker"]').count() === initial.recommendations.length, 'Numbered markers');
   const regressionFailures = [];
-  // Same-origin tabs must retain independent additions and synchronize external deletions.
+  // Вкладки одного origin сохраняют независимые добавления и синхронизируют удаления.
   await page.evaluate(() => localStorage.removeItem('geomarketing.saved.v1'));
   await page.reload();
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
@@ -51,7 +51,7 @@ async page => {
   await page.evaluate(() => localStorage.removeItem('geomarketing.saved.v1'));
   await page.reload();
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
-  // A failed refresh retains the complete successful result and its actions.
+  // Неудачное обновление сохраняет полный успешный результат и доступные действия.
   const previousCoords = await page.locator('#coords').innerText();
   const previousKPI = await page.locator('#kpi-residents').innerText();
   await page.route('**/api/calculate?**', async route => {
@@ -80,7 +80,7 @@ async page => {
   await page.evaluate(() => localStorage.removeItem('geomarketing.saved.v1'));
   await page.reload();
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
-  // Saving queued behind a lock must retain the analysis captured before a filter change.
+  // Сохранение в очереди блокировки использует расчёт, зафиксированный до смены фильтра.
   await page.evaluate(() => {
     window.__releaseSavedLock = null;
     navigator.locks.request('geomarketing.saved.v1.write', () => new Promise(resolve => { window.__releaseSavedLock = resolve; }));
@@ -109,10 +109,12 @@ async page => {
   assert(await page.locator('[data-testid="saved-card"]').count() === 0 && /недоступно/.test(await page.locator('#storage-status').innerText()), 'Missing locks falsely reported save');
   await page.reload();
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
-  // Threshold changes and new analyses must reuse map renderers rather than accumulating canvases.
+  // Смена порога и новый расчёт повторно используют средства отрисовки карты без накопления canvas.
   const canvasCount = await page.locator('#map canvas').count();
   for (let index = 0; index < 15; index++) {
-    await page.locator('#thr').fill(String(70 + index));
+    if(await page.locator('#display-options').getAttribute('data-expanded')!=='true')await page.locator('#display-options>summary').click();
+    await page.locator('#thr').press('Home');
+    for(let step=0;step<index;step++)await page.locator('#thr').press('ArrowRight');
     await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   }
   assert(await page.locator('#map canvas').count() <= canvasCount + 1, 'Threshold updates leaked map canvases');
@@ -154,6 +156,7 @@ async page => {
   assert(await page.locator('#model-dialog').isVisible(), 'Model dialog missing');
   await page.keyboard.press('Escape');
   assert(!await page.locator('#model-dialog').isVisible(), 'Dialog Escape does not close');
+  if(await page.locator('#display-options').getAttribute('data-expanded')!=='true')await page.locator('#display-options>summary').click();
   for (const layer of ['houses', 'competitors', 'centroids', 'zones']) {
     await page.locator('#layer-' + layer).uncheck();
     assert(await page.locator('[data-testid="recommendation-marker"]').count() >= 1, 'Recommendations hidden by layer');
@@ -212,7 +215,7 @@ async page => {
   await waitStorageMessage(page, 'недоступно');
   assert(/недоступно/.test(await page.locator('#storage-status').innerText()), 'Blocked storage false success');
   assert(await page.locator('[data-testid="saved-card"]').count() === 1, 'Failed persistence presented as saved');
-  // Seed real saved records with distinct analyses to exercise list and comparison limits.
+  // Создаём настоящие записи разных расчётов для проверки ограничений списка и сравнения.
   await page.reload();
   await page.locator('[data-testid="recommendation-card"]').first().waitFor({ timeout: 70000 });
   await page.evaluate(() => {

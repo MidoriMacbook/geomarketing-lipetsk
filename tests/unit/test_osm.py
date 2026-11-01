@@ -30,7 +30,7 @@ class BusinessDataTests(unittest.TestCase):
         for business, radius in [('beauty',450),('pharmacy',500),('grocery',400)]:
             with self.subTest(business=business), patch.object(osm, '_overpass', return_value=[]) as query:
                 osm._load_competitors(business,area)
-                # Last bbox longitude limit must cover >= analysis radius + catchment.
+                # Крайняя долгота bbox покрывает как минимум радиус анализа вместе с зоной охвата.
                 bbox=query.call_args[0][0].split('(')[2].split(')')[0]
                 east=float(bbox.split(',')[3])
                 extent=(east-lng)*111000*math.cos(math.radians(lat))

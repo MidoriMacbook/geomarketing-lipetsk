@@ -1,4 +1,4 @@
-"""Local coordinate projection and geometry helpers."""
+"""Локальная проекция координат и геометрические функции."""
 import math
 import numpy as np
 

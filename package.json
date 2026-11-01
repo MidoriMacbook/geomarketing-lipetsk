@@ -5,6 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@11.25.0",
   "scripts": {
+    "test:smoke": "playwright test",
     "build:material": "rollup --config rollup.config.js",
     "check:material": "node --check scripts/frontend/material-web-entry.js && rollup --config rollup.config.js",
     "build:hero": "rollup --config rollup.config.js --configHero",
@@ -19,6 +20,7 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@rollup/plugin-commonjs": "29.0.3",
     "@rollup/plugin-node-resolve": "16.0.3",
     "@rollup/plugin-replace": "6.0.3",

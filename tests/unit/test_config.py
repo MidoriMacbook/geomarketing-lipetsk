@@ -1,4 +1,4 @@
-"""Development/production defaults and unchanged environment semantics."""
+"""Значения по умолчанию для разработки и рабочего сервера; прежний смысл переменных окружения."""
 import unittest
 from unittest.mock import patch
 

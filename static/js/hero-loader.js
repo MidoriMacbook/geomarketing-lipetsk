@@ -1,4 +1,4 @@
-// Progressive enhancement: static text and all app modules are independent.
+// Постепенное улучшение: статический текст и все модули приложения независимы.
 (() => {
   const mount = document.getElementById('hero-motion-root');
   if (!mount || mount.dataset.heroLoading) return;
@@ -6,7 +6,7 @@
   const load = () => import('/static/vendor/hero/hero-motion.js').catch(() => {
     mount.dataset.heroState = 'fallback';
   });
-  // This deferred script already has the DOM. Tiles and API requests must not
-  // postpone the first-screen entrance until the window load event.
+  // Отложенному скрипту DOM уже доступен. Плитки и запросы API не должны
+  // задерживать появление первого экрана до события window load.
   load();
 })();

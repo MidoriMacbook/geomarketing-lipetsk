@@ -43,8 +43,8 @@ async original => {
     await page.locator('[data-testid="save-place"]').nth(1).click();await page.waitForFunction(()=>document.querySelectorAll('[data-testid="field-checks"]').length===2);
     const savedBefore=await page.evaluate(()=>localStorage.getItem('geomarketing.saved.v1'));
     const other=await context.newPage();
-    // Saved cards render before catalog loading starts. Hold that response to
-    // exercise the bootstrap race: widget visibility alone is not analysis-ready.
+    // Сохранённые карточки появляются до начала загрузки каталога. Задерживаем ответ,
+    // воспроизводя гонку запуска: видимость виджета ещё не означает готовность расчёта.
     let releaseCatalog;
     const catalogGate=new Promise(resolve=>{releaseCatalog=resolve;});
     await other.route('**/api/catalog',async route=>{

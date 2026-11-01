@@ -1,4 +1,4 @@
-"""Liveness endpoint."""
+"""Маршрут проверки работоспособности."""
 from flask import Blueprint, jsonify
 
 blueprint = Blueprint('health', __name__)

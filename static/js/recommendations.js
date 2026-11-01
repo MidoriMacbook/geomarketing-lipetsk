@@ -1,3 +1,4 @@
+import { scoreText, SCORE_NOTE } from './result-format.js';
 import { state } from './state.js';
 import { deliverySummary } from './data-delivery.js';
 import { $, fmt, coords, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin, animateUI, cancelUI, motionReduced } from './ui.js';
@@ -161,9 +162,9 @@ export function showResult(data, { freshCalculation=false } = {}) {
       expandMobileCard(entry, expanded, true);
     });
     toggle.setAttribute('aria-controls', body.id);
-    const decision=recommendationDecision(rec),score=node('span','mobile-rec-score',`${Math.round(rec.score*100)}%`);
-    score.setAttribute('aria-label',`${Math.round(rec.score*100)}% — относительная оценка внутри этого расчёта`);
-    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference','Оценка внутри расчёта'));
+    const decision=recommendationDecision(rec),score=node('span','mobile-rec-score',scoreText(rec.score));
+    score.setAttribute('aria-label',`${scoreText(rec.score)} — ${SCORE_NOTE}`);
+    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference','Только внутри этого расчёта'));
     const reasons=node('section','mobile-reasons decision-reasons'),reasonList=node('ul');
     reasons.append(node('h4','','Почему это место'),node('p','decision-headline',decision.headline),reasonList);
     // Население уже показано крупно в метриках: это та же фактическая причина,
@@ -173,7 +174,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     const heading = node('div', 'place-title'), select = button(`Место ${rec.rank}`, 'place-select', () => selectPlace(rec.rank));
     select.setAttribute('aria-pressed', rec.rank === state.selectedRank);
     select.setAttribute('aria-label', `Показать место ${rec.rank} на карте`);
-    heading.append(node('span', 'rank', rec.rank), select, node('span', 'score', `${Math.round(rec.score*100)}%`));
+    heading.append(node('span', 'rank', rec.rank), select, node('span', 'score', scoreText(rec.score)));
     const coordinate = node('p', 'coords', coords(rec));
     if (!index)coordinate.id = 'coords';
     const metrics = node('div', 'place-metrics'), people = node('div'), competition = node('div');
@@ -239,7 +240,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     mobileCards.set(rec.rank, entry);
     arrangeMobileCard(entry);
     $('recommendation-list').append(card);
-    countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: '%', from: previous[0] });
+    countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: ' из 100', from: previous[0] });
     countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ', from: previous[1] });
     countTo(competition.querySelector('strong'), rec.competitors_in_radius, { animate: newAnalysis, from: previous[2] });
     if (newAnalysis) animateUI(card,[{opacity:0,transform:'translateY(var(--motion-distance-small))'},{opacity:1,transform:'translateY(0)'}],'calculation-result',{delay:motionStagger()*(3+index*2/3),duration:'workspace',easing:'emphasized'});
@@ -248,13 +249,13 @@ export function showResult(data, { freshCalculation=false } = {}) {
   $('kpi-business').textContent = data.business_name;
   $('map-context').textContent = `${data.district_name} · ${data.business_name}`;
   if ($('analysis-context')) $('analysis-context').textContent = `${data.district_name} · ${data.business_name}`;
-  $('source').textContent = `Источник: ${sourceText(data.source)}. Дата самой ранней копии: ${dateText(dataDate(data))}. Население оценено по площади и этажности домов. ${deliverySummary(data)}`.trim();
+  $('source').textContent = `Источник: ${sourceText(data.source)}. Дата самой ранней копии: ${dateText(dataDate(data))}. Число жителей оценено по данным домов. ${deliverySummary(data)}`.trim();
   const warning = [data.source === 'demo'?'Показаны демонстрационные данные: не используйте их для выбора места без проверки.': '', data.warning, data.notice].filter(Boolean).join(' ');
   $('data-warning').textContent = warning;
   $('data-warning').hidden = !warning;
   if (warning && newAnalysis) reveal($('data-warning'), 'notice');
   $('data-section').hidden = false;
-  $('data-quality')?.replaceChildren(qualityBlock(data));
+  $('data-quality')?.replaceChildren(qualityBlock(data, false, true));
   const quality = qualitySummary(data);
   const summary = `${state.openedScenarioId ? 'Сохранённый расчёт · ' : ''}${quality.source} · ${quality.freshness} · ${quality.completeness}`;
   if ($('trust-summary')) {

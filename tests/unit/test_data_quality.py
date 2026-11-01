@@ -1,4 +1,4 @@
-"""Quality states describe provenance limitations, never statistical confidence."""
+"""Статусы качества описывают ограничения происхождения данных, а не статистическую уверенность."""
 from datetime import datetime, timedelta, timezone
 import json
 import unittest

@@ -1,4 +1,4 @@
-"""Pure scoring checks: no Flask application, cache writes, or network access."""
+"""Изолированные проверки баллов без Flask-приложения, записи кэша и сети."""
 import unittest
 from unittest.mock import patch
 

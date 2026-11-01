@@ -33,7 +33,7 @@
 .section-heading h2 { min-width:0; }
 .step { display:grid; place-items:center; flex-shrink:0; min-width:var(--space-6); min-height:var(--space-6); border-radius:var(--radius-control); background:var(--color-primary); color:var(--color-on-primary); font-family:var(--font-mono); font-size:var(--text-xs); font-variant-numeric:tabular-nums; }
 .section-note { font-size:var(--text-xs); margin-bottom:var(--space-4); }
-/* Keep recommendation headers visible when the list reaches the shared row cap. */
+/* Заголовки рекомендаций остаются видимыми при достижении общей предельной высоты строки. */
 .recommendations>.section-heading,.recommendations>.section-note { flex-shrink:0; }
 #result { min-height:0; overflow-y:auto; overscroll-behavior-y:contain; scrollbar-gutter:stable; padding:var(--space-2); margin:calc(-1 * var(--space-2)); }
 #result-empty { min-height:0; overflow-y:auto; }

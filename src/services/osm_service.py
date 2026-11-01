@@ -1,6 +1,8 @@
-"""OpenStreetMap loading and resident estimation without HTTP dependencies."""
+"""Загрузка OpenStreetMap и оценка жителей без зависимости от HTTP-маршрутов приложения."""
 import math
 import logging
+import hashlib
+import json
 import time
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -17,6 +19,7 @@ from src.config import (
 )
 from src.domain.businesses import BUSINESS_CATALOG
 from src.domain.models import CacheInfo
+from src.domain.provenance import make_rows, source_record
 from src.services.cache_service import _cached
 from src.utils.geo import _bbox, _footprint_m2
 from src.utils.validation import area_for, custom_area
@@ -28,7 +31,7 @@ _deadline = ContextVar('overpass_deadline', default=None)
 
 @contextmanager
 def loading_budget():
-    """Share a retry budget across houses and competitors in one calculation."""
+    """Общий лимит времени повторных попыток для домов и конкурентов одного расчёта."""
     token = _deadline.set(time.monotonic() + 85)
     try:
         yield
@@ -59,7 +62,7 @@ def _overpass(query):
             started = time.monotonic()
             retry = False
             try:
-                # Query execution plus the upstream queue can exceed ten seconds.
+                # Выполнение запроса вместе с очередью источника может занять больше десяти секунд.
                 resp = requests.get(url, params={'data': query}, headers=HEADERS,
                                     timeout=(3, min(40, remaining - 3)))
                 resp.raise_for_status()
@@ -69,16 +72,16 @@ def _overpass(query):
                 if data.get('remark'):
                     raise ValueError('Incomplete Overpass response: ' + str(data['remark'])[:160])
                 return data['elements']
-            except Exception as exc:  # noqa: BLE001 - fail over without losing saved data
-                # Do not log URLs containing user coordinates or entire response bodies.
+            except Exception as exc:  # noqa: BLE001 — переключаем источник, сохраняя прежние данные
+                # Не записываем в журнал URL с координатами пользователя или полные тела ответов.
                 status = getattr(resp, 'status_code', None)
                 reason = getattr(exc.args[0], 'reason', None) if exc.args else None
                 os_errno = getattr(getattr(reason, '__cause__', None), 'errno', None)
                 logger.warning('Overpass %s failed: %s cause=%s errno=%s status=%s',
                                host, type(exc).__name__, type(reason).__name__, os_errno, status)
                 errors.append(f'{host}: {type(exc).__name__} status={status}')
-                # A gateway may reject immediately while the data server is healthy.
-                # Retry only this fast transient failure, never a timeout or rate limit.
+                # Шлюз может сразу отказать, хотя сервер данных работает. Повторяем только
+                # такой быстрый временный сбой, но не тайм-аут и не ограничение частоты.
                 retry = (attempt == 0 and status in (502, 503, 504)
                          and time.monotonic() - started < 3
                          and deadline - time.monotonic() > 45)
@@ -139,9 +142,40 @@ def _load_houses(district):
     return parse_houses(_overpass(query), district)
 
 
-def parse_houses(elements, district=None):
-    """Use identical footprint/population rules in live and daily collection."""
-    rows = []
+def _population_provenance(tags, footprint):
+    """Фиксируем ровно те признаки и коэффициенты, которыми пользуется оценка."""
+    flats = _num(tags.get('building:flats'))
+    levels = _num(tags.get('building:levels'))
+    rule = ('flats' if flats else 'private_house'
+            if tags.get('building') in PRIVATE_TYPES or tags.get('building') == 'yes'
+            and (levels is None or levels <= 2) and footprint <= YES_MAX_FOOTPRINT_PRIVATE
+            else 'footprint_levels')
+    keys = ('building', 'building:flats', 'building:levels', 'addr:housenumber', *NON_RESIDENTIAL_KEYS)
+    return {'rule': rule, 'tags': {key: str(tags[key]) for key in keys if key in tags},
+            'footprint_m2': footprint, 'levels_used': (levels or DEFAULT_LEVELS) if rule == 'footprint_levels' else None,
+            'persons_per_flat': PERSONS_PER_FLAT, 'persons_per_private_house': PERSONS_PER_PRIVATE_HOUSE,
+            'living_share': LIVING_SHARE, 'm2_per_resident': M2_PER_RESIDENT,
+            'rounding': 'max(1, round(residents))'}
+
+
+def _append_source(rows, records, seen, row, record):
+    identity = (record['osm_type'], record['osm_id']) if record['osm_id'] is not None else None
+    if identity in seen:
+        index = seen[identity]
+        if rows[index] != row or records[index] != record:
+            raise ValueError('Противоречивые повторы исходного объекта OSM')
+        return False
+    if identity is not None:
+        seen[identity] = len(rows)
+    rows.append(row)
+    records.append(record)
+    return True
+
+
+def parse_houses(elements, district=None, *, fetched_at=None):
+    """Единые правила площади и оценки населения для живой и ежедневной загрузки."""
+    rows, records, seen, duplicates = [], [], {}, 0
+    fetched_at = time.time() if fetched_at is None else fetched_at
     for el in elements:
         geom = el.get('geometry')
         if not geom or len(geom) < 3:
@@ -160,8 +194,13 @@ def parse_houses(elements, district=None):
             dy = (lat - lat0) * 111_000
             if math.hypot(dx, dy) > district['radius']:
                 continue
-        rows.append([round(lat, 6), round(lng, 6), max(1, round(residents))])
-    return rows
+        row = [round(lat, 6), round(lng, 6), max(1, round(residents))]
+        record = source_record(el, fetched_at, _population_provenance(el.get('tags', {}), footprint))
+        record['geometry_sha256'] = hashlib.sha256(
+            json.dumps(geom, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
+        if not _append_source(rows, records, seen, row, record):
+            duplicates += 1
+    return make_rows(rows, records, duplicates)
 
 
 def _load_competitors(business, district):
@@ -173,8 +212,14 @@ def _load_competitors(business, district):
     return parse_competitors(_overpass(query))
 
 
-def parse_competitors(elements, deduplicate=True):
-    seen, rows = set(), []
+def parse_competitors(elements, deduplicate=True, *, fetched_at=None):
+    """Сливаем только повтор type+id; разные ID, включая точку и контур, остаются.
+
+    Аргумент deduplicate оставлен для совместимости вызовов. Слияние по координатам
+    больше не применяется ни при одном его значении.
+    """
+    rows, records, seen, duplicates = [], [], {}, 0
+    fetched_at = time.time() if fetched_at is None else fetched_at
     for el in elements:
         if el['type'] == 'node':
             lat, lng = el['lat'], el['lon']
@@ -182,11 +227,11 @@ def parse_competitors(elements, deduplicate=True):
             lat, lng = el['center']['lat'], el['center']['lon']
         else:
             continue
-        key = (round(lat, 4), round(lng, 4))  # один объект мог попасть дважды (точка и контур)
-        if not deduplicate or key not in seen:
-            seen.add(key)
-            rows.append([round(lat, 6), round(lng, 6)])
-    return rows
+        row = [round(lat, 6), round(lng, 6)]
+        record = source_record(el, fetched_at)
+        if not _append_source(rows, records, seen, row, record):
+            duplicates += 1
+    return make_rows(rows, records, duplicates)
 
 
 def get_houses(area, refresh=False, *, cached_only=False):

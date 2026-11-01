@@ -1,8 +1,8 @@
-"""Production entry point: python serve.py (Windows and Linux)."""
+"""Запуск рабочего сервера: python serve.py (Windows и Linux)."""
 import logging
 import os
 
-# Avoid multiplying BLAS threads across simultaneous web requests.
+# Ограничиваем число потоков BLAS при одновременных веб-запросах.
 os.environ.setdefault('OMP_NUM_THREADS', '1')
 os.environ.setdefault('OPENBLAS_NUM_THREADS', '1')
 

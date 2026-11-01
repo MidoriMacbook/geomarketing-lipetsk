@@ -1,4 +1,4 @@
-"""Preset district and business catalog representation."""
+"""Представление каталога готовых районов и категорий бизнеса."""
 from src.config import DISTRICTS
 from src.domain.businesses import BUSINESS_CATALOG
 

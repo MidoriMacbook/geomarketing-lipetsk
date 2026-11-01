@@ -35,7 +35,7 @@ async page => {
   await p.unroute('**/api/calculate?**');
  };
  const fresh=structuredClone(fixture);fresh.source='osm';fresh.warning=null;if(fresh.data_quality)fresh.data_quality.source='osm';
- delete fresh.data_delivery; // Keep explicit coverage of older/live API responses.
+ delete fresh.data_delivery; // Отдельно проверяем старые ответы API и ответы живого источника.
  Object.values(fresh.data_meta).forEach(meta=>{meta.cached=false;meta.warning=null;meta.fetched_at=Date.now()/1000;meta.stale=false;});
  await reply(fresh);
  check((await p.locator('#refresh-status').textContent()).startsWith('Данные получены'),'Fresh success not shown');

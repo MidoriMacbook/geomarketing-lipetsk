@@ -1,9 +1,10 @@
+import { SCORE_NOTE } from './result-format.js';
 export const $ = id => document.getElementById(id);
 export const fmt = n => Math.round(n).toLocaleString('ru-RU');
 export const coords = p => `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`;
 export const distance = n => n === null ? 'Не найдены в данных области' : `${fmt(n)} м`;
 export const STORAGE_KEY = 'geomarketing.saved.v1';
-export const LIMITATIONS = 'Население оценено по площади и этажности домов. Расстояния по прямой. Данные OpenStreetMap могут быть неполными или устаревшими. Модель не учитывает аренду, наличие помещений, пешеходные маршруты, доходы и поток посетителей. Относительную оценку нельзя сравнивать между разными расчётами.';
+export const LIMITATIONS = 'Число жителей оценено по квартирам либо площади и этажности домов, а не по переписи. Расстояния по прямой. Данные OpenStreetMap могут быть неполными или устаревшими. Модель не учитывает аренду, наличие помещений, пешеходные маршруты, доходы и поток посетителей. Относительную оценку нельзя сравнивать между разными расчётами. '+SCORE_NOTE;
 export const node = (tag, className, text) => {
   const e = document.createElement(tag);
   if (className) e.className = className;
@@ -36,8 +37,8 @@ export function dataDate(data) {
   return dates.length ? new Date(Math.min(...dates) * 1000).toISOString() : null;
 }
 
-// Motion never owns visibility, focus or application state. A cancelled animation
-// simply exposes the final DOM, and every temporary snapshot has its own cleanup.
+// Анимация не управляет видимостью, фокусом и состоянием приложения. При отмене
+// показывается итоговый DOM; каждый временный снимок очищается отдельно.
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const effects = new Map(), snapshots = new Map(), pendingReveals = new Map();
 let revealObserver;
@@ -97,7 +98,7 @@ export function animateUI(element, frames, purpose, options = {}) {
     };
     const effect = { animation, cleanup: finish };
     effects.set(element, effect);
-    // Both branches consume finished; cancel never creates an unhandled rejection.
+    // Обе ветки обрабатывают finished; отмена не создаёт необработанного отклонения Promise.
     animation.finished.then(finish, finish);
     return animation;
   }
@@ -109,14 +110,14 @@ export function animateUI(element, frames, purpose, options = {}) {
 
 export function reveal(element, purpose, options = {}) {
   if (!element) return null;
-  // The editorial island owns the five once-only block entrances. Its failure
-  // leaves static content visible rather than replaying a second card animation.
+  // Вступительный блок отвечает за пять однократных появлений. При его отказе
+  // статический контент остаётся видимым без повторной анимации карточек.
   if (document.getElementById('hero-motion-root') && ['section', 'recommendation', 'scenario', 'saved-enter', 'kpi'].includes(purpose)) return null;
   const frames = [{ opacity: 0, transform: 'translateY(var(--motion-distance))' }, { opacity: 1, transform: 'translateY(0)' }];
   cancelUI(element);
   if (motionReduced() || !element.isConnected) return null;
-  // Do not spend an entrance while its content is several screens below the user.
-  // Pending content remains readable/focusable: only the eventual effect is deferred.
+  // Не запускаем появление, пока содержимое находится на несколько экранов ниже.
+  // Ожидающее содержимое доступно для чтения и фокуса; откладывается только эффект.
   for (const queued of pendingReveals.keys()) {
     if (!queued.isConnected || queued.closest('[hidden]')) cancelUI(queued);
   }
@@ -219,7 +220,7 @@ function syncProgress() {
     progress.shadowRoot?.getAnimations?.({ subtree: true }).forEach(animation => animation.cancel());
   };
   stopShadowMotion();
-  // Lit can create its internal animations after an attribute update.
+  // Lit может создавать внутренние анимации после обновления атрибута.
   Promise.resolve(progress.updateComplete).then(stopShadowMotion, () => {});
 }
 
@@ -247,8 +248,8 @@ export function setAnalysisState(value, message) {
   }
 }
 
-// Native details owns semantics. Motion only bridges between its final states.
-// Repeated initialization is harmless for saved cards and dynamically built reports.
+// Семантику обеспечивает стандартный details. Анимация лишь связывает итоговые состояния.
+// Повторная инициализация безопасна для сохранённых карточек и динамических отчётов.
 const disclosures = new WeakMap();
 export function initDisclosure(details, options = {}) {
   if (details?.hasAttribute('data-workspace-disclosure')) return details;
@@ -322,8 +323,8 @@ export function initMotion() {
   setAnalysisState('initial');
   ['settings', 'map-card', 'recommendations', 'saved-section', 'data-section'].forEach((id, index) => reveal($(id), 'section', { duration: 'slow', easing: 'emphasized', delay: Math.min(index * 30, 90) }));
   document.querySelectorAll('details').forEach(details => initDisclosure(details));
-  // Native dynamic details keep their own keyboard/toggle behaviour. Only the
-  // accessible state is synchronised; no second disclosure controller is added.
+  // Динамические стандартные details сохраняют обработку клавиатуры и раскрытия.
+  // Синхронизируется только состояние доступности, второй обработчик раскрытия не добавляется.
   const syncNativeDetails=details=>details.querySelector(':scope>summary')?.setAttribute('aria-expanded',details.dataset.expanded||String(details.open));
   document.querySelectorAll('details').forEach(syncNativeDetails);
   document.addEventListener('toggle',event=>{if(event.target.matches?.('details'))syncNativeDetails(event.target);},true);

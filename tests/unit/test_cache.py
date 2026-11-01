@@ -62,7 +62,7 @@ class CacheTests(unittest.TestCase):
         name = 'houses_test'
         rows = [[52.61, 39.58, 100]]
         (self.root / f'{name}.json').write_text(json.dumps(rows), encoding='utf-8')
-        # A real lock would deadlock the old implementation: use an instrumented one.
+        # Настоящая блокировка привела бы к взаимной блокировке старого кода: используем наблюдаемую замену.
         from unittest.mock import MagicMock, Mock
         busy = MagicMock()
         busy.acquire.return_value = False

@@ -1,4 +1,4 @@
-"""Characterization of the public JSON contract before backend modularization."""
+"""Проверки публичного JSON-контракта, зафиксированного до разделения сервера на модули."""
 import unittest
 from unittest.mock import patch
 

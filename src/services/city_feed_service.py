@@ -1,4 +1,4 @@
-"""Bounded GitHub extract loading with atomic replacement and source dates."""
+"""Ограниченная загрузка выгрузки GitHub с атомарной заменой и исходными датами."""
 import json
 import logging
 import tempfile
@@ -11,11 +11,12 @@ import requests
 from src.config import CACHE_DIR, CACHE_TTL, CITY_DATA_URL, HEADERS
 from src.domain.city_data import select_area, validate_bundle
 from src.domain.models import CacheInfo, LoadedData
+from src.domain.provenance import provenance_summary
 from src.utils.formatting import cache_metadata
 from src.utils.validation import UserError, validate_data
 
 CACHE_FILE = CACHE_DIR / 'city-v1.json'
-MAX_BYTES = 10 * 1024 * 1024
+MAX_BYTES = 32 * 1024 * 1024
 _memory = None
 _last_check = 0
 _etag = None
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class FeedUnavailable(RuntimeError):
-    """Neither remote data nor a valid local city copy can be used."""
+    """Недоступны и удалённые данные, и пригодная локальная городская копия."""
 
 
 def _save(bundle):
@@ -47,7 +48,7 @@ def _download(previous, refresh):
     headers = {**HEADERS, 'Cache-Control': 'no-cache'}
     if _etag:
         headers['If-None-Match'] = _etag
-    # Explicit checks must not be answered by an older CDN cache entry.
+    # Явная проверка обновления не должна получать устаревшую копию CDN.
     params = {'check': int(time.time())} if refresh else None
     with requests.get(CITY_DATA_URL, headers=headers, params=params,
                       timeout=(3, 12), stream=True) as response:
@@ -123,9 +124,14 @@ def load(area, business, refresh=False):
     house_rows, competitor_rows = validate_data(
         np.asarray(houses, dtype=float).reshape(-1, 3),
         np.asarray(competitors, dtype=float).reshape(-1, 2))
-    info = CacheInfo(cached, bundle['fetched_at'], age > CACHE_TTL, warning)
+    def source_info(rows):
+        provenance = getattr(rows, 'provenance', None)
+        saved = min((record['fetched_at'] for record in provenance['records']),
+                    default=bundle['fetched_at']) if provenance else bundle['fetched_at']
+        return CacheInfo(cached, saved, time.time() - saved > CACHE_TTL, warning, provenance_summary(rows))
+    house_info, competitor_info = source_info(houses), source_info(competitors)
     return LoadedData(house_rows, competitor_rows,
-                      'cache' if cached else 'osm', warning, cache_metadata(info, info),
+                      'cache' if cached else 'osm', warning, cache_metadata(house_info, competitor_info),
                       {'mode': 'daily', 'status': status, 'version': bundle['version'],
                        'fetched_at': bundle['fetched_at'], 'checked_at': _last_check,
                        'interval_hours': 24})

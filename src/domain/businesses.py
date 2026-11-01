@@ -1,4 +1,4 @@
-"""Shared business names, model parameters, and OpenStreetMap filters."""
+"""Общие названия категорий бизнеса, параметры модели и фильтры OpenStreetMap."""
 
 BUSINESS_CATALOG = {
     'cafe': {

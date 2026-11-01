@@ -21,8 +21,8 @@ async original => {
       metrics.push({height,scale,...geometry});
       if(geometry.target<geometry.header-1||geometry.target>=height||geometry.focus!=='workspace'||geometry.open!=='false')
         throw Error(`Menu anchor is outside the usable viewport: ${JSON.stringify(metrics.at(-1))}`);
-      // Exercise real anchor/default click handlers independently of hit target
-      // scrolling; keyboard, touch and pointer activation are covered separately.
+      // Проверяем настоящие якоря и стандартные обработчики click отдельно от прокрутки
+      // к цели; клавиатура, касание и указатель проверяются отдельно.
       for(const [selector,target,focus] of [
         ['.hero-links a[href="#workspace"]','workspace','workspace'],
         ['#trust-details-link','data-title','data-summary'],

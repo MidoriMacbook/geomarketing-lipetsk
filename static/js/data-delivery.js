@@ -1,4 +1,4 @@
-// Pure copy shared by the refresh status and provenance panel.
+// Общие тексты статуса обновления и панели происхождения данных без побочных эффектов.
 export function deliverySummary(data) {
   return data?.data_delivery?.mode === 'daily'
     ? 'Выгрузка OpenStreetMap собирается раз в сутки. Кнопка проверяет наличие новой версии; дата относится к исходным данным.'

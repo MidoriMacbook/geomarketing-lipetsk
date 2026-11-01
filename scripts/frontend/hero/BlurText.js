@@ -1,5 +1,5 @@
 // React Bits BlurText's blur/direction snapshots and buildKeyframes algorithm.
-// Uses Motion's smaller React animation hook on the existing short paragraph.
+// Для существующего короткого абзаца используется компактный React-хук анимации Motion.
 import { useEffect, useRef } from 'react';
 import { useAnimate } from 'motion/react-mini';
 
@@ -23,7 +23,7 @@ export function BlurText({ enabled }) {
     });
     const start = () => { if (!active) return;
     try {
-      // Restrained whole-paragraph adaptation: no duplicate SR text or flex spans.
+      // Адаптация целого абзаца без дублирования текста для экранного диктора и flex-элементов.
       const from = {filter:'blur(8px)',opacity:0,transform:'translateY(14px)'};
       const steps = [
         {filter:'blur(2px)',opacity:.75,transform:'translateY(-0.8px)'},
@@ -31,7 +31,7 @@ export function BlurText({ enabled }) {
       ];
       animation = animate(el, buildKeyframes(from,steps), {duration:.75,delay:.48,ease:'easeOut',times:[0,.5,1]});
       animation.then(restore);
-    } catch { /* The static paragraph remains the fallback. */ }
+    } catch { /* При отказе остаётся статический абзац. */ }
     };
     if (!document.fonts || document.fonts.status === 'loaded') start();
     else document.fonts.ready.then(start);

@@ -1,4 +1,4 @@
-/* One local geometry for each directional role; colour follows its control. */
+/* Единая локальная геометрия каждого направления; цвет наследуется от элемента управления. */
 :root {
  --direction-size:1rem;
  --direction-duration:var(--motion-fast);

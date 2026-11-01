@@ -1,4 +1,4 @@
-"""Shipped real OSM catalog geography, integrity, coverage and offline behavior."""
+"""География, целостность, покрытие и автономная работа опубликованного каталога OSM."""
 import hashlib
 import json
 import math

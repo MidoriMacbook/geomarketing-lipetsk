@@ -15,6 +15,8 @@ from src.config import CACHE_DIR, DISTRICTS, HEADERS, LIPETSK_BOUNDS, SNAPSHOT_D
 from src.domain.businesses import BUSINESS_CATALOG
 from src.domain.city_data import select_area, validate_bundle
 from src.domain.scoring import score_locations
+from src.domain.provenance import ProvenancedRows, provenance_summary, validate_provenance
+from src.services.city_feed_service import MAX_BYTES
 import numpy as np
 from src.services.osm_service import cache_key, competitor_cache_name
 
@@ -63,6 +65,11 @@ def audit_file(path, area, business, now, binding=None):
                                    else 'stale' if now - saved > 604800
                                    else 'recent' if now - saved > 86400 else 'fresh'))
         columns = 2 if business else 3
+        if 'provenance' in payload:
+            provenance = validate_provenance(payload['provenance'], rows, columns)
+            result['object_provenance'] = provenance_summary(ProvenancedRows(rows, provenance))
+        else:
+            result['object_provenance'] = None
         valid, invalid = [], []
         for index, row in enumerate(rows):
             if (not isinstance(row, list) or len(row) != columns
@@ -108,10 +115,10 @@ def runtime_audit(output_dir):
     bundle = None
     try:
         with urlopen(Request(feed_url, headers=HEADERS), timeout=20) as response:
-            raw = response.read(10 * 1024 * 1024 + 1)
+            raw = response.read(MAX_BYTES + 1)
             result['feed_http_status'] = response.status
-        if len(raw) > 10 * 1024 * 1024:
-            raise ValueError('Выгрузка больше 10 МиБ')
+        if len(raw) > MAX_BYTES:
+            raise ValueError('Выгрузка превышает предел загрузки')
         bundle = validate_bundle(json.loads(raw))
         target = output_dir / 'public-city.json'
         target.write_bytes(raw)
@@ -123,9 +130,12 @@ def runtime_audit(output_dir):
         datasets = {'houses': bundle['houses'], **bundle['competitors']}
         result['dataset_checks'] = {}
         for key, rows in datasets.items():
+            provenance = (bundle.get('provenance', {}).get('houses') if key == 'houses' else
+                          bundle.get('provenance', {}).get('competitors', {}).get(key))
             exact = Counter(tuple(row) for row in rows)
             rounded = Counter(tuple(round(v, 4) for v in row[:2]) for row in rows)
             result['dataset_checks'][key] = {
+                'object_provenance': provenance_summary(ProvenancedRows(rows, provenance)),
                 'exact_duplicate_excess': sum(n-1 for n in exact.values()),
                 'exact_duplicate_rows': [{'row': list(row), 'count': n} for row, n in exact.items() if n > 1],
                 'rounded_coordinate_excess': sum(n-1 for n in rounded.values()),
@@ -157,8 +167,11 @@ def runtime_audit(output_dir):
                 record['feed_selected_stats'] = expected
                 record['stats_match_feed'] = payload.get('stats') == expected
                 record['version_matches_feed'] = payload.get('data_delivery', {}).get('version') == bundle['version']
-                record['source_dates_match_feed'] = all(payload.get('data_meta', {}).get(name, {}).get('fetched_at') == bundle['fetched_at']
-                                                        for name in ('houses', 'competitors'))
+                record['source_dates_match_feed'] = all(
+                    payload.get('data_meta', {}).get(name, {}).get('fetched_at') == min(
+                        (item['fetched_at'] for item in getattr(rows, 'provenance', {}).get('records', [])),
+                        default=bundle['fetched_at'])
+                    for name, rows in [('houses', houses), ('competitors', competitors)])
                 scored = score_locations(np.asarray(houses, dtype=float).reshape(-1, 3),
                                          np.asarray(competitors, dtype=float).reshape(-1, 2),
                                          area['center'], area['radius'], BUSINESS_CATALOG[business])
@@ -259,7 +272,8 @@ def audit(now, external=False, output_dir=Path('tests/artifacts/mobile-data-audi
               'unbound_cache_files': sorted(p.name for p in CACHE_DIR.glob('*.json')
                                             if p.name not in manifest['outputs']),
               'mixed_source_dates': mismatches, 'manifest_geometry_claims': source_geometry,
-              'geometry_limit': 'В снимках нет исходных контуров и ID. Заявления manifest об импорте не являются повторной проверкой геометрии.',
+              'geometry_limit': 'В старых снимках нет исходных контуров и ID. Новое происхождение хранит ID, признаки оценки и подписи геометрии, '
+                                'но не заменяет проверку полной топологии или полевую сверку. Заявления manifest не являются повторной проверкой геометрии.',
               'public_samples': []}
     if external:
         for key, business in [('eleytsky', None), ('center', 'cafe'), ('traktorny', 'grocery'), ('pobeda', 'pharmacy')]:

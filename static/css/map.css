@@ -35,7 +35,7 @@ md-linear-progress:defined + .progress-fallback { display:none; }
 .trust-status p { flex:1 1 14rem; margin:0; }
 .trust-status a { display:inline-flex; align-items:center; min-height:var(--size-target); font-size:var(--text-xs); color:var(--color-primary); }
 
-/* The map is its own dark surface. Page colours must not bleed into Leaflet. */
+/* Карта имеет собственную тёмную поверхность. Цвета страницы не должны менять оформление Leaflet. */
 #map { --color-surface:var(--color-map-surface); --color-ink:var(--color-map-ink); --color-muted:var(--color-map-muted); --color-border:var(--color-map-line); --color-primary:var(--color-map-primary); --color-subtle:var(--color-map-canvas); color:var(--color-map-ink); color-scheme:dark; }
 #map .recommendation-pin.is-selected { background:var(--color-map-primary); color:var(--color-map-canvas); border-color:var(--color-map-canvas); }
 #map .leaflet-tooltip { font-size:var(--text-sm); line-height:1.5; padding:var(--space-2) var(--space-3); }

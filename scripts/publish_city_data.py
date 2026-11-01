@@ -1,4 +1,4 @@
-"""Publish the validated file atomically to the data branch using Actions' token."""
+"""Атомарная публикация проверенного файла в ветку данных с токеном Actions."""
 import base64
 import json
 import os
@@ -27,7 +27,7 @@ def publish(path):
         else:
             branch.raise_for_status()
         existing = session.get(api + '/contents/city.json', params={'ref': 'osm-data'}, timeout=20)
-        payload = {'message': 'data: daily Lipetsk OSM extract [skip ci] [skip render]',
+        payload = {'message': 'ежедневные данные города',
                    'branch': 'osm-data', 'content': base64.b64encode(raw).decode('ascii')}
         if existing.status_code != 404:
             existing.raise_for_status()

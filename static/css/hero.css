@@ -1,6 +1,6 @@
-/* Editorial cover. Static content is complete before the motion island starts. */
+/* Журнальное вступление. Статический контент готов до запуска анимационного блока. */
 .header-reserve { position:relative; top:0; z-index:var(--z-header); min-height:var(--size-header); }
-/* Measured anchor offsets and the collapsible menu require working navigation JS. */
+/* Измеряемые отступы якорей и раскрывающееся меню требуют работающего скрипта навигации. */
 .header-reserve:has(>.site-header[data-navigation-ready]) { position:sticky; }
 .site-header { position:relative; z-index:var(--z-header); min-height:var(--size-header); max-height:none; padding:var(--space-3) max(var(--space-7),calc((100vw - var(--size-page))/2 + var(--space-7))); background:var(--color-header); backdrop-filter:blur(12px); }
 .site-header.is-scrolled { min-height:var(--size-header); padding-block:var(--space-3); background:var(--color-header); box-shadow:0 2px 12px var(--color-shadow-soft); }
@@ -19,8 +19,8 @@
 .intro .hero-title { font-size:var(--text-title); line-height:1.035; font-weight:500; letter-spacing:-.055em; margin:var(--space-5) 0 var(--space-5); max-width:100%; container:hero-title / inline-size; }
 .hero-title-line { display:block; }
 @container hero-title (width < 9em) { .hero-title-business { display:block; } }
-/* At enlarged text sizes choose stable word rows in either display font.
-   The em threshold follows this heading's font size rather than device width. */
+/* При увеличении текста сохраняем устойчивые строки в обоих заголовочных шрифтах.
+   Порог в em зависит от размера шрифта заголовка, а не ширины устройства. */
 @container hero-title (width < 6em) { .hero-title-word { display:block; } }
 .hero-title em { font-weight:500; color:var(--color-primary); margin-inline-start:.055em; }
 .intro .hero-description { max-width:30rem; font-size:var(--text-base); line-height:1.65; color:var(--color-muted); }
@@ -99,7 +99,7 @@
 @media (prefers-reduced-motion:reduce) { .hero-art [data-hero-drift] { transform:none!important; } }
 @media print { .header-reserve,.editorial-hero { display:none!important; } }
 
-/* Warm motion polish: persistent geometry, purposeful first-view entrances. */
+/* Плавная обратная связь: устойчивая геометрия и осмысленное появление первого экрана. */
 .hero-magnet { display:inline-flex; max-width:100%; }
 .hero-links .primary { white-space:nowrap; transition:background-color var(--motion-fast),box-shadow var(--motion-base),transform var(--motion-fast); }
 .hero-links .primary span,.hero-action-arrow { transition:transform var(--motion-base) var(--ease-emphasized); }
@@ -146,7 +146,7 @@
 }
 
 .city-motion-active.city-motion-intro .city-response { animation-play-state:running; }
-/* Navigation is a stable cream bar; the mobile panel overlays below it. */
+/* Навигация остаётся кремовой полосой; мобильная панель раскрывается поверх контента под ней. */
 .nav-items { position:relative; display:flex; align-items:center; gap:var(--space-2); }
 .nav-items>a,.nav-items>button { position:relative; z-index:1; transition:transform 220ms var(--ease-emphasized),color 220ms var(--ease-standard); }
 .site-header .nav-items .active { background:transparent; }

@@ -3,7 +3,7 @@ async page => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   const assert = (condition, message) => { if (!condition) throw new Error(message); };
-  // Blocking the old CDN must not break initialization or calculation.
+  // Блокировка прежнего CDN не должна нарушать инициализацию и расчёт.
   await page.route('**/unpkg.com/**', route => route.abort());
   await page.goto(base);
   await page.waitForFunction(() => typeof L !== 'undefined', null, { timeout: 5000 });
@@ -12,7 +12,7 @@ async page => {
   assert(/\d+\.\d+/.test(await page.locator('#coords').innerText()), 'No coordinates');
   const original = await page.locator('#coords').innerText();
 
-  // A response for a previous selection must never be shown for a new one.
+  // Ответ для прежнего выбора не должен отображаться для нового.
   let arrived;
   const requestStarted = new Promise(resolve => { arrived = resolve; });
   await page.route('**/api/calculate?**', async route => {
@@ -32,7 +32,7 @@ async page => {
   await page.locator('#result').waitFor({ state: 'visible' });
   assert(await page.locator('#coords').innerText() !== original, 'District change did not affect result');
 
-  // Tile failure is visible and does not disable analysis.
+  // Отказ плиток заметен и не блокирует анализ.
   await page.route('**/tile.openstreetmap.org/**', route => route.abort());
   await page.reload();
   await page.waitForFunction(() => !document.getElementById('map-status').hidden);
@@ -43,7 +43,7 @@ async page => {
   await page.locator('#retry-map').click();
   await page.waitForFunction(() => document.querySelectorAll('.leaflet-tile-loaded').length > 0);
 
-  // Hosted visitor sees an actionable network error, with no local Python instructions.
+  // Посетитель сайта видит понятную сетевую ошибку без инструкций локального запуска Python.
   await page.route('**/api/calculate?**', route => route.abort());
   await page.locator('#run').click();
   await page.locator('#error').waitFor({ state: 'visible' });

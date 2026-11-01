@@ -21,6 +21,7 @@ async original => {
   await page.locator('#run').click();await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
   await page.locator('.place-select').nth(1).click();
   await page.locator('#thr').evaluate(n=>{n.value='95';n.dispatchEvent(new Event('input',{bubbles:true}));});
+  if(await page.locator('#display-options').getAttribute('data-expanded')!=='true')await page.locator('#display-options>summary').click();
   await page.locator('#layer-houses').uncheck();await page.locator('#layer-zones').uncheck();
   await page.locator('#scenario-save').click();await page.locator('#scenario-name').fill('Своя область — контекст');
   await page.locator('#scenario-note').fill('Проверить помещение и конкурентов');await page.locator('#scenario-submit').click();
@@ -72,7 +73,7 @@ async original => {
   await other.evaluate(async()=>{const{mutateScenarios}=await import('/static/js/scenario-storage.js');await mutateScenarios(items=>items.slice(0,1));});
   await page.waitForFunction(()=>document.querySelectorAll('[data-testid="scenario-card"]').length===1);
   assert(await page.locator('#scenario-comparison table').count()===0,'Deleted cross-tab scenario remains in comparison');
-  assert(await page.evaluate(async()=>{const{state}=await import('/static/js/state.js');return state.current===null&&state.openedScenarioId===null;}),'Changed filters retain archive result');
+  assert(await page.evaluate(async original=>{const{state}=await import('/static/js/state.js');return state.current?.analysis_id===original.analysis.analysis_id&&state.openedScenarioId===original.id&&state.current.business==='cafe'&&document.getElementById('business').value==='pharmacy';},saved),'Смена формы теряет предыдущий архив или меняет его контекст');
   await page.getByTestId('scenario-open').click();
   await page.getByTestId('save-place').first().click();await page.waitForFunction(()=>document.querySelectorAll('[data-testid="saved-card"]').length===1);
   await page.evaluate(()=>{
@@ -81,13 +82,13 @@ async original => {
   });
   await page.locator('#export-csv').click();await page.waitForFunction(()=>typeof window.__scenarioCsv==='string');
   const csv=await page.evaluate(()=>window.__scenarioCsv);
-  assert(csv.includes('Относительная оценка (только внутри расчёта)')&&csv.includes('Свежесть данных')&&csv.includes('Пригодность данных'),'Legacy CSV metadata or original columns missing');
+  assert(csv.includes('Относительная оценка (только внутри расчёта) — из 100')&&csv.includes('Свежесть данных')&&csv.includes('Пригодность данных'),'Legacy CSV metadata or original columns missing');
   await page.locator('#print-report').click();assert(await page.evaluate(()=>window.__scenarioPrint),'Current report no longer prints');
   await page.emulateMedia({media:'print'});
   const printFacts=await page.locator('#print-report-content').evaluate(n=>({quality:!!n.querySelector('.quality-block'),explanations:n.querySelectorAll('.explanation-block').length,checks:[...n.querySelectorAll('.explanation-block li')].filter(e=>e.getBoundingClientRect().height>0).length}));
   assert(printFacts.quality&&printFacts.explanations===3&&printFacts.checks>0,'Printed quality/explanations are hidden');
   await page.emulateMedia({media:null});
-  // Old API snapshots remain readable; a missing future category does not replace current analysis.
+  // Старые снимки API читаются; отсутствующая будущая категория не заменяет текущий расчёт.
   await other.evaluate(async()=>{
    const{duplicateScenario,mutateScenarios}=await import('/static/js/scenario-storage.js');
    await mutateScenarios(items=>{const copy=duplicateScenario(items[0]);copy.selection.business='future-category';copy.analysis.business='future-category';copy.analysis.business_name='Будущая категория';copy.name='Архив недоступной категории';return [...items,copy];});

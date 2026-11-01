@@ -1,5 +1,5 @@
 // Adapted from React Bits SplitText, revision recorded in upstream/PROVENANCE.json.
-// External-target effect controller: the server-rendered h1 remains the only text.
+// Эффект управляет существующим элементом: серверный h1 остаётся единственным текстом.
 import { useRef } from 'react';
 import { gsap } from 'gsap';
 import { SplitText as GSAPSplitText } from 'gsap/SplitText';
@@ -31,7 +31,7 @@ export function SplitText({ enabled }) {
           wordsClass: 'hero-word', aria: 'none',
         });
         const next = el.getBoundingClientRect();
-        // Never trade the existing natural wrapping for an entrance effect.
+        // Эффект появления не должен нарушать естественный перенос строк.
         if (Math.abs(box.height-next.height)>.5 || Math.abs(box.width-next.width)>.5) { finish(); return; }
         el.dataset.heroSplitStarted = 'true';
         intro = gsap.timeline({ onComplete: finish });
@@ -41,8 +41,8 @@ export function SplitText({ enabled }) {
         });
       } catch { finish(); }
     };
-    // Wait for fonts without hiding the server-rendered title or losing the
-    // entrance on a slow connection. The viewport check prevents late replay.
+    // Ждём шрифты, сохраняя видимость серверного заголовка и возможность анимации
+    // при медленном соединении. Проверка видимости предотвращает запоздалый повтор.
     if (!document.fonts || document.fonts.status === 'loaded') start();
     else document.fonts.ready.then(start);
     return () => { active = false; finish(); };

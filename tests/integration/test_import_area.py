@@ -123,7 +123,7 @@ class AreaImportTests(unittest.TestCase):
             f'<osm>{BOUNDS}<way id="1"><nd ref="999"/><tag k="building" v="house"/></way></osm>',
             f'<osm>{BOUNDS}<relation id="1"><member type="way" ref="999"/><tag k="shop" v="beauty"/></relation></osm>',
             f'<osm>{BOUNDS}<relation id="1"><member type="relation" ref="2"/><tag k="shop" v="beauty"/></relation><relation id="2"><member type="relation" ref="1"/></relation></osm>',
-            # Valid house + cafe must not be written before a later business fails.
+            # Корректные дом и кафе нельзя записывать до возможного отказа следующей категории.
             f'<osm>{BOUNDS}{house}<node id="1" lat="52.593" lon="39.48"><tag k="amenity" v="cafe"/></node><way id="999"><nd ref="404"/><tag k="amenity" v="dentist"/></way></osm>',
         ]
         self.output.mkdir()

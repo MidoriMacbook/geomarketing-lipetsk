@@ -1,7 +1,7 @@
-"""Validate a complete local OSM extract and atomically prepare offline snapshots.
+"""Проверка полной локальной выгрузки OSM и атомарная подготовка снимков.
 
-The acquisition timestamp must be supplied from the download record. Importing
-never uses the source file's modification time as evidence of acquisition.
+Дата получения передаётся из записи загрузки. Время изменения исходного
+файла не используется как доказательство получения данных.
 """
 import argparse
 import hashlib
@@ -16,11 +16,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.import_osm_competitors import extract_competitors
-from src.config import APARTMENT_TYPES, PRIVATE_TYPES, MIN_FOOTPRINT_M2, SNAPSHOT_DIR
+from src.config import APARTMENT_TYPES, PRIVATE_TYPES, SNAPSHOT_DIR
 from src.domain.businesses import BUSINESS_CATALOG
 from src.services import osm_service as osm
 from src.services.cache_service import _validate_rows
-from src.utils.geo import _bbox, _footprint_m2
+from src.utils.geo import _bbox
 
 MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_PRIMITIVES = 250_000
@@ -67,13 +67,13 @@ def _coordinate(value, limit):
 
 
 def _read_source(source):
-    # Bound the actual read as well as the stat: a growing file cannot bypass it.
+    # Ограничиваем само чтение, чтобы растущий файл не обошёл проверку размера.
     with Path(source).open('rb') as stream:
         raw = stream.read(MAX_SOURCE_BYTES + 1)
     if len(raw) > MAX_SOURCE_BYTES:
         raise ValueError('OSM source exceeds 64 MiB limit')
-    # Decode before inspecting declarations: UTF-16's interleaved NUL bytes
-    # can otherwise hide a DTD from an ASCII byte scan while ET accepts it.
+    # Сначала декодируем: нулевые байты UTF-16 могут скрыть DTD от проверки
+    # ASCII-байтов, хотя XML-парсер принимает такую декларацию.
     try:
         decoded = raw.decode('utf-8-sig')
     except UnicodeDecodeError as exc:
@@ -141,7 +141,7 @@ def _read_source(source):
             if element.tag == 'node':
                 nodes[ident] = {'lat': _coordinate(element.attrib['lat'], 90),
                                 'lon': _coordinate(element.attrib['lon'], 180)}
-        # Also reject bad inline coordinates, even on unmatched primitives.
+        # Отклоняем неверные встроенные координаты, даже у неподходящих объектов.
         for element in root.iter():
             for name, limit in [('lat', 90), ('lon', 180)]:
                 if name in element.attrib:
@@ -159,7 +159,7 @@ def _require_coverage(bounds, area, margin=0):
 
 
 def _validate_geometry(elements, nodes, roots):
-    """Bound legacy extractor work without expanding repeated relation members."""
+    """Ограничиваем работу прежнего импортёра без раскрытия повторяющихся членов отношений."""
     memo = {}
 
     def measure(key, active):
@@ -207,9 +207,8 @@ def _validate_geometry(elements, nodes, roots):
             raise ValueError('Total OSM geometry expansion limit exceeded')
 
 
-def _house_rows(elements, nodes, area):
-    rows = []
-    lat0, lng0 = area['center']
+def _house_rows(elements, nodes, area, *, fetched_at=None):
+    parsed = []
     for element in elements.values():
         if not _house_candidate(element):
             continue
@@ -217,19 +216,9 @@ def _house_rows(elements, nodes, area):
         if len(refs) < 4 or refs[0] != refs[-1] or len(set(refs)) < 3:
             raise ValueError('Incomplete residential OSM polygon')
         geom = [nodes[ref] for ref in refs]
-        footprint = _footprint_m2(geom)
-        if footprint < MIN_FOOTPRINT_M2:
-            continue
-        residents = osm.estimate_residents(_tags(element), footprint)
-        if residents is None:
-            continue
-        lat = sum(point['lat'] for point in geom) / len(geom)
-        lng = sum(point['lon'] for point in geom) / len(geom)
-        distance = math.hypot((lng - lng0) * 111_000 * math.cos(math.radians(lat0)),
-                              (lat - lat0) * 111_000)
-        if distance <= area['radius']:
-            rows.append([round(lat, 6), round(lng, 6), max(1, round(residents))])
-    return rows
+        parsed.append({'type': 'way', 'id': int(element.attrib['id']),
+                       'tags': _tags(element), 'geometry': geom})
+    return osm.parse_houses(parsed, area, fetched_at=fetched_at)
 
 
 def extract_houses(source: Path, area: dict) -> list[list[float]]:
@@ -242,10 +231,10 @@ def extract_houses(source: Path, area: dict) -> list[list[float]]:
 
 def generate_snapshots(source: Path, area: dict, output_dir: Path, businesses=None,
                        *, fetched_at: float) -> list[Path]:
-    """Validate every selected payload before replacing any snapshot.
+    """Проверяем каждый выбранный набор до замены любого снимка.
 
-    None prepares houses and all business categories. An explicit iterable
-    prepares only its competitor categories, including an empty iterable.
+    None подготавливает дома и все категории бизнеса. Явный перебираемый
+    набор выбирает только категории конкурентов, включая пустой набор.
     """
     if (isinstance(fetched_at, bool) or not isinstance(fetched_at, (int, float))
             or not math.isfinite(fetched_at) or fetched_at <= 0):
@@ -260,8 +249,8 @@ def generate_snapshots(source: Path, area: dict, output_dir: Path, businesses=No
     _require_coverage(bounds, area, max((osm.competitor_margin(key) for key in selected), default=0))
     roots = [key for key, element in elements.items()
              if include_houses and _house_candidate(element)]
-    # The legacy extractor traverses again for each selected category, so a
-    # primitive tagged for several categories consumes the budget each time.
+    # Импортёр повторяет обход для каждой выбранной категории: объект
+    # с несколькими категориями каждый раз расходует лимит работы.
     roots.extend(key for business in selected for key, element in elements.items()
                  if _matches(element, [business]))
     _validate_geometry(elements, nodes, roots)
@@ -269,16 +258,17 @@ def generate_snapshots(source: Path, area: dict, output_dir: Path, businesses=No
                 'source_sha256': hashlib.sha256(raw).hexdigest(), 'source': SOURCE_ATTRIBUTION}
     payloads = []
     if include_houses:
-        rows = _house_rows(elements, nodes, area)
+        rows = _house_rows(elements, nodes, area, fetched_at=fetched_at)
         _validate_rows(rows, 3, allow_empty=False)
-        payloads.append((f'houses_{osm.cache_key(area)}.json', {**metadata, 'data': rows}))
+        payloads.append((f'houses_{osm.cache_key(area)}.json',
+                         {**metadata, 'data': rows, 'provenance': rows.provenance}))
     for business in selected:
-        # Use the validated byte sequence, avoiding a second read of a source
-        # that could have changed since validation and provenance hashing.
-        rows = extract_competitors(io.BytesIO(raw), business, area)
+        # Используем уже проверенные байты: исходный файл мог измениться
+        # после проверки и вычисления контрольной суммы.
+        rows = extract_competitors(io.BytesIO(raw), business, area, fetched_at=fetched_at)
         _validate_rows(rows, 2, allow_empty=True)
         payloads.append((f'{osm.competitor_cache_name(business, area)}.json',
-                         {**metadata, 'data': rows,
+                         {**metadata, 'data': rows, 'provenance': rows.provenance,
                           'coverage_margin_m': osm.competitor_margin(business)}))
     serialized = [(name, json.dumps(payload, allow_nan=False, ensure_ascii=False))
                   for name, payload in payloads]

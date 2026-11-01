@@ -1,5 +1,5 @@
-// No browser globals are accessed at import. Every transaction uses saved -> field
-// lock order so deletion cannot race a queued checklist write into an orphan.
+// При импорте глобальные объекты браузера не читаются. Транзакции берут блокировки
+// в порядке saved → field, чтобы удаление не оставляло запись списка без места.
 export const FIELD_CHECK_KEY = 'geomarketing.field-checks.v1';
 export const SAVED_LOCK = 'geomarketing.saved.v1.write';
 export const FIELD_LOCK = `${FIELD_CHECK_KEY}.write`;
@@ -63,8 +63,8 @@ export function readFieldChecks(options = {}) { return decode(getRaw(storageFor(
 function membership(options, id, expected) {
   let saved;
   try { saved = options.readSaved?.(); } catch { throw failure('membership'); }
-  // The caller injects its existing strict saved.v1 reader. No weaker parallel
-  // interpretation or migration of the saved schema is introduced here.
+  // Вызывающий код передаёт существующий строгий считыватель saved.v1. Здесь нет
+  // упрощённой параллельной трактовки или миграции схемы сохранённых мест.
   if (!Array.isArray(saved) || saved.some(item => !item || typeof item.id !== 'string')) throw failure('membership');
   if (saved.some(item => item.id === id) !== expected) throw failure(expected ? 'missing' : 'membership');
 }
@@ -111,8 +111,8 @@ export async function resetFieldChecks(expectedRaw, options = {}) {
   return transaction(options, storage => {
     const raw = getRaw(storage);
     if (raw !== expectedRaw || raw === null) throw failure('conflict');
-    // Even an oversized future envelope belongs to a newer application. Inspect
-    // its version only during explicit recovery; normal reads stay size bounded.
+    // Даже слишком большой контейнер будущего формата принадлежит новой версии приложения.
+    // Его версия читается только при явном восстановлении; обычное чтение ограничено размером.
     try {
       const envelope = JSON.parse(raw);
       if (envelope && typeof envelope.schema_version === 'number' && envelope.schema_version > 1) throw failure('unsupported', raw);

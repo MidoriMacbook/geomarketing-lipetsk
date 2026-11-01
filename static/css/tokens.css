@@ -1,9 +1,9 @@
-/* Primitive → semantic → component tokens. All colour literals live here. */
+/* Базовые → смысловые → компонентные токены. Все литералы цветов находятся здесь. */
 :root {
  --palette-cream:#FFF7E6; --palette-ink:#2D3A47;
  --palette-pink:#F7C8D3; --palette-rosewood:#B46A72; --palette-sage:#A8B58A;
  --palette-sky:#A9B7C6;
- /* Accessible tints and shades derived from the six-colour brief. */
+ /* Контрастные оттенки получены из шести цветов исходной палитры. */
  --palette-rosewood-deep:#89434E; --palette-rosewood-hover:#71343F;
  --palette-ink-muted:#596470; --palette-border:rgb(45 58 71 / .57); --palette-line:rgb(45 58 71 / .14);
  --palette-warm:#FDEEDF; --palette-paper:#F8EADB; --palette-pink-soft:#FCE6DE; --palette-sage-soft:#EAE7D0;

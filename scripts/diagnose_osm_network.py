@@ -1,4 +1,4 @@
-"""Small operator diagnostic: DNS and TLS to the configured public OSM hosts."""
+"""Краткая диагностика DNS и TLS настроенных публичных серверов OSM."""
 import logging
 import socket
 import ssl

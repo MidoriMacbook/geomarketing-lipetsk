@@ -27,8 +27,8 @@ async original => {
       await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
       const after=await measure(),cls=await page.evaluate(()=>window.__fontCLS);
       const result={width,scale,before,after,cls};metrics.push(result);
-      // Geometry isolates this font regression; whole-page CLS also includes
-      // independent Material/data updates and is reported as a diagnostic.
+      // Геометрия изолирует регрессию шрифта; CLS всей страницы также включает
+      // независимые обновления Material и данных, поэтому выводится как диагностика.
       if(Math.abs(before.heading-after.heading)>1||Math.abs(before.cta-after.cta)>1||before.buttons.some((y,i)=>Math.abs(y-after.buttons[i])>1)||before.text!==after.text||before.overflow||after.overflow)
         throw Error(`Delayed display font shifts headline/CTA: ${JSON.stringify(result)}`);
     }finally{release();await context.close();}

@@ -1,4 +1,4 @@
-"""Projection and geometric coverage checks without HTTP or network access."""
+"""Проверки проекции и геометрического покрытия без HTTP и сетевых запросов."""
 import math
 import unittest
 

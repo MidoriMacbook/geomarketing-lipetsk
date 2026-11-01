@@ -1,5 +1,8 @@
 name: Tests
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
 permissions:
   contents: read
 jobs:
@@ -25,7 +28,12 @@ jobs:
       - run: pnpm run check:hero
       - run: |
           for module in static/js/*.js; do node --check "$module"; done
-      - run: node --test tests/unit/scenario-storage.test.js
-      - run: node --test tests/unit/field-check-storage.test.js
-      - run: node --test tests/unit/data-delivery.test.js
-      - run: node --test tests/unit/analysis-focus.test.js tests/unit/recommendation-brief.test.js
+      - run: node --test tests/unit/*.test.js
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:smoke
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-smoke
+          path: tests/artifacts/smoke/
+          retention-days: 7

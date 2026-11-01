@@ -43,8 +43,8 @@ function start(element) {
   if (!frame) frame = requestAnimationFrame(tick);
 }
 
-// Only generated visual content changes each frame. Exact text, accessibility,
-// copied values and the reserved final-value layout remain stable throughout.
+// Каждый кадр меняет лишь сгенерированное визуальное содержимое. Точный текст,
+// доступность, копируемые значения и место для итогового числа остаются неизменными.
 export function counterValue(element) {
   return records.get(element)?.current ?? values.get(element);
 }
@@ -118,13 +118,13 @@ matchMedia('print').addEventListener('change', event => { if (event.matches) set
 window.addEventListener('beforeprint', settleAll);
 document.addEventListener('visibilitychange', () => { if (document.hidden) settleAll(); });
 
-// A replay changes only aria-hidden generated content, never the exact value.
+// Повтор меняет только сгенерированное содержимое с aria-hidden, сохраняя точное значение.
 export function replayCounter(element) {
   settle(element);
   const target = Number(element.dataset.counterTarget);
   const visual = element.querySelector('.counter-visual');
   if (!visual || !Number.isSafeInteger(target) || motionReduced() || document.hidden) return;
-  // Small counts must cross an integer boundary to visibly replay.
+  // Для заметного повтора небольшое число должно пересечь целочисленную границу.
   const from = target < 20 ? 0 : Math.floor(target * .94);
   records.set(element, { from, target, current: from, prefix: '', suffix: '', visual, started: null, duration: 560 });
   visual.dataset.display = format(from, '', '');

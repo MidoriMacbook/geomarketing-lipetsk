@@ -47,7 +47,7 @@ async original => {
     requests.at(-1).release(); await waitDistrict('universitetsky'); await checkNumbers('universitetsky');
     hold = false;
     await choose('center'); await waitDistrict('center'); await checkNumbers('center');
-    // A previous response can arrive after the user has already chosen another area.
+    // Предыдущий ответ может прийти, когда пользователь уже выбрал другую область.
     await page.evaluate(async()=>{
       const {state}=await import('/static/js/state.js'), data=structuredClone(state.current), native=window.fetch;
       data.analysis_id='late-district-response';

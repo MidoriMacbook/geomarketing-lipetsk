@@ -51,7 +51,7 @@ class ApiTests(unittest.TestCase):
         self.assertNotIn('private server details', response.get_json()['message'])
 
     def test_university_center_matches_osm_neighbourhood(self):
-        # OSM relation 17717422, checked 2026-10-11.
+        # Отношение OSM 17717422, проверено 11.10.2026.
         lat, lng = osm.DISTRICTS['universitetsky']['center']
         self.assertTrue(52.6021103 <= lat <= 52.6099012)
         self.assertTrue(39.4972877 <= lng <= 39.5123113)

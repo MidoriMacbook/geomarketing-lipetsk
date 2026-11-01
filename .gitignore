@@ -234,3 +234,10 @@ tests/artifacts/
 tests/**/tmp-*/
 qa-architecture-*.log
 tests/tmp-*/
+
+# Локальные резервные копии и пробное переименование истории.
+/.maintenance/
+
+# Локальные служебные журналы; решения находятся в документации проекта.
+/state.md
+/session-log.md

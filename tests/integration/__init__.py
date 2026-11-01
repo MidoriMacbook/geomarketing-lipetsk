@@ -1,1 +1,1 @@
-"""Package for organized backend components or tests."""
+"""Пакет серверных компонентов или тестов."""

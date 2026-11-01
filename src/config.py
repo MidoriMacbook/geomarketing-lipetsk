@@ -1,4 +1,4 @@
-"""Project-root paths and unchanged data/model parameters."""
+"""Пути от корня проекта и параметры данных и модели."""
 import os
 from pathlib import Path
 
@@ -7,8 +7,8 @@ _cache_path = Path(os.environ.get('CACHE_DIR', 'cache')).expanduser()
 CACHE_DIR = (_cache_path if _cache_path.is_absolute() else PROJECT_ROOT / _cache_path).resolve()
 SNAPSHOT_DIR = PROJECT_ROOT / 'data' / 'snapshots'
 CACHE_TTL = 7 * 24 * 3600
-# Opt in on the deployment; offline tests and existing local installs retain
-# their preset snapshots until this public feed is configured.
+# Городская выгрузка включается настройкой окружения; без неё локальные установки
+# и автономные тесты используют готовые районные снимки.
 CITY_DATA_URL = os.environ.get('CITY_DATA_URL', '')
 
 
@@ -21,8 +21,8 @@ def server_port(default: int) -> int:
 
 OVERPASS_URLS = [
     'https://overpass-api.de/api/interpreter',
-    # Independent global instance; a second name for the same node cannot help
-    # when the host refuses connections from the deployment network.
+    # Независимый глобальный сервер: другое имя того же узла не помогает,
+    # если он отклоняет соединения из сети приложения.
     'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
     'https://overpass.private.coffee/api/interpreter',   # бывший overpass.kumi.systems
 ]

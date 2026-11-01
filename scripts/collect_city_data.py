@@ -1,4 +1,4 @@
-"""Collect one complete daily city extract; never publish partial OSM results."""
+"""Сбор полной ежедневной городской выгрузки; неполные ответы OSM не публикуются."""
 import argparse
 import json
 import logging
@@ -13,6 +13,7 @@ import requests
 from src.config import OVERPASS_URLS, HEADERS, APARTMENT_TYPES, PRIVATE_TYPES
 from src.domain.businesses import BUSINESS_CATALOG
 from src.domain.city_data import COVERAGE, make_bundle, validate_bundle
+from src.domain.provenance import filter_rows
 from src.services.osm_service import parse_houses, parse_competitors
 
 FEED_URL = 'https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/osm-data/city.json'
@@ -50,15 +51,16 @@ def collect():
                     f'way["building"~"^({types})$"]({box});'
                     f'way["building"="yes"]["building:levels"]({box});'
                     f'way["building"="yes"]["addr:housenumber"]({box}););out body geom;')
-    houses = [row for row in parse_houses(fetch_elements(houses_query)) if in_coverage(row)]
+    houses = filter_rows(parse_houses(fetch_elements(houses_query)), in_coverage)
     tags = sorted({tag for business in BUSINESS_CATALOG.values() for tag in business['tags']})
     query = '[out:json][timeout:180];(' + ''.join(f'nwr[{tag}]({box});' for tag in tags) + ');out body center;'
     elements = fetch_elements(query)
+    competitor_fetched_at = time.time()
     competitors = {}
     for key, business in BUSINESS_CATALOG.items():
         pairs = [re.fullmatch(r'"([^"]+)"="([^"]+)"', tag).groups() for tag in business['tags']]
         matching = [el for el in elements if any(el.get('tags', {}).get(k) == v for k, v in pairs)]
-        competitors[key] = [row for row in parse_competitors(matching, deduplicate=False) if in_coverage(row)]
+        competitors[key] = filter_rows(parse_competitors(matching, fetched_at=competitor_fetched_at), in_coverage)
     bundle = make_bundle(houses, competitors, time.time())
     with requests.get(FEED_URL, headers=HEADERS, timeout=(5, 20)) as previous:
         if previous.status_code != 404:

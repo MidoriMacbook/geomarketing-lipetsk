@@ -12,7 +12,7 @@ from src.config import PROJECT_ROOT
 
 class ImportPathTests(unittest.TestCase):
     def run_python(self, arguments, cwd, cache_dir=None, project_pythonpath=True):
-        environment = {**os.environ, 'PYTHONPATH': str(PROJECT_ROOT)}
+        environment = {**os.environ, 'PYTHONPATH': str(PROJECT_ROOT), 'PYTHONUTF8': '1'}
         if not project_pythonpath:
             environment.pop('PYTHONPATH', None)
         if cache_dir is None:
@@ -20,7 +20,7 @@ class ImportPathTests(unittest.TestCase):
         else:
             environment['CACHE_DIR'] = cache_dir
         result = subprocess.run([sys.executable, *arguments], cwd=cwd,
-                                env=environment, capture_output=True, text=True)
+                                env=environment, capture_output=True, text=True, encoding='utf-8')
         self.assertEqual(result.returncode, 0, result.stderr)
         return result.stdout
 

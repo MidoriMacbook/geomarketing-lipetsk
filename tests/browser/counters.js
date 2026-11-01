@@ -39,12 +39,12 @@ async original => {
     await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
     const cardNumber=page.locator('[data-testid="recommendation-card"]').first().locator('.score');
     assert(!await cardNumber.evaluate(node=>node.classList.contains('is-counting')),'Offscreen card count started before viewing');
-    assert(await page.locator('.mobile-rec-score').first().textContent()==='100%','Mobile summary loses exact score');
+    assert(await page.locator('.mobile-rec-score').first().textContent()==='100 из 100','Mobile summary loses exact score');
     await page.setViewportSize({width:1440,height:1000});
     await cardNumber.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>document.querySelector('.recommendation .score').classList.contains('is-counting'));
     const cardFinal=await cardNumber.textContent();
-    assert(cardFinal==='100%','Animated percentage changed exact score text');
+    assert(cardFinal==='100 из 100','Animated percentage changed exact score text');
     await page.waitForFunction(()=>!document.querySelector('.recommendation .score').classList.contains('is-counting'));
     await page.setViewportSize({width:1440,height:1000});
     await counter.scrollIntoViewIfNeeded();

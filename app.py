@@ -1,4 +1,4 @@
-"""ГеоМаркетинг-Липецк: Flask composition and development entry point."""
+"""ГеоМаркетинг-Липецк: сборка Flask-приложения и запуск для разработки."""
 from flask import Flask, send_from_directory
 
 from src.config import PROJECT_ROOT, server_host, server_port

@@ -1,5 +1,5 @@
 button,select,.button,.place-actions a,.saved-card,.scenario-card,.recommendation,.site-header { transition:background-color var(--motion-fast) var(--ease-standard),color var(--motion-fast) var(--ease-standard),border-color var(--motion-fast) var(--ease-standard),box-shadow var(--motion-base) var(--ease-standard),transform var(--motion-fast) var(--ease-standard); }
-/* Saved/unsaved foreground and surface switch together to preserve contrast. */
+/* При сохранении и отмене сохранения текст и фон меняются вместе, сохраняя контраст. */
 .place-actions .save { transition:box-shadow var(--motion-base) var(--ease-standard),transform var(--motion-fast) var(--ease-standard); }
 button:disabled,select:disabled { cursor:default; opacity:var(--opacity-disabled); }
 button:active:not(:disabled),.place-actions a:active { transform:translateY(var(--line)); }
@@ -53,7 +53,7 @@ html[data-analysis-state=error] .status-dot { background:var(--color-on-dark); }
 .recommendation::before { content:""; position:absolute; left:0; top:var(--space-4); height:var(--space-8); width:var(--line-strong); border-radius:var(--radius-pill); background:var(--color-recommendation-line); opacity:0; transform:scaleY(.3); transform-origin:top; pointer-events:none; transition:transform var(--motion-workspace) var(--ease-emphasized),opacity var(--motion-workspace); }
 .recommendation:first-child::before,.recommendation.selected::before,.recommendation.is-preview::before { opacity:1; transform:scaleY(1); }
 @keyframes selection-mark { from { transform:scaleY(.2); opacity:.3; } to { transform:scaleY(1); opacity:1; } }
-/* Metric replays preserve the exact number and all report data. */
+/* Повторная анимация показателя сохраняет точное число и все данные отчёта. */
 :is(.kpis,.area-details-grid)>div { position:relative; isolation:isolate; overflow:hidden; padding-bottom:var(--space-5); --kpi-accent:var(--palette-rosewood); transition:background-color var(--motion-workspace),border-color var(--motion-workspace); }
 :is(.kpis,.area-details-grid)>div:nth-child(2) { --kpi-accent:var(--palette-sky); }
 :is(.kpis,.area-details-grid)>div:nth-child(3) { --kpi-accent:var(--palette-pink); }
@@ -81,7 +81,6 @@ html[data-analysis-state=error] .status-dot { background:var(--color-on-dark); }
 html[data-analysis-state=calculating] #result-empty::after,html[data-analysis-state=initial] #catalog-status { animation:loading-enter 400ms var(--ease-emphasized); }
 @keyframes choice-check-in { from { opacity:0; clip-path:inset(0 100% 0 0); } to { opacity:1; clip-path:inset(0); } }
 @keyframes choice-mark-in { from { transform:scale(.85); } to { transform:scale(1); } }
-@keyframes save-line { from { transform:scaleX(0); } to { transform:scaleX(1); } }
 @keyframes loading-enter { from { opacity:.3; transform:translateY(4px); } to { opacity:1; transform:none; } }
 @keyframes mobile-scrim-in { from { opacity:0; } to { opacity:1; } }
 @keyframes mobile-scrim-out { from { opacity:1; } to { opacity:0; } }
@@ -90,10 +89,10 @@ html[data-analysis-state=calculating] #result-empty::after,html[data-analysis-st
  .choice-trigger,.layers label,#run,:is(.kpis,.area-details-grid)>div { transform:none!important; }
  .choice-check,.choice-option-mark,.recommendation.selected::before,.place-actions .save::after,#catalog-status,#result-empty::after { animation:none!important; }
 }
-@media print { .kpi-replay,.kpi-wave,.kpi-progress { display:none!important; } }
+@media print { .kpi-replay,.kpi-wave { display:none!important; } }
 
 .save-check { display:inline-block; animation:choice-check-in 320ms var(--ease-emphasized); }
-/* Disclosure feedback works for both static sources and generated explanations. */
+/* Отклик раскрытия работает у статических сведений об источнике и сгенерированных объяснений. */
 details[data-expanded]>summary { transition:color 180ms,background-color 180ms; border-radius:var(--radius-control); }
 details[data-expanded]>summary:active { background:var(--color-featured); }
 details[data-expanded=true]>summary { color:var(--color-primary); }

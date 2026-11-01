@@ -33,7 +33,7 @@ async original => {
         await page.mouse.move(r.x+r.width-8,r.y+r.height/2);
         assert(await cta.evaluate(e=>!e.style.translate),'Keyboard focus moved magnet');
       }
-      // Sections are prepared only by JS; keyboard focus must reveal controls.
+      // Разделы подготавливает только JS; фокус клавиатуры должен показывать элементы управления.
       const prepared=await page.locator('#saved-section').evaluate(e=>e.classList.contains('motion-prepared'));
       assert(prepared,'Below-fold saved section was not prepared');
       await page.locator('#saved-section').scrollIntoViewIfNeeded();
@@ -48,7 +48,7 @@ async original => {
       results.push(layout);
     } finally {await ctx.close();}
   }
-  // A slow tile/image load must not defer the island until window.load.
+  // Медленная загрузка плиток и изображений не должна откладывать анимационный блок до window.load.
   const early=await browser.newContext();const p=await early.newPage();let release;
   const gate=new Promise(resolve=>release=resolve);
   try {

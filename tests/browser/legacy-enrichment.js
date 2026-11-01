@@ -4,6 +4,7 @@ async original=>{
  page.on('pageerror',error=>errors.push(error.message));
  try{
   await page.route('**/legacy-fixture',route=>route.fulfill({path:'tests/fixtures/saved-places-v1.json',contentType:'application/json'}));
+  await page.route('**/api/calculate?**',route=>route.fulfill({path:'tests/fixtures/halo-api-v1.json',contentType:'application/json'}));
   await page.goto(base);
   const optionalCases=await page.evaluate(async()=>{
    const{checkedQuality,checkedExplanation}=await import('/static/js/data-quality.js');

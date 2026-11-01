@@ -3,8 +3,8 @@ const competition = { low: 'Небольшой штраф модели', moderat
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const strings = value => Array.isArray(value) && value.length <= 64 && value.every(text => typeof text === 'string' && text.length <= 2000);
 
-// Same conservative v1 contract as the detailed explanation; kept DOM-free so
-// the brief remains a pure presentation helper for legacy snapshots as well.
+// Тот же осторожный контракт v1, что у подробного объяснения. Модуль не зависит от DOM,
+// поэтому краткое представление остаётся пригодным и для старых снимков.
 function assessed(value) {
   const metrics = value?.metrics;
   return object(value) && value.version === 1 && Object.hasOwn(demand, value.demand_level)

@@ -119,6 +119,15 @@ pnpm run check:hero
 Источники и лицензии находятся рядом с локальными сборками.
 [Material Web](docs/design/material-web.md) · [Клиентская архитектура](docs/architecture/frontend.md).
 
+## Происхождение данных
+
+Новые выгрузки сохраняют OSM ID/тип, дату получения и признаки оценки жителей.
+Повторы одного объекта удаляются по ID; разные близкие объекты сохраняются.
+Вероятные дубли отмечаются как неопределённость. Старые выгрузки и архивы
+поддерживаются, но происхождение без исходных ID восстановить нельзя.
+«100 из 100» — относительный балл внутри одного расчёта, не вероятность успеха.
+[Результаты проверки](docs/verification/2026-11-01-reliability-and-release.md).
+
 ## Исследования, хранилища и отчёты
 
 Исследование хранит расчёт, выбранное место, порог и слои. «Открыть» восстанавливает
@@ -142,10 +151,15 @@ pnpm run check:hero
 python -m unittest discover -s tests -v
 python -m py_compile app.py serve.py osm.py businesses.py
 python scripts/validate_project.py
-node --test tests/unit/scenario-storage.test.js tests/unit/field-check-storage.test.js tests/unit/data-delivery.test.js tests/unit/analysis-focus.test.js tests/unit/recommendation-brief.test.js
+node --test tests/unit/*.test.js
+pnpm install --frozen-lockfile
+pnpm exec playwright install chromium
+pnpm run test:smoke
 ```
 
-Серверные тесты работают без сети. GitHub Actions также проверяет синтаксис
+Серверные тесты и четыре коротких браузерных smoke-сценария работают без внешней сети.
+Smoke запускает изолированный сервер с фиксированными данными; Overpass, Render
+и внешние плитки в нём не используются. GitHub Actions также проверяет синтаксис
 клиентских модулей и воспроизводимость сборок на Linux, Node 24, pnpm 11.25.0.
 
 Браузерные сценарии запускаются после локального сервера в чистом сеансе:
@@ -173,6 +187,7 @@ playwright-cli -s=geomarket close
 - [Геоданные и импорт](data/README.md), [источники каталога](docs/research/2026-10-18-catalog-data-discovery.md).
 - [Журнал изменений](CHANGELOG.md), [правила обслуживания истории](docs/maintenance/git-history-cleanup-plan.md).
 
-Новые сообщения коммитов пишутся по-русски. Опубликованные SHA не меняются.
+Новые сообщения коммитов короткие, строчными по-русски, без точки и префиксов.
+Опубликованные SHA меняются только после отдельного согласования операции с владельцем.
 После отправки в main сначала проверьте начавшееся развёртывание Render и CI,
 не запускайте второй экземпляр публикации. Подробности — в DEPLOYMENT.md.

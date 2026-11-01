@@ -8,7 +8,7 @@ class OverpassTransportTests(unittest.TestCase):
 
     def test_competitor_query_requests_node_coordinates(self):
         def endpoint(query):
-            # Overpass 'out tags' omits lat/lon for nodes; body includes them.
+            # Режим Overpass 'out tags' не возвращает lat/lon узлов; body возвращает.
             node={'type':'node','id':1,'tags':{'amenity':'cafe'}}
             if 'out body center;' in query:node.update(lat=52.5935,lon=39.48)
             return [node]

@@ -62,8 +62,8 @@ async page => {
   for (const width of widths) {
     await page.setViewportSize({ width, height: 1000 });
     await page.waitForTimeout(800);
-    // Capture only after the whole current tile set settles; failed or pending
-    // tiles are reported separately, because a single loaded tile is insufficient.
+    // Снимок делаем после завершения загрузки всего текущего набора плиток; отказы
+    // и ожидание указываем отдельно: одной загруженной плитки недостаточно.
     await page.waitForFunction(() => {
       const tiles = [...document.querySelectorAll('#map img.leaflet-tile')];
       return tiles.length > 0 && tiles.every(tile => tile.complete);

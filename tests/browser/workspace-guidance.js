@@ -93,8 +93,8 @@ async original=>{
   await page.locator('#run').click();await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
   check(calls===apiBeforeArchive+1,'New calculation request count');
   check(!(await page.locator('#analysis-context').textContent()).includes('сохранённый'),'New result retains archive context');
-  // This is a UI regression, not an availability check of public Overpass.
-  // Refresh copy/provenance contracts have independent pure tests.
+  // Проверяется регрессия интерфейса, а не доступность публичного Overpass.
+  // Контракты текстов обновления и происхождения данных имеют отдельные изолированные тесты.
   const refreshed=await page.evaluate(async()=>({...structuredClone((await import('/static/js/state.js')).state.current),data_delivery:{mode:'daily',status:'unchanged'}}));
   await page.route('**/api/calculate?**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(refreshed)}));
   if(!await page.locator('#data-details').evaluate(e=>e.open))await page.locator('#data-summary').click();

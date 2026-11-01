@@ -1,4 +1,4 @@
-"""Load usable data, apply the existing demo fallback, and assemble analyses."""
+"""Загрузка пригодных данных, доступных демонаборов и подготовка результата расчёта."""
 import logging
 from datetime import datetime, timezone
 import numpy as np
@@ -44,7 +44,7 @@ DEMO_COMPETITORS = {
 }
 
 def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
-    """Return usable rows, source, warnings, and cache provenance."""
+    """Возвращаем пригодные строки, источник, предупреждения и происхождение кэша."""
     feed_warning = None
     if CITY_DATA_URL:
         try:
@@ -73,10 +73,6 @@ def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
         if CITY_DATA_URL:
             raise UserError('Ежедневная выгрузка временно недоступна, а для этой области '
                             'нет пригодной сохранённой копии. Повторите проверку позже.') from exc
-        if business not in DEMO_COMPETITORS:
-            raise UserError('Не удалось загрузить пригодные данные домов и конкурентов '
-                            'OpenStreetMap для этого типа бизнеса. '
-                            'Повторите позже или выберите другой район.') from exc
         if area['custom']:   # для произвольной области демо-данных нет
             if isinstance(exc, RuntimeError) and 'мало домов' in str(exc):
                 raise UserError('В этой области в OpenStreetMap почти нет размеченных жилых домов. '
@@ -84,11 +80,17 @@ def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
             raise UserError('Не удалось загрузить данные OpenStreetMap. '
                             'Повторите через минуту или выберите готовый район.') from exc
         district = area['key']
+        if district not in DEMO_HOUSES or district not in DEMO_COMPETITORS.get(business, {}):
+            raise UserError('Не удалось загрузить пригодные данные домов и конкурентов '
+                            'OpenStreetMap для выбранных района и типа бизнеса. '
+                            'Сохранённой копии и демонстрационного набора для этой пары нет. '
+                            'Повторите позже или выберите другой район.') from exc
         houses = np.array(DEMO_HOUSES[district], dtype=float)
         competitors = np.array(DEMO_COMPETITORS[business][district], dtype=float)
         logger.warning('Using demo data for %s: %s', district, exc)
         return LoadedData(houses, competitors, 'demo',
-                          'Данные OpenStreetMap сейчас недоступны или неполны.')
+                          'Демонстрационные данные: OpenStreetMap сейчас недоступен или неполон. '
+                          'Пример показывает работу интерфейса и не подходит для выбора помещения.')
 
 
 def analyze(area: Area, business: str, refresh: bool = False) -> dict:

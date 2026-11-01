@@ -1,4 +1,4 @@
-"""Pure provenance assessment; these labels never change model eligibility."""
+"""Оценка происхождения данных; метки не меняют допуск данных к модели."""
 from datetime import datetime, timezone
 import math
 
@@ -25,11 +25,11 @@ def _iso(value):
 
 def assess_data_quality(*, source, metadata, house_count, residents,
                         competitor_count, warning=None, notice=None, now=None):
-    """Use the oldest two known fetch dates, never calculation or save time.
+    """Берём старшую из двух исходных дат, а не время расчёта или сохранения.
 
-    Fetch times in existing CacheInfo metadata are Unix seconds. ISO timestamps
-    are accepted too, keeping the assessment usable outside the HTTP service.
-    ``now`` is injectable for deterministic boundary checks.
+    В CacheInfo даты заданы секундами Unix; допускаются и метки ISO,
+    чтобы использовать оценку вне HTTP-сервиса. Для воспроизводимых
+    граничных проверок можно передать ``now``.
     """
     now = now or datetime.now(timezone.utc)
     dates = [_date(metadata.get(dataset, {}).get('fetched_at'))
@@ -54,6 +54,17 @@ def assess_data_quality(*, source, metadata, house_count, residents,
            'оценка жителей не является переписью населения')
     if source == 'demo':
         reason('demo_data', 'Демонстрационные данные: реальная полнота и свежесть не оцениваются')
+    else:
+        provenance = [metadata.get(dataset, {}).get('provenance') for dataset in ('houses', 'competitors')]
+        if any(not item or item.get('unknown', 0) for item in provenance):
+            reason('provenance_missing', 'У части исходных данных нет идентификаторов OSM; '
+                   'тождество близких объектов проверить нельзя')
+        if any(item and item.get('possible_node_way_pairs', 0) for item in provenance):
+            reason('possible_node_way_duplicates', 'Сохранены близкие точка и контур с разными ID OSM; '
+                   'это могут быть как разные заведения, так и повтор одного')
+        if any(item and item.get('same_geometry_groups', 0) for item in provenance):
+            reason('same_geometry_objects', 'Сохранены разные ID OSM с совпадающей исходной геометрией; '
+                   'нужна проверка возможного двойного учёта')
     if house_count < MIN_HOUSES:
         reason('insufficient_houses', f'Учтено домов: {house_count}; для модели желательно не менее {MIN_HOUSES}')
     if residents < LOW_DATA_RESIDENTS:

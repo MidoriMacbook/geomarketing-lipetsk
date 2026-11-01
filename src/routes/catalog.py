@@ -1,4 +1,4 @@
-"""HTTP adapter for the public catalog."""
+"""HTTP-маршрут публичного каталога."""
 from flask import Blueprint, jsonify
 from src.services.catalog_service import get_catalog
 

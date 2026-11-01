@@ -1,4 +1,4 @@
-"""Plain domain data shared by the backend."""
+"""Простые структуры данных предметной области сервера."""
 from dataclasses import dataclass, field
 from typing import TypedDict
 import numpy as np
@@ -18,6 +18,7 @@ class CacheInfo:
     fetched_at: float
     stale: bool = False
     warning: str | None = None
+    provenance: dict | None = None
 
     def __bool__(self):
         return self.cached

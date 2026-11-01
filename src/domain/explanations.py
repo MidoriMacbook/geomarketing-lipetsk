@@ -1,4 +1,4 @@
-"""Facts behind existing recommendations, using the model's unchanged kernels."""
+"""Факты, объясняющие рекомендации по прежним ядрам модели."""
 import math
 
 import numpy as np
@@ -8,10 +8,10 @@ from src.utils.geo import to_meters
 
 def explain_recommendations(houses, competitors, center, half, parameters,
                             recommendations, centroids):
-    """Return explanations in recommendation order without mutating model outputs.
+    """Возвращаем объяснения в порядке рекомендаций, не меняя результаты модели.
 
-    Inputs are validated model data. ``half`` is the loaded area's circular radius;
-    the category's R describes demand reach, independently of that loaded area.
+    Входные данные уже проверены. ``half`` — радиус круга загруженной области;
+    R категории задаёт охват спроса независимо от границ загруженной области.
     """
     radius, alpha = parameters['R'], parameters['alpha']
     h_xy = to_meters(houses[:, :2], *center)
@@ -43,7 +43,7 @@ def explain_recommendations(houses, competitors, center, half, parameters,
                  'плотность относится только к учтённым домам']
         if not len(competitors):
             risks.append('В выборке OSM конкуренты не отмечены; это не означает отсутствия конкуренции')
-        # The loader clips houses to the area circle after fetching its bounding box.
+        # После загрузки прямоугольной рамки загрузчик оставляет дома в круге области.
         if float(np.linalg.norm(xy)) + radius > half:
             risks.append('Круг доступности пересекает границу загруженной области: '
                          'спрос у границы может быть занижен')

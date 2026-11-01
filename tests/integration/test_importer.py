@@ -27,14 +27,15 @@ class ImporterTests(unittest.TestCase):
             for business in ('grocery','bakery','beauty'):
                 result=subprocess.run([sys.executable,'scripts/import_osm_competitors.py',
                     '--district','eleytsky','--business',business,'--source',str(source),
-                    '--output-dir',str(root)],capture_output=True,text=True)
+                    '--fetched-at','1792300000','--output-dir',str(root)],capture_output=True,text=True)
                 self.assertEqual(result.returncode,0,result.stderr)
                 name = (osm.competitor_cache_name(business, osm.area_for('eleytsky'))
                         if hasattr(osm, 'competitor_cache_name') else f'comp_{business}_{osm.cache_key(osm.area_for("eleytsky"))}')
                 target=root/f'{name}.json'
                 payload=json.loads(target.read_text(encoding='utf-8'))
-                self.assertEqual(len(payload['data']),1)
-                self.assertGreater(payload['fetched_at'],0)
+                self.assertEqual(len(payload['data']), 2 if business == 'grocery' else 1)
+                self.assertEqual(payload['provenance']['deduplication'], 'osm_type_id')
+                self.assertEqual(payload['fetched_at'], 1792300000)
 
     def test_rejected_import_does_not_replace_previous_snapshot(self):
         area=osm.area_for('eleytsky')
@@ -52,7 +53,7 @@ class ImporterTests(unittest.TestCase):
                 target.write_text(previous,encoding='utf-8')
                 result=subprocess.run([sys.executable,'scripts/import_osm_competitors.py',
                     '--district','eleytsky','--business','beauty','--source',str(source),
-                    '--output-dir',str(root)],capture_output=True,text=True)
+                    '--fetched-at','1792300000','--output-dir',str(root)],capture_output=True,text=True)
                 self.assertNotEqual(result.returncode,0)
                 self.assertEqual(target.read_text(encoding='utf-8'),previous)
 
@@ -65,7 +66,7 @@ class ImporterTests(unittest.TestCase):
                 <node id="1" lat="{lat}" lon="{east}"><tag k="shop" v="beauty"/></node></osm>''',encoding='utf-8')
             result=subprocess.run([sys.executable,'scripts/import_osm_competitors.py',
                 '--district','eleytsky','--business','beauty','--source',str(source),
-                '--output-dir',str(root)],capture_output=True,text=True)
+                '--fetched-at','1792300000','--output-dir',str(root)],capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
             payload=json.loads(next(root.glob('comp_beauty*.json')).read_text(encoding='utf-8'))
             self.assertEqual(len(payload['data']),1)
@@ -93,7 +94,9 @@ class ImporterTests(unittest.TestCase):
               <way id="10"><nd ref="1"/><nd ref="2"/><tag k="shop" v="hairdresser"/></way>
               <relation id="20"><member type="way" ref="10"/><tag k="shop" v="beauty"/></relation>
             </osm>''',encoding='utf-8')
-            self.assertEqual(extract_competitors(source,'beauty',area),[[52.5935,39.481]])
+            rows = extract_competitors(source, 'beauty', area)
+            self.assertEqual(rows, [[52.5935, 39.481]] * 3)
+            self.assertEqual(len(rows.provenance['possible_node_way_pairs']), 2)
 
 
 if __name__ == '__main__':

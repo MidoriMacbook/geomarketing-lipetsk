@@ -24,17 +24,17 @@ export function ScrollReveal({ enabled }) {
       animations.set(el,gsap.fromTo(el,{opacity:0,y:24,willChange:'transform, opacity'},
         {opacity:1,y:0,duration:.7,ease:'power3.out',onComplete:()=>{clear(el);animations.delete(el);}}));
     }),{threshold:0,rootMargin:'0px 0px -24px 0px'});
-    // A pointer can arrive during an entrance (especially after native scroll
-    // to an off-screen control). Freeze geometry through the click so down/up
-    // cannot land on different controls. Keyboard focus exposes it immediately.
+    // Указатель может появиться во время анимации, особенно после стандартной прокрутки
+    // к элементу за экраном. Фиксируем геометрию на время нажатия, чтобы down/up
+    // не попали в разные элементы. Фокус клавиатуры показывает содержимое сразу.
     const hold = el => { const animation=animations.get(el); if(animation){animation.pause();el.style.opacity='1';} };
     let pointerHeld=false,resumeFrame=0,releaseTimer=0;
     const onPointer = event => {clearTimeout(releaseTimer);pointerHeld=true;blocks.forEach(el=>{if(el.contains(event.target))hold(el);});};
     const release = () => {
       clearTimeout(releaseTimer);
       cancelAnimationFrame(resumeFrame);
-      // Touch generates compatibility mouse/focus events after pointerup.
-      // Keep the hold through that complete click dispatch as well.
+      // После pointerup касание создаёт совместимые события мыши и фокуса.
+      // Сохраняем фиксацию до окончания обработки этого click.
       resumeFrame=requestAnimationFrame(()=>{resumeFrame=0;pointerHeld=false;animations.forEach(animation=>animation.resume());});
     };
     const onUp=()=>{releaseTimer=setTimeout(release,500);};

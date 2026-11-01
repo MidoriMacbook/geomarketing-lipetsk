@@ -78,7 +78,7 @@ export function initMap() {
     pane.dataset.focusPane=key;
     preferences[key]=key==='recommendations'||$('layer-'+key).checked;
   });
-  // Leaflet keeps renderers on the map after paths are cleared; reuse these across redraws.
+  // После удаления контуров Leaflet сохраняет средства отрисовки; используем их повторно.
   pointsRenderer = L.canvas({
     pane: 'points',
     padding: .5
@@ -105,7 +105,7 @@ export function initMap() {
       const { width, height } = map.getContainer().getBoundingClientRect();
       if (!width || !height || (width === lastWidth && height === lastHeight)) return;
       lastWidth = width; lastHeight = height;
-      // Size changes must preserve the user's center, zoom and selected marker.
+      // Изменение размера сохраняет выбранные пользователем центр, масштаб и маркер.
       map.invalidateSize({ pan: true, animate: false, debounceMoveend: true });
     });
   };
@@ -299,7 +299,7 @@ export function toggleLayer(key, enabled) {
   syncMapLayers();
 }
 
-// Only presentation groups change. Checkbox preferences, data and map view stay intact.
+// Меняются только группы отображения. Флажки, данные и положение карты сохраняются.
 export function setMapEmphasis(keys=[],{animate=true}={}) {
   emphasized=new Set(keys);previewRank=null;syncMapLayers(animate);
 }

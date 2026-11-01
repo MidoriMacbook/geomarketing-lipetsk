@@ -1,4 +1,4 @@
-"""Calculation request parsing, bounded concurrency, and HTTP error handling."""
+"""Разбор параметров расчёта, ограничение параллельных запросов и обработка HTTP-ошибок."""
 from threading import BoundedSemaphore
 from flask import Blueprint, current_app, jsonify, request
 

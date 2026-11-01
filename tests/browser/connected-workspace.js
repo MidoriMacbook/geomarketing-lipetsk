@@ -24,7 +24,7 @@ async original=>{
   await p.locator('#comparison-map-link').tap();await p.waitForFunction(()=>document.activeElement?.id==='map-title');
   await p.locator('#comparison-guide-open').tap();await p.locator('#comparison-settings-link').tap();await p.waitForFunction(()=>document.getElementById('mobile-settings-dialog').open);await p.locator('#mobile-settings-close').tap();await p.waitForTimeout(300);
   await p.locator('#comparison-guide-open').tap();await p.locator('#comparison-research-button').tap();await p.waitForFunction(()=>document.getElementById('scenario-dialog').open);await p.locator('#scenario-name').fill('Проверка пути');await p.locator('#scenario-submit').tap();await p.waitForFunction(()=>document.getElementById('scenario-dialog').open===false);
-  // Reload keeps snapshots, but selection is still the original transient Set.
+  // Перезагрузка сохраняет снимки, но выбор остаётся исходным временным Set.
   await p.reload();await wait();check((await p.locator('#hero-return-context').textContent()).includes('исследование'),'Нет контекста исследования после reload');
   check((await p.locator('#comparison-guide-count').textContent()).includes('0'),'Выбор сравнения тайно восстановлен');
   const before=await p.evaluate(async()=>(await import('/static/js/state.js')).state.current.analysis_id);

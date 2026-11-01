@@ -1,4 +1,4 @@
-"""API enrichment is additive; old scoring and input provenance stay intact."""
+"""Обогащение API дополняет прежние баллы, сохраняя происхождение входных данных."""
 import json
 import unittest
 from datetime import datetime
