@@ -30,6 +30,7 @@ function expandMobileCard(entry, expanded, animate = false) {
 function arrangeMobileCard(entry) {
   const { body, content, heading, coordinate, metrics, brief, reasons, secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, briefDetails } = entry;
   cancelUI(body);
+  metrics.children[1].querySelector('small').textContent=mobileRecommendations.matches?'конкурентов OSM':'конкурентов в радиусе';
   if (mobileRecommendations.matches) {
     placeContent.append(coordinate, entry.linkActions);
     entry.linkActions.append(copy, osm);
