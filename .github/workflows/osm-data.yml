@@ -10,6 +10,21 @@ on:
       - 'scripts/collect_city_data.py'
       - 'scripts/publish_city_data.py'
       - 'src/domain/city_data.py'
+      # Граф импортов сборщика и публикации; изменения интерфейса сюда не входят.
+      - '.python-version'
+      - 'requirements.txt'
+      - 'src/__init__.py'
+      - 'src/config.py'
+      - 'src/domain/__init__.py'
+      - 'src/domain/businesses.py'
+      - 'src/domain/models.py'
+      - 'src/domain/provenance.py'
+      - 'src/services/__init__.py'
+      - 'src/services/cache_service.py'
+      - 'src/services/osm_service.py'
+      - 'src/utils/__init__.py'
+      - 'src/utils/geo.py'
+      - 'src/utils/validation.py'
 permissions:
   contents: write
 concurrency:
