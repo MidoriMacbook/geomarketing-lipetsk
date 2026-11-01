@@ -69,7 +69,7 @@ export function explanationBlock(rec, { expanded = false } = {}) {
   const details = node('details'), metrics = explanation.metrics || {};
   details.append(node('summary', '', 'Почему это место'));
   details.open = expanded;
-  details.append(node('p', '', `В радиусе ${fmt(rec.radius_m)} м: ≈ ${fmt(rec.residents_in_radius)} жителей, ${fmt(rec.competitors_in_radius)} конкурентов. Ближайший конкурент: ${distance(rec.nearest_competitor_m)}.`));
+  details.append(node('p', 'explanation-overview', `В радиусе ${fmt(rec.radius_m)} м: ≈ ${fmt(rec.residents_in_radius)} жителей, ${fmt(rec.competitors_in_radius)} конкурентов. Ближайший конкурент: ${distance(rec.nearest_competitor_m)}.`));
   const demand = { higher: 'Выше среднего среди точек этого расчёта', similar: 'Близок к среднему среди точек этого расчёта', lower: 'Ниже среднего среди точек этого расчёта', unknown: 'Не оценен' };
   const competition = { low: 'Небольшой штраф модели', moderate: 'Умеренный штраф модели', high: 'Высокий штраф модели' };
   const number = (value, suffix = '', digits = 2) => Number.isFinite(value) ? `${value.toLocaleString('ru-RU', { maximumFractionDigits: digits })}${suffix}` : 'не оценено';

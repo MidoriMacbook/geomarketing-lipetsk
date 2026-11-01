@@ -33,12 +33,14 @@ function arrangeMobileCard(entry) {
   if (mobileRecommendations.matches) {
     placeContent.append(coordinate, entry.linkActions);
     entry.linkActions.append(copy, osm);
+    brief.hidden = false;
     briefDetails.append(brief,placeDetails,explanation);
     secondaryActions.prepend(showOnMap);
     content.append(heading,metrics,reasons,actions,confirmation,secondaryActions,briefDetails);
     placeDetails.open = false;
     briefDetails.open = false;
   } else {
+    brief.hidden = false;
     actions.append(save, copy, osm);
     content.append(heading, coordinate, metrics, reasons, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,secondaryActions);
     placeDetails.open = true;
@@ -132,6 +134,9 @@ export function showResult(data, { freshCalculation=false } = {}) {
   if (previewCard) previewPlace(previewCard, +previewCard.dataset.rank, false);
   mobileCards.clear();
   $('recommendation-list').replaceChildren();
+  $('recommendations-context').textContent = `${data.district_name} · ${data.business_name}`;
+  $('recommendations-context').setAttribute('aria-label',`Параметры расчёта: ${data.district_name}, ${data.business_name}. Изменить параметры`);
+  const contextIcon=node('span','directional-icon icon-forward');contextIcon.setAttribute('aria-hidden','true');$('recommendations-context').append(contextIcon);
   setRevealed($('result-empty'), !data.recommendations.length, 'empty');
   $('result').hidden = !data.recommendations.length;
   if (!data.recommendations.length) {
@@ -164,9 +169,9 @@ export function showResult(data, { freshCalculation=false } = {}) {
     toggle.setAttribute('aria-controls', body.id);
     const decision=recommendationDecision(rec),score=node('span','mobile-rec-score',scoreText(rec.score));
     score.setAttribute('aria-label',`${scoreText(rec.score)} — ${SCORE_NOTE}`);
-    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference','Только внутри этого расчёта'));
+    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference',`≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов`));
     const reasons=node('section','mobile-reasons decision-reasons'),reasonList=node('ul');
-    reasons.append(node('h4','','Почему это место'),node('p','decision-headline',decision.headline),reasonList);
+    reasons.append(node('h4','','Почему это место'),node('p','decision-headline',recommendationBrief(rec).demand),reasonList);
     // Население уже показано крупно в метриках: это та же фактическая причина,
     // а не второй экземпляр числа в списке. Остальные причины — максимум две.
     decision.reasons.filter(text=>!text.startsWith('≈ ')).forEach(text=>reasonList.append(node('li','',text)));
@@ -179,7 +184,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     if (!index)coordinate.id = 'coords';
     const metrics = node('div', 'place-metrics'), people = node('div'), competition = node('div');
     people.append(node('strong', '', `≈ ${fmt(rec.residents_in_radius)}`), node('small', '', `жителей в ${fmt(rec.radius_m)} м`));
-    competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов в радиусе'));
+    competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов OSM'));
     metrics.append(people, competition);
     const showOnMap = button('Показать на карте', 'button secondary action-tertiary mobile-show-place', () => {
       selectPlace(rec.rank, true);
@@ -233,6 +238,8 @@ export function showResult(data, { freshCalculation=false } = {}) {
     const briefDetails = node('details', 'mobile-rec-details');
     briefDetails.append(node('summary', '', 'Подробнее о месте'));
     const explanation = explanationBlock(rec);
+    const check = node('p','mobile-field-check',recommendationBrief(rec).check);
+    briefDetails.append(node('h4','','Проверить на месте'),check);
     const secondaryActions=node('div','mobile-save-secondary'),compare=button('Сравнить','compare-saved-link',openSavedComparison);compare.hidden=true;secondaryActions.append(compare);
     const savedId=`${data.analysis_id}:${rec.rank}`;if(state.saved.some(item=>item.id===savedId))card.dataset.savedFeedbackId=savedId;
     card.append(toggle, body);

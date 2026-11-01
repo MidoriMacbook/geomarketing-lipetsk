@@ -112,6 +112,8 @@
 #mobile-settings-dialog:not([open]) { display:none; }
 .recommendation-body,.recommendation-clip,.recommendation-content { display:contents; }
 .mobile-reasons,.mobile-save-secondary { display:none; }
+.recommendations-context { display:flex; align-items:center; gap:var(--space-2); min-height:var(--size-target); font-size:var(--text-sm); color:var(--color-primary); line-height:1.5; margin-bottom:var(--space-2); text-decoration:none; }
+.recommendations-context-row { flex-shrink:0; }
 @media (max-width:600px), (max-width:950px) and (max-height:500px) and (pointer:coarse) {
  .mobile-only:not(dialog) { display:block; }
  html[data-mobile-sheet-open=true],html[data-mobile-sheet-open=true] body { overflow:hidden; }
@@ -227,6 +229,9 @@
  .recommendation-placeholder span { height:var(--space-3); border-radius:var(--radius-control); background:var(--color-subtle); }
  .recommendation-placeholder span:last-child { width:75%; height:var(--space-2); }
  #recommendations { padding:var(--space-3); }
+ .recommendations-context-row { display:flex; align-items:center; flex-wrap:wrap; gap:0 var(--space-2); margin-bottom:var(--space-2); }
+ .recommendations-context-row a { flex:1 1 9rem; margin:0; }
+ .recommendations-context-row .button { min-height:var(--size-target); padding:var(--space-2) 0; font-size:var(--text-sm); }
  #recommendations>.section-heading { margin-bottom:var(--space-2); padding-bottom:var(--space-2); }
  #recommendations-title { font-size:1.5rem; }
  #recommendations>.section-note { margin-bottom:var(--space-3); font-size:var(--text-sm); }
@@ -239,9 +244,11 @@
  }
  .mobile-rec-toggle::after { grid-column:4; grid-row:1/4; align-self:center; color:var(--color-primary); }
  .mobile-rec-toggle>.rank { grid-column:1; grid-row:1/4; }
- .mobile-rec-name { grid-column:2/4; grid-row:1; min-width:0; font-size:var(--text-base); font-weight:650; }
- .mobile-rec-score { grid-column:2/4; grid-row:2; font-family:var(--font-mono); font-size:var(--text-base); font-weight:600; font-variant-numeric:tabular-nums; }
- .mobile-rec-difference { grid-column:2/4; grid-row:3; font-size:var(--text-sm); line-height:1.45; color:var(--color-muted); }
+ .mobile-rec-name { grid-column:2; grid-row:1; min-width:0; font-size:var(--text-base); font-weight:650; }
+ .mobile-rec-score { grid-column:3; grid-row:1; font-family:var(--font-mono); font-size:var(--text-sm); font-weight:400; color:var(--color-muted); font-variant-numeric:tabular-nums; }
+ .mobile-rec-difference { grid-column:2/4; grid-row:2; font-size:var(--text-sm); line-height:1.45; color:var(--color-muted); }
+ .recommendation[data-mobile-expanded=true] .mobile-rec-difference { display:none; }
+ .recommendation .explanation-overview { display:none; }
  .recommendation[data-mobile-expanded]>.recommendation-body { display:grid; grid-template-rows:0fr; opacity:0; transform:translateY(calc(0px - var(--motion-distance-small))); padding:0; }
  .recommendation[data-mobile-expanded=true]>.recommendation-body { grid-template-rows:1fr; opacity:1; transform:none; }
  .recommendation-body.is-transitioning { transition:grid-template-rows var(--motion-fast) var(--ease-emphasized),opacity var(--motion-fast),transform var(--motion-fast) var(--ease-emphasized); }
@@ -257,6 +264,7 @@
  .recommendation .place-actions .button { min-height:var(--size-target); white-space:normal; }
  .recommendation .recommendation-brief { margin-top:var(--space-3); padding-top:var(--space-2); }
  .recommendation .recommendation-brief>div { padding-block:var(--space-1); }
+ .recommendation .recommendation-brief>div:not(:has(.nearest)) { display:none; }
  .mobile-place-details,.mobile-rec-details { margin-top:var(--space-2); border-top:var(--line) solid var(--color-line); font-size:var(--text-sm); }
  .mobile-place-details>summary,.mobile-rec-details>summary { min-height:var(--size-target); padding-block:var(--space-2); font-weight:600; }
  .mobile-place-details .coords { margin:var(--space-2) 0; }
@@ -267,6 +275,7 @@
  .mobile-rec-difference { font-size:var(--text-xs); line-height:1.45; }
  .recommendation .place-metrics { padding-top:0; border-top:0; }
  .mobile-reasons { display:block; margin-top:var(--space-2); }
+ .mobile-field-check { font-size:var(--text-sm); line-height:1.5; margin-top:var(--space-2); }
  .mobile-reasons h4 { font-size:var(--text-xs); line-height:1.5; font-weight:650; }
  .mobile-reasons ul { display:flex; flex-wrap:wrap; gap:var(--space-1) var(--space-3); list-style:none; margin:var(--space-1) 0 0; padding:0; }
  .mobile-reasons li { font-size:var(--text-xs); line-height:1.5; color:var(--color-muted); }

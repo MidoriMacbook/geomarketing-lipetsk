@@ -7,8 +7,9 @@ export function initMobileWorkspace() {
  if(initialized)return;initialized=true;
  const byId=id=>document.getElementById(id),mobile=matchMedia('(max-width:600px), (max-width:950px) and (max-height:500px) and (pointer:coarse)');
  const settings=byId('settings'),map=byId('map-card'),workspace=byId('workspace'),dialog=byId('mobile-settings-dialog'),opener=byId('mobile-settings-open');
- const home=document.createComment('settings-home'),runHome=document.createComment('run-home');
- settings.before(home);byId('run').before(runHome);
+ const bar=byId('mobile-settings-bar');
+ const home=document.createComment('settings-home'),runHome=document.createComment('run-home'),barHome=document.createComment('mobile-settings-bar-home');
+ settings.before(home);byId('run').before(runHome);bar.before(barHome);
  const kpis=document.querySelector('.kpis'),area=byId('area-details'),secondary=area.querySelector('.area-details-grid');
  const cards=Object.fromEntries(['residents','houses','competitors','places'].map(key=>[key,byId('kpi-'+key).parentElement]));
  const sections=[['saved-section','Сохранённые места'],['scenarios-section','Архив исследований']].map(([id,title])=>{
@@ -17,12 +18,27 @@ export function initMobileWorkspace() {
   return {section,marker,details,summary,title};
  });
  let revision=0,closing=false,collapseAfterRun=false,returnTo=null;
+ function selectionMatchesResult() {
+  const data=state.current;
+  if(!data)return false;
+  const custom=data.analysis_context?.custom===true||data.district==='custom'||data.district.startsWith('custom_');
+  if(byId('district').value!==(custom?'custom':data.district)||byId('business').value!==data.business)return false;
+  if(!custom)return true;
+  // Сервер округляет центр до четырёх знаков; сравниваем с отправленными параметрами,
+  // чтобы собственная область после успешного расчёта не выглядела изменённой.
+  const request=new URLSearchParams(state.currentRequestKey||'');
+  const center=request.get('district')==='custom'&&request.has('lat')&&request.has('lng')
+   ?[Number(request.get('lat')),Number(request.get('lng'))]:data.analysis_context?.center||data.center;
+  return Number(byId('radius').value)===(data.analysis_context?.requested_radius_m||data.half_m)
+   && state.customPoint?.length===2 && center?.length===2
+   && state.customPoint.every((value,index)=>value.toFixed(5)===center[index].toFixed(5));
+ }
  function syncSummary() {
   const district=byId('district'),business=byId('business');
   byId('mobile-settings-selection').textContent=[district.selectedOptions[0]?.textContent,business.selectedOptions[0]?.textContent].filter(Boolean).join(' · ');
   const phase=document.documentElement.dataset.analysisState;
   opener.querySelector('.mobile-settings-label').textContent=phase==='error'?'Проверить параметры':state.current?'Изменить параметры':'Настроить анализ';
-  byId('mobile-settings-state').textContent=!state.catalog?'Настройте параметры':district.value==='custom'&&!state.customPoint?'Выберите центр на карте':phase==='error'?'Проверьте параметры и повторите расчёт':phase==='calculating'||phase==='refreshing'?'Выполняется расчёт…':'Готово к расчёту';
+  byId('mobile-settings-state').textContent=!state.catalog?'Настройте параметры':phase==='calculating'||phase==='refreshing'?'Выполняется расчёт…':district.value==='custom'&&!state.customPoint?'Выберите центр на карте':phase==='error'?'Проверьте параметры и повторите расчёт':state.current&&!selectionMatchesResult()?'Выполните расчёт — параметры изменены':state.openedScenarioId?'Сохранённый расчёт':state.current?'Расчёт готов':'Готово к расчёту';
   document.documentElement.dataset.mobileHasResult=String(!!state.current);
   for(const item of sections){
    const count=item.section.id==='saved-section'?state.saved.length:byId('scenario-count')?.textContent?.split('/')[0]?.trim();
@@ -63,12 +79,12 @@ export function initMobileWorkspace() {
   closeSettings({immediate:true,restoreFocus:false});
   if(mobile.matches){
    byId('mobile-settings-content').append(settings);
-   workspace.prepend(map);
+   workspace.prepend(bar,map);
    secondary.append(cards.houses,cards.competitors);
    byId('display-options').after(byId('run'),byId('loading-hint'),byId('error'));
    for(const item of sections){item.marker.after(item.details);item.details.append(item.section);}
   } else {
-   home.after(settings);settings.after(map);
+   barHome.after(bar);home.after(settings);settings.after(map);
    kpis.append(cards.residents,cards.houses,cards.competitors,cards.places);
    runHome.after(byId('run'),byId('loading-hint'),byId('error'));
    for(const item of sections){item.marker.after(item.section);item.details.remove();}
