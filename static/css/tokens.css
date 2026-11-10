@@ -34,7 +34,7 @@
  --color-error:var(--palette-error); --color-error-bg:var(--palette-error-soft); --color-notice-bg:var(--palette-sage-soft);
  --color-map-canvas:var(--palette-map); --color-map-primary:var(--palette-pink); --color-map-house:var(--palette-sky);
  --color-map-competitor:var(--palette-rosewood); --color-map-centroid:var(--palette-sage);
- --color-map-competitor-outline:var(--palette-pink);
+ --color-map-competitor-outline:var(--palette-cream);
  --color-map-zone-low:var(--palette-map-zone-low); --color-map-zone-high:var(--palette-map-zone-high);
  --color-map-outline:var(--palette-map); --color-map-surface:var(--palette-map-surface);
  --color-map-ink:var(--palette-cream); --color-map-muted:var(--palette-map-muted); --color-map-line:var(--palette-map-line);
@@ -46,7 +46,7 @@
  --color-hero-line:var(--palette-line); --color-hero-wash:var(--palette-pink-soft); --color-hero-paper:var(--palette-paper);
  --color-print-page:var(--palette-cream); --color-print-ink:var(--palette-ink); --color-print-muted:var(--palette-ink-muted);
  --color-print-settings:var(--palette-paper); --color-print-line:var(--palette-line);
- --map-tile-filter:grayscale(.85) saturate(.4) contrast(.92);
+ --map-tile-filter:grayscale(.65) sepia(.18) saturate(.65) contrast(.92);
  --font-body:"Golos Text",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
  --font-display:"Playfair Display",Georgia,"Times New Roman",serif;
  --font-mono:ui-monospace,"Cascadia Code",Consolas,monospace;

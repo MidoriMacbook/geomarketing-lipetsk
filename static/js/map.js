@@ -4,7 +4,7 @@ import { $, fmt, node, animateUI, cancelUI, setRevealed, motionReduced, reveal }
 let map = null, tiles = null, tileTimer = null, tileFailures = 0;
 let pointsRenderer = null, zonesRenderer = null;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
-let emphasized = new Set(), previewRank = null;
+let emphasized = new Set(), previewRank = null, houseData = [];
 const layers = {}, markers = new Map();
 const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const color = role => token(`--color-map-${role}`);
@@ -67,6 +67,9 @@ export function initMap() {
   });
   map.createPane('zones');
   map.getPane('zones').style.zIndex = token('--z-zones');
+  map.createPane('accessibility');
+  map.getPane('accessibility').style.zIndex = '410';
+  map.getPane('accessibility').style.pointerEvents = 'none';
   map.createPane('points');
   map.getPane('points').style.zIndex = token('--z-points');
   ['houses','competitors','centroids'].forEach((key,index)=>{
@@ -86,9 +89,15 @@ export function initMap() {
   zonesRenderer = L.canvas({
     pane: 'zones'
   });
-  ['zones', 'houses', 'competitors', 'centroids', 'recommendations', 'boundary', 'preview'].forEach(key => {
+  ['zones', 'houses', 'competitors', 'centroids', 'recommendations', 'boundary', 'preview', 'accessibility'].forEach(key => {
     layers[key] = L.layerGroup().addTo(map);
   });
+  map.on('zoomend', drawHouses);
+  const motionObserver=new IntersectionObserver(([entry])=>{map.getContainer().dataset.motionVisible=String(entry.isIntersecting);});
+  motionObserver.observe(map.getContainer());
+  document.querySelectorAll('[data-layer-key]').forEach(button=>button.addEventListener('click',()=>{
+    const input=$('layer-'+button.dataset.layerKey);input.checked=!input.checked;input.dispatchEvent(new Event('change',{bubbles:true}));
+  }));
   map.on('click', e => {
     if ($('district').value !== 'custom') return;
     resetSelection();
@@ -178,17 +187,10 @@ export function drawMap(data) {
     dashArray: '4 6',
     fill: false
   }).addTo(layers.boundary);
-  data.houses.forEach(h => L.circleMarker([h.lat, h.lng], {
-    renderer: dataRenderers.houses,
-    radius: 2.5+Math.sqrt(h.residents)/6,
-    color: palette.outline,
-    weight: 1,
-    fillColor: palette.house,
-    fillOpacity: .78
-  }).bindTooltip(`Жителей: ≈ ${fmt(h.residents)}`).addTo(layers.houses));
+  houseData=data.houses;drawHouses();
   data.competitors.forEach(c => L.circleMarker([c.lat, c.lng], {
     renderer: dataRenderers.competitors,
-    radius: 6,
+    radius: 5,
     color: palette['competitor-outline'],
     weight: 2,
     fillColor: palette.competitor,
@@ -206,6 +208,7 @@ export function drawMap(data) {
     const marker = L.marker([r.lat, r.lng], {
       icon: iconFor(r.rank,
       r.rank === state.selectedRank),
+      zIndexOffset:r.rank===state.selectedRank?1000:0,
       title: `Рекомендация ${r.rank}`,
       alt: `Место ${r.rank}`
     }).bindTooltip(`Место ${r.rank}`, {
@@ -216,9 +219,47 @@ export function drawMap(data) {
     marker.on('click', () => selectPlace(r.rank, false));
     markers.set(r.rank, marker);
   });
+  drawAccessRadius(state.selectedRank);
   animateUI(map.getPane('points'), [{ opacity: .3 }, { opacity: 1 }], 'map-points');
   syncMapLayers(false);
 }
+// Экранная сетка — только представление суммы жителей, исходные дома не меняются.
+function drawHouses() {
+  if(!map)return;
+  layers.houses.clearLayers();
+  const zoom=map.getZoom(), palette=readPalette(['house']);
+  const options={renderer:dataRenderers.houses,stroke:false,fillColor:palette.house,fillOpacity:.42};
+  if(zoom<=13){
+    const cells=new Map(),cellSize=24;
+    for(const house of houseData){
+      const point=map.project([house.lat,house.lng],zoom),x=Math.floor(point.x/cellSize),y=Math.floor(point.y/cellSize),key=x+':'+y;
+      const cell=cells.get(key)||{x,y,residents:0,count:0};cell.residents+=house.residents;cell.count++;cells.set(key,cell);
+    }
+    const max=Math.max(1,...[...cells.values()].map(c=>c.residents));
+    for(const cell of cells.values()){
+      const a=map.unproject([cell.x*cellSize,cell.y*cellSize],zoom),b=map.unproject([(cell.x+1)*cellSize,(cell.y+1)*cellSize],zoom);
+      L.rectangle([a,b],{...options,fillOpacity:.12+.28*Math.sqrt(cell.residents/max)})
+        .bindTooltip(`Группа домов: ${fmt(cell.count)} · жителей ≈ ${fmt(cell.residents)}`).addTo(layers.houses);
+    }
+    map.getContainer().dataset.housesView='grid';
+  }else{
+    for(const house of houseData){
+      const radius=Math.min(zoom<=14?3:5,2+Math.sqrt(house.residents)/80*Math.max(1,zoom-13));
+      L.circleMarker([house.lat,house.lng],{...options,radius})
+        .bindTooltip(`Жителей: ≈ ${fmt(house.residents)}`).addTo(layers.houses);
+    }
+    map.getContainer().dataset.housesView='points';
+  }
+}
+function drawAccessRadius(rank){
+  if(!map)return;
+  layers.accessibility.clearLayers();
+  const rec=state.current?.recommendations.find(r=>r.rank===rank);
+  if(!rec)return;
+  L.circle([rec.lat,rec.lng],{pane:'accessibility',radius:rec.radius_m,interactive:false,
+    color:token('--palette-rosewood-deep'),weight:2,opacity:.7,fillColor:token('--palette-pink'),fillOpacity:.1,dashArray:'6 5'}).addTo(layers.accessibility);
+}
+
 const mix = (a, b, t) => '#'+[1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i+2), 16)+(parseInt(b.slice(i, i+2), 16)-parseInt(a.slice(i, i+2), 16))*t).toString(16).padStart(2, '0')).join('');
 let zoneSnapshot=null;
 
@@ -243,10 +284,10 @@ export function drawZones() {
     const t = Math.max(0, Math.min(1, (score-threshold)/(1-threshold))), lat = g.lat_min+Math.floor(i/g.n)*dLat, lng = g.lng_min+(i%g.n)*dLng;
     L.rectangle([[lat-dLat*.52, lng-dLng*.52], [lat+dLat*.52, lng+dLng*.52]], {
       renderer,
-      stroke: true, color:palette['zone-high'],weight:.25,opacity:.35,
+      stroke: false,
       interactive: false,
       fillColor: t<.5?mix(palette['zone-low'],palette['zone-mid'],t*2):mix(palette['zone-mid'],palette['zone-high'],(t-.5)*2),
-      fillOpacity: .22+.35*t
+      fillOpacity: .32+.28*t
     }).addTo(layers.zones);
   });
   syncMapLayers(false);
@@ -263,7 +304,7 @@ export function fitArea(data) {
 }
 
 export function clearAnalysisMap() {
-  emphasized=new Set();previewRank=null;
+  emphasized=new Set();previewRank=null;houseData=[];
   Object.keys(layerTimers).forEach(key=>{clearTimeout(layerTimers[key]);layerRevisions[key]=(layerRevisions[key]||0)+1;});
   markers.clear();
   Object.entries(layers).forEach(([key, layer]) => {
@@ -280,10 +321,12 @@ export function selectMarker(rank, pan, changed = false) {
   previewRank=null;
   markers.forEach((marker, r) => {
     const pin = marker.getElement()?.querySelector('.recommendation-pin');
+    marker.setZIndexOffset(r===rank?1000:0);
     pin?.classList.toggle('is-selected', r === rank);
     pin?.classList.remove('is-preview');
     if (r !== rank) cancelUI(pin);
   });
+  drawAccessRadius(rank);
   if (changed) {
     const pin = markers.get(rank)?.getElement()?.querySelector('.recommendation-pin');
     animateUI(pin, [{ transform: 'scale(1)' }, { transform: 'scale(var(--motion-pulse-scale))', offset: .45 }, { transform: 'scale(1)' }], 'marker-pulse', { duration: 420, easing: 'spring' });
@@ -319,6 +362,9 @@ function syncLegend() {
   if(previewRank || (!active.size && state.current?.recommendations?.length))active.add('places');
   document.querySelectorAll('.map-legend>[data-layer]').forEach(item=>{
     const selected=active.has(item.dataset.layer);item.dataset.active=String(selected);
+    const key=item.dataset.layerKey, enabled=preferences[key]!==false||emphasized.has(key);
+    item.setAttribute('aria-pressed',String(enabled));
+    const label=item.querySelector('.layer-state');if(label)label.textContent=enabled?'вкл':'выкл';
     if(selected)item.setAttribute('aria-current','true');else item.removeAttribute('aria-current');
   });
 }

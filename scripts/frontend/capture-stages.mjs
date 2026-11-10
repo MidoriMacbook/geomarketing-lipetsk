@@ -21,9 +21,13 @@ try {
   await page.getByRole('option',{name:'Центр (Быханов сад)',exact:true}).click();
   await page.locator('#run').click();
   await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success',{},{timeout:90000});
+  if(width===1440)await page.setViewportSize({width,height:1900});
   await page.locator('#map-card').scrollIntoViewIfNeeded();
   if(width===375)await page.locator('button[data-snap=half]').click();
+  else await page.evaluate(()=>scrollTo(0,document.getElementById('workspace').getBoundingClientRect().top+scrollY-110));
   await page.waitForTimeout(1000);
+  // Статический снимок показывает конечные числа, в том числе вне viewport.
+  await page.emulateMedia({reducedMotion:'reduce'});
   if(width===1440)await page.locator('#workspace').screenshot({path:`${dir}/${width}-workspace.png`});
   else await page.screenshot({path:`${dir}/${width}-workspace.png`});
   await context.close();
