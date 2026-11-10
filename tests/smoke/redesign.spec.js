@@ -37,6 +37,16 @@ test('без острова и с уменьшенной анимацией ин
  await expect(page.locator('[data-testid=recommendation-card]')).toHaveCount(3);
 });
 
+test('быстрая смена порога прерывает предыдущий crossfade без ошибок',async({page})=>{
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ await page.locator('#display-options-summary').click();
+ await page.locator('#thr').evaluate(async el=>{for(const value of ['70','99','80']){el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));await new Promise(requestAnimationFrame);}});
+ await expect(page.locator('#thr-out')).toContainText('80');
+ await expect(page.locator('.leaflet-zones-pane canvas')).toHaveCount(1);
+ expect(errors).toEqual([]);
+});
+
 test('быстрые переключения, перетаскивание и порог не оставляют зависших состояний',async({page})=>{
  await page.setViewportSize({width:375,height:850});await page.goto('/');
  await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');

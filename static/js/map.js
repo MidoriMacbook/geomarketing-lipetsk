@@ -224,7 +224,9 @@ let zoneSnapshot=null;
 
 export function drawZones() {
   if (!map)return;
-  if(zoneSnapshot){cancelUI(zoneSnapshot);zoneSnapshot.remove();zoneSnapshot=null;}
+  // cancelUI синхронно вызывает cleanup; не обращаемся затем к сброшенной ссылке.
+  const previous=zoneSnapshot;
+  if(previous){zoneSnapshot=null;cancelUI(previous);previous.remove();}
   const oldCanvas=map.getPane('zones').querySelector('canvas');
   if(oldCanvas&&!motionReduced()&&state.current){
     const snapshot=oldCanvas.cloneNode();snapshot.getContext('2d').drawImage(oldCanvas,0,0);
