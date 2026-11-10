@@ -30,6 +30,15 @@ try {
   await page.emulateMedia({reducedMotion:'reduce'});
   if(width===1440)await page.locator('#workspace').screenshot({path:`${dir}/${width}-workspace.png`});
   else await page.screenshot({path:`${dir}/${width}-workspace.png`});
+  if(width===375&&Number(stage)>=4){
+    for(const snap of ['full','collapsed']){
+      await page.locator(`button[data-snap=${snap}]`).click();
+      await page.screenshot({path:`${dir}/375-${snap}.png`});
+    }
+    await page.locator('button[data-snap=half]').click();
+    await page.locator('#recommendations-context').click();
+    await page.screenshot({path:`${dir}/375-settings.png`});
+  }
   await context.close();
  }
  if(errors.length)throw Error(errors.join('\n'));

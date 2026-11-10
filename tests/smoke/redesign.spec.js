@@ -4,7 +4,8 @@ test('мобильные параметры, меню и три положени
  await page.setViewportSize({width:375,height:850});
  await page.goto('/');
  await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
- await expect(page.locator('#workspace #district-trigger')).toBeVisible();
+ await expect(page.locator('#mobile-settings-open')).toBeVisible();
+ await expect(page.locator('#mobile-settings-dialog')).not.toBeVisible();
  await page.locator('#nav-toggle').click();
  await expect(page.locator('html')).toHaveAttribute('data-nav-open','true');
  await page.keyboard.press('Tab');
@@ -20,7 +21,8 @@ test('мобильные параметры, меню и три положени
  await page.locator('#mobile-settings-open').click();
  await expect(page.locator('#mobile-settings-dialog')).toBeVisible();
  await page.keyboard.press('Escape');
- await expect(page.locator('#workspace #district-trigger')).toBeVisible();
+ await expect(page.locator('#mobile-settings-open')).toBeVisible();
+ await expect(page.locator('#mobile-settings-dialog')).not.toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 
@@ -62,7 +64,7 @@ test('быстрые переключения, перетаскивание и �
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.getByRole('button',{name:'Развернуть результаты полностью'}).click();
  await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','full');
- await page.locator('#mobile-settings-open').click();
+ await page.locator('#recommendations-context').click();
  await page.locator('#display-options-summary').click();
  const threshold=page.locator('#thr');await threshold.focus();
  await threshold.press('Home');await threshold.press('End');await threshold.press('Home');

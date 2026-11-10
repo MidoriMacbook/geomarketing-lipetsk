@@ -24,7 +24,7 @@ controls.innerHTML='<button class="sheet-handle" type="button" aria-label="Из�
 sheet.prepend(controls);
 const handle=controls.querySelector('.sheet-handle');
 const home=document.createElement('div');home.className='sheet-home';sheet.before(home);home.append(sheet);
-let snap='collapsed',active=false,drag=null,scrollFrame=0,suppressHandleClick=false;
+let snap='collapsed',active=false,drag=null,scrollFrame=0,suppressHandleClick=false,viewportKey='';
 function offsets(){
  const height=sheet.getBoundingClientRect().height;
  return {collapsed:Math.max(0,height-112),half:Math.max(0,height-innerHeight*.48),full:0};
@@ -36,12 +36,21 @@ function setSnap(value){
   const offset=offsets()[snap];sheet.style.setProperty('--sheet-offset',`${offset}px`);
   sheet.style.setProperty('--sheet-visible',`${sheet.getBoundingClientRect().height-offset}px`);
  }
+ const nextKey=[active,snap,innerWidth,innerHeight].join(':');
+ if(nextKey!==viewportKey){viewportKey=nextKey;document.dispatchEvent(new CustomEvent('gm:sheet-position',{detail:{active,snap}}));}
  const collapsed=active&&snap==='collapsed';
  const busy=['calculating','refreshing'].includes(root.dataset.analysisState);
  [...sheet.children].filter(el=>el!==controls&& !el.classList.contains('section-heading')).forEach(el=>{el.inert=collapsed||(el.id==='result'&&busy);});
 }
+const notes=[...sheet.querySelectorAll(':scope>.section-note,:scope>.recommendation-data-note')].map(note=>{const home=document.createComment('note-home');note.before(home);return {note,home};});
+const noteDetails=document.createElement('details');noteDetails.className='result-data-details';
+const noteSummary=document.createElement('summary');noteSummary.textContent='Оценка и данные';noteDetails.append(noteSummary);
 function sync(){
  scrollFrame=0;
+ if(mobile.matches){
+  if(!noteDetails.isConnected)document.getElementById('recommendation-list').before(noteDetails);
+  for(const {note} of notes)if(note.parentElement!==noteDetails)noteDetails.append(note);
+ }else{for(const {note,home} of notes)if(note.parentElement!==sheet)home.after(note);noteDetails.remove();}
  const rect=map.getBoundingClientRect(),header=document.getElementById('site-header').getBoundingClientRect().bottom;
  const largeText=parseFloat(getComputedStyle(root).fontSize)>22;
  root.dataset.largeText=String(largeText);
@@ -87,7 +96,8 @@ new ResizeObserver(()=>{if(!scrollFrame)scrollFrame=requestAnimationFrame(sync);
 let fontSize=root.style.fontSize;
 new MutationObserver(()=>{if(fontSize!==root.style.fontSize){fontSize=root.style.fontSize;sync();}}).observe(root,{attributes:true,attributeFilter:['style']});
 document.addEventListener('gm:analysis-rendered',()=>{setSnap('half');sync();});
-document.addEventListener('click',event=>{if(event.target.closest('.mobile-show-place'))setSnap('collapsed');});
+document.addEventListener('gm:show-place',()=>setSnap('collapsed'));
+document.addEventListener('gm:map-focus',()=>setSnap('collapsed'));
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&active&&!document.querySelector('dialog[open]'))setSnap('collapsed');});
 sheet.addEventListener('focusin',event=>{if(active&&snap==='collapsed'&&!controls.contains(event.target))setSnap('half');});
 document.addEventListener('focusin',event=>{

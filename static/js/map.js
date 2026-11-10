@@ -93,6 +93,13 @@ export function initMap() {
     layers[key] = L.layerGroup().addTo(map);
   });
   map.on('zoomend', drawHouses);
+  document.addEventListener('gm:sheet-position',event=>{
+    if(event.detail.active)requestAnimationFrame(()=>fitMobilePlaces());
+  });
+  document.addEventListener('gm:show-place',event=>{
+    // Сначала панель принимает целевое положение; затем центрируем выбранное место.
+    requestAnimationFrame(()=>centerVisiblePlace(event.detail.rank));
+  });
   const motionObserver=new IntersectionObserver(([entry])=>{map.getContainer().dataset.motionVisible=String(entry.isIntersecting);});
   motionObserver.observe(map.getContainer());
   document.querySelectorAll('[data-layer-key]').forEach(button=>button.addEventListener('click',()=>{
@@ -295,12 +302,37 @@ export function drawZones() {
 
 export function fitArea(data) {
   if (!map)return;
+  if(matchMedia('(max-width:600px)').matches&&data.recommendations?.length){fitMobilePlaces(data);return;}
   const [lat, lng] = data.center, dLat = data.half_m/111000, dLng = data.half_m/(111000*Math.cos(lat*Math.PI/180));
   map.fitBounds([[lat-dLat, lng-dLng], [lat+dLat, lng+dLng]], {
     padding: [25,
     25],
     animate: false
   });
+}
+
+function visiblePadding(){
+  const rect=map.getContainer().getBoundingClientRect(),sheet=$('recommendations');
+  const header=$('site-header').getBoundingClientRect().bottom;
+  const sheetTop=sheet.dataset.sheetActive==='true'?innerHeight-parseFloat(sheet.style.getPropertyValue('--sheet-visible')||'0'):innerHeight;
+  const top=Math.max(28,header-rect.top+24);
+  const bottom=Math.max(28,rect.bottom-sheetTop+28);
+  // При полностью раскрытом списке карту не перекадрируем.
+  return {top,bottom,usable:rect.height-top-bottom};
+}
+function fitMobilePlaces(data=state.current){
+  if(!map||!matchMedia('(max-width:600px)').matches||!data?.recommendations?.length)return;
+  const {top,bottom,usable}=visiblePadding();
+  if(usable<100)return;
+  map.fitBounds(data.recommendations.map(r=>[r.lat,r.lng]),{paddingTopLeft:[36,top],paddingBottomRight:[36,bottom],maxZoom:16,animate:false});
+}
+function centerVisiblePlace(rank){
+  if(!map)return;
+  const rec=state.current?.recommendations.find(r=>r.rank===rank);if(!rec)return;
+  const {top,bottom,usable}=visiblePadding();if(usable<100)return;
+  const zoom=map.getZoom(),point=map.project([rec.lat,rec.lng],zoom);
+  point.y+=(bottom-top)/2;
+  map.flyTo(map.unproject(point,zoom),zoom,{animate:!motionReduced(),duration:.45,easeLinearity:.25});
 }
 
 export function clearAnalysisMap() {

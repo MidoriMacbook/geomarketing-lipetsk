@@ -8,6 +8,8 @@ export function initMobileWorkspace() {
  const byId=id=>document.getElementById(id),mobile=matchMedia('(max-width:600px), (max-width:950px) and (max-height:500px) and (pointer:coarse)');
  const settings=byId('settings'),map=byId('map-card'),workspace=byId('workspace'),dialog=byId('mobile-settings-dialog'),opener=byId('mobile-settings-open');
  const bar=byId('mobile-settings-bar');
+ const trust=byId('trust-status'),trustHome=document.createComment('trust-home');trust.before(trustHome);
+ const footer=document.createElement('div');footer.className='mobile-sheet-actions';dialog.append(footer);
  const home=document.createComment('settings-home'),runHome=document.createComment('run-home'),barHome=document.createComment('mobile-settings-bar-home');
  settings.before(home);byId('run').before(runHome);bar.before(barHome);
  const kpis=document.querySelector('.kpis'),area=byId('area-details'),secondary=area.querySelector('.area-details-grid');
@@ -39,7 +41,7 @@ export function initMobileWorkspace() {
   const district=byId('district'),business=byId('business');
   byId('mobile-settings-selection').textContent=[district.selectedOptions[0]?.textContent,business.selectedOptions[0]?.textContent].filter(Boolean).join(' · ');
   const phase=document.documentElement.dataset.analysisState;
-  opener.querySelector('.mobile-settings-label').textContent=phase==='error'?'Проверить параметры':state.current?'Изменить параметры':'Настроить анализ';
+  opener.querySelector('.mobile-settings-label').textContent=phase==='error'?'Проверить':state.current?'Изменить':'Настроить';
   byId('mobile-settings-state').textContent=!state.catalog?'Настройте параметры':phase==='calculating'||phase==='refreshing'?'Выполняется расчёт…':district.value==='custom'&&!state.customPoint?'Выберите центр на карте':phase==='error'?'Проверьте параметры и повторите расчёт':state.current&&!selectionMatchesResult()?'Выполните расчёт — параметры изменены':state.openedScenarioId?'Сохранённый расчёт':state.current?'Расчёт готов':'Готово к расчёту';
   document.documentElement.dataset.mobileHasResult=String(!!state.current);
   for(const item of sections){
@@ -51,9 +53,9 @@ export function initMobileWorkspace() {
  function finishClose(token,restoreFocus=true) {
   if(token!==revision)return;
   cancelUI(dialog);closing=false;
-  delete dialog.dataset.closing;
+  delete dialog.dataset.closing;dialog.style.removeProperty('transform');gesture=null;
   if(dialog.open)dialog.close();
-  if(mobile.matches){bar.after(settings);settings.classList.add('inline-settings');}
+  if(mobile.matches)byId('mobile-settings-content').append(settings);
   delete document.documentElement.dataset.mobileSheetOpen;
   opener.setAttribute('aria-expanded','false');
   if(restoreFocus&&mobile.matches&&returnTo?.isConnected)returnTo.focus({preventScroll:true});
@@ -76,18 +78,20 @@ export function initMobileWorkspace() {
   if(!dialog.open)dialog.showModal();
   // Поля остаются теми же элементами; фокус не меняет положение страницы.
   (byId('district-trigger')||byId('district')).focus({preventScroll:true});
-  animateUI(dialog,[{opacity:0,transform:'translateY(24px)'},{opacity:1,transform:'translateY(0)'}],'mobile-settings-open',{duration:'workspace',easing:'emphasized'});
+  animateUI(dialog,[{opacity:0,transform:'translateY(24px)'},{opacity:1,transform:'translateY(0)'}],'mobile-settings-open',{duration:'workspace',easing:'spring'});
  }
  function syncLayout() {
   const focused=document.activeElement,focusedSection=sections.find(item=>item.section.contains(focused));
   closeSettings({immediate:true,restoreFocus:false});
   if(mobile.matches){
-   workspace.prepend(bar,settings,map);settings.classList.add('inline-settings');
+   map.querySelector('.map-footer').append(trust);
+   workspace.prepend(bar,map);byId('mobile-settings-content').append(settings);settings.classList.remove('inline-settings');
    map.after(context,kpis,area);
    secondary.append(cards.houses,cards.competitors);
-   byId('display-options').after(byId('run'),byId('loading-hint'),byId('error'));
+   byId('display-options').after(byId('loading-hint'),byId('error'));footer.append(byId('run'));
    for(const item of sections){item.marker.after(item.details);item.details.append(item.section);}
   } else {
+   trustHome.after(trust);
    settings.classList.remove('inline-settings');
    summaryHome.after(context,kpis,area);
    barHome.after(bar);home.after(settings);settings.after(map);
@@ -110,11 +114,34 @@ export function initMobileWorkspace() {
   delete dialog.dataset.closing;
   cancelUI(dialog);
   closeChoiceMenus();closing=false;delete document.documentElement.dataset.mobileSheetOpen;opener.setAttribute('aria-expanded','false');
-  if(mobile.matches){bar.after(settings);settings.classList.add('inline-settings');}
+  if(mobile.matches)byId('mobile-settings-content').append(settings);
+ });
+ // Жест только на заголовке: прокрутка полей не закрывает лист.
+ const grip=dialog.querySelector('.mobile-sheet-heading');
+ let gesture=null;
+ grip.addEventListener('pointerdown',event=>{
+  if(event.target.closest('button')||event.button!==0)return;
+  cancelUI(dialog);gesture={id:event.pointerId,y:event.clientY,delta:0};grip.setPointerCapture(event.pointerId);
+ });
+ grip.addEventListener('pointermove',event=>{
+  if(gesture?.id!==event.pointerId)return;
+  gesture.delta=Math.max(0,event.clientY-gesture.y);dialog.style.transform=`translateY(${gesture.delta}px)`;
+ });
+ const finishGesture=event=>{
+  if(gesture?.id!==event.pointerId)return;
+  const delta=gesture.delta;gesture=null;dialog.style.removeProperty('transform');
+  if(event.type==='pointerup'&&delta>70)closeSettings();
+  else animateUI(dialog,[{transform:`translateY(${delta}px)`},{transform:'translateY(0)'}],'settings-return',{duration:'fast',easing:'spring'});
+ };
+ grip.addEventListener('pointerup',finishGesture);grip.addEventListener('pointercancel',finishGesture);
+ dialog.addEventListener('click',event=>{
+  if(event.target!==dialog)return;
+  const box=dialog.getBoundingClientRect();
+  if(event.clientY<box.top||event.clientX<box.left||event.clientX>box.right)closeSettings();
  });
  byId('run').addEventListener('click',()=>{collapseAfterRun=mobile.matches&&dialog.open;},{capture:true});
  byId('mobile-custom-map').addEventListener('click',()=>{
-  closeSettings({immediate:true});const target=byId('map');if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'center'});
+  closeSettings({immediate:true});document.dispatchEvent(new Event('gm:map-focus'));const target=byId('map');if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'center'});
  });
  document.addEventListener('click',event=>{
   const link=event.target.closest('a[href^="#"]');if(!mobile.matches||!link)return;
