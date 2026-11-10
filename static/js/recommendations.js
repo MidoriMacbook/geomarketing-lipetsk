@@ -180,7 +180,8 @@ export function showResult(data, { freshCalculation=false } = {}) {
     const heading = node('div', 'place-title'), select = button(`Место ${rec.rank}`, 'place-select', () => selectPlace(rec.rank));
     select.setAttribute('aria-pressed', rec.rank === state.selectedRank);
     select.setAttribute('aria-label', `Показать место ${rec.rank} на карте`);
-    heading.append(node('span', 'rank', rec.rank), select, node('span', 'score', scoreText(rec.score)));
+    heading.append(node('span', 'rank', rec.rank), select, node('span', 'score', scoreText(rec.score)),node('small','score-caption','Относительная оценка внутри расчёта'));
+    heading.querySelector('.score').title=SCORE_NOTE;
     const coordinate = node('p', 'coords', coords(rec));
     if (!index)coordinate.id = 'coords';
     const metrics = node('div', 'place-metrics'), people = node('div'), competition = node('div');
@@ -193,7 +194,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
       if (map) { if(!map.hasAttribute('tabindex'))map.tabIndex=-1;map.focus({ preventScroll: true });map.scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'center' }); }
     });
     const brief = node('dl', 'recommendation-brief'), summary = recommendationBrief(rec);
-    for (const [key, label] of [['demand', 'Спрос'], ['competition', 'Конкуренция'], ['nearest', 'Ближайший конкурент'], ['check', 'Проверить на месте']]) {
+    for (const [key, label] of [['competition', 'Влияние конкурентов'], ['nearest', 'Ближайший конкурент'], ['check', 'Проверить на месте']]) {
       const row = node('div');
       row.append(node('dt', '', label), node('dd', key === 'nearest' ? 'nearest' : '', summary[key]));
       brief.append(row);
@@ -216,7 +217,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     });
     save.dataset.testid = 'save-place';
     save.dataset.rank = rec.rank;
-    const copy = button('Координаты', 'button secondary', async() => {
+    const copy = button('Копировать координаты', 'button secondary', async() => {
       try {
         await navigator.clipboard.writeText(`${rec.lat.toFixed(6)}, ${rec.lng.toFixed(6)}`);
         copy.textContent = 'Скопировано';
@@ -226,8 +227,9 @@ export function showResult(data, { freshCalculation=false } = {}) {
         copy.title = 'Координаты указаны на карточке — выделите и скопируйте их.';
       }
     });
+    copy.title='Скопировать широту и долготу';copy.setAttribute('aria-label',`Копировать координаты места ${rec.rank}`);
     if (!index)copy.id = 'copy';
-    const osm = node('a'),externalIcon=node('span','directional-icon icon-external');externalIcon.setAttribute('aria-hidden','true');osm.append(externalIcon);
+    const osm = node('a'),externalIcon=node('span','directional-icon icon-external');externalIcon.setAttribute('aria-hidden','true');osm.append(document.createTextNode('Открыть на карте'),externalIcon);osm.title='Открыть в OpenStreetMap в новой вкладке';
     osm.href = `https://www.openstreetmap.org/?mlat=${rec.lat}&mlon=${rec.lng}#map=18/${rec.lat}/${rec.lng}`;
     osm.target = '_blank';
     osm.rel = 'noopener';
@@ -238,7 +240,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     placeDetails.append(node('summary', '', 'Координаты и ссылки'), placeContent);
     const briefDetails = node('details', 'mobile-rec-details');
     briefDetails.append(node('summary', '', 'Подробнее о месте'));
-    const explanation = explanationBlock(rec);
+    const explanation = explanationBlock(rec,{compact:true});
     const check = node('p','mobile-field-check',recommendationBrief(rec).check);
     briefDetails.append(node('h4','','Проверить на месте'),check);
     const secondaryActions=node('div','mobile-save-secondary'),compare=button('Сравнить','compare-saved-link',openSavedComparison);compare.hidden=true;secondaryActions.append(compare);

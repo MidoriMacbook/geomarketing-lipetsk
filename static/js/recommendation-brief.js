@@ -1,5 +1,5 @@
 const demand = { higher: 'Выше среднего среди точек расчёта', similar: 'Близок к среднему среди точек расчёта', lower: 'Ниже среднего среди точек расчёта', unknown: 'Не оценен' };
-const competition = { low: 'Небольшой штраф модели', moderate: 'Умеренный штраф модели', high: 'Высокий штраф модели' };
+const competition = { low: 'Слабое влияние на оценку', moderate: 'Умеренное влияние на оценку', high: 'Сильное влияние на оценку' };
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const strings = value => Array.isArray(value) && value.length <= 64 && value.every(text => typeof text === 'string' && text.length <= 2000);
 
@@ -19,9 +19,9 @@ export function recommendationBrief(rec) {
   const nearest = rec?.nearest_competitor_m;
   return {
     demand: explanation ? demand[explanation.demand_level] : 'Не оценен',
-    competition: explanation ? competition[explanation.competition_level] : 'Не оценена',
+    competition: explanation ? competition[explanation.competition_level]+(rec?.competitors_in_radius===0?' — учитываются и конкуренты за радиусом':'') : 'Не оценена',
     nearest: nearest === null ? 'Не найдены в данных области' : Number.isFinite(nearest) && nearest >= 0 ? `${Math.round(nearest).toLocaleString('ru-RU')} м` : 'Не оценено',
-    check: explanation?.field_checks.find(text => text.trim()) || 'Проверьте помещение, доступ и поток посетителей.'
+    check: explanation?.field_checks.find(text => text.trim() && !/конкурент.*OSM/i.test(text)) || 'Проверьте помещение, доступ и поток посетителей.'
   };
 }
 

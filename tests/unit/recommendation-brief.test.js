@@ -44,7 +44,7 @@ test('decision keeps priorities and does not classify missing facts or invent lo
 test('brief describes existing model levels, exact nearest distance and first field check', () => {
   assert.deepEqual(recommendationBrief(recommendation()), {
     demand: 'Выше среднего среди точек расчёта',
-    competition: 'Небольшой штраф модели',
+    competition: 'Слабое влияние на оценку',
     nearest: '124 м',
     check: 'Проверьте вход и пешеходный поток.'
   });
@@ -53,7 +53,7 @@ test('brief describes existing model levels, exact nearest distance and first fi
 test('brief covers all model level labels without inventing city-wide claims', () => {
   const demand = { similar: 'Близок к среднему среди точек расчёта', lower: 'Ниже среднего среди точек расчёта', unknown: 'Не оценен' };
   for (const [level, label] of Object.entries(demand)) assert.equal(recommendationBrief(recommendation({ explanation: explanation({ demand_level: level }) })).demand, label);
-  for (const [level, label] of Object.entries({ moderate: 'Умеренный штраф модели', high: 'Высокий штраф модели' })) assert.equal(recommendationBrief(recommendation({ explanation: explanation({ competition_level: level }) })).competition, label);
+  for (const [level, label] of Object.entries({ moderate: 'Умеренное влияние на оценку', high: 'Сильное влияние на оценку' })) assert.equal(recommendationBrief(recommendation({ explanation: explanation({ competition_level: level }) })).competition, label);
 });
 
 test('old or damaged enrichment falls back honestly while preserving the base distance', () => {
@@ -85,4 +85,11 @@ test('brief is deterministic and does not mutate a frozen recommendation or enri
   const before = JSON.stringify(rec);
   assert.deepEqual(recommendationBrief(rec), recommendationBrief(rec));
   assert.equal(JSON.stringify(rec), before);
+});
+
+test('zero nearby competitors explains influence from outside the radius',()=>{
+ const rec=recommendation({competitors_in_radius:0,explanation:explanation({field_checks:['Проверьте конкурентов, которые могли отсутствовать в OSM','Уточните аренду.']})});
+ const brief=recommendationBrief(rec);
+ assert.match(brief.competition,/за радиусом/);
+ assert.equal(brief.check,'Уточните аренду.');
 });

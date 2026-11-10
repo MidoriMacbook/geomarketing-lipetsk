@@ -61,15 +61,15 @@ export function qualityBlock(data, compact = false, separateWarnings = false) {
   return block;
 }
 
-export function explanationBlock(rec, { expanded = false } = {}) {
+export function explanationBlock(rec, { expanded = false, compact = false } = {}) {
   const block = node('div', 'explanation-block'), explanation = checkedExplanation(rec?.explanation);
   block.dataset.testid = 'explanation-block';
   if (!explanation) { block.append(node('p', 'hint', 'Объяснение для этого сохранённого расчёта не оценено.')); return block; }
-  if (explanation.strengths?.length) block.append(node('p', 'explanation-strength', explanation.strengths[0]));
+  if (!compact && explanation.strengths?.length) block.append(node('p', 'explanation-strength', explanation.strengths[0]));
   const details = node('details'), metrics = explanation.metrics || {};
-  details.append(node('summary', '', 'Почему это место'));
+  details.append(node('summary', '', compact?'Расчёт и ограничения':'Почему это место'));
   details.open = expanded;
-  details.append(node('p', 'explanation-overview', `В радиусе ${fmt(rec.radius_m)} м: ≈ ${fmt(rec.residents_in_radius)} жителей, ${fmt(rec.competitors_in_radius)} конкурентов. Ближайший конкурент: ${distance(rec.nearest_competitor_m)}.`));
+  if(!compact)details.append(node('p', 'explanation-overview', `В радиусе ${fmt(rec.radius_m)} м: ≈ ${fmt(rec.residents_in_radius)} жителей, ${fmt(rec.competitors_in_radius)} конкурентов. Ближайший конкурент: ${distance(rec.nearest_competitor_m)}.`));
   const demand = { higher: 'Выше среднего среди точек этого расчёта', similar: 'Близок к среднему среди точек этого расчёта', lower: 'Ниже среднего среди точек этого расчёта', unknown: 'Не оценен' };
   const competition = { low: 'Небольшой штраф модели', moderate: 'Умеренный штраф модели', high: 'Высокий штраф модели' };
   const number = (value, suffix = '', digits = 2) => Number.isFinite(value) ? `${value.toLocaleString('ru-RU', { maximumFractionDigits: digits })}${suffix}` : 'не оценено';
@@ -80,7 +80,7 @@ export function explanationBlock(rec, { expanded = false } = {}) {
   for (const [key, title] of [['strengths', 'Сильные стороны'], ['risks', 'Риски'], ['field_checks', 'Проверить на месте']]) {
     details.append(node('h4', '', title));
     const list = node('ul');
-    (explanation[key] || []).forEach(text => list.append(node('li', '', text)));
+    (explanation[key] || []).filter(text=>!compact||!/конкурент.*OSM/i.test(text)).forEach(text => list.append(node('li', '', text)));
     details.append(list);
   }
   details.append(node('h4', '', 'Ограничение модели'), node('p', '', LIMITATIONS));
