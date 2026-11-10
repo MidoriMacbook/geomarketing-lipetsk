@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#2D3A47">
 <meta name="description" content="Карта спроса и конкуренции в Липецке. Сравните места для кофейни, аптеки, магазина, пекарни и салона красоты.">
-<title>ГеоМаркетинг — места для бизнеса в Липецке</title>
+<title>ГеоМаркетинг Липецк — места для бизнеса</title>
 <link rel="preload" href="/static/assets/fonts/golos-text-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/static/assets/fonts/playfair-display-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/static/assets/fonts/playfair-display-italic-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
@@ -38,20 +38,19 @@
 <a class="skip-link" href="#settings">Перейти к настройкам</a>
 <div id="header-sentinel" aria-hidden="true"></div>
 <div class="header-reserve"><header id="site-header" class="site-header">
-  <a class="brand" href="/" aria-label="ГеоМаркетинг, главная"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M6 9h28v22H6zM14 9v22M26 9v22M6 20h28"/><circle cx="20" cy="20" r="7"/><circle cx="20" cy="20" r="2"/></svg></span><span>Гео<wbr>Маркетинг<small>Городская аналитика · Липецк</small></span></a>
+  <a class="brand" href="/" aria-label="ГеоМаркетинг Липецк, главная"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M6 9h28v22H6zM14 9v22M26 9v22M6 20h28"/><circle cx="20" cy="20" r="7"/><circle cx="20" cy="20" r="2"/></svg></span><span>Гео<wbr>Маркетинг Липецк<small>Городская аналитика</small></span></a>
   <button id="nav-toggle" class="nav-toggle" type="button" aria-label="Меню" aria-expanded="false" aria-controls="nav-menu" hidden><span>Меню</span><span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span></button>
-  <nav id="nav-menu" aria-label="Основная навигация"><div class="nav-clip"><div class="nav-items"><span class="nav-indicator" aria-hidden="true"></span><a class="active" href="#workspace">Карта и анализ</a><a href="#scenarios-section" hidden>Исследования</a><a href="#saved-section">Сохранённые <span id="nav-saved-count">0</span></a><button id="model-button" type="button">Как это работает <span class="directional-icon icon-forward" aria-hidden="true"></span></button></div></div></nav>
-  <a class="header-cta button primary" href="#workspace">Найти места <span aria-hidden="true">↗</span></a>
+  <nav id="nav-menu" aria-label="Основная навигация"><div class="nav-clip"><div class="nav-items"><span class="nav-indicator" aria-hidden="true"></span><a class="active" href="#workspace">Карта и анализ</a><a href="#scenarios-section" hidden>Исследования</a><a href="#saved-section">Сохранённые <span id="nav-saved-count">0</span></a><a href="#how-it-works">Как это работает</a></div></div></nav>
 </header></div>
 <div id="nav-backdrop" aria-hidden="true" hidden></div>
 <main class="page">
 <section id="hero" class="intro editorial-hero" aria-labelledby="page-title">
   <div class="hero-copy">
-    <p class="eyebrow">Липецк / Атлас возможностей</p>
-    <h1 id="page-title" class="hero-title"><span class="hero-title-word">Гео</span><em class="hero-title-word">Маркетинг</em></h1>
+    <p class="eyebrow">Места для вашего бизнеса</p>
+    <h1 id="page-title" class="hero-title"><span class="hero-title-word">Гео</span><em class="hero-title-word">Маркетинг</em><span class="hero-city"> Липецк</span></h1>
     <div class="hero-editorial-row"><p class="hero-statement">У каждого бизнеса<br>есть <em>своё место.</em></p>
-      <div class="hero-intent"><p id="hero-description" class="hero-description">Изучите спрос и конкуренцию.<br>Найдите места для своего бизнеса.</p>
-      <div class="hero-links"><span class="hero-magnet"><a id="hero-map-link" class="button primary" href="#workspace"><span>Найти места</span></a></span><button class="hero-text-action" id="hero-model-button" type="button"><span class="hero-action-label">Как это работает</span><span class="hero-action-arrow directional-icon icon-forward" aria-hidden="true"></span></button></div></div>
+      <div class="hero-intent"><p id="hero-description" class="hero-description">Сравните спрос и конкуренцию, чтобы выбрать место для своего бизнеса.</p>
+      <div class="hero-links"><span class="hero-magnet"><a id="hero-map-link" class="button primary" href="#workspace"><span>Найти места</span></a></span></div></div>
     </div>
     <div class="hero-return-slot"><p id="hero-return-context" hidden></p></div>
   </div>
@@ -82,12 +81,7 @@
  </g>
 </svg>
 <span class="atlas-pin-label">Здесь начинается ваше дело</span></div>
-  <div class="atlas-coordinates"><span>52,61° с. ш. / 39,58° в. д.</span><span>Липецкая область</span><a href="#workspace">К исследованию ↓</a></div>
-  <div class="hero-steps" aria-label="Как устроен поиск">
-    <article><span class="atlas-step">01 / Данные</span><h2>Город в деталях</h2><p>Дома и бизнес из OpenStreetMap</p></article>
-    <article><span class="atlas-step">02 / Анализ</span><h2>Спрос и окружение</h2><p>Оценка жителей и близости конкурентов</p></article>
-    <article><span class="atlas-step">03 / Решение</span><h2>Ваш следующий шаг</h2><p>До трёх мест для проверки на месте</p></article>
-  </div>
+  <div class="atlas-coordinates"><span>52.61° с. ш. / 39.58° в. д.</span><span>Липецкая область</span><a href="#workspace">К исследованию ↓</a></div>
   <div id="hero-motion-root" aria-hidden="true"></div>
 </section>
   <div class="analysis-context-row"><span class="eyebrow">Область в цифрах</span><p id="analysis-context">Выберите район и категорию бизнеса</p></div>
@@ -97,9 +91,9 @@
     <div id="mobile-settings-bar" class="mobile-only"><button id="mobile-settings-open" type="button" aria-haspopup="dialog" aria-controls="mobile-settings-dialog" aria-expanded="false"><span class="mobile-settings-label">Настроить анализ</span><span id="mobile-settings-selection">Область и тип бизнеса</span><span id="mobile-settings-state">Настройте параметры</span></button></div>
     <aside id="settings" class="card settings" aria-labelledby="settings-title"><div class="section-heading"><span class="step">01</span><h2 id="settings-title" tabindex="-1">Настройки анализа</h2></div>
       <div id="catalog-status" role="status" class="notice">Загружаем районы и категории… <button id="retry-catalog" type="button" class="linkbtn" hidden>Повторить</button></div>
-      <section class="settings-group" aria-labelledby="area-group-title"><h3 id="area-group-title" class="group-heading">Область</h3><label class="field-label" for="district">Область поиска</label><select id="district" disabled aria-describedby="area-hint"><option>Загрузка районов…</option></select><p class="hint" id="area-hint">Готовые области — круги поиска вокруг жилой застройки, а не административные границы. Можно выбрать свою область на карте.</p>
+      <section class="settings-group" aria-labelledby="area-group-title"><label id="area-group-title" class="field-label" for="district">Область поиска</label><select id="district" disabled aria-describedby="area-hint"><option>Загрузка районов…</option></select><p class="hint" id="area-hint">Готовые области — круги поиска вокруг жилой застройки, а не административные границы. Можно выбрать свою область на карте.</p>
       <div id="custom-box" class="custom-box" hidden><label class="field-label" for="radius">Радиус области</label><select id="radius"><option value="700">700 м</option><option value="1000" selected>1 000 м</option><option value="1500">1 500 м</option></select><p class="hint" id="custom-hint">Кликните по карте, чтобы выбрать центр области.</p><button id="mobile-custom-map" class="button secondary mobile-only" type="button">Выбрать центр на карте</button></div>
-      </section><section class="settings-group" aria-labelledby="business-group-title"><h3 id="business-group-title" class="group-heading">Бизнес</h3><label class="field-label" for="business">Тип бизнеса</label><select id="business" data-testid="business-select" disabled><option>Загрузка категорий…</option></select><p class="hint" id="business-parameters">Параметры появятся после загрузки каталога.</p></section>
+      </section><section class="settings-group" aria-labelledby="business-group-title"><label id="business-group-title" class="field-label" for="business">Тип бизнеса</label><select id="business" data-testid="business-select" disabled><option>Загрузка категорий…</option></select><p class="hint" id="business-parameters">Параметры появятся после загрузки каталога.</p></section>
       <button class="button primary" id="run" disabled type="button">Найти места</button><p class="hint timing" id="loading-hint" role="status" hidden>Загрузка и расчёт могут занять до минуты.</p><div id="error" class="notice error" role="alert" hidden></div>
       <details id="display-options" class="settings-group display-group" aria-labelledby="display-group-title" data-workspace-disclosure><summary id="display-options-summary"><h3 id="display-group-title" class="group-heading">Отображение</h3><span class="display-options-meta">Слои и порог</span></summary><div class="workspace-disclosure-body"><div class="workspace-disclosure-content"><div class="layers"><h3>Слои карты</h3><label><span><i class="sw houses" aria-hidden="true"></i>Жилые дома</span><input id="layer-houses" type="checkbox" checked></label><label><span><i class="sw competitors" aria-hidden="true"></i>Конкуренты</span><input id="layer-competitors" type="checkbox" checked></label><label><span><i class="sw centroids" aria-hidden="true"></i>Скопления жителей</span><input id="layer-centroids" type="checkbox" checked></label><label><span><i class="sw zones" aria-hidden="true"></i>Зоны спроса</span><input id="layer-zones" type="checkbox" checked></label></div>
       <div class="threshold"><label for="thr">Порог оценки зон <output id="thr-out" for="thr">90%</output></label><input type="range" id="thr" min="70" max="99" value="90"><p class="hint">Относительная оценка внутри расчёта.</p></div>
@@ -120,6 +114,13 @@
     <p id="scenario-empty" class="empty-line">Пока исследований нет. Выполните расчёт и сохраните исследование целиком. Сохранённое место содержит одну точку; исследование сохраняет всю карту и настройки.</p>
     <div id="scenario-list" class="scenario-list"></div><section id="scenario-comparison" class="scenario-comparison" aria-label="Сравнение исследований" hidden></section>
   </section>
+<section id="how-it-works" class="method-section" aria-labelledby="method-title"><h2 id="method-title">От данных к решению</h2>
+  <div class="hero-steps method-steps" aria-label="Как устроен поиск">
+    <article><span class="atlas-step">01 / Данные</span><h3>Город в деталях</h3><p>Дома и бизнес из OpenStreetMap</p></article>
+    <article><span class="atlas-step">02 / Анализ</span><h3>Спрос и окружение</h3><p>Оценка жителей и близости конкурентов</p></article>
+    <article><span class="atlas-step">03 / Решение</span><h3>Ваш следующий шаг</h3><p>До трёх мест для проверки на месте</p></article>
+  </div>
+<button id="model-button" class="button secondary" type="button">Подробнее о модели и ограничениях</button></section>
   <section id="data-section" class="data-section" aria-labelledby="data-title">
     <h2 id="data-title">Источники и ограничения</h2>
     <p>Карта помогает выбрать места для проверки. Население оценочное, расстояния — по прямой; помещения, аренду и поток людей проверьте на месте.</p>
@@ -131,7 +132,7 @@
       <p id="refresh-status" class="refresh-status" role="status" aria-live="polite" hidden></p>
     </div></details>
   </section>
-  <footer class="page-footer"><span>ГеоМаркетинг · Липецк</span><p>Ориентир для поиска, а не прогноз выручки. Проверьте помещения, аренду и окружение на месте.</p></footer>
+  <footer class="page-footer"><span>ГеоМаркетинг Липецк</span><p>Ориентир для поиска, а не прогноз выручки. Проверьте помещения, аренду и окружение на месте.</p></footer>
 </main>
 <dialog id="mobile-settings-dialog" class="mobile-only" aria-labelledby="mobile-settings-title"><div class="mobile-sheet-heading"><h2 id="mobile-settings-title">Настроить анализ</h2><button id="mobile-settings-close" class="icon-button" type="button" aria-label="Закрыть настройки">×</button></div><div id="mobile-settings-content" class="mobile-sheet-content"></div></dialog>
 <dialog id="model-dialog" aria-labelledby="model-title"><div class="dialog-heading"><h2 id="model-title">Как мы выбираем места</h2><button class="icon-button" id="close-model" type="button" aria-label="Закрыть объяснение">×</button></div><p>Модель оценивает спрос по жилым домам и снижает оценку рядом с конкурентами выбранной категории. В расчёте учитываются радиус доступности и коэффициент конкуренции из настроек категории.</p><p>До трёх мест выбираются по убыванию оценки, на расстоянии не менее 250 м друг от друга. Оценка относительная: 100 из 100 означает максимум только в этом расчёте, а не вероятность успеха.</p><p>Число жителей оценено по квартирам либо площади и этажности домов. Расстояния измерены по прямой. Данные OpenStreetMap могут быть неполными или устаревшими. Модель не учитывает аренду, наличие помещений, пешеходные маршруты, доходы и поток посетителей.</p><p>Сохранения принадлежат этому браузеру и могут исчезнуть при очистке его данных. CSV позволяет сохранить список отдельно. Отчёт можно напечатать или сохранить в PDF через окно печати браузера.</p></dialog>

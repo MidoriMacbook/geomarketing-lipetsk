@@ -30,7 +30,7 @@ function expandMobileCard(entry, expanded, animate = false) {
 function arrangeMobileCard(entry) {
   const { body, content, heading, coordinate, metrics, brief, reasons, secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, briefDetails } = entry;
   cancelUI(body);
-  metrics.children[1].querySelector('small').textContent=mobileRecommendations.matches?'конкурентов OSM':'конкурентов в радиусе';
+  metrics.children[1].querySelector('small').textContent='конкурентов в радиусе';
   if (mobileRecommendations.matches) {
     placeContent.append(coordinate, entry.linkActions);
     entry.linkActions.append(copy, osm);
@@ -185,7 +185,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     if (!index)coordinate.id = 'coords';
     const metrics = node('div', 'place-metrics'), people = node('div'), competition = node('div');
     people.append(node('strong', '', `≈ ${fmt(rec.residents_in_radius)}`), node('small', '', `жителей в ${fmt(rec.radius_m)} м`));
-    competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов OSM'));
+    competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов в радиусе'));
     metrics.append(people, competition);
     const showOnMap = button('Показать на карте', 'button secondary action-tertiary mobile-show-place', () => {
       selectPlace(rec.rank, true);

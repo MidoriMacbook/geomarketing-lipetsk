@@ -29,7 +29,7 @@ test('без острова и с уменьшенной анимацией ин
  await page.route('**/vendor/hero/**',route=>route.abort());
  await page.route('**/assets/fonts/**',route=>route.abort());
  await page.goto('/');
- await expect(page.locator('#page-title')).toHaveText('ГеоМаркетинг');
+ await expect(page.locator('#page-title')).toHaveText('ГеоМаркетинг Липецк');
  await expect(page.locator('#hero-map-link')).toBeVisible();
  await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
  await page.locator('#run').click();

@@ -17,6 +17,13 @@
 .intro .hero-title { font-size:clamp(4.5rem,11.25vw,10.7rem); line-height:1.12; margin:12px 0 24px; font-weight:400; letter-spacing:-.065em; white-space:nowrap; container:none; }
 .hero-title em { font-weight:500; margin:0; }
 .hero-title .hero-title-word { display:inline; }
+.hero-title .hero-city { display:block; font:500 1rem/1.5 var(--font-body); letter-spacing:.08em; margin-top:12px; }
+.method-section { margin-block:40px; scroll-margin-top:calc(var(--header-offset,80px) + 24px); }
+.method-section>h2 { font:500 2rem/1.2 var(--font-display); margin-bottom:20px; }
+.method-section>.button { margin-top:20px; }
+.method-steps article { min-width:0; overflow-wrap:anywhere; }
+.method-steps h3 { font:500 1.65rem/1.2 var(--font-display); margin:12px 0 5px; }
+.method-steps p { font-size:.875rem; }
 .hero-editorial-row { display:flex; justify-content:space-between; align-items:start; gap:32px; min-height:230px; }
 .hero-statement { font:400 clamp(1.8rem,3vw,2.75rem)/1.15 var(--font-display); letter-spacing:-.035em; }
 .hero-statement em { color:var(--color-primary); }
@@ -138,7 +145,8 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
 }
 @media (max-width:600px) {
  .page { padding-inline:16px; }
- .site-header .brand { font-size:.875rem; }
+ .site-header .brand { font-size:.875rem; min-width:0; }
+ .site-header .brand>span:last-child { max-width:150px; white-space:normal; }
  .site-header .brand small { display:block; font-size:.56rem; }
  #nav-toggle { border-radius:99px; background:transparent; }
  .intro.editorial-hero { padding-top:24px; margin-bottom:24px; }
