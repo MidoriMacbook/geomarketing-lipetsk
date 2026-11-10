@@ -11,6 +11,8 @@ export function initMobileWorkspace() {
  const home=document.createComment('settings-home'),runHome=document.createComment('run-home'),barHome=document.createComment('mobile-settings-bar-home');
  settings.before(home);byId('run').before(runHome);bar.before(barHome);
  const kpis=document.querySelector('.kpis'),area=byId('area-details'),secondary=area.querySelector('.area-details-grid');
+ const context=document.querySelector('.analysis-context-row'),summaryHome=document.createComment('area-summary-home');
+ context.before(summaryHome);
  const cards=Object.fromEntries(['residents','houses','competitors','places'].map(key=>[key,byId('kpi-'+key).parentElement]));
  const sections=[['saved-section','Сохранённые места'],['scenarios-section','Архив исследований']].map(([id,title])=>{
   const section=byId(id),marker=document.createComment(id+'-home'),details=document.createElement('details'),summary=document.createElement('summary');
@@ -51,6 +53,7 @@ export function initMobileWorkspace() {
   cancelUI(dialog);closing=false;
   delete dialog.dataset.closing;
   if(dialog.open)dialog.close();
+  if(mobile.matches){bar.after(settings);settings.classList.add('inline-settings');}
   delete document.documentElement.dataset.mobileSheetOpen;
   opener.setAttribute('aria-expanded','false');
   if(restoreFocus&&mobile.matches&&returnTo?.isConnected)returnTo.focus({preventScroll:true});
@@ -66,6 +69,7 @@ export function initMobileWorkspace() {
  }
  function openSettings(trigger=opener) {
   if(!mobile.matches)return;
+  settings.classList.remove('inline-settings');byId('mobile-settings-content').append(settings);
   ++revision;closing=false;collapseAfterRun=false;cancelUI(dialog);returnTo=trigger;
   delete dialog.dataset.closing;
   document.documentElement.dataset.mobileSheetOpen='true';opener.setAttribute('aria-expanded','true');
@@ -78,12 +82,14 @@ export function initMobileWorkspace() {
   const focused=document.activeElement,focusedSection=sections.find(item=>item.section.contains(focused));
   closeSettings({immediate:true,restoreFocus:false});
   if(mobile.matches){
-   byId('mobile-settings-content').append(settings);
-   workspace.prepend(bar,map);
+   workspace.prepend(bar,settings,map);settings.classList.add('inline-settings');
+   map.after(context,kpis,area);
    secondary.append(cards.houses,cards.competitors);
    byId('display-options').after(byId('run'),byId('loading-hint'),byId('error'));
    for(const item of sections){item.marker.after(item.details);item.details.append(item.section);}
   } else {
+   settings.classList.remove('inline-settings');
+   summaryHome.after(context,kpis,area);
    barHome.after(bar);home.after(settings);settings.after(map);
    kpis.append(cards.residents,cards.houses,cards.competitors,cards.places);
    runHome.after(byId('run'),byId('loading-hint'),byId('error'));
@@ -104,6 +110,7 @@ export function initMobileWorkspace() {
   delete dialog.dataset.closing;
   cancelUI(dialog);
   closeChoiceMenus();closing=false;delete document.documentElement.dataset.mobileSheetOpen;opener.setAttribute('aria-expanded','false');
+  if(mobile.matches){bar.after(settings);settings.classList.add('inline-settings');}
  });
  byId('run').addEventListener('click',()=>{collapseAfterRun=mobile.matches&&dialog.open;},{capture:true});
  byId('mobile-custom-map').addEventListener('click',()=>{

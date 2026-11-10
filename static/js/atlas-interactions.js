@@ -1,7 +1,7 @@
 import {motionReduced,animateUI} from './ui.js';
 
 // Только представление. Расчёт, состояние и сохранения принадлежат прежним модулям.
-const root=document.documentElement,hero=document.getElementById('hero');
+const root=document.documentElement;
 let frame=0;
 const updateProgress=()=>{
  frame=0;
@@ -17,13 +17,14 @@ document.addEventListener('click',event=>{
 });
 
 const sheet=document.getElementById('recommendations'),map=document.getElementById('map-card');
+new IntersectionObserver(([entry])=>{sheet.dataset.motionVisible=String(entry.isIntersecting);}).observe(sheet);
 const mobile=matchMedia('(max-width:600px)');
 const controls=document.createElement('div');controls.className='sheet-controls';
 controls.innerHTML='<button class="sheet-handle" type="button" aria-label="Изменить высоту результатов"></button><button type="button" data-snap="collapsed" aria-label="Свернуть результаты">Карта</button><button type="button" data-snap="half" aria-label="Показать половину панели результатов">Места</button><button type="button" data-snap="full" aria-label="Развернуть результаты полностью">Все</button>';
 sheet.prepend(controls);
 const handle=controls.querySelector('.sheet-handle');
 const home=document.createElement('div');home.className='sheet-home';sheet.before(home);home.append(sheet);
-let snap='collapsed',active=false,drag=null,scrollFrame=0;
+let snap='collapsed',active=false,drag=null,scrollFrame=0,suppressHandleClick=false;
 function offsets(){
  const height=sheet.getBoundingClientRect().height;
  return {collapsed:Math.max(0,height-112),half:Math.max(0,height-innerHeight*.48),full:0};
@@ -53,14 +54,17 @@ function sync(){
  setSnap(snap);
 }
 controls.addEventListener('click',event=>{const button=event.target.closest('[data-snap]');if(button)setSnap(button.dataset.snap);});
-handle.addEventListener('click',()=>{if(drag?.moved)return;setSnap(snap==='collapsed'?'half':snap==='half'?'full':'collapsed');});
+handle.addEventListener('click',()=>{if(suppressHandleClick){suppressHandleClick=false;return;}setSnap(snap==='collapsed'?'half':snap==='half'?'full':'collapsed');});
 handle.addEventListener('keydown',event=>{
  if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();const steps=['collapsed','half','full'];setSnap(steps[Math.max(0,Math.min(2,steps.indexOf(snap)+(event.key==='ArrowUp'?1:-1)))]);}
 });
 handle.addEventListener('pointerdown',event=>{
  if(!active||event.button!==0)return;
- drag={id:event.pointerId,y:event.clientY,offset:offsets()[snap],moved:false};
+ suppressHandleClick=false;
+ const visualOffset=new DOMMatrixReadOnly(getComputedStyle(sheet).transform).m42;
+ drag={id:event.pointerId,y:event.clientY,offset:visualOffset,moved:false};
  handle.setPointerCapture(event.pointerId);sheet.dataset.dragging='true';
+ sheet.style.setProperty('--sheet-offset',`${visualOffset}px`);
 });
 handle.addEventListener('pointermove',event=>{
  if(!drag||drag.id!==event.pointerId)return;
@@ -70,11 +74,11 @@ handle.addEventListener('pointermove',event=>{
 });
 function endDrag(event){
  if(!drag||drag.id!==event.pointerId)return;
- const current=drag;delete sheet.dataset.dragging;
+ const current=drag;delete sheet.dataset.dragging;suppressHandleClick=current.moved;
  if(current.moved)setSnap(Object.entries(offsets()).sort((a,b)=>Math.abs(a[1]-current.next)-Math.abs(b[1]-current.next))[0][0]);
  else setSnap(snap);
  // Синтетический click после перетаскивания не переключает положение ещё раз.
- setTimeout(()=>{if(drag===current)drag=null;},0);
+ drag=null;
 }
 handle.addEventListener('pointerup',endDrag);handle.addEventListener('pointercancel',endDrag);
 window.addEventListener('scroll',()=>{if(!scrollFrame)scrollFrame=requestAnimationFrame(sync);},{passive:true});

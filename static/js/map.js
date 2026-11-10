@@ -220,25 +220,33 @@ export function drawMap(data) {
   syncMapLayers(false);
 }
 const mix = (a, b, t) => '#'+[1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i+2), 16)+(parseInt(b.slice(i, i+2), 16)-parseInt(a.slice(i, i+2), 16))*t).toString(16).padStart(2, '0')).join('');
+let zoneSnapshot=null;
 
 export function drawZones() {
   if (!map)return;
+  if(zoneSnapshot){cancelUI(zoneSnapshot);zoneSnapshot.remove();zoneSnapshot=null;}
+  const oldCanvas=map.getPane('zones').querySelector('canvas');
+  if(oldCanvas&&!motionReduced()&&state.current){
+    const snapshot=oldCanvas.cloneNode();snapshot.getContext('2d').drawImage(oldCanvas,0,0);
+    snapshot.style.pointerEvents='none';snapshot.setAttribute('aria-hidden','true');
+    oldCanvas.after(snapshot);zoneSnapshot=snapshot;
+    animateUI(snapshot,[{opacity:1},{opacity:0}],'zone-crossfade',{duration:'base',cleanup:()=>{snapshot.remove();if(zoneSnapshot===snapshot)zoneSnapshot=null;}});
+  }
   layers.zones.clearLayers();
   if (!state.current||!state.current.grid)return;
   const g = state.current.grid, threshold = +$('thr').value/100, dLat = (g.lat_max-g.lat_min)/(g.n-1), dLng = (g.lng_max-g.lng_min)/(g.n-1), renderer = zonesRenderer;
-  const palette = readPalette(['zone-low', 'zone-high']);
+  const palette = readPalette(['zone-low', 'zone-mid', 'zone-high']);
   g.scores.forEach((score, i) => {
     if (score<threshold)return;
     const t = Math.max(0, Math.min(1, (score-threshold)/(1-threshold))), lat = g.lat_min+Math.floor(i/g.n)*dLat, lng = g.lng_min+(i%g.n)*dLng;
     L.rectangle([[lat-dLat*.52, lng-dLng*.52], [lat+dLat*.52, lng+dLng*.52]], {
       renderer,
-      stroke: false,
+      stroke: true, color:palette['zone-high'],weight:.25,opacity:.35,
       interactive: false,
-      fillColor: mix(palette['zone-low'], palette['zone-high'], t),
-      fillOpacity: .18+.24*t
+      fillColor: t<.5?mix(palette['zone-low'],palette['zone-mid'],t*2):mix(palette['zone-mid'],palette['zone-high'],(t-.5)*2),
+      fillOpacity: .22+.35*t
     }).addTo(layers.zones);
   });
-  animateUI(map.getPane('zones'), [{ opacity: .25 }, { opacity: 1 }], 'map-zones');
   syncMapLayers(false);
 }
 
@@ -280,7 +288,7 @@ export function selectMarker(rank, pan, changed = false) {
   }
   const rec = state.current?.recommendations.find(r => r.rank === rank);
   if (map&&rec&&pan) map.panTo([rec.lat, rec.lng], {
-    animate: !motionReduced()
+    animate: !motionReduced(),duration:.5,easeLinearity:.25
   });
   syncMapLayers();
 }
