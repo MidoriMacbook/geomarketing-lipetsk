@@ -16,6 +16,11 @@ try {
   await page.evaluate(()=>document.fonts.ready);
   await page.waitForTimeout(1500);
   await page.screenshot({path:`${dir}/${width}-hero.png`});
+  if(width===1440&&stage==='06'){
+    await page.evaluate(()=>{const h=document.getElementById('hero'),w=document.getElementById('workspace');scrollTo({top:(h.offsetTop+h.offsetHeight*.4+w.offsetTop-innerHeight*.2)/2,behavior:'instant'});});
+    await page.waitForTimeout(150);
+    await page.screenshot({path:`${dir}/1440-transition.png`});
+  }
   if(width===375)await page.locator('#mobile-settings-open').click();
   await page.locator('#district-trigger').click();
   await page.getByRole('option',{name:'Центр (Быханов сад)',exact:true}).click();

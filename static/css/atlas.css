@@ -36,6 +36,7 @@
 .hero-return-slot { position:absolute; bottom:0; left:0; width:260px; margin:0; height:36px; font-size:.75rem; }
 .hero-art { position:absolute; z-index:0; width:64%; left:22%; top:300px; height:290px; pointer-events:none; overflow:hidden; display:block; border-radius:50%; mask-image:linear-gradient(transparent,black 6%,black 90%,transparent); }
 .hero-pointer-light { display:none; position:absolute; top:0; left:0; width:220px; height:220px; border-radius:50%; pointer-events:none; z-index:-1; background:radial-gradient(circle,var(--palette-pink) 0%,transparent 68%); opacity:0; }
+.hero-map-transition { position:fixed; top:0; left:0; width:200px; height:200px; border:2px solid var(--palette-rosewood-deep); border-radius:50%; pointer-events:none; z-index:2; opacity:0; }
 .city-block.block-0 { fill:var(--palette-sage); }
 .city-block.block-1 { fill:var(--palette-sky); }
 .city-block.block-2 { fill:var(--palette-pink); }
