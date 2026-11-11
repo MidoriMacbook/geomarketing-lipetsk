@@ -10,6 +10,39 @@ try{
  await page.goto(process.env.PREVIEW_URL||'http://127.0.0.1:5057',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');await page.evaluate(()=>document.fonts.ready);
  const metrics={point,phase,cpu:4};
+ if(point==='07'){
+  for(const width of [375,768]){
+   await page.setViewportSize({width,height:812});await page.waitForTimeout(400);
+   if(width===375)await page.locator('#mobile-settings-open').click();else await page.locator('#settings').scrollIntoViewIfNeeded();
+   await page.screenshot({path:`${dir}/${phase}-${width}.png`});
+   metrics[width]=await page.locator('#settings .field-label:visible').evaluateAll(els=>els.map(el=>({text:el.textContent,width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})));
+   if(width===375)await page.keyboard.press('Escape');
+  }
+ }
+ if(point==='08'){
+  await page.evaluate(async()=>{(await import('/static/js/ui.js')).setAnalysisState('calculating');});
+  await page.locator('#map-card').scrollIntoViewIfNeeded();await page.waitForTimeout(400);
+  metrics.text=await page.locator('.analysis-bar').evaluate(el=>({color:getComputedStyle(el).color,background:getComputedStyle(el).backgroundColor}));
+  await page.screenshot({path:`${dir}/${phase}-375.png`});
+ }
+ if(point==='09'){
+  await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('[data-snap=full]').click();
+  const cards=page.getByTestId('recommendation-card');await cards.first().getByTestId('save-place').click();await cards.nth(1).locator('.mobile-rec-toggle').click();await cards.nth(1).getByTestId('save-place').click();await page.locator('#comparison-guide-open').click();
+  await page.locator('#comparison').scrollIntoViewIfNeeded();await page.waitForTimeout(500);
+  metrics.width=await page.evaluate(()=>({page:document.documentElement.scrollWidth,viewport:innerWidth}));
+  await page.screenshot({path:`${dir}/${phase}-375.png`});
+ }
+ if(point==='10'){
+  await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('[data-snap=full]').click();await page.locator('.result-data-details summary').click();await page.waitForTimeout(400);
+  metrics.occurrences=await page.evaluate(()=>document.body.textContent.match(/не вероятность успеха/gi)?.length||0);
+  await page.screenshot({path:`${dir}/${phase}-375.png`});
+ }
+ if(point==='11'){
+  await page.locator('#scenario-save').click();await page.locator('#scenario-submit').click();
+  await page.getByTestId('scenario-delete').evaluate(el=>{for(let p=el.parentElement;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
+  await page.getByTestId('scenario-delete').click();await page.waitForTimeout(400);
+  metrics.text=await page.locator('#scenario-delete-dialog').innerText();await page.screenshot({path:`${dir}/${phase}-375.png`});
+ }
  if(point==='05'){
   for(const width of [375,1440]){
    await page.setViewportSize({width,height:812});await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(500);
