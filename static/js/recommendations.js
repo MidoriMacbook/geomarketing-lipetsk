@@ -192,7 +192,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
       selectPlace(rec.rank, false);
       document.dispatchEvent(new CustomEvent('gm:show-place',{detail:{rank:rec.rank}}));
       const map = $('map');
-      if (map) { if(!map.hasAttribute('tabindex'))map.tabIndex=-1;map.focus({ preventScroll: true });map.scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'center' }); }
+      if (map) { if(!map.hasAttribute('tabindex'))map.tabIndex=-1;map.focus({ preventScroll: true });$('map-card').scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'start' }); }
     });
     const brief = node('dl', 'recommendation-brief'), summary = recommendationBrief(rec);
     for (const [key, label] of [['competition', 'Влияние конкурентов'], ['nearest', 'Ближайший конкурент'], ['check', 'Проверить на месте']]) {

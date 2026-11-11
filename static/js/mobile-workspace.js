@@ -9,6 +9,7 @@ export function initMobileWorkspace() {
  const settings=byId('settings'),map=byId('map-card'),workspace=byId('workspace'),dialog=byId('mobile-settings-dialog'),opener=byId('mobile-settings-open');
  const bar=byId('mobile-settings-bar');
  const trust=byId('trust-status'),trustHome=document.createComment('trust-home');trust.before(trustHome);
+ const legend=map.querySelector('.map-legend'),legendHome=document.createComment('legend-home');legend.before(legendHome);
  const footer=document.createElement('div');footer.className='mobile-sheet-actions';dialog.append(footer);
  const home=document.createComment('settings-home'),runHome=document.createComment('run-home'),barHome=document.createComment('mobile-settings-bar-home');
  settings.before(home);byId('run').before(runHome);bar.before(barHome);
@@ -85,6 +86,7 @@ export function initMobileWorkspace() {
   closeSettings({immediate:true,restoreFocus:false});
   if(mobile.matches){
    map.querySelector('.map-footer').append(trust);
+   map.querySelector('.analysis-bar').after(legend);
    workspace.prepend(bar,map);byId('mobile-settings-content').append(settings);settings.classList.remove('inline-settings');
    map.after(context,kpis,area);
    secondary.append(cards.houses,cards.competitors);
@@ -92,6 +94,7 @@ export function initMobileWorkspace() {
    for(const item of sections){item.marker.after(item.details);item.details.append(item.section);}
   } else {
    trustHome.after(trust);
+   legendHome.after(legend);
    settings.classList.remove('inline-settings');
    summaryHome.after(context,kpis,area);
    barHome.after(bar);home.after(settings);settings.after(map);

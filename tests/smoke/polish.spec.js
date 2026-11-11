@@ -1,5 +1,20 @@
 import {test,expect} from '@playwright/test';
 
+test('радиус выбранного места и четыре слоя помещаются над панелью',async({page,baseURL})=>{
+ await page.setViewportSize({width:375,height:812});await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('[data-snap=full]').click();
+ await page.locator('.mobile-show-place').first().click();
+ await expect.poll(async()=>{
+  const circle=await page.locator('.leaflet-accessibility-pane path').boundingBox(),map=await page.locator('#map').boundingBox(),sheet=await page.locator('#recommendations').boundingBox();
+  return circle.width>20&&circle.x>=map.x&&circle.x+circle.width<=map.x+map.width&&circle.y>=map.y&&circle.y+circle.height<sheet.y;
+ }).toBe(true);
+ const sheet=await page.locator('#recommendations').boundingBox();
+ for(const layer of await page.locator('[data-layer-key]').all()){const box=await layer.boundingBox();expect(box.y).toBeGreaterThan(80);expect(box.y+box.height).toBeLessThan(sheet.y);}
+ expect(errors).toEqual([]);
+});
+
 test('меню и место параметров существуют до загрузки JavaScript',async({page,baseURL})=>{
  await page.setViewportSize({width:375,height:812});
  let release;const gate=new Promise(resolve=>release=resolve);

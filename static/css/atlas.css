@@ -273,6 +273,8 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  #recommendations #result>.section-note { font-size:13px; margin-bottom:8px; }
  #recommendations #result>.recommendation-data-note { font-size:13px; margin-bottom:12px; }
  #recommendations .mobile-save-secondary .mobile-show-place { width:100%; padding:10px 14px; border:1px solid var(--color-border); background:var(--color-page); font-size:14px; }
+ #map-card { scroll-margin-top:calc(var(--header-offset,80px) + 8px); }
+ #map-card>.map-legend { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; padding:8px; margin:0; }
  #map-card .map-legend>[data-layer] { min-height:44px; padding:6px 8px; }
  #recommendations[data-sheet-active=true][data-snap=collapsed]>.section-heading { margin-bottom:0; }
  html[data-sheet-gesture=true] #map { height:var(--map-gesture-height); min-height:var(--map-gesture-height); flex-basis:var(--map-gesture-height); }

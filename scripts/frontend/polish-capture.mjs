@@ -22,5 +22,11 @@ try{
   metrics.links=await page.locator('#nav-menu a:visible').evaluateAll(links=>links.map(el=>{const s=getComputedStyle(el);return {text:el.textContent,radius:s.borderRadius,clip:s.clipPath,background:s.backgroundColor};}));
   await page.screenshot({path:`${dir}/${phase}-375.png`});
  }
+ if(point==='04'){
+  await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('button[data-snap=full]').click();
+  await page.getByTestId('recommendation-card').first().locator('.mobile-show-place').click();await page.waitForTimeout(1600);
+  metrics.map=await page.locator('#map').boundingBox();metrics.circle=await page.locator('.leaflet-accessibility-pane path').boundingBox();metrics.layers=await page.locator('[data-layer-key]').evaluateAll(els=>els.map(el=>({text:el.textContent,top:el.getBoundingClientRect().top,bottom:el.getBoundingClientRect().bottom})));metrics.sheet=await page.locator('#recommendations').boundingBox();
+  await page.screenshot({path:`${dir}/${phase}-375.png`});
+ }
  await writeFile(`${dir}/${phase}.json`,JSON.stringify(metrics,null,2)+'\n');
 }finally{await browser.close();}

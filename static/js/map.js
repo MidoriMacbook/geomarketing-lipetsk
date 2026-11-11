@@ -5,6 +5,7 @@ let map = null, tiles = null, tileTimer = null, tileFailures = 0;
 let pointsRenderer = null, zonesRenderer = null;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
 let emphasized = new Set(), previewRank = null, houseData = [];
+let viewportRank=null, viewportTimer=null;
 const layers = {}, markers = new Map();
 const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const color = role => token(`--color-map-${role}`);
@@ -94,12 +95,14 @@ export function initMap() {
   });
   map.on('zoomend', drawHouses);
   document.addEventListener('gm:sheet-position',event=>{
-    if(event.detail.active)requestAnimationFrame(()=>fitMobilePlaces());
+    if(event.detail.active&&viewportRank===null)requestAnimationFrame(()=>fitMobilePlaces());
   });
   document.addEventListener('gm:show-place',event=>{
-    // Сначала панель принимает целевое положение; затем центрируем выбранное место.
-    requestAnimationFrame(()=>centerVisiblePlace(event.detail.rank));
+    viewportRank=event.detail.rank;schedulePlaceFrame();
   });
+  // После естественной прокрутки и остановки панели известна видимая часть карты.
+  window.addEventListener('scroll',schedulePlaceFrame,{passive:true});
+  document.addEventListener('gm:analysis-rendered',()=>{viewportRank=null;clearTimeout(viewportTimer);});
   const motionObserver=new IntersectionObserver(([entry])=>{map.getContainer().dataset.motionVisible=String(entry.isIntersecting);});
   motionObserver.observe(map.getContainer());
   document.querySelectorAll('[data-layer-key]').forEach(button=>button.addEventListener('click',()=>{
@@ -130,6 +133,7 @@ export function initMap() {
   window.addEventListener('resize', resizeMap);
   document.addEventListener('gm:sheet-settled',()=>{
     map.invalidateSize({pan:true,animate:false,debounceMoveend:true});
+    schedulePlaceFrame();
   });
   matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
     if (event.matches) { map.stop(); syncMapLayers(false); }
@@ -334,9 +338,12 @@ function centerVisiblePlace(rank){
   if(!map)return;
   const rec=state.current?.recommendations.find(r=>r.rank===rank);if(!rec)return;
   const {top,bottom,usable}=visiblePadding();if(usable<100)return;
-  const zoom=map.getZoom(),point=map.project([rec.lat,rec.lng],zoom);
-  point.y+=(bottom-top)/2;
-  map.flyTo(map.unproject(point,zoom),zoom,{animate:!motionReduced(),duration:.45,easeLinearity:.25});
+  const bounds=L.latLng(rec.lat,rec.lng).toBounds(rec.radius_m*2);
+  map.flyToBounds(bounds,{paddingTopLeft:[24,top],paddingBottomRight:[24,bottom],maxZoom:16,animate:!motionReduced(),duration:.45});
+}
+function schedulePlaceFrame(){
+  if(viewportRank===null||!matchMedia('(max-width:600px)').matches)return;
+  clearTimeout(viewportTimer);viewportTimer=setTimeout(()=>centerVisiblePlace(viewportRank),160);
 }
 
 export function clearAnalysisMap() {
