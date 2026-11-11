@@ -6,9 +6,21 @@ const browser=await chromium.launch({channel:'chrome',headless:true});
 try{
  const page=await browser.newPage({viewport:{width:375,height:812},isMobile:true,hasTouch:true});
  const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
+ if(point==='05')await page.route('https://tile.openstreetmap.org/**',()=>new Promise(()=>{}));
  await page.goto(process.env.PREVIEW_URL||'http://127.0.0.1:5057',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');await page.evaluate(()=>document.fonts.ready);
  const metrics={point,phase,cpu:4};
+ if(point==='05'){
+  for(const width of [375,1440]){
+   await page.setViewportSize({width,height:812});await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(500);
+   if(width===1440){await page.locator('h1').hover();await page.evaluate(()=>{const r=document.createRange();r.selectNodeContents(document.querySelector('h1'));getSelection().removeAllRanges();getSelection().addRange(r);});}
+   await page.screenshot({path:`${dir}/${phase}-${width}-hero.png`});
+   await page.evaluate(()=>getSelection().removeAllRanges());await page.locator('#map-card').scrollIntoViewIfNeeded();await page.waitForTimeout(500);
+   await page.screenshot({path:`${dir}/${phase}-${width}-map.png`});
+  }
+  metrics.background=await page.locator('#map').evaluate(el=>getComputedStyle(el).backgroundColor);
+  metrics.selection=await page.locator('h1').evaluate(el=>({background:getComputedStyle(el,'::selection').backgroundColor,color:getComputedStyle(el,'::selection').color}));
+ }
  if(point==='02'){
   await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('button[data-snap=full]').click();await page.waitForTimeout(450);
   const rect=await page.locator('.sheet-handle').boundingBox();await page.mouse.move(rect.x+rect.width/2,rect.y+22);await page.mouse.down();await page.mouse.move(rect.x+rect.width/2,rect.y+180,{steps:8});

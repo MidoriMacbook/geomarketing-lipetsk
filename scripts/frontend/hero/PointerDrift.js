@@ -14,7 +14,7 @@ export function PointerDrift({ enabled }) {
     };
     const paint = () => {
       raf = 0;
-      if(light){light.style.transform=`translate(${lightX}px,${lightY}px)`;light.style.opacity='1';}
+      if(light){light.style.transform=`translate(${lightX}px,${lightY}px)`;light.style.opacity='.35';}
     };
     const move = event => {
       if (!fine.matches || event.pointerType === 'touch') return;
