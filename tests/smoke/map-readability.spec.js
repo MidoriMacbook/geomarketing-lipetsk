@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 
-test('слои сохраняют состояние, выбранное место видно над плотной застройкой',async({page})=>{
+test('слои сохраняют состояние, выбранное место видно над плотной застройкой',async({page,baseURL})=>{
+ await page.route('**/*',route=>new URL(route.request().url()).origin===baseURL?route.continue():route.abort());
  await page.goto('/');
  await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
  const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});

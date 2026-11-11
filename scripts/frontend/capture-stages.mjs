@@ -11,7 +11,7 @@ try {
   const context=await browser.newContext({viewport:{width,height:width===375?812:1000},isMobile:width===375,hasTouch:width===375,deviceScaleFactor:1});
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   const cdp=await context.newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
-  await page.goto(process.env.PREVIEW_URL||'http://127.0.0.1:5057');
+  await page.goto(process.env.PREVIEW_URL||'http://127.0.0.1:5057',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success',{},{timeout:90000});
   await page.evaluate(()=>document.fonts.ready);
   await page.waitForTimeout(1500);

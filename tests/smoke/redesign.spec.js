@@ -1,5 +1,9 @@
 import {test,expect} from '@playwright/test';
 
+test.beforeEach(async({page,baseURL})=>{
+ await page.route('**/*',route=>new URL(route.request().url()).origin===baseURL?route.continue():route.abort());
+});
+
 test('мобильные параметры, меню и три положения результатов',async({page})=>{
  await page.setViewportSize({width:375,height:850});
  await page.goto('/');

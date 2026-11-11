@@ -48,14 +48,14 @@
   <div class="hero-copy">
     <p class="eyebrow">Места для вашего бизнеса</p>
     <h1 id="page-title" class="hero-title"><span class="hero-title-word">Гео</span><em class="hero-title-word">Маркетинг</em><span class="hero-city"> Липецк</span></h1>
-    <div class="hero-editorial-row"><p class="hero-statement">У каждого бизнеса<br>есть <em>своё место.</em></p>
+    <div class="hero-editorial-row"><p class="hero-statement">У каждого бизнеса <br>есть <em>своё место.</em></p>
       <div class="hero-intent"><p id="hero-description" class="hero-description">Сравните спрос и конкуренцию, чтобы выбрать место для своего бизнеса.</p>
       <div class="hero-links"><span class="hero-magnet"><a id="hero-map-link" class="button primary" href="#workspace"><span>Найти места</span></a></span></div></div>
     </div>
     <div class="hero-return-slot"><p id="hero-return-context" hidden></p></div>
   </div>
-  <div id="hero-art" class="hero-art" aria-hidden="true"><svg class="atlas-city" data-hero-drift="5" focusable="false" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 530" fill="none">
- <defs><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".8" fill="var(--palette-ink)" opacity=".16"/></pattern></defs>
+  <span class="hero-pointer-light" aria-hidden="true"></span><div id="hero-art" class="hero-art" aria-hidden="true"><svg class="atlas-city" data-hero-drift="5" focusable="false" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 530" fill="none">
+ <defs><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".8" fill="var(--palette-ink)" opacity=".16"/></pattern><clipPath id="hero-route-clip"><rect class="hero-route-mask" x="320" y="170" width="420" height="210"/></clipPath></defs>
  <path fill="url(#grid)" d="M0 0h1100v530H0z"/>
  <g stroke="var(--palette-sage)" stroke-width="1.2" opacity=".7">
   <path d="M-70 270C60 20 200 300 340 110S650 80 690 250s270 140 430 40"/>
@@ -65,16 +65,28 @@
   <path d="M-70 370C100 100 230 385 420 190S570 160 610 330s310 220 520 40"/>
   <path d="M-70 395C110 120 240 405 440 210S550 180 590 350s320 240 540 40"/>
  </g>
- <path d="M900-40C780 80 980 140 850 240S700 300 820 400s-70 120-80 180" stroke="var(--palette-sky)" stroke-width="54" opacity=".6"/>
+ <path d="M900-40C780 80 980 140 850 240S700 300 820 400s-70 120-80 180" stroke="var(--palette-sky)" stroke-width="54" opacity=".38" data-hero-drift="2"/>
  <path d="M900-40C780 80 980 140 850 240S700 300 820 400s-70 120-80 180" stroke="var(--palette-cream)" stroke-width="1.5" stroke-dasharray="4 8"/>
  <g transform="rotate(-14 550 280)">
-  <g fill="var(--palette-sky)" fill-opacity=".5" stroke="var(--palette-cream)" stroke-width="4">
-   <path d="M280 120h100v60H280zM400 120h70v60h-70zM490 120h110v60H490zM620 120h90v60h-90zM280 200h100v90H280zM400 200h70v90h-70zM490 200h110v90H490zM620 200h90v90h-90zM280 310h100v85H280zM400 310h70v85h-70zM490 310h110v85H490zM620 310h90v85h-90zM730 200h70v90h-70z"/>
+  <g fill="var(--palette-sky)" fill-opacity="1" stroke="var(--palette-cream)" data-hero-drift="4" stroke-width="4">
+   <rect class="city-block block-0" style="--block-order:0" x="280" y="120" width="100" height="60" rx="3"/>
+   <rect class="city-block block-1" style="--block-order:1" x="400" y="120" width="70" height="60" rx="3"/>
+   <rect class="city-block block-2" style="--block-order:2" x="490" y="120" width="110" height="60" rx="3"/>
+   <rect class="city-block block-0" style="--block-order:3" x="620" y="120" width="90" height="60" rx="3"/>
+   <rect class="city-block block-1" style="--block-order:4" x="280" y="200" width="100" height="90" rx="3"/>
+   <rect class="city-block block-2" style="--block-order:5" x="400" y="200" width="70" height="90" rx="3"/>
+   <rect class="city-block block-0" style="--block-order:6" x="490" y="200" width="110" height="90" rx="3"/>
+   <rect class="city-block block-1" style="--block-order:7" x="620" y="200" width="90" height="90" rx="3"/>
+   <rect class="city-block block-2" style="--block-order:8" x="280" y="310" width="100" height="85" rx="3"/>
+   <rect class="city-block block-0" style="--block-order:9" x="400" y="310" width="70" height="85" rx="3"/>
+   <rect class="city-block block-1" style="--block-order:10" x="490" y="310" width="110" height="85" rx="3"/>
+   <rect class="city-block block-2" style="--block-order:11" x="620" y="310" width="90" height="85" rx="3"/>
+   <rect class="city-block block-0" style="--block-order:12" x="730" y="200" width="70" height="90" rx="3"/>
   </g>
-  <circle cx="545" cy="250" r="122" fill="var(--palette-pink)" fill-opacity=".52" stroke="var(--palette-rosewood)" stroke-width="1.5"/>
+  <circle class="hero-radius-ring" cx="545" cy="250" r="122" fill="var(--palette-pink)" fill-opacity=".52" stroke="var(--palette-rosewood)" stroke-width="1.5"/>
   <circle cx="545" cy="250" r="91" stroke="var(--palette-rosewood)" stroke-opacity=".5"/>
   <circle cx="545" cy="250" r="58" fill="var(--palette-rosewood)" fill-opacity=".12" stroke="var(--palette-rosewood)" stroke-dasharray="3 5"/>
-  <path d="M330 355h60V190h155v60h175" stroke="var(--palette-rosewood-deep)" stroke-width="2" stroke-dasharray="5 6"/>
+  <path class="hero-route" clip-path="url(#hero-route-clip)" d="M330 355h60V190h155v60h175" stroke="var(--palette-rosewood-deep)" stroke-width="2" stroke-dasharray="5 6"/>
   <g fill="var(--palette-cream)" stroke="var(--palette-rosewood-deep)" stroke-width="2"><circle cx="330" cy="355" r="7"/><circle cx="720" cy="250" r="7"/></g>
   <circle cx="545" cy="250" r="17" fill="var(--palette-rosewood-deep)" stroke="var(--palette-cream)" stroke-width="5"/>
   <circle cx="545" cy="250" r="4" fill="var(--palette-cream)"/>
