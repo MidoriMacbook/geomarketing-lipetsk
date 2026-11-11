@@ -24,10 +24,10 @@ export function BlurText({ enabled }) {
     const start = () => { if (!active) return;
     try {
       // Адаптация целого абзаца без дублирования текста для экранного диктора и flex-элементов.
-      const from = {filter:'blur(3px)',opacity:.65,transform:'translateY(8px)'};
+      const from = {opacity:.65,transform:'translateY(8px)'};
       const steps = [
-        {filter:'blur(2px)',opacity:.75,transform:'translateY(-0.8px)'},
-        {filter:'blur(0px)',opacity:1,transform:'translateY(0px)'},
+        {opacity:.75,transform:'translateY(-0.8px)'},
+        {opacity:1,transform:'translateY(0px)'},
       ];
       animation = animate(el, buildKeyframes(from,steps), {duration:.45,delay:0,ease:'easeOut',times:[0,.5,1]});
       animation.then(restore);

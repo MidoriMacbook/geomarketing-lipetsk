@@ -24,10 +24,9 @@ export function SplitText({ enabled }) {
       if (!active || (document.fonts && document.fonts.status !== 'loaded')) return;
       const box = el.getBoundingClientRect();
       if (box.bottom <= 0 || box.top >= innerHeight) return;
-      // На телефоне используем готовые две строки: позднее дробление/слияние
+      // На телефоне заголовок полностью статичен: позднее дробление/слияние
       // большого заголовка создаёт новый LCP после загрузки React-острова.
       if(matchMedia('(max-width:600px)').matches){
-        intro=gsap.fromTo(el.children,{y:12},{y:0,duration:.5,ease:'power3.out',clearProps:'transform'});
         return;
       }
       try {

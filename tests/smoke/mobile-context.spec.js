@@ -98,6 +98,17 @@ test('Своя область различает применённый ради
   await page.getByRole('option', { name: /^1\s?500 м$/ }).click();
   await expect(page.locator('#mobile-settings-state')).toHaveText('Расчёт готов');
   await page.locator('#mobile-custom-map').click();
-  await page.locator('#map').click({ position: { x: 40, y: 270 } });
+  // После fitBounds прежние экранные координаты могут попасть в номерной пин.
+  // Выбор нового центра выполняем по свободной поверхности карты.
+  await page.locator('#map').click({position:{x:40,y:270},trial:true});
+  const freePosition=await page.locator('#map').evaluate(map=>{
+    const r=map.getBoundingClientRect();
+    for(const [x,y] of [[40,200],[300,180],[170,140]]){
+      const hit=document.elementFromPoint(r.x+x,r.y+y);
+      if(hit&&map.contains(hit)&&!hit.closest('.leaflet-marker-icon,.leaflet-control'))return {x,y};
+    }
+    throw new Error('Нет свободной поверхности карты для выбора центра');
+  });
+  await page.locator('#map').click({position:freePosition});
   await expect(page.locator('#mobile-settings-state')).toHaveText('Выполните расчёт — параметры изменены');
 });

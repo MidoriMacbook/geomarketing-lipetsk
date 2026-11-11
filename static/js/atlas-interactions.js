@@ -13,7 +13,7 @@ document.addEventListener('visibilitychange',visibility);visibility();updateProg
 document.addEventListener('click',event=>{
  const target=event.target.closest('.button');
  if(!target||target.disabled||motionReduced())return;
- animateUI(target,[{boxShadow:'0 0 0 0 var(--color-glow)'},{boxShadow:'0 0 0 8px transparent'}],'press-ring',{duration:350});
+ animateUI(target,[{opacity:.75},{opacity:1}],'press-ring',{duration:350});
 });
 
 const sheet=document.getElementById('recommendations'),map=document.getElementById('map-card');
