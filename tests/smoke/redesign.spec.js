@@ -18,9 +18,9 @@ test('мобильные параметры, меню и три положени
  await expect(page.locator('#nav-toggle')).toBeFocused();
  await page.locator('#map-card').scrollIntoViewIfNeeded();
  await expect(page.locator('#recommendations')).toHaveAttribute('data-sheet-active','true');
- await page.getByRole('button',{name:'Развернуть результаты полностью'}).click();
+ await page.getByRole('button',{name:'Все — развернуть результаты полностью'}).click();
  await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','full');
- await page.getByRole('button',{name:'Свернуть результаты'}).click();
+ await page.getByRole('button',{name:'Карта — свернуть результаты'}).click();
  await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','collapsed');
  await page.locator('#mobile-settings-open').click();
  await expect(page.locator('#mobile-settings-dialog')).toBeVisible();
@@ -60,13 +60,13 @@ test('быстрые переключения, перетаскивание и �
  await expect(page.locator('html')).toHaveAttribute('data-nav-open','false');
  expect(await page.locator('main').evaluate(el=>el.inert)).toBe(false);
  await page.locator('#map-card').scrollIntoViewIfNeeded();
- await page.getByRole('button',{name:'Развернуть результаты полностью'}).click();
+ await page.getByRole('button',{name:'Все — развернуть результаты полностью'}).click();
  const handle=page.locator('.sheet-handle');await handle.click({trial:true});const box=await handle.boundingBox();
  await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();
  await page.mouse.move(box.x+box.width/2,820,{steps:12});await page.mouse.up();
  await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','collapsed');
  await page.emulateMedia({reducedMotion:'reduce'});
- await page.getByRole('button',{name:'Развернуть результаты полностью'}).click();
+ await page.getByRole('button',{name:'Все — развернуть результаты полностью'}).click();
  await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','full');
  await page.locator('#recommendations-context').click();
  await page.locator('#display-options-summary').click();

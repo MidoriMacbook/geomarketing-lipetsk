@@ -80,7 +80,7 @@ test('Мобильное меню, настройки и повторный ра
   await expect(page.locator('#mobile-settings-dialog')).not.toBeVisible();
   await expect(page.locator('#mobile-settings-open')).toBeFocused();
   await page.locator('#map-card').scrollIntoViewIfNeeded();
-  await page.getByRole('button',{name:'Развернуть результаты полностью'}).click();
+  await page.getByRole('button',{name:'Все — развернуть результаты полностью'}).click();
   await page.getByTestId('recommendation-card').nth(1).locator('.mobile-rec-toggle').click();
   await expect(page.getByTestId('recommendation-card').nth(1)).toHaveAttribute('data-mobile-expanded', 'true');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();

@@ -131,7 +131,7 @@ details[data-workspace-disclosure][open]:not([data-expanded=false])>.workspace-d
 .confirmation-space,.comparison-caption-space { visibility:hidden; }
 .confirmation-space::before,.comparison-caption-space::before { content:attr(data-text); }
 .recommendation .decision-reasons { display:block; margin-top:var(--space-3); font-size:var(--text-xs); line-height:1.5; }
-.decision-reasons h4 { margin:0; font-size:inherit; line-height:inherit; font-weight:600; }
+.decision-reasons h3 { margin:0; font-size:inherit; line-height:inherit; font-weight:600; }
 .decision-headline { margin-top:var(--space-1); font-weight:500; }
 .decision-reasons ul { list-style:none; padding:0; margin:var(--space-1) 0 0; }
 .decision-reasons li { color:var(--color-muted); }

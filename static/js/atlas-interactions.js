@@ -20,7 +20,7 @@ const sheet=document.getElementById('recommendations'),map=document.getElementBy
 new IntersectionObserver(([entry])=>{sheet.dataset.motionVisible=String(entry.isIntersecting);}).observe(sheet);
 const mobile=matchMedia('(max-width:600px)');
 const controls=document.createElement('div');controls.className='sheet-controls';
-controls.innerHTML='<button class="sheet-handle" type="button" aria-label="Изменить высоту результатов"></button><button type="button" data-snap="collapsed" aria-label="Свернуть результаты">Карта</button><button type="button" data-snap="half" aria-label="Показать половину панели результатов">Места</button><button type="button" data-snap="full" aria-label="Развернуть результаты полностью">Все</button>';
+controls.innerHTML='<button class="sheet-handle" type="button" aria-label="Изменить высоту результатов"></button><button type="button" data-snap="collapsed" aria-label="Карта — свернуть результаты">Карта</button><button type="button" data-snap="half" aria-label="Места — показать половину панели результатов">Места</button><button type="button" data-snap="full" aria-label="Все — развернуть результаты полностью">Все</button>';
 sheet.prepend(controls);
 const handle=controls.querySelector('.sheet-handle');
 const home=document.createElement('div');home.className='sheet-home';sheet.before(home);home.append(sheet);

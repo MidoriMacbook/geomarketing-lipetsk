@@ -172,7 +172,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     score.setAttribute('aria-label',`${scoreText(rec.score)} — ${SCORE_NOTE}`);
     toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference',`≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов`));
     const reasons=node('section','mobile-reasons decision-reasons'),reasonList=node('ul');
-    reasons.append(node('h4','','Почему это место'),node('p','decision-headline',recommendationBrief(rec).demand),reasonList);
+    reasons.append(node('h3','','Почему это место'),node('p','decision-headline',recommendationBrief(rec).demand),reasonList);
     // Население уже показано крупно в метриках: это та же фактическая причина,
     // а не второй экземпляр числа в списке. Остальные причины — максимум две.
     decision.reasons.filter(text=>!text.startsWith('≈ ')).forEach(text=>reasonList.append(node('li','',text)));
@@ -243,7 +243,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     briefDetails.append(node('summary', '', 'Подробнее о месте'));
     const explanation = explanationBlock(rec,{compact:true});
     const check = node('p','mobile-field-check',recommendationBrief(rec).check);
-    briefDetails.append(node('h4','','Проверить на месте'),check);
+    briefDetails.append(node('h3','','Проверить на месте'),check);
     const secondaryActions=node('div','mobile-save-secondary'),compare=button('Сравнить','compare-saved-link',openSavedComparison);compare.hidden=true;secondaryActions.append(compare);
     const savedId=`${data.analysis_id}:${rec.rank}`;if(state.saved.some(item=>item.id===savedId))card.dataset.savedFeedbackId=savedId;
     card.append(toggle, body);
