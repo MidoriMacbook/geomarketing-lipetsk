@@ -25,6 +25,15 @@ sheet.prepend(controls);
 const handle=controls.querySelector('.sheet-handle');
 const home=document.createElement('div');home.className='sheet-home';sheet.before(home);home.append(sheet);
 let snap='collapsed',active=false,drag=null,scrollFrame=0,suppressHandleClick=false,viewportKey='';
+let settleTimer=0;
+function settleSheet(){
+ clearTimeout(settleTimer);
+ if(active&&snap!=='collapsed')sheet.style.setProperty('--sheet-content-visible',sheet.style.getPropertyValue('--sheet-visible'));
+ delete sheet.dataset.moving;delete root.dataset.sheetGesture;
+ document.getElementById('map').style.removeProperty('--map-gesture-height');
+ document.dispatchEvent(new CustomEvent('gm:sheet-settled',{detail:{active,snap}}));
+}
+sheet.addEventListener('transitionend',event=>{if(event.target===sheet&&event.propertyName==='transform')settleSheet();});
 function offsets(){
  const height=sheet.getBoundingClientRect().height;
  return {collapsed:Math.max(0,height-112),half:Math.max(0,height-innerHeight*.48),full:0};
@@ -37,7 +46,15 @@ function setSnap(value){
   sheet.style.setProperty('--sheet-visible',`${sheet.getBoundingClientRect().height-offset}px`);
  }
  const nextKey=[active,snap,innerWidth,innerHeight].join(':');
- if(nextKey!==viewportKey){viewportKey=nextKey;document.dispatchEvent(new CustomEvent('gm:sheet-position',{detail:{active,snap}}));}
+ if(nextKey!==viewportKey){
+  viewportKey=nextKey;clearTimeout(settleTimer);
+  const visible=parseFloat(sheet.style.getPropertyValue('--sheet-visible'))||0;
+  const previous=parseFloat(sheet.style.getPropertyValue('--sheet-content-visible'))||visible;
+  sheet.style.setProperty('--sheet-content-visible',`${Math.max(previous,visible)}px`);
+  sheet.dataset.moving='true';
+  document.dispatchEvent(new CustomEvent('gm:sheet-position',{detail:{active,snap}}));
+  if(!active||motionReduced())settleSheet();else settleTimer=setTimeout(settleSheet,420);
+ }
  const collapsed=active&&snap==='collapsed';
  const busy=['calculating','refreshing'].includes(root.dataset.analysisState);
  [...sheet.children].filter(el=>el!==controls&& !el.classList.contains('section-heading')).forEach(el=>{el.inert=collapsed||(el.id==='result'&&busy);});
@@ -73,6 +90,8 @@ handle.addEventListener('pointerdown',event=>{
  const visualOffset=new DOMMatrixReadOnly(getComputedStyle(sheet).transform).m42;
  drag={id:event.pointerId,y:event.clientY,offset:visualOffset,moved:false};
  handle.setPointerCapture(event.pointerId);sheet.dataset.dragging='true';
+ root.dataset.sheetGesture='true';
+ document.getElementById('map').style.setProperty('--map-gesture-height',`${document.getElementById('map').getBoundingClientRect().height}px`);
  sheet.style.setProperty('--sheet-offset',`${visualOffset}px`);
 });
 handle.addEventListener('pointermove',event=>{
@@ -84,12 +103,16 @@ handle.addEventListener('pointermove',event=>{
 function endDrag(event){
  if(!drag||drag.id!==event.pointerId)return;
  const current=drag;delete sheet.dataset.dragging;suppressHandleClick=current.moved;
+ viewportKey='';
  if(current.moved)setSnap(Object.entries(offsets()).sort((a,b)=>Math.abs(a[1]-current.next)-Math.abs(b[1]-current.next))[0][0]);
  else setSnap(snap);
  // Синтетический click после перетаскивания не переключает положение ещё раз.
  drag=null;
 }
 handle.addEventListener('pointerup',endDrag);handle.addEventListener('pointercancel',endDrag);
+const preventGestureScroll=event=>{if(drag&&event.cancelable)event.preventDefault();};
+window.addEventListener('touchmove',preventGestureScroll,{passive:false});
+window.addEventListener('wheel',preventGestureScroll,{passive:false});
 window.addEventListener('scroll',()=>{if(!scrollFrame)scrollFrame=requestAnimationFrame(sync);},{passive:true});
 window.addEventListener('resize',sync);mobile.addEventListener('change',sync);
 new ResizeObserver(()=>{if(!scrollFrame)scrollFrame=requestAnimationFrame(sync);}).observe(document.getElementById('workspace'));
@@ -105,5 +128,5 @@ document.addEventListener('focusin',event=>{
 });
 window.addEventListener('beforeprint',()=>{active=false;sheet.dataset.sheetActive='false';home.style.minHeight='';setSnap('collapsed');});
 window.addEventListener('afterprint',sync);
-matchMedia('(prefers-reduced-motion:reduce)').addEventListener('change',()=>{drag=null;delete sheet.dataset.dragging;sync();});
+matchMedia('(prefers-reduced-motion:reduce)').addEventListener('change',()=>{drag=null;delete sheet.dataset.dragging;settleSheet();sync();});
 sync();

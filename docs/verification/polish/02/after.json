@@ -1,0 +1,10 @@
+{
+  "point": "02",
+  "phase": "after",
+  "cpu": 4,
+  "moving": {
+    "visibility": "visible",
+    "height": 556.9999389648438,
+    "scrollTop": 0
+  }
+}

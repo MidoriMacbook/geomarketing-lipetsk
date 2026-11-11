@@ -268,13 +268,13 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  #recommendations[data-sheet-active=true] { position:fixed; z-index:800; left:0; bottom:0; width:100%; height:calc(100dvh - var(--header-offset,80px) - 28px); max-height:none; border-radius:24px 24px 0 0; box-shadow:var(--shadow-dialog); padding:12px 16px max(16px,env(safe-area-inset-bottom)); transform:translateY(var(--sheet-offset,0px)); transition:transform 360ms var(--ease-emphasized); }
  #recommendations[data-sheet-active=true][data-dragging=true] { transition:none; }
  #recommendations[data-sheet-active=true]>.section-heading { display:none; }
- #recommendations[data-sheet-active=true] #result { overflow-y:auto; overscroll-behavior:contain; padding-bottom:24px; max-height:calc(var(--sheet-visible,100dvh) - 164px); flex:1 1 auto; }
+ #recommendations[data-sheet-active=true] #result { overflow-y:auto; overscroll-behavior:contain; padding-bottom:24px; max-height:calc(var(--sheet-content-visible,100dvh) - 164px); flex:1 1 auto; }
  #recommendations #result>.section-note { font-size:13px; margin-bottom:8px; }
  #recommendations #result>.recommendation-data-note { font-size:13px; margin-bottom:12px; }
  #recommendations .mobile-save-secondary .mobile-show-place { width:100%; padding:10px 14px; border:1px solid var(--color-border); background:var(--color-page); font-size:14px; }
  #map-card .map-legend>[data-layer] { min-height:44px; padding:6px 8px; }
  #recommendations[data-sheet-active=true][data-snap=collapsed]>.section-heading { margin-bottom:0; }
- #recommendations[data-sheet-active=true][data-snap=collapsed]>:not(.sheet-controls):not(.section-heading) { visibility:hidden; }
+ html[data-sheet-gesture=true] #map { height:var(--map-gesture-height); min-height:var(--map-gesture-height); flex-basis:var(--map-gesture-height); }
  html[data-atlas-sheet=true] .page { padding-bottom:150px; }
  .saved-section,.scenarios-section { padding:16px; }
 }

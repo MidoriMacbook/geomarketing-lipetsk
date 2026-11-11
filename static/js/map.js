@@ -115,6 +115,7 @@ export function initMap() {
   });
   let resizeFrame = null, lastWidth = 0, lastHeight = 0;
   const resizeMap = () => {
+    if(document.documentElement.dataset.sheetGesture==='true')return;
     if (resizeFrame !== null) return;
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = null;
@@ -127,6 +128,9 @@ export function initMap() {
   };
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resizeMap).observe(map.getContainer());
   window.addEventListener('resize', resizeMap);
+  document.addEventListener('gm:sheet-settled',()=>{
+    map.invalidateSize({pan:true,animate:false,debounceMoveend:true});
+  });
   matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
     if (event.matches) { map.stop(); syncMapLayers(false); }
   });
