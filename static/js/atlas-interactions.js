@@ -64,10 +64,8 @@ const noteDetails=document.createElement('details');noteDetails.className='resul
 const noteSummary=document.createElement('summary');noteSummary.textContent='Оценка и данные';noteDetails.append(noteSummary);
 function sync(){
  scrollFrame=0;
- if(mobile.matches){
-  if(!noteDetails.isConnected)document.getElementById('recommendation-list').before(noteDetails);
-  for(const {note} of notes)if(note.parentElement!==noteDetails)noteDetails.append(note);
- }else{for(const {note,home} of notes)if(note.parentElement!==sheet)home.after(note);noteDetails.remove();}
+ if(!noteDetails.isConnected)document.getElementById('recommendation-list').before(noteDetails);
+ for(const {note} of notes)if(note.parentElement!==noteDetails)noteDetails.append(note);
  const rect=map.getBoundingClientRect(),header=document.getElementById('site-header').getBoundingClientRect().bottom;
  const largeText=parseFloat(getComputedStyle(root).fontSize)>22;
  root.dataset.largeText=String(largeText);

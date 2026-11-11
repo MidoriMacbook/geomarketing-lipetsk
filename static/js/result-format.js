@@ -1,4 +1,4 @@
-export const SCORE_NOTE = 'Баллы сравнивают точки только внутри этого расчёта. Это не вероятность успеха.';
+export const SCORE_NOTE = 'Баллы сравнивают точки только внутри этого расчёта.';
 export const OSM_LIMITATION = 'OpenStreetMap может быть неполной или устаревшей. Оценка жителей не является переписью населения.';
 export const scoreValue = value => Number.isFinite(value) && value >= 0 && value <= 1 ? Math.round(value * 100) : null;
 export const scoreText = value => scoreValue(value) === null ? 'Не оценено' : `${scoreValue(value)} из 100`;
