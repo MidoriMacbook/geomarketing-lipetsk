@@ -1,0 +1,25 @@
+{
+  "point": "03",
+  "phase": "after",
+  "cpu": 4,
+  "links": [
+    {
+      "text": "Карта и анализ",
+      "radius": "12px",
+      "clip": "none",
+      "background": "rgb(247, 200, 211)"
+    },
+    {
+      "text": "Сохранённые 0",
+      "radius": "12px",
+      "clip": "none",
+      "background": "rgb(253, 238, 223)"
+    },
+    {
+      "text": "Как это работает",
+      "radius": "12px",
+      "clip": "none",
+      "background": "rgb(253, 238, 223)"
+    }
+  ]
+}

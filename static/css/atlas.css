@@ -157,7 +157,8 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .site-header,.site-header.is-scrolled { padding:8px 12px; min-height:60px; }
  .header-cta { display:none; }
  .site-header #nav-menu { border:0; padding:12px; border-radius:22px; top:calc(100% + 10px); background:var(--color-page); }
- .site-header #nav-menu .nav-items { gap:8px; }
+ .site-header #nav-menu .nav-items { gap:8px; border-radius:0; clip-path:none; }
+ .site-header #nav-menu .nav-items .active { background:var(--palette-pink); color:var(--palette-ink); }
  .site-header #nav-menu :is(a,button) { width:100%; border-radius:12px; }
  .nav-open .nav-items>a,.nav-open .nav-items>button { animation:loading-enter 350ms var(--ease-emphasized) both; }
  .nav-open .nav-items>:nth-child(3) { animation-delay:40ms; }

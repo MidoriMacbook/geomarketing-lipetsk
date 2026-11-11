@@ -17,5 +17,10 @@ try{
   metrics.moving=await page.locator('#result').evaluate(el=>({visibility:getComputedStyle(el).visibility,height:el.getBoundingClientRect().height,scrollTop:el.scrollTop}));
   await page.screenshot({path:`${dir}/${phase}-375-moving.png`});
  }
+ if(point==='03'){
+  await page.locator('#nav-toggle').click();await page.waitForTimeout(600);
+  metrics.links=await page.locator('#nav-menu a:visible').evaluateAll(links=>links.map(el=>{const s=getComputedStyle(el);return {text:el.textContent,radius:s.borderRadius,clip:s.clipPath,background:s.backgroundColor};}));
+  await page.screenshot({path:`${dir}/${phase}-375.png`});
+ }
  await writeFile(`${dir}/${phase}.json`,JSON.stringify(metrics,null,2)+'\n');
 }finally{await browser.close();}
