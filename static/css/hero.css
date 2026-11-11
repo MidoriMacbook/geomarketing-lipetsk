@@ -68,7 +68,7 @@
  .site-header nav { width:100%; border-top:var(--line) solid var(--color-line); padding-top:var(--space-2); }
  .site-header:not([data-navigation-ready]) { position:relative; }
  .header-reserve:has(.site-header:not([data-navigation-ready])) { height:auto; }
- .site-header[data-navigation-ready] #nav-toggle { display:inline-flex; align-items:center; justify-content:center; }
+ .site-header #nav-toggle { display:inline-flex; align-items:center; justify-content:center; }
  .site-header #nav-menu a,.site-header #nav-menu button { padding:var(--space-3); min-height:var(--size-target); }
  .page { padding-top:0; }
  .intro.editorial-hero { min-height:430px; grid-template-columns:minmax(0,1.2fr) minmax(0,.85fr); gap:var(--space-4); padding-top:var(--space-8); margin-bottom:var(--space-5); }

@@ -40,17 +40,10 @@
 .city-block.block-0 { fill:var(--palette-sage); }
 .city-block.block-1 { fill:var(--palette-sky); }
 .city-block.block-2 { fill:var(--palette-pink); }
-.city-motion-intro .hero-art .city-block { animation:city-block-in 650ms var(--ease-emphasized) both paused; animation-delay:calc(var(--block-order)*45ms); transform-box:fill-box; transform-origin:center; }
 .city-motion-intro .hero-art .hero-radius-ring { transform-box:fill-box; transform-origin:center; animation:city-radius-breathe 3.6s ease-in-out infinite paused; }
-.city-motion-intro .hero-art .hero-route-mask { fill:var(--palette-cream); transform-box:fill-box; transform-origin:left; animation:city-route-reveal 1.8s var(--ease-emphasized) both paused; }
-.city-motion-active .hero-art :is(.city-block,.hero-radius-ring,.hero-route-mask) { animation-play-state:running; }
-@keyframes city-block-in { from { opacity:0; transform:translateY(10px) scale(.96); } to { opacity:1; transform:none; } }
+.city-motion-active .hero-art .hero-radius-ring { animation-play-state:running; }
 @keyframes city-radius-breathe { 0%,100% { opacity:.65; transform:scale(.97); } 50% { opacity:1; transform:scale(1.04); } }
-@keyframes city-route-reveal { from { transform:scaleX(0); } to { transform:scaleX(1); } }
 .hero-art .atlas-city { width:100%; height:100%; max-height:none; }
-.city-motion-active .hero-art .atlas-city { animation:atlas-drift 4.5s var(--ease-emphasized) both; }
-.hero-art .atlas-city { animation-play-state:paused; }
-@keyframes atlas-drift { from { transform:translateY(12px) scale(.97); opacity:.5; } to { transform:none; opacity:1; } }
 .atlas-pin-label { position:absolute; top:62%; left:40%; font:500 .8125rem var(--font-mono); padding:8px 12px; background:var(--color-page); border:1px solid var(--color-line); border-radius:99px; transform:rotate(-7deg); }
 .atlas-coordinates { position:relative; z-index:2; display:flex; justify-content:space-between; gap:16px; margin:12px 0 20px; color:var(--color-muted); font:400 .8125rem var(--font-mono); }
 .atlas-coordinates a { text-decoration:none; }
@@ -231,8 +224,8 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .hero-steps h2 { font-size:1rem; line-height:1.12; margin:8px 0 0; text-wrap:wrap; }
  .hero-steps p { display:none; }
  .analysis-context-row { padding-top:12px; }
- html[data-mobile-has-result=false] .kpis { display:grid; visibility:hidden; }
- html[data-mobile-has-result=false] #area-details { display:block; visibility:hidden; }
+ html[data-mobile-has-result=false] .workspace>.kpis { display:grid; visibility:hidden; }
+ html[data-mobile-has-result=false] .workspace>#area-details { display:block; visibility:hidden; }
  .kpis { grid-template-columns:1fr 1fr; margin:8px 0; }
  .kpis>.kpi-card,.kpis>.kpi-card:first-child { padding:12px; background:transparent; border:0; }
  .kpis .kpi-card small { display:none; }
@@ -292,3 +285,12 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .method-steps .atlas-step { font-size:13px; }
 }
 @media print { #reading-progress,#nav-backdrop,.sheet-controls { display:none!important; } #recommendations[data-sheet-active] { position:static!important; transform:none!important; } }
+
+/* Одинаковая мобильная компоновка до и после загрузки модулей. */
+@media (max-width:600px) {
+ .page>.analysis-context-row,.page>.kpis,.page>#area-details,.workspace>#settings { display:none; }
+ .map-heading>.trust-status { display:none; }
+ #mobile-settings-open { min-height:108px; }
+ #mobile-settings-selection { min-height:2.9em; }
+ #mobile-settings-state { min-height:2.9em; }
+}
