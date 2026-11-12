@@ -34,7 +34,12 @@ test('касание ручки двигает панель, а касание �
  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
  await expect(sheet).toHaveAttribute('data-snap','full');
  expect(await page.evaluate(()=>scrollY)).toBe(scroll);
- await page.locator('button[data-snap=collapsed]').click();
+ const fullHandle=await handle.boundingBox(),fullStart={x:fullHandle.x+fullHandle.width/2,y:fullHandle.y+fullHandle.height/2};
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[fullStart]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:fullStart.x,y:800}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ await expect(sheet).toHaveAttribute('data-snap','collapsed');
+ expect(await page.evaluate(()=>scrollY)).toBe(scroll);
  const mapBox=await page.locator('#map').boundingBox(),start={x:mapBox.x+100,y:mapBox.y+100};
  const before=await pane.evaluate(el=>el.style.transform);
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[start]});

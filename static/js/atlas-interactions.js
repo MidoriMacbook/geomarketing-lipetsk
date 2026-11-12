@@ -112,7 +112,10 @@ function endDrag(event){
  if(event.type==='pointercancel')setSnap(current.snap);
  else if(current.moved&&Math.abs(current.next-current.offset)>70){
   const steps=['full','half','collapsed'],direction=current.next>current.offset?1:-1;
-  setSnap(steps[Math.max(0,Math.min(2,steps.indexOf(current.snap)+direction))]);
+  const nearest=Object.entries(offsets()).sort((a,b)=>Math.abs(a[1]-current.next)-Math.abs(b[1]-current.next))[0][0];
+  const adjacent=Math.max(0,Math.min(2,steps.indexOf(current.snap)+direction));
+  // Короткий уверенный жест проходит хотя бы один шаг; длинный доходит до края.
+  setSnap(steps[direction>0?Math.max(adjacent,steps.indexOf(nearest)):Math.min(adjacent,steps.indexOf(nearest))]);
  }
  else if(current.moved)setSnap(Object.entries(offsets()).sort((a,b)=>Math.abs(a[1]-current.next)-Math.abs(b[1]-current.next))[0][0]);
  else setSnap(snap);
