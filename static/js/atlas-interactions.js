@@ -93,7 +93,7 @@ handle.addEventListener('pointerdown',event=>{
  if(!active||event.button!==0)return;
  suppressHandleClick=false;
  const visualOffset=new DOMMatrixReadOnly(getComputedStyle(sheet).transform).m42;
- drag={id:event.pointerId,y:event.clientY,offset:visualOffset,moved:false};
+ drag={id:event.pointerId,y:event.clientY,offset:visualOffset,snap,moved:false};
  handle.setPointerCapture(event.pointerId);sheet.dataset.dragging='true';
  root.dataset.sheetGesture='true';
  document.getElementById('map').style.setProperty('--map-gesture-height',`${document.getElementById('map').getBoundingClientRect().height}px`);
@@ -109,7 +109,12 @@ function endDrag(event){
  if(!drag||drag.id!==event.pointerId)return;
  const current=drag;delete sheet.dataset.dragging;suppressHandleClick=current.moved;
  viewportKey='';
- if(current.moved)setSnap(Object.entries(offsets()).sort((a,b)=>Math.abs(a[1]-current.next)-Math.abs(b[1]-current.next))[0][0]);
+ if(event.type==='pointercancel')setSnap(current.snap);
+ else if(current.moved&&Math.abs(current.next-current.offset)>70){
+  const steps=['full','half','collapsed'],direction=current.next>current.offset?1:-1;
+  setSnap(steps[Math.max(0,Math.min(2,steps.indexOf(current.snap)+direction))]);
+ }
+ else if(current.moved)setSnap(Object.entries(offsets()).sort((a,b)=>Math.abs(a[1]-current.next)-Math.abs(b[1]-current.next))[0][0]);
  else setSnap(snap);
  // Синтетический click после перетаскивания не переключает положение ещё раз.
  drag=null;
