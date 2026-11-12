@@ -1,5 +1,17 @@
 import {test,expect} from '@playwright/test';
 
+test('долгое первое подключение использует существующую строку статуса',async({page,baseURL})=>{
+ await page.setViewportSize({width:375,height:812});
+ await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
+ let release;const gate=new Promise(resolve=>release=resolve);
+ await page.route('**/api/calculate?**',async r=>{await gate;await r.continue();});
+ await page.goto('/');const before=await page.locator('#mobile-settings-bar').boundingBox();
+ await expect(page.locator('#mobile-settings-state')).toHaveText('Сервис просыпается…',{timeout:6000});
+ expect((await page.locator('#mobile-settings-bar').boundingBox()).height).toBeCloseTo(before.height,0);
+ release();await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ await expect(page.locator('#mobile-settings-state')).toHaveText('Расчёт готов');
+});
+
 test('радиус выбранного места и четыре слоя помещаются над панелью',async({page,baseURL})=>{
  await page.setViewportSize({width:375,height:812});await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
  const errors=[];page.on('pageerror',error=>errors.push(error.message));

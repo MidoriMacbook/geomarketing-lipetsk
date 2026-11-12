@@ -7,9 +7,14 @@ try{
  const page=await browser.newPage({viewport:{width:375,height:812},isMobile:true,hasTouch:true});
  const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
  if(point==='05')await page.route('https://tile.openstreetmap.org/**',()=>new Promise(()=>{}));
+ if(point==='06')await page.route('**/api/calculate?**',()=>new Promise(()=>{}));
  await page.goto(process.env.PREVIEW_URL||'http://127.0.0.1:5057',{waitUntil:'domcontentloaded'});
- await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');await page.evaluate(()=>document.fonts.ready);
+ if(point!=='06')await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');await page.evaluate(()=>document.fonts.ready);
  const metrics={point,phase,cpu:4};
+ if(point==='06'){
+  await page.waitForTimeout(4000);await page.locator('#mobile-settings-bar').scrollIntoViewIfNeeded();
+  metrics.text=await page.locator('#mobile-settings-state').innerText();await page.screenshot({path:`${dir}/${phase}-375.png`});
+ }
  if(point==='07'){
   for(const width of [375,768]){
    await page.setViewportSize({width,height:812});await page.waitForTimeout(400);
