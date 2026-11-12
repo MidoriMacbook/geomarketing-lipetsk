@@ -20,6 +20,6 @@ try{
  await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success',null,{timeout:90000});
  await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(5000);
  await page.screenshot({path:`${dir}/${phase}-375-ready.png`});
- const result=await page.evaluate(()=>({shifts:polishShifts,frames:polishFrames,cls:polishShifts.reduce((n,e)=>n+e.value,0),navigation:performance.getEntriesByType('navigation')[0].toJSON()}));
+ const result=await page.evaluate(()=>({shifts:polishShifts,frames:polishFrames.filter((f,i,a)=>i===0||i===a.length-1||f.workspace!==a[i-1].workspace||f.menu!==a[i-1].menu||f.artOpacity!==a[i-1].artOpacity),cls:polishShifts.reduce((n,e)=>n+e.value,0),navigation:performance.getEntriesByType('navigation')[0].toJSON()}));
  await writeFile(`${dir}/${phase}-loading.json`,JSON.stringify({url,network:'Fast 3G: 1.6 Mbps / 750 Kbps, latency 150 ms',cpu:4,...result},null,2)+'\n');console.log({phase,cls:result.cls,first:result.frames[0],last:result.frames.at(-1),shifts:result.shifts});
 }finally{await browser.close();}

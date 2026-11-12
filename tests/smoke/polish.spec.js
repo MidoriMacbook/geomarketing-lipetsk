@@ -1,5 +1,17 @@
 import {test,expect} from '@playwright/test';
 
+test('задержанные стили и модули не сдвигают рабочую область',async({page,baseURL})=>{
+ await page.setViewportSize({width:375,height:812});
+ await page.addInitScript(()=>{window.shifts=[];new PerformanceObserver(list=>{for(const e of list.getEntries())if(!e.hadRecentInput)window.shifts.push(e.value);}).observe({type:'layout-shift',buffered:true});});
+ await page.route('**/*',async r=>{
+  if(new URL(r.request().url()).origin!==baseURL)return r.abort();
+  if(['script','font'].includes(r.request().resourceType()))await new Promise(resolve=>setTimeout(resolve,350));
+  return r.continue();
+ });
+ await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(400);
+ expect(await page.evaluate(()=>window.shifts.reduce((a,b)=>a+b,0))).toBeLessThan(.05);
+});
+
 test('долгое первое подключение использует существующую строку статуса',async({page,baseURL})=>{
  await page.setViewportSize({width:375,height:812});
  await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
