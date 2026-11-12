@@ -11,6 +11,19 @@ try{
  await page.goto(process.env.PREVIEW_URL||'http://127.0.0.1:5057',{waitUntil:'domcontentloaded'});
  if(point!=='06')await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');await page.evaluate(()=>document.fonts.ready);
  const metrics={point,phase,cpu:4};
+ if(point==='14'){
+  for(const area of ['eleytsky','center']){
+   if(area==='center'){
+    await page.locator('#mobile-settings-open').click();await page.locator('#district-trigger').click();await page.getByRole('option',{name:'Центр (Быханов сад)',exact:true}).click();await page.locator('#run').click();await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');
+   }
+   await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('[data-snap=full]').click();await page.waitForTimeout(500);
+   metrics[area]=await page.getByTestId('recommendation-card').count();await page.screenshot({path:`${dir}/${phase}-${area}-375.png`});
+   if(area==='eleytsky'){
+    await page.getByTestId('recommendation-card').nth(1).locator('.mobile-rec-toggle').click();await page.getByTestId('recommendation-card').nth(1).scrollIntoViewIfNeeded();await page.waitForTimeout(400);await page.screenshot({path:`${dir}/${phase}-difference-375.png`});
+    await page.locator('[data-snap=collapsed]').click();
+   }
+  }
+ }
  if(point==='06'){
   await page.waitForTimeout(4000);await page.locator('#mobile-settings-bar').scrollIntoViewIfNeeded();
   metrics.text=await page.locator('#mobile-settings-state').innerText();await page.screenshot({path:`${dir}/${phase}-375.png`});

@@ -67,6 +67,8 @@
 .workspace { grid-template-columns:260px minmax(0,1fr); align-items:start; gap:20px; }
 .settings { grid-row:1 / span 2; max-height:none; overflow:visible; scrollbar-gutter:auto; padding:22px; background:var(--palette-sage-soft); box-shadow:none; }
 .map-card { grid-column:2; overflow:hidden; border-radius:20px; box-shadow:none; }
+.place-difference { margin-block:12px; padding-left:12px; border-left:2px solid var(--palette-sage); font-size:14px; line-height:1.5; color:var(--color-ink); }
+#selection-note { margin:12px 0; line-height:1.5; }
 #map { min-height:510px; height:510px; flex-basis:510px; }
 .map-heading { background:var(--color-page); }
 .recommendations { grid-column:2; max-height:none; padding:24px 0; border:0; border-top:1px solid var(--color-line); border-radius:0; background:transparent; box-shadow:none; }

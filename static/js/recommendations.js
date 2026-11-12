@@ -1,4 +1,4 @@
-import { scoreText, SCORE_NOTE } from './result-format.js';
+import { scoreText, SCORE_NOTE, placeDifference } from './result-format.js';
 import { state } from './state.js';
 import { deliverySummary } from './data-delivery.js';
 import { $, fmt, coords, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin, animateUI, cancelUI, motionReduced } from './ui.js';
@@ -37,13 +37,13 @@ function arrangeMobileCard(entry) {
     brief.hidden = false;
     briefDetails.append(brief,placeDetails,explanation);
     secondaryActions.prepend(showOnMap);
-    content.append(heading,metrics,reasons,actions,confirmation,secondaryActions,briefDetails);
+    content.append(heading,metrics,reasons,entry.difference,actions,confirmation,secondaryActions,briefDetails);
     placeDetails.open = false;
     briefDetails.open = false;
   } else {
     brief.hidden = false;
     actions.append(save, copy, osm);
-    content.append(heading, coordinate, metrics, reasons, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,secondaryActions);
+    content.append(heading, coordinate, metrics, reasons, entry.difference, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,secondaryActions);
     placeDetails.open = true;
     briefDetails.open = true;
   }
@@ -135,6 +135,11 @@ export function showResult(data, { freshCalculation=false } = {}) {
   if (previewCard) previewPlace(previewCard, +previewCard.dataset.rank, false);
   mobileCards.clear();
   $('recommendation-list').replaceChildren();
+  let selectionNote=$('selection-note');
+  if(!selectionNote){selectionNote=node('p','hint');selectionNote.id='selection-note';$('recommendation-list').before(selectionNote);}
+  const independent=data.recommendations[0]?.selection_method==='cluster_maxima_v1'&&data.recommendations.length<3;
+  selectionNote.hidden=!independent;
+  selectionNote.textContent=independent?`По текущей модели в области нет трёх независимых зон. Найдено мест: ${data.recommendations.length}. Близкие варианты с общими жителями исключены.`:'';
   $('recommendations-context').textContent = `${data.district_name} · ${data.business_name}`;
   $('recommendations-context').setAttribute('aria-label',`Параметры расчёта: ${data.district_name}, ${data.business_name}. Изменить параметры`);
   const contextIcon=node('span','directional-icon icon-forward');contextIcon.setAttribute('aria-hidden','true');$('recommendations-context').append(contextIcon);
@@ -247,7 +252,8 @@ export function showResult(data, { freshCalculation=false } = {}) {
     const secondaryActions=node('div','mobile-save-secondary'),compare=button('Сравнить','compare-saved-link',openSavedComparison);compare.hidden=true;secondaryActions.append(compare);
     const savedId=`${data.analysis_id}:${rec.rank}`;if(state.saved.some(item=>item.id===savedId))card.dataset.savedFeedbackId=savedId;
     card.append(toggle, body);
-    const entry = { card, body, content, toggle, heading, coordinate, metrics, brief,reasons,secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
+    const difference=node('p','place-difference',placeDifference(rec));difference.hidden=!difference.textContent;
+    const entry = { card, body, content, toggle, heading, coordinate, metrics, brief,reasons,difference,secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
     mobileCards.set(rec.rank, entry);
     arrangeMobileCard(entry);
     $('recommendation-list').append(card);
