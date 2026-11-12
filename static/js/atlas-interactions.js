@@ -26,6 +26,7 @@ const handle=controls.querySelector('.sheet-handle');
 const home=document.createElement('div');home.className='sheet-home';sheet.before(home);home.append(sheet);
 let snap='collapsed',active=false,drag=null,scrollFrame=0,suppressHandleClick=false,viewportKey='';
 let settleTimer=0;
+let halfVisible=innerHeight*.48;
 function settleSheet(){
  clearTimeout(settleTimer);
  if(active&&snap!=='collapsed')sheet.style.setProperty('--sheet-content-visible',sheet.style.getPropertyValue('--sheet-visible'));
@@ -36,16 +37,22 @@ function settleSheet(){
 sheet.addEventListener('transitionend',event=>{if(event.target===sheet&&event.propertyName==='transform')settleSheet();});
 function offsets(){
  const height=sheet.getBoundingClientRect().height;
- return {collapsed:Math.max(0,height-112),half:Math.max(0,height-innerHeight*.48),full:0};
+ return {collapsed:Math.max(0,height-112),half:Math.max(0,height-halfVisible),full:0};
 }
 function setSnap(value){
  snap=value;sheet.dataset.snap=snap;
+ const nextKey=[active,snap,innerWidth,innerHeight].join(':');
+ if(nextKey!==viewportKey&&active&&snap==='half'){
+  const mapTop=Math.max(document.getElementById('site-header').getBoundingClientRect().bottom,document.getElementById('map').getBoundingClientRect().top);
+  // В положении «Места» оставляем место карте, включая высокую строку слоёв.
+  // Значение фиксируется на переходе, а не пересчитывается во время прокрутки/жеста.
+  halfVisible=Math.max(200,Math.min(innerHeight*.48,innerHeight-mapTop-160));
+ }
  controls.querySelectorAll('[data-snap]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.snap===snap)));
  if(active){
   const offset=offsets()[snap];sheet.style.setProperty('--sheet-offset',`${offset}px`);
   sheet.style.setProperty('--sheet-visible',`${sheet.getBoundingClientRect().height-offset}px`);
  }
- const nextKey=[active,snap,innerWidth,innerHeight].join(':');
  if(nextKey!==viewportKey){
   viewportKey=nextKey;clearTimeout(settleTimer);
   const visible=parseFloat(sheet.style.getPropertyValue('--sheet-visible'))||0;

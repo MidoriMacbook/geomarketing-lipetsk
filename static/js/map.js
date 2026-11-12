@@ -331,7 +331,7 @@ function visiblePadding(){
 function fitMobilePlaces(data=state.current){
   if(!map||!matchMedia('(max-width:600px)').matches||!data?.recommendations?.length)return;
   const {top,bottom,usable}=visiblePadding();
-  if(usable<100)return;
+  if(usable<40)return;
   map.fitBounds(data.recommendations.map(r=>[r.lat,r.lng]),{paddingTopLeft:[36,top],paddingBottomRight:[36,bottom],maxZoom:16,animate:false});
 }
 function centerVisiblePlace(rank){
@@ -342,8 +342,11 @@ function centerVisiblePlace(rank){
   map.flyToBounds(bounds,{paddingTopLeft:[24,top],paddingBottomRight:[24,bottom],maxZoom:16,animate:!motionReduced(),duration:.45});
 }
 function schedulePlaceFrame(){
-  if(viewportRank===null||!matchMedia('(max-width:600px)').matches)return;
-  clearTimeout(viewportTimer);viewportTimer=setTimeout(()=>centerVisiblePlace(viewportRank),160);
+  if(!matchMedia('(max-width:600px)').matches)return;
+  clearTimeout(viewportTimer);viewportTimer=setTimeout(()=>{
+    if(document.documentElement.dataset.sheetGesture==='true')return;
+    if(viewportRank===null)fitMobilePlaces();else centerVisiblePlace(viewportRank);
+  },160);
 }
 
 export function clearAnalysisMap() {
