@@ -36,10 +36,13 @@ test('Каталог, расчёт, выбор места и сохранени�
   expect(analysis.status).toBe('success');
   expect(analysis.source).toBe('cache');
   expect(analysis.stats).toEqual({ houses: 6, competitors: 2, residents: 5100 });
+  expect(analysis.recommendations.every(r=>r.selection_method==='cluster_maxima_v1')).toBe(true);
+  expect(new Set(analysis.recommendations.map(r=>r.cluster_id)).size).toBe(3);
   await waitForAnalysis(page);
   await expect(page.locator('#coords')).toContainText(/52\.\d+/);
   await page.getByTestId('recommendation-card').nth(1).locator('.place-select').click();
   await expect(page.getByTestId('recommendation-card').nth(1)).toHaveClass(/selected/);
+  await expect(page.getByTestId('recommendation-card').nth(1).locator('.place-difference')).toContainText('Общих домов');
   await expect(page.locator('.recommendation-pin.is-selected')).toHaveCount(1);
 
   await page.locator('#scenario-save').click();
@@ -79,6 +82,8 @@ test('Мобильное меню, настройки и повторный ра
   await waitForAnalysis(page);
   await expect(page.locator('#mobile-settings-dialog')).not.toBeVisible();
   await expect(page.locator('#mobile-settings-open')).toBeFocused();
+  await page.locator('#map-card').scrollIntoViewIfNeeded();
+  await page.locator('.sheet-handle').click();await page.getByRole('button',{name:'Все — развернуть результаты полностью'}).click();
   await page.getByTestId('recommendation-card').nth(1).locator('.mobile-rec-toggle').click();
   await expect(page.getByTestId('recommendation-card').nth(1)).toHaveAttribute('data-mobile-expanded', 'true');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();

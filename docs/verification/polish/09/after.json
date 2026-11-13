@@ -1,0 +1,9 @@
+{
+  "point": "09",
+  "phase": "after",
+  "cpu": 4,
+  "width": {
+    "page": 375,
+    "viewport": 375
+  }
+}

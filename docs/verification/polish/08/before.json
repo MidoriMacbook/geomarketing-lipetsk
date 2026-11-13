@@ -1,0 +1,9 @@
+{
+  "point": "08",
+  "phase": "before",
+  "cpu": 4,
+  "text": {
+    "color": "rgb(247, 200, 211)",
+    "background": "rgb(234, 231, 208)"
+  }
+}

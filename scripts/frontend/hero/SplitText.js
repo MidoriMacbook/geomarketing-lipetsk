@@ -24,6 +24,11 @@ export function SplitText({ enabled }) {
       if (!active || (document.fonts && document.fonts.status !== 'loaded')) return;
       const box = el.getBoundingClientRect();
       if (box.bottom <= 0 || box.top >= innerHeight) return;
+      // На телефоне заголовок полностью статичен: позднее дробление/слияние
+      // большого заголовка создаёт новый LCP после загрузки React-острова.
+      if(matchMedia('(max-width:600px)').matches){
+        return;
+      }
       try {
         // Upstream GSAPSplitText/onSplit + timeline/stagger algorithm; only words.
         split = new GSAPSplitText(el, {
@@ -35,8 +40,8 @@ export function SplitText({ enabled }) {
         if (Math.abs(box.height-next.height)>.5 || Math.abs(box.width-next.width)>.5) { finish(); return; }
         el.dataset.heroSplitStarted = 'true';
         intro = gsap.timeline({ onComplete: finish });
-        intro.fromTo(split.words, {opacity: 0, y: 32, willChange: 'transform, opacity'}, {
-          opacity: 1, y: 0, duration: .74, ease: 'power3.out',
+        intro.fromTo(split.words, {opacity: .65, y: 16, willChange: 'transform, opacity'}, {
+          opacity: 1, y: 0, duration: .5, ease: 'power3.out',
           stagger: gsap.utils.distribute({each: .085, from: 'start'}),
         });
       } catch { finish(); }

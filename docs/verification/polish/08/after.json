@@ -1,0 +1,9 @@
+{
+  "point": "08",
+  "phase": "after",
+  "cpu": 4,
+  "text": {
+    "color": "rgb(45, 58, 71)",
+    "background": "rgb(234, 231, 208)"
+  }
+}

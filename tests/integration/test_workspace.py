@@ -63,9 +63,10 @@ class WorkspaceTests(unittest.TestCase):
     def test_recommendations_are_ranked_separated_inside_circle_and_match_best(self):
         data = self.calculate().get_json()
         recommendations = data['recommendations']
-        self.assertEqual(len(recommendations), 3)
+        self.assertEqual(len(recommendations), 1)
         self.assertEqual(data['best'], recommendations[0])
-        self.assertEqual([item['rank'] for item in recommendations], [1, 2, 3])
+        self.assertEqual([item['rank'] for item in recommendations], [1])
+        self.assertEqual(recommendations[0]['independent_zones'], 1)
         self.assertEqual(recommendations[0]['score'], 1)
         self.assertEqual(sorted([item['score'] for item in recommendations], reverse=True),
                          [item['score'] for item in recommendations])

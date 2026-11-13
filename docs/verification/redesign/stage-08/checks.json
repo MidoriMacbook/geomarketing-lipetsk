@@ -1,0 +1,33 @@
+{
+  "url": "http://127.0.0.1:5057",
+  "cpuSlowdown": 4,
+  "widths": [
+    375,
+    768,
+    1440
+  ],
+  "pageErrors": [],
+  "journeys": [
+    {
+      "width": 375,
+      "recommendations": 3,
+      "savedAfterReload": 2,
+      "comparisonRows": 2,
+      "researchOpened": true
+    },
+    {
+      "width": 768,
+      "recommendations": 3,
+      "savedAfterReload": 2,
+      "comparisonRows": 2,
+      "researchOpened": true
+    },
+    {
+      "width": 1440,
+      "recommendations": 3,
+      "savedAfterReload": 2,
+      "comparisonRows": 2,
+      "researchOpened": true
+    }
+  ]
+}

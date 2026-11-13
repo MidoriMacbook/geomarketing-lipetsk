@@ -1,0 +1,7 @@
+{
+  "lighthouseVersion": "13.6.0",
+  "url": "http://127.0.0.1:5057/",
+  "accessibility": 100,
+  "failedAudits": [],
+  "note": "Автоматический аудит Chrome mobile; не проверка физического телефона или скринридера"
+}

@@ -143,7 +143,7 @@ export function updateSaveButtons(feedback = false) {
       b.replaceChildren(node('span', 'save-label', label));
       if (exists) { const check = node('span', 'save-check', ' ✓'); check.setAttribute('aria-hidden', 'true'); b.append(check); }
     }
-    b.setAttribute('aria-label',mobileSaving.matches?(selected?`Место ${b.dataset.rank} сохранено в сравнении`:exists?(state.comparison.size>=3?`Место ${b.dataset.rank} сохранено. Выбор сравнения заполнен`:`Место ${b.dataset.rank} сохранено. Добавить в сравнение`):`Сохранить место ${b.dataset.rank} для сравнения`):(exists ? `Место ${b.dataset.rank} сохранено` : `Сохранить место ${b.dataset.rank}`));
+    b.setAttribute('aria-label', `${label} — место ${b.dataset.rank}${exists&&state.comparison.size>=3&&!selected?' — выбор сравнения заполнен':''}`);
     if (feedback && newlySaved) reveal(b, 'save-feedback', { duration: 'fast' });
   });
 }

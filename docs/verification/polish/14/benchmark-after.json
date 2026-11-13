@@ -1,0 +1,151 @@
+{
+  "phase": "after",
+  "source_version": "de6e5170846256863e933821b0694ce0b06bae74a0474ff18c49f0eee6da0f8c",
+  "fetched_at": 1794395759.8063166,
+  "business": "cafe",
+  "baseline_ref": "9905f82",
+  "threads": 1,
+  "repeats": 7,
+  "cases": [
+    {
+      "key": "center",
+      "center": [
+        52.6122,
+        39.5843
+      ],
+      "radius": 1000,
+      "houses": 360,
+      "median_ms": 32.55239999998594,
+      "runs_ms": [
+        32.89260000019567,
+        28.829599999880884,
+        28.217899998708162,
+        28.766100000211736,
+        32.89260000019567,
+        32.55239999998594,
+        34.26150000086636
+      ],
+      "grid_sha256": "62f98f5bd0d217674461a44da9101b94cbf832addcb616378da872f2880c6a21",
+      "recommendations": [
+        {
+          "rank": 1,
+          "lat": 52.61235269506795,
+          "lng": 39.587569127263855,
+          "score": 1.0,
+          "residents_in_radius": 8037,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 479,
+          "selection_method": "cluster_maxima_v1",
+          "cluster_id": 1,
+          "independent_zones": 1,
+          "comparison_to_best": null
+        }
+      ],
+      "pairs": []
+    },
+    {
+      "key": "eleytsky",
+      "center": [
+        52.5935,
+        39.48
+      ],
+      "radius": 1000,
+      "houses": 153,
+      "median_ms": 17.644300001848023,
+      "runs_ms": [
+        20.80260000002454,
+        19.02189999964321,
+        20.179999999527354,
+        16.501499998412328,
+        16.391099998145364,
+        17.644300001848023,
+        14.842599997791694
+      ],
+      "grid_sha256": "5d9fa14a9399d3804796acb1b35ba475fec59f4be0074d25da5c029209f23c55",
+      "recommendations": [
+        {
+          "rank": 1,
+          "lat": 52.596095816155135,
+          "lng": 39.48728955574016,
+          "score": 1.0,
+          "residents_in_radius": 7862,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 448,
+          "selection_method": "cluster_maxima_v1",
+          "cluster_id": 3,
+          "independent_zones": 2,
+          "comparison_to_best": null
+        },
+        {
+          "rank": 2,
+          "lat": 52.587239502214075,
+          "lng": 39.474721356188155,
+          "score": 0.25995740294848574,
+          "residents_in_radius": 2174,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 409,
+          "selection_method": "cluster_maxima_v1",
+          "cluster_id": 1,
+          "independent_zones": 2,
+          "comparison_to_best": {
+            "distance_m": 1298,
+            "shared_houses": 0,
+            "shared_residents": 0,
+            "shared_residents_fraction": 0.0
+          }
+        }
+      ],
+      "pairs": [
+        {
+          "places": [
+            1,
+            2
+          ],
+          "distance_m": 1297.9,
+          "shared_houses": 0,
+          "shared_residents": 0
+        }
+      ]
+    },
+    {
+      "key": "small",
+      "center": [
+        52.592,
+        39.487
+      ],
+      "radius": 500,
+      "houses": 12,
+      "median_ms": 4.137099997024052,
+      "runs_ms": [
+        4.137099997024052,
+        3.9944999989529606,
+        4.448100000445265,
+        6.038899999111891,
+        4.305800001020543,
+        4.029200001241406,
+        3.7899000017205253
+      ],
+      "grid_sha256": "cbc8a68ae248f3501779b6f369ce14e79a88d759a5d5bb4c6cacf98221156110",
+      "recommendations": [
+        {
+          "rank": 1,
+          "lat": 52.59497755382501,
+          "lng": 39.48712567769313,
+          "score": 1.0,
+          "residents_in_radius": 4702,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 421,
+          "selection_method": "cluster_maxima_v1",
+          "cluster_id": 2,
+          "independent_zones": 1,
+          "comparison_to_best": null
+        }
+      ],
+      "pairs": []
+    }
+  ]
+}

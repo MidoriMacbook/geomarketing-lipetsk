@@ -1,7 +1,7 @@
 // React Bits ScrollReveal adapted to one-time block entrances, without scrub.
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-const selectors = ['.kpis','#workspace','#saved-section','#scenarios-section','#data-section'];
+const selectors = ['.kpis','#saved-section','#scenarios-section','#data-section'];
 export function ScrollReveal({ enabled }) {
   const completed = useRef(new WeakSet());
   useEffect(() => {
