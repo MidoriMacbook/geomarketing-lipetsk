@@ -27,7 +27,7 @@
  --color-panel-dark:var(--palette-map); --color-on-dark:var(--palette-cream); --color-muted-on-dark:var(--palette-map-muted);
  --color-line-on-dark:var(--palette-map-line); --color-primary:var(--palette-rosewood-deep); --color-primary-hover:var(--palette-rosewood-hover);
  --color-on-primary:var(--palette-cream); --color-accent:var(--palette-rosewood-deep); --color-signal:var(--color-accent);
- --color-selection-bg:var(--palette-pink); --color-selection-ink:var(--palette-ink);
+ --color-selection-bg:rgba(180,106,114,.23); --color-selection-ink:var(--palette-ink);
  --color-featured:var(--palette-warm-selected); --color-selected:var(--palette-warm-selected);
  --color-recommendation:var(--palette-warm-raised); --color-recommendation-line:var(--palette-rosewood);
  --color-kpi-active:var(--palette-warm-selected); --color-opportunity:var(--palette-sage-deep);

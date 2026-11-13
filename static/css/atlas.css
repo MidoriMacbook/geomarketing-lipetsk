@@ -14,10 +14,10 @@
 .editorial-hero .hero-copy { z-index:2; max-width:none; }
 .editorial-hero .eyebrow { font-family:var(--font-mono); font-size:.8125rem; letter-spacing:.1em; }
 .editorial-hero .eyebrow::before { display:none; }
-.intro .hero-title { font-size:clamp(4.5rem,11.25vw,10.7rem); line-height:1.12; margin:12px 0 24px; font-weight:400; letter-spacing:-.065em; white-space:nowrap; container:none; }
+.intro .hero-title { font-size:clamp(4.5rem,11.25vw,10.7rem); line-height:.96; margin:48px 0 24px; font-weight:400; letter-spacing:-.065em; white-space:nowrap; container:none; }
 .hero-title em { font-weight:500; font-style:normal; margin:0; }
 .hero-title .hero-title-word { display:inline; }
-.hero-title .hero-city { display:block; font:500 1rem/1.5 var(--font-body); letter-spacing:.08em; margin-top:12px; }
+.hero-title .hero-city { display:block; font:500 1rem/1.5 var(--font-body); letter-spacing:.08em; margin-top:40px; }
 .method-section { margin-block:40px; scroll-margin-top:calc(var(--header-offset,80px) + 24px); }
 .method-section>h2 { font:500 2rem/1.2 var(--font-display); margin-bottom:20px; }
 .method-section>.button { margin-top:20px; }
@@ -208,9 +208,10 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  #nav-toggle { border-radius:99px; background:transparent; }
  .intro.editorial-hero { padding-top:24px; margin-bottom:24px; }
  .editorial-hero .eyebrow { font-size:.8125rem; }
- .intro .hero-title { font-size:14.5vw; white-space:normal; line-height:1; margin:12px 0; letter-spacing:-.05em; }
- .intro .hero-title .hero-title-word { display:block; }
- .hero-title em { margin-left:.16em; }
+ .intro .hero-title { font-size:13.4vw; white-space:nowrap; line-height:1; margin:24px 0; letter-spacing:-.05em; }
+ .intro .hero-title .hero-title-word { display:inline; }
+ .hero-title .hero-city { margin-top:24px; }
+ .hero-title em { margin-left:0; }
  .hero-editorial-row { display:block; min-height:0; }
  .hero-statement { display:block; font-size:1.3rem; margin-bottom:10px; }
  .hero-statement br { display:none; }
