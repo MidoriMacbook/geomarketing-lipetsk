@@ -1,6 +1,6 @@
 import { motionReduced, node } from './ui.js';
 
-const records = new Map(), values = new WeakMap();
+const records = new Map(), values = new WeakMap(), formats = new WeakMap();
 let observer, frame = 0, duration;
 const numberFormat = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
 const format = (value, prefix, suffix) => `${prefix}${numberFormat.format(value)}${suffix}`;
@@ -58,6 +58,7 @@ export function countTo(element, target, { animate = true, prefix = '', suffix =
   for (const queued of records.keys()) if (!queued.isConnected) settle(queued);
   if (!Number.isSafeInteger(target) || target < 0) {
     values.delete(element);
+    formats.delete(element);
     element.textContent = '—';
     element.classList.remove('counter-number', 'is-counting');
     delete element.dataset.counterTarget;
@@ -65,6 +66,7 @@ export function countTo(element, target, { animate = true, prefix = '', suffix =
     return;
   }
   const final = node('span', 'counter-final', format(target, prefix, suffix));
+  formats.set(element, {prefix, suffix});
   const visual = node('span', 'counter-visual');
   visual.setAttribute('aria-hidden', 'true');
   visual.dataset.display = format(from, prefix, suffix);
@@ -106,6 +108,7 @@ export function resetCounters(container) {
   for (const element of elements) {
     settle(element);
     values.delete(element);
+    formats.delete(element);
     element.classList.remove('counter-number', 'is-counting');
     delete element.dataset.counterTarget;
     delete element.dataset.counterFrom;
@@ -126,7 +129,8 @@ export function replayCounter(element) {
   if (!visual || !Number.isSafeInteger(target) || motionReduced() || document.hidden) return;
   // Для заметного повтора небольшое число должно пересечь целочисленную границу.
   const from = target < 20 ? 0 : Math.floor(target * .94);
-  records.set(element, { from, target, current: from, prefix: '', suffix: '', visual, started: null, duration: 560 });
-  visual.dataset.display = format(from, '', '');
+  const {prefix='',suffix=''}=formats.get(element)||{};
+  records.set(element, { from, target, current: from, prefix, suffix, visual, started: null, duration: 560 });
+  visual.dataset.display = format(from, prefix, suffix);
   start(element);
 }

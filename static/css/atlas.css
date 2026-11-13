@@ -66,13 +66,15 @@
 .editorial-hero .hero-steps p { font-size:.8125rem; color:var(--color-ink); }
 .analysis-context-row { border-top:1px solid var(--color-line); padding-top:24px; }
 .kpis { grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; border-block:1px solid var(--color-line); margin:16px 0 32px; }
-.kpis>.kpi-card { border:0; border-radius:0; border-right:1px solid var(--color-line); background:transparent; padding:16px 24px; min-height:0; box-shadow:none; }
-.kpis>.kpi-card:first-child { border-left:0; padding-left:0; }
+.kpis>.kpi-card { border:0; border-radius:0; border-right:1px solid var(--color-line); background:transparent; padding:24px; min-height:0; box-shadow:none; transition:transform var(--motion-fast),box-shadow var(--motion-fast),background-color var(--motion-fast); }
+.kpis>.kpi-card:first-child { border-left:0; padding-left:24px; }
 .kpis>.kpi-card:last-child { border:0; background:transparent; }
 .kpis strong,.kpis>div:first-child strong { font-family:var(--font-body); font-size:2.75rem; font-weight:500; letter-spacing:-.045em; font-variant-numeric:tabular-nums; }
 .kpis .kpi-replay { min-height:44px; margin-top:4px; }
 .kpi-action-label { min-width:0; overflow-wrap:anywhere; }
 .kpi-action-icon { flex-shrink:0; }
+.kpi-action-icon { transition:transform var(--motion-fast) var(--ease-emphasized); }
+.kpi-card:has(.kpi-replay:active:not(:disabled)) { transform:none; }
 .workspace { grid-template-columns:260px minmax(0,1fr); align-items:start; gap:20px; }
 .settings { grid-row:1 / span 2; max-height:none; overflow:visible; scrollbar-gutter:auto; padding:22px; background:var(--palette-sage-soft); box-shadow:none; }
 .map-card { grid-column:2; overflow:hidden; border-radius:20px; box-shadow:none; }
@@ -151,7 +153,8 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .hero-steps article { transition:transform var(--motion-base) var(--ease-emphasized); }
  .hero-steps article:hover { transform:translateY(-4px); }
  .button:hover { box-shadow:var(--shadow-control); }
- .kpis>.kpi-card:hover { transform:translateY(-2px); background:var(--color-subtle); }
+ :is(.kpis,.area-details-grid)>.kpi-card:has(.kpi-replay:hover:not(:disabled)),:is(.kpis,.area-details-grid)>.kpi-card:has(.kpi-replay:active:not(:disabled)) { transform:translateY(-3px); background:var(--color-subtle); box-shadow:var(--shadow-control); }
+ .kpi-replay:hover .kpi-action-icon,.kpi-replay:active .kpi-action-icon { transform:translateX(3px); }
 }
 @media (max-width:1100px) {
  .site-header .brand small { display:none; }
@@ -181,7 +184,7 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .hero-steps article { padding:16px; }
  .hero-steps h2 { font-size:1.4rem; }
  .hero-steps p { font-size:.8125rem; }
- .kpis>.kpi-card { padding:12px; }
+ .kpis>.kpi-card,.kpis>.kpi-card:first-child { padding:20px; }
  .kpis strong,.kpis>div:first-child strong { font-size:2rem; }
 }
 @media (min-width:601px) and (max-width:1100px) {
@@ -256,7 +259,9 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  html[data-mobile-has-result=false] .workspace>.kpis { display:grid; visibility:hidden; }
  html[data-mobile-has-result=false] .workspace>#area-details { display:block; visibility:hidden; }
  .kpis { grid-template-columns:1fr 1fr; margin:8px 0; }
- .kpis>.kpi-card,.kpis>.kpi-card:first-child { padding:12px; background:transparent; border:0; }
+ :is(.kpis,.area-details-grid)>.kpi-card,:is(.kpis,.area-details-grid)>.kpi-card:is(:first-child,:last-child) { padding:20px; background:transparent; border:1px solid var(--color-line); border-radius:var(--radius-control); }
+ :is(.kpis,.area-details-grid)>.kpi-card:has(.kpi-replay:active:not(:disabled)) { transform:none; }
+ :is(.kpis,.area-details-grid)>.kpi-card strong,:is(.kpis,.area-details-grid)>.kpi-card:first-child strong { font-size:1.5rem; font-family:var(--font-body); font-variant-numeric:tabular-nums; white-space:nowrap; overflow-wrap:normal; }
  .kpis .kpi-card small { display:none; }
  .kpis .kpi-replay { margin:0; font-size:.8125rem; }
  .kpis .kpi-action-icon { width:14px; height:14px; }

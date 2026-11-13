@@ -4,6 +4,17 @@ test.beforeEach(async({page,baseURL})=>{
  await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
 });
 
+test('знак приблизительного числа сохраняется при повторе счётчика',async({page})=>{
+ await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ const residents=page.locator('#kpi-residents');await residents.scrollIntoViewIfNeeded();
+ await expect(residents).toHaveText('≈\u00a05\u00a0100');
+ await page.locator('[data-kpi=residents] .kpi-replay').click();
+ await expect(residents.locator('.counter-visual')).toHaveAttribute('data-display',/^≈\u00a0/);
+ await expect(residents).not.toHaveClass(/is-counting/);
+ await expect(residents.locator('.counter-visual')).toHaveAttribute('data-display','≈\u00a05\u00a0100');
+ await expect(page.locator('[data-kpi=residents]>span').first()).toHaveText('Жителей в области');
+});
+
 test('аннотации читаются и не пересекаются, reduced motion отключает появление',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  for(const width of [375,768,1440,1920]){

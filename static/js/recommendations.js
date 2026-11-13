@@ -149,7 +149,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     $('result-empty').querySelector('h3').textContent = 'Подходящих мест не найдено';
     $('result-empty').querySelector('p').textContent = 'В области не хватает спроса для рекомендации. Попробуйте другую область или увеличьте её радиус.';
   }
-  countTo($('kpi-residents'), Math.round(data.stats.residents), { animate: newAnalysis });
+  countTo($('kpi-residents'), Math.round(data.stats.residents), { animate: newAnalysis, prefix: '≈\u00a0' });
   countTo($('kpi-houses'), data.stats.houses, { animate: newAnalysis });
   countTo($('kpi-competitors'), data.stats.competitors, { animate: newAnalysis });
   countTo($('kpi-places'), data.recommendations.length, { animate: newAnalysis });

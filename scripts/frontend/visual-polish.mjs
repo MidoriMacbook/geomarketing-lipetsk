@@ -1,5 +1,6 @@
 import {chromium} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
 const [phase='before',only='all']=process.argv.slice(2),base=process.env.PREVIEW_URL||'http://127.0.0.1:5071';
 const browser=await chromium.launch({channel:'chrome',headless:true});
 try{
@@ -7,12 +8,20 @@ try{
   const dir=`docs/verification/visual-polish/${point}`;await mkdir(dir,{recursive:true});const metrics=[];
   for(const width of (point==='04'?[375,768,1280,1440,1920]:[375,768,1440,1920])){
    const page=await browser.newPage({viewport:{width,height:1000},isMobile:width===375,hasTouch:width===375});
-   await page.route('**/*',r=>new URL(r.request().url()).origin===base?r.continue():r.abort());
+   await page.route('**/*',r=>{
+    const url=new URL(r.request().url());if(url.origin!==base)return r.abort();
+    const path=url.pathname==='/'?'static/index.html':url.pathname.slice(1);
+    if(process.env.CAPTURE_REF&&/^static\/(css\/|js\/|index.html)/.test(path)){
+     const body=execFileSync('git',['show',`${process.env.CAPTURE_REF}:${path}`],{encoding:'utf8'});
+     return r.fulfill({body,contentType:path.endsWith('.css')?'text/css':path.endsWith('.js')?'text/javascript':'text/html'});
+    }
+    return r.continue();
+   });
    await page.goto(base);await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1800);
    if(point==='01')await page.keyboard.press('Control+a');
    if(point==='03'){
-    if(width===375){await page.locator('#area-details>summary').click();await page.locator('#mobile-settings-bar').scrollIntoViewIfNeeded();}
-    else await page.locator('.analysis-context-row').scrollIntoViewIfNeeded();
+    if(width===375){await page.locator('#area-details>summary').click();await page.locator('button[data-snap=collapsed]').click();await page.locator('.kpis').evaluate(el=>scrollTo({top:el.getBoundingClientRect().top+scrollY-100,behavior:'instant'}));await page.waitForTimeout(500);}
+    else {await page.locator('.analysis-context-row').evaluate(el=>scrollTo({top:el.getBoundingClientRect().top+scrollY-100,behavior:'instant'}));await page.waitForTimeout(500);}
    }
    if(point==='05'){
     if(width===375)await page.locator('.mobile-secondary-details>summary').filter({hasText:'Сохранённые места'}).click();
