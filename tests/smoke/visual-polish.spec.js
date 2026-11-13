@@ -1,7 +1,19 @@
 import {test,expect} from '@playwright/test';
+test.setTimeout(60000); // Несколько полных загрузок с локальными шрифтами в одной проверке ширин.
 
 test.beforeEach(async({page,baseURL})=>{
  await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
+});
+
+test('курсив включается только на широком экране и схема не заходит на буквы',async({page})=>{
+ for(const width of [375,768,900,1280,1440,1920]){
+  await page.setViewportSize({width,height:1000});await page.goto('/');await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1100);
+  await expect(page.locator('#page-title em')).toHaveCSS('font-style',width>=900?'italic':'normal');
+  if(width>=900)await expect(page.locator('#page-title em')).toHaveCSS('color','rgb(180, 106, 114)');
+  const title=await page.locator('#page-title em').boundingBox(),art=await page.locator('#hero-art').boundingBox();
+  expect(art.y).toBeGreaterThanOrEqual(title.y+title.height);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ }
 });
 
 test('знак приблизительного числа сохраняется при повторе счётчика',async({page})=>{
