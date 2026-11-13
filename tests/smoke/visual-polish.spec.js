@@ -4,6 +4,21 @@ test.beforeEach(async({page,baseURL})=>{
  await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
 });
 
+test('аннотации читаются и не пересекаются, reduced motion отключает появление',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ for(const width of [375,768,1440,1920]){
+  await page.setViewportSize({width,height:1000});await page.goto('/');await page.evaluate(()=>document.fonts.ready);
+  const labels=await page.locator('.hero-annotation:visible').evaluateAll(groups=>groups.map(g=>{
+   const text=g.querySelector('text'),rect=g.querySelector('rect'),box=rect.getBoundingClientRect();
+   return {size:parseFloat(getComputedStyle(text).fontSize)*text.getScreenCTM().a,fill:getComputedStyle(rect).fill,opacity:getComputedStyle(g).opacity,animation:getComputedStyle(g).animationName,box:{x:box.x,y:box.y,right:box.right,bottom:box.bottom}};
+  }));
+  expect(labels).toHaveLength(width===375?2:3);
+  for(const label of labels){expect(label.size).toBeGreaterThanOrEqual(12);expect(label.fill).toBe('rgb(255, 247, 230)');expect(label.opacity).toBe('1');expect(label.animation).toBe('none');expect(label.box.x).toBeGreaterThanOrEqual(0);expect(label.box.right).toBeLessThanOrEqual(width);}
+  for(let i=0;i<labels.length;i++)for(let j=i+1;j<labels.length;j++){const a=labels[i].box,b=labels[j].box;expect(a.right<=b.x||b.right<=a.x||a.bottom<=b.y||b.bottom<=a.y).toBe(true);}
+  const coordinates=await page.locator('.atlas-coordinates').boundingBox(),art=await page.locator('#hero-art').boundingBox();expect(coordinates.y).toBeGreaterThanOrEqual(art.y+art.height);
+ }
+});
+
 test('заголовок копируется без разрыва названия и выделение не касается соседних строк',async({page})=>{
  for(const width of [375,768,1440,1920]){
   await page.setViewportSize({width,height:1000});await page.goto('/');await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1100);
