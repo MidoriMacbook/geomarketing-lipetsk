@@ -11,7 +11,7 @@ test('балл явно задан из ста без вероятности у�
 test('сравнение с лучшим объясняет знаменатель доли и поддерживает старые архивы',()=>{
  assert.equal(placeDifference({rank:2}),'');
  const rec={selection_method:'cluster_maxima_v1',comparison_to_best:{distance_m:529,shared_houses:1,shared_residents_fraction:10/1010}};
- assert.match(placeDifference(rec),/529 м/);assert.match(placeDifference(rec),/Общих домов: 1/);assert.match(placeDifference(rec),/1% жителей этого радиуса/);
+ assert.match(placeDifference(rec),/529 м/);assert.match(placeDifference(rec),/Общих домов: 1/);assert.match(placeDifference(rec),/1% жителей этого радиуса/);
  rec.comparison_to_best.shared_residents_fraction=null;assert.match(placeDifference(rec),/не оценена/);
 });
 test('дата читаема локально, повреждённая дата не выдумывается',()=>{

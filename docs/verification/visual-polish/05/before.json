@@ -1,0 +1,142 @@
+[
+  {
+    "width": 375,
+    "copied": "Гео\nМаркетинг\nЛипецк",
+    "overflow": false,
+    "heading": "54.375px",
+    "italic": "normal",
+    "selection": "rgb(247, 200, 211)",
+    "annotations": [],
+    "kpis": [
+      {
+        "text": "Жителей в области ≈\n5 100\nПоказать на карте",
+        "padding": "12px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Мест для проверки\n3\nПоказать на карте",
+        "padding": "12px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "",
+        "padding": "12px",
+        "border": "1px",
+        "before": "none"
+      },
+      {
+        "text": "",
+        "padding": "12px",
+        "border": "1px",
+        "before": "none"
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "copied": "ГеоМаркетинг\nЛипецк",
+    "overflow": false,
+    "heading": "92.8973px",
+    "italic": "normal",
+    "selection": "rgb(247, 200, 211)",
+    "annotations": [],
+    "kpis": [
+      {
+        "text": "Жителей в области ≈\n5 100\nОценка по жилым домам\nПоказать на карте",
+        "padding": "12px 12px 12px 0px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Учтено домов\n6\nОбъекты OpenStreetMap\nПоказать на карте",
+        "padding": "12px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Конкурентов в области\n2\nКофейня\nПоказать на карте",
+        "padding": "12px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Мест для проверки\n3\nДо трёх рекомендаций\nПоказать на карте",
+        "padding": "12px",
+        "border": "0px",
+        "before": "none"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "copied": "ГеоМаркетинг\nЛипецк",
+    "overflow": false,
+    "heading": "181.44px",
+    "italic": "normal",
+    "selection": "rgb(247, 200, 211)",
+    "annotations": [],
+    "kpis": [
+      {
+        "text": "Жителей в области ≈\n5 100\nОценка по жилым домам\nПоказать на карте",
+        "padding": "16px 24px 16px 0px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Учтено домов\n6\nОбъекты OpenStreetMap\nПоказать на карте",
+        "padding": "16px 24px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Конкурентов в области\n2\nКофейня\nПоказать на карте",
+        "padding": "16px 24px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Мест для проверки\n3\nДо трёх рекомендаций\nПоказать на карте",
+        "padding": "16px 24px",
+        "border": "0px",
+        "before": "none"
+      }
+    ]
+  },
+  {
+    "width": 1920,
+    "copied": "ГеоМаркетинг\nЛипецк",
+    "overflow": false,
+    "heading": "191.744px",
+    "italic": "normal",
+    "selection": "rgb(247, 200, 211)",
+    "annotations": [],
+    "kpis": [
+      {
+        "text": "Жителей в области ≈\n5 100\nОценка по жилым домам\nПоказать на карте",
+        "padding": "16px 24px 16px 0px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Учтено домов\n6\nОбъекты OpenStreetMap\nПоказать на карте",
+        "padding": "16px 24px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Конкурентов в области\n2\nКофейня\nПоказать на карте",
+        "padding": "16px 24px",
+        "border": "0px",
+        "before": "none"
+      },
+      {
+        "text": "Мест для проверки\n3\nДо трёх рекомендаций\nПоказать на карте",
+        "padding": "16px 24px",
+        "border": "0px",
+        "before": "none"
+      }
+    ]
+  }
+]

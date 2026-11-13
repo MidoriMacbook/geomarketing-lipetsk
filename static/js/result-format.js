@@ -7,7 +7,7 @@ export function placeDifference(rec) {
  const overlap=Number.isFinite(fraction)&&fraction>=0&&fraction<=1
   ?`${(fraction*100).toLocaleString('ru-RU',{maximumFractionDigits:1})}% жителей этого радиуса также входят в радиус лучшего места`
   :'доля общих жителей не оценена';
- return `От лучшего места — ${distance} м. Общих домов: ${value.shared_houses}; ${overlap}.`;
+ return `От лучшего места — ${distance} м. Общих домов: ${value.shared_houses}; ${overlap}.`;
 }
 export const OSM_LIMITATION = 'OpenStreetMap может быть неполной или устаревшей. Оценка жителей не является переписью населения.';
 export const scoreValue = value => Number.isFinite(value) && value >= 0 && value <= 1 ? Math.round(value * 100) : null;

@@ -20,7 +20,7 @@ export function recommendationBrief(rec) {
   return {
     demand: explanation ? demand[explanation.demand_level] : 'Не оценен',
     competition: explanation ? competition[explanation.competition_level]+(rec?.competitors_in_radius===0?' — учитываются и конкуренты за радиусом':'') : 'Не оценена',
-    nearest: nearest === null ? 'Не найдены в данных области' : Number.isFinite(nearest) && nearest >= 0 ? `${Math.round(nearest).toLocaleString('ru-RU')} м` : 'Не оценено',
+    nearest: nearest === null ? 'Не найдены в данных области' : Number.isFinite(nearest) && nearest >= 0 ? `${Math.round(nearest).toLocaleString('ru-RU')} м` : 'Не оценено',
     check: explanation?.field_checks.find(text => text.trim() && !/конкурент.*OSM/i.test(text)) || 'Проверьте помещение, доступ и поток посетителей.'
   };
 }
@@ -33,8 +33,8 @@ export function recommendationDecision(rec) {
   if(Number.isSafeInteger(count)&&count>=0)facts.push(count===0
     ? explanation?.demand_level==='higher'?'Спрос выше среди точек расчёта; нет учтённых конкурентов':'Нет учтённых конкурентов в радиусе'
     :`Учтено конкурентов в радиусе: ${format(count)}`);
-  if(Number.isFinite(rec?.residents_in_radius)&&rec.residents_in_radius>=0)facts.push(`≈ ${format(rec.residents_in_radius)} жителей в радиусе`);
-  if(Number.isFinite(metrics?.nearest_demand_center_m)&&metrics.nearest_demand_center_m>=0)facts.push(`Центр спроса в ${format(metrics.nearest_demand_center_m)} м`);
+  if(Number.isFinite(rec?.residents_in_radius)&&rec.residents_in_radius>=0)facts.push(`≈ ${format(rec.residents_in_radius)} жителей в радиусе`);
+  if(Number.isFinite(metrics?.nearest_demand_center_m)&&metrics.nearest_demand_center_m>=0)facts.push(`Центр спроса в ${format(metrics.nearest_demand_center_m)} м`);
   if(Number.isFinite(metrics?.houses_per_km2)&&metrics.houses_per_km2>=0)facts.push(`Плотность домов: ${format(metrics.houses_per_km2)} на км²`);
   return {headline:facts[0]||'Причина не определена по доступным данным',reasons:facts.slice(1,3)};
 }

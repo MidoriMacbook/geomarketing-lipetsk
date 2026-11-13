@@ -2,7 +2,7 @@ import { SCORE_NOTE } from './result-format.js';
 export const $ = id => document.getElementById(id);
 export const fmt = n => Math.round(n).toLocaleString('ru-RU');
 export const coords = p => `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`;
-export const distance = n => n === null ? 'Не найдены в данных области' : `${fmt(n)} м`;
+export const distance = n => n === null ? 'Не найдены в данных области' : `${fmt(n)} м`;
 export const STORAGE_KEY = 'geomarketing.saved.v1';
 export const LIMITATIONS = 'Число жителей оценено по квартирам либо площади и этажности домов, а не по переписи. Расстояния по прямой. Данные OpenStreetMap могут быть неполными или устаревшими. Модель не учитывает аренду, наличие помещений, пешеходные маршруты, доходы и поток посетителей. Относительную оценку нельзя сравнивать между разными расчётами. '+SCORE_NOTE;
 export const node = (tag, className, text) => {

@@ -22,7 +22,9 @@
 - своё место.
 - Сравните спрос и конкуренцию, чтобы выбрать место для своего бизнеса.
 - Найти места
-- Здесь начинается ваше дело
+- Дома и жители
+- Радиус пешей доступности
+- Место для проверки
 - 52.61° с. ш. / 39.58° в. д.
 - Липецкая область
 - К исследованию ↓
@@ -228,8 +230,11 @@
 
 ## static/js/atlas-interactions.js
 
-- &lt;button class="sheet-handle" type="button" aria-label="Изменить высоту результатов"&gt;&lt;/button&gt;&lt;button type="button" data-snap="collapsed" aria-label="Карта — свернуть результаты"&gt;Карта&lt;/button&gt;&lt;button type="button" data-snap="half" aria-label="Места — показать половину панели результатов"&gt;Места&lt;/button&gt;&lt;button type="button" data-snap="full" aria-label="Все — развернуть результаты полностью"&gt;Все&lt;/button&gt;
+- &lt;button class="sheet-handle" type="button" aria-label="Изменить высоту результатов" aria-expanded="false"&gt;&lt;span class="sheet-summary"&gt;Мест нет&lt;/span&gt;&lt;/button&gt;&lt;button type="button" data-snap="peek" aria-label="Карта — свернуть результаты"&gt;Карта&lt;/button&gt;&lt;button type="button" data-snap="half" aria-label="Места — показать половину панели результатов"&gt;Места&lt;/button&gt;&lt;button type="button" data-snap="full" aria-label="Все — развернуть результаты полностью"&gt;Все&lt;/button&gt;
 - Оценка и данные
+- ${count} ${count===1?'место':'места'} · лучшее ${scoreText(places[0].score)}
+- Мест нет
+- Расчёт не завершён
 
 ## static/js/boot-status.js
 

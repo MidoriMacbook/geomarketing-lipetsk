@@ -100,7 +100,7 @@ dialog p { margin-top:var(--space-3); font-size:var(--text-sm); line-height:1.65
 .disclosure-body { overflow:clip; }
 .disclosure-content { display:flow-root; }
 details>summary { cursor:pointer; min-height:var(--size-target); align-content:center; }
-details>summary:focus-visible { outline:var(--line-strong) solid var(--color-primary); outline-offset:var(--space-1); border-radius:var(--radius-control); }
+details>summary:focus-visible { outline:var(--focus-width) solid var(--color-primary); outline-offset:var(--focus-offset); border-radius:var(--radius-control); }
 
 details[data-expanded]>summary { list-style:none; }
 details[data-expanded]>summary::-webkit-details-marker { display:none; }

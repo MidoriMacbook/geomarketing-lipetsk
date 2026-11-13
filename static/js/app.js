@@ -53,7 +53,7 @@ function bootstrap() {
     if ($('trust-summary')) delete $('trust-summary').dataset.resultSummary;
     $('error').hidden = true;
     $('loading-hint').hidden = true;
-    $('result-empty').querySelector('h3').textContent = 'Готово к новому расчёту';
+    $('result-empty').querySelector('h3').textContent = 'Готово к новому расчёту';
     $('result-empty').querySelector('p').textContent = 'Проверьте настройки и нажмите «Найти места». Сохранённые места доступны ниже.';
     if (state.catalog) $('map-context').textContent = `${$('district').selectedOptions[0].textContent} · ${$('business').selectedOptions[0].textContent}`;
     $('run').disabled = !state.catalog;
@@ -118,7 +118,7 @@ function bootstrap() {
   function updateParams() {
     if (!state.catalog) return;
     const b = state.catalog.businesses.find(b => b.key === $('business').value);
-    $('business-parameters').textContent = `Радиус доступности ${fmt(b.radius_m)} м · коэффициент конкуренции ${b.alpha.toLocaleString('ru-RU')}. Стартовые эвристики модели, не прогноз выручки.`;
+    $('business-parameters').textContent = `Радиус доступности ${fmt(b.radius_m)} м · коэффициент конкуренции ${b.alpha.toLocaleString('ru-RU')}. Стартовые эвристики модели, не прогноз выручки.`;
     $('kpi-business').textContent = state.current?.business_name || b.name;
   }
   async function loadCatalog() {
