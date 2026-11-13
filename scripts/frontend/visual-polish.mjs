@@ -20,7 +20,7 @@ try{
    await page.goto(base);await page.waitForFunction(()=>document.documentElement.dataset.analysisState==='success');await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1800);
    if(point==='01')await page.keyboard.press('Control+a');
    if(point==='03'){
-    if(width===375){await page.locator('#area-details>summary').click();await page.locator('button[data-snap=collapsed]').click();await page.locator('.kpis').evaluate(el=>scrollTo({top:el.getBoundingClientRect().top+scrollY-100,behavior:'instant'}));await page.waitForTimeout(500);}
+    if(width===375){await page.locator('#area-details>summary').click();if(await page.locator('#recommendations').getAttribute('data-snap')!=='peek')await page.locator('button[data-snap=collapsed],button[data-snap=peek]').click();await page.locator('.kpis').evaluate(el=>scrollTo({top:el.getBoundingClientRect().top+scrollY-100,behavior:'instant'}));await page.waitForTimeout(500);}
     else {await page.locator('.analysis-context-row').evaluate(el=>scrollTo({top:el.getBoundingClientRect().top+scrollY-100,behavior:'instant'}));await page.waitForTimeout(500);}
    }
    if(point==='05'){

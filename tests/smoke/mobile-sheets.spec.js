@@ -16,9 +16,9 @@ test('параметры только в листе, свайп и фон зак
  await page.locator('#mobile-settings-open').click();await dialog.click({trial:true});
  const panel=await dialog.boundingBox();await page.mouse.click(5,panel.y-10);
  await expect(dialog).not.toBeVisible();
- await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('button[data-snap=half]').click();
+ await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('.sheet-handle').click();
  const sheet=await page.locator('#recommendations').boundingBox();
- for(const pin of await page.locator('.recommendation-pin').all()){
+ for(const pin of await page.locator('.recommendation-pin.is-selected').all()){
   await expect.poll(async()=>{const r=await pin.boundingBox();return r.y+r.height<sheet.y;}).toBe(true);
  }
 });

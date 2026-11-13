@@ -28,7 +28,7 @@ test('радиус выбранного места и четыре слоя по
  await page.setViewportSize({width:375,height:812});await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
- await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('[data-snap=full]').click();
+ await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('.sheet-handle').click();await page.locator('[data-snap=full]').click();
  await page.locator('.mobile-show-place').first().click();
  await expect.poll(async()=>{
   const circle=await page.locator('.leaflet-accessibility-pane path').boundingBox(),map=await page.locator('#map').boundingBox(),sheet=await page.locator('#recommendations').boundingBox();
@@ -69,10 +69,10 @@ test('пункты меню не обрезаются скруглением о�
 test('закрытие панели не скрывает содержимое и не меняет карту в процессе',async({page,baseURL})=>{
  await page.setViewportSize({width:375,height:812});await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
  await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
- await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('button[data-snap=full]').click();
+ await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('.sheet-handle').click();await page.locator('button[data-snap=full]').click();
  await expect(page.locator('#recommendations')).not.toHaveAttribute('data-moving','true');
  const map=await page.locator('#map').boundingBox(),result=await page.locator('#result').boundingBox();
- await page.locator('button[data-snap=collapsed]').evaluate(el=>el.click());
+ await page.locator('button[data-snap=peek]').evaluate(el=>el.click());
  await page.waitForTimeout(100);
  expect(await page.locator('#result').evaluate(el=>getComputedStyle(el).visibility)).toBe('visible');
  expect((await page.locator('#result').boundingBox()).height).toBeCloseTo(result.height,0);

@@ -95,9 +95,14 @@ export function initMap() {
   });
   map.on('zoomend', drawHouses);
   document.addEventListener('gm:sheet-position',event=>{
-    if(event.detail.active&&viewportRank===null)requestAnimationFrame(()=>fitMobilePlaces());
+    if(event.detail.active&&event.detail.snap==='half'){
+      viewportRank=state.selectedRank;schedulePlaceFrame();
+    }else if(event.detail.active&&viewportRank===null)requestAnimationFrame(()=>fitMobilePlaces());
   });
   document.addEventListener('gm:show-place',event=>{
+    viewportRank=event.detail.rank;schedulePlaceFrame();
+  });
+  document.addEventListener('gm:pin-selected',event=>{
     viewportRank=event.detail.rank;schedulePlaceFrame();
   });
   // После естественной прокрутки и остановки панели известна видимая часть карты.
@@ -231,7 +236,10 @@ export function drawMap(data) {
       offset: [0,
       -12]
     }).addTo(layers.recommendations);
-    marker.on('click', () => selectPlace(r.rank, false));
+    marker.on('click', () => {
+      selectPlace(r.rank, false);
+      document.dispatchEvent(new CustomEvent('gm:pin-selected',{detail:{rank:r.rank}}));
+    });
     markers.set(r.rank, marker);
   });
   drawAccessRadius(state.selectedRank);

@@ -1,0 +1,119 @@
+[
+  {
+    "name": "hero",
+    "time": 1949.300000011921,
+    "snap": "peek",
+    "active": "false",
+    "scrollY": 0,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "appear-0",
+    "time": 2046.199999988079,
+    "snap": "peek",
+    "active": "true",
+    "scrollY": 830,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "appear-100",
+    "time": 2194.699999988079,
+    "snap": "peek",
+    "active": "true",
+    "scrollY": 830,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "appear-200",
+    "time": 2227.5,
+    "snap": "peek",
+    "active": "true",
+    "scrollY": 830,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "appear-400",
+    "time": 2427.4000000059605,
+    "snap": "peek",
+    "active": "true",
+    "scrollY": 830,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "expand-0",
+    "time": 2515,
+    "snap": "half",
+    "active": "true",
+    "scrollY": 0,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "expand-100",
+    "time": 2617.5,
+    "snap": "half",
+    "active": "true",
+    "scrollY": 0,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "expand-200",
+    "time": 2723.5999999940395,
+    "snap": "half",
+    "active": "true",
+    "scrollY": 0,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "expand-400",
+    "time": 2915.5,
+    "snap": "half",
+    "active": "true",
+    "scrollY": 0,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "hide-0",
+    "time": 3428.199999988079,
+    "snap": "peek",
+    "active": "true",
+    "scrollY": 2504,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "hide-100",
+    "time": 3524,
+    "snap": "peek",
+    "active": "false",
+    "scrollY": 2504,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "hide-200",
+    "time": 3624,
+    "snap": "peek",
+    "active": "false",
+    "scrollY": 2504,
+    "mapHeight": 386.859375,
+    "cls": 0
+  },
+  {
+    "name": "hide-400",
+    "time": 3819.699999988079,
+    "snap": "peek",
+    "active": "false",
+    "scrollY": 2504,
+    "mapHeight": 386.859375,
+    "cls": 0
+  }
+]
