@@ -36,3 +36,13 @@ test('пин открывает выноску над полосой, тольк
  await expect.poll(async()=>{const box=await popup.boundingBox(),sheet=await page.locator('#recommendations').boundingBox();return box.y>=80&&box.y+box.height<sheet.y;}).toBe(true);
  await popup.getByRole('button',{name:'Подробнее'}).click();await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','expanded');await expect(popup).toHaveCount(0);
 });
+test('объяснение отдельно от базовых домов и выключается без удаления круга',async({page,baseURL})=>{
+ await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ await page.locator('#map').scrollIntoViewIfNeeded();
+ await page.locator('.leaflet-houses-pane canvas').evaluate(el=>{window.originalHouseCanvas=el;});
+ await page.locator('.recommendation-pin').nth(1).click();await expect(page.locator('#map')).toHaveAttribute('data-explanation','true');
+ expect(await page.locator('.leaflet-houses-pane canvas').evaluate(el=>el===window.originalHouseCanvas)).toBe(true);
+ await page.getByRole('button',{name:'Закрыть выноску'}).click();await page.locator('#map-explain-toggle').click();
+ await expect(page.locator('#map')).toHaveAttribute('data-explanation','false');await expect(page.locator('.leaflet-accessibility-pane path')).toHaveCount(1);
+ await expect(page.locator('.map-distance')).toHaveCount(0);
+});

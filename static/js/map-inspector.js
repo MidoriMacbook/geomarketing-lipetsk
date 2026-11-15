@@ -5,7 +5,7 @@ import {savePlace} from './saved-places.js';
 import {scoreText} from './result-format.js';
 
 // Этот слой читает готовый расчёт. Он не меняет рекомендации или сетку сервера.
-export function createMapInspector(map){
+export function createMapInspector(map,{selectPoint=()=>{}}={}){
  let analysis=null,popup=null;
  const token=name=>getComputedStyle(document.documentElement).getPropertyValue(name).trim();
  const layer=L.layerGroup().addTo(map);
@@ -53,7 +53,7 @@ export function createMapInspector(map){
   if(!sample.inside)box.append(node('p','','Выберите точку внутри границы области.'));
   else if(!sample.available)box.append(node('p','','В этой части сетки нет оценки. Выберите другую точку.'));
   else{
-   const rec=sample.recommendation;facts(box,rec);box.dataset.score=String(Math.round(rec.score*100));
+   const rec=sample.recommendation;selectPoint(rec);facts(box,rec);box.dataset.score=String(Math.round(rec.score*100));
    if(sample.difference){const d=sample.difference,signed=n=>n>0?`+${fmt(n)}`:fmt(n);box.append(node('p','map-inspection-difference',`По сравнению с лучшим: ${signed(d.score)} баллов · ${signed(d.residents)} жителей`));}
    box.append(node('p','map-inspection-note','Оценка относительная, как у рекомендаций.'));
    saveAction(box,rec,'Сохранить как своё место');

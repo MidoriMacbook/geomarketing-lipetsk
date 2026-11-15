@@ -1,12 +1,13 @@
 import { state } from './state.js';
 import {createMapInspector} from './map-inspector.js';
+import {createSelectionLayer} from './map-selection.js';
 import { $, fmt, node, animateUI, cancelUI, setRevealed, motionReduced, reveal } from './ui.js';
 
 let map = null, tiles = null, tileTimer = null, tileFailures = 0;
 let pointsRenderer = null, zonesRenderer = null;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
 let emphasized = new Set(), previewRank = null, houseData = [];
-let viewportRank=null, viewportTimer=null,inspector=null,choosingCenter=false;
+let viewportRank=null, viewportTimer=null,inspector=null,selection=null,choosingCenter=false;
 const layers = {}, markers = new Map();
 const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const color = role => token(`--color-map-${role}`);
@@ -113,7 +114,8 @@ export function initMap() {
   document.querySelectorAll('[data-layer-key]').forEach(button=>button.addEventListener('click',()=>{
     const input=$('layer-'+button.dataset.layerKey);input.checked=!input.checked;input.dispatchEvent(new Event('change',{bubbles:true}));
   }));
-  inspector=createMapInspector(map);
+  selection=createSelectionLayer(map);
+  inspector=createMapInspector(map,{selectPoint:rec=>{drawAccessCircle(rec);selection.select(rec);}});
   document.addEventListener('gm:choose-center',()=>{choosingCenter=true;});
   document.getElementById('district').addEventListener('change',()=>{choosingCenter=$('district').value==='custom';});
   map.on('click', e => {
@@ -194,7 +196,7 @@ export function iconFor(rank, selected) {
 
 export function drawMap(data) {
   if (!map)return;
-  choosingCenter=false;inspector.setData(data);
+  choosingCenter=false;inspector.setData(data);selection.setData(data);
   Object.entries(layers).forEach(([key, layer]) => {
     if (key !== 'preview')layer.clearLayers();
   });
@@ -280,9 +282,12 @@ function drawHouses() {
   }
 }
 function drawAccessRadius(rank){
+  const rec=state.current?.recommendations.find(r=>r.rank===rank);
+  drawAccessCircle(rec);selection?.select(rec);
+}
+function drawAccessCircle(rec){
   if(!map)return;
   layers.accessibility.clearLayers();
-  const rec=state.current?.recommendations.find(r=>r.rank===rank);
   if(!rec)return;
   L.circle([rec.lat,rec.lng],{pane:'accessibility',radius:rec.radius_m,interactive:false,
     color:token('--palette-rosewood-deep'),weight:2,opacity:.7,fillColor:token('--palette-pink'),fillOpacity:.1,dashArray:'6 5'}).addTo(layers.accessibility);
@@ -364,6 +369,7 @@ function schedulePlaceFrame(){
 
 export function clearAnalysisMap() {
   inspector?.setData(null);
+  selection?.setData(null);
   emphasized=new Set();previewRank=null;houseData=[];
   Object.keys(layerTimers).forEach(key=>{clearTimeout(layerTimers[key]);layerRevisions[key]=(layerRevisions[key]||0)+1;});
   markers.clear();
