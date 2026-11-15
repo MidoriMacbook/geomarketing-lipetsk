@@ -20,6 +20,10 @@ try{for(const width of [375,768,1440]){
    const box=await page.locator('#map').boundingBox();await page.locator('#map').click({position:{x:box.width*.45,y:box.height*.55}});await page.waitForTimeout(600);
    await page.screenshot({path:`${dir}/${phase}-point-${width}.png`});
   }
+  if(point==='popover'){
+   await page.locator('#map').evaluate(el=>scrollTo({top:scrollY+el.getBoundingClientRect().top-110,behavior:'instant'}));await page.waitForTimeout(700);
+   await page.locator('.recommendation-pin').first().click();await page.waitForTimeout(650);await page.screenshot({path:`${dir}/${phase}-popover-${width}.png`});
+  }
  }
  await page.close();
 }}finally{await browser.close();}

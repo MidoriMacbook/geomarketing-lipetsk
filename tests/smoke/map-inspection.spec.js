@@ -27,3 +27,12 @@ test('перетаскивание карты не проверяет случа
  await page.mouse.move(box.x+100,box.y+100);await page.mouse.down();await page.mouse.move(box.x+220,box.y+160,{steps:8});await page.mouse.up();
  await expect(page.locator('.map-inspection')).toHaveCount(0);
 });
+test('пин открывает выноску над полосой, только Подробнее раскрывает список',async({page,baseURL})=>{
+ await page.setViewportSize({width:375,height:667});await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
+ await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ await page.locator('#map').evaluate(el=>scrollTo({top:scrollY+el.getBoundingClientRect().top-110,behavior:'instant'}));await page.waitForTimeout(700);
+ await page.locator('.recommendation-pin').first().click();const popup=page.locator('.map-inspection');
+ await expect(popup).toHaveAttribute('aria-label','Место 1 · оценка');await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','peek');
+ await expect.poll(async()=>{const box=await popup.boundingBox(),sheet=await page.locator('#recommendations').boundingBox();return box.y>=80&&box.y+box.height<sheet.y;}).toBe(true);
+ await popup.getByRole('button',{name:'Подробнее'}).click();await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','expanded');await expect(popup).toHaveCount(0);
+});

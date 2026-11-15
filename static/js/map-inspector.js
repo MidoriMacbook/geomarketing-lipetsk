@@ -60,8 +60,16 @@ export function createMapInspector(map){
   }
   show(point,box);
  }
+ function openPlace(rec){
+  close();const box=card(`Место ${rec.rank} · оценка`);facts(box,rec);
+  saveAction(box,rec,'Сохранить');
+  box.append(button('Подробнее','button secondary',()=>{
+   close();document.dispatchEvent(new CustomEvent('gm:place-details',{detail:{rank:rec.rank}}));
+   if(!matchMedia('(max-width:600px)').matches){const card=document.querySelector(`#recommendation-list [data-rank="${rec.rank}"]`);card?.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'nearest'});}
+  }));show(rec,box);
+ }
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&popup?.isOpen()){event.preventDefault();close();map.getContainer().focus({preventScroll:true});}});
  document.addEventListener('gm:sheet-settled',keepVisible);
  window.addEventListener('resize',()=>requestAnimationFrame(keepVisible));
- return {inspect,keepVisible,isOpen:()=>Boolean(popup?.isOpen()),setData(next){close();analysis=next?createMapAnalysis(next):null;}};
+ return {inspect,openPlace,keepVisible,isOpen:()=>Boolean(popup?.isOpen()),setData(next){close();analysis=next?createMapAnalysis(next):null;}};
 }

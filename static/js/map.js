@@ -103,7 +103,7 @@ export function initMap() {
     viewportRank=event.detail.rank;schedulePlaceFrame();
   });
   document.addEventListener('gm:pin-selected',event=>{
-    viewportRank=event.detail.rank;schedulePlaceFrame();
+    viewportRank=event.detail.rank;
   });
   // После естественной прокрутки и остановки панели известна видимая часть карты.
   window.addEventListener('scroll',schedulePlaceFrame,{passive:true});
@@ -243,6 +243,7 @@ export function drawMap(data) {
     marker.on('click', () => {
       selectPlace(r.rank, false);
       document.dispatchEvent(new CustomEvent('gm:pin-selected',{detail:{rank:r.rank}}));
+      inspector.openPlace(r);
     });
     markers.set(r.rank, marker);
   });
