@@ -6,6 +6,7 @@ import { $, fmt, node, animateUI, cancelUI, setRevealed, motionReduced, reveal }
 
 let map = null, tiles = null, tileTimer = null, tileFailures = 0;
 let pointsRenderer = null, zonesRenderer = null;
+let accessPalette=null,focusDuration=400;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
 let emphasized = new Set(), previewRank = null, houseData = [];
 let viewportRank=null, viewportTimer=null,inspector=null,selection=null,comparison=null,choosingCenter=false;
@@ -44,6 +45,7 @@ export function initMap() {
   map = L.map('map', {
     zoomControl: false
   }).setView([52.6088, 39.5992], 12);
+  accessPalette={line:token('--palette-rosewood-deep'),fill:token('--palette-pink')};focusDuration=parseFloat(token('--motion-map-focus'))||400;
   map.attributionControl.setPrefix(false);
   L.control.zoom({
     position: 'topright'
@@ -300,7 +302,7 @@ function drawAccessCircle(rec){
   layers.accessibility.clearLayers();
   if(!rec)return;
   L.circle([rec.lat,rec.lng],{pane:'accessibility',radius:rec.radius_m,interactive:false,
-    color:token('--palette-rosewood-deep'),weight:2,opacity:.7,fillColor:token('--palette-pink'),fillOpacity:.1,dashArray:'6 5'}).addTo(layers.accessibility);
+    color:accessPalette.line,weight:2,opacity:.7,fillColor:accessPalette.fill,fillOpacity:.1,dashArray:'6 5'}).addTo(layers.accessibility);
 }
 
 const mix = (a, b, t) => '#'+[1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i+2), 16)+(parseInt(b.slice(i, i+2), 16)-parseInt(a.slice(i, i+2), 16))*t).toString(16).padStart(2, '0')).join('');
@@ -448,7 +450,7 @@ function syncLegend() {
 
 function syncMapLayers(animate=true) {
   syncLegend();if(!map)return;
-  const duration=animate&&!motionReduced()?parseFloat(token('--motion-map-focus'))||400:0;
+  const duration=animate&&!motionReduced()?focusDuration:0;
   ['houses','competitors','centroids','zones','recommendations'].forEach(key=>{
     const pane=map.getPane(key==='recommendations'?'markerPane':key),layer=layers[key];
     if(!layer)return;

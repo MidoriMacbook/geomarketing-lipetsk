@@ -228,14 +228,6 @@
 - Выберите центр своей области на карте
 - Список сохранённых мест обновлён в другой вкладке.
 
-## static/js/atlas-interactions.js
-
-- &lt;button class="sheet-handle" type="button" aria-label="Изменить высоту результатов" aria-expanded="false"&gt;&lt;span class="sheet-summary"&gt;Мест нет&lt;/span&gt;&lt;/button&gt;&lt;button type="button" data-snap="peek" aria-label="Карта — свернуть результаты"&gt;Карта&lt;/button&gt;&lt;button type="button" data-snap="half" aria-label="Места — показать половину панели результатов"&gt;Места&lt;/button&gt;&lt;button type="button" data-snap="full" aria-label="Все — развернуть результаты полностью"&gt;Все&lt;/button&gt;
-- Оценка и данные
-- ${count} ${count===1?'место':'места'} · лучшее ${scoreText(places[0].score)}
-- Мест нет
-- Расчёт не завершён
-
 ## static/js/boot-status.js
 
 - Сервис просыпается…
@@ -340,15 +332,65 @@
 - ${action}: ${label.toLocaleLowerCase('ru')}, ${number.textContent}. Повторить анимацию числа
 - Показать связь показателя «${label}» с картой. Повторное нажатие снимает выделение.
 
+## static/js/map-analysis.js
+
+- выбрано вручную
+- место ${rec.rank}
+
+## static/js/map-comparison.js
+
+- Общая аудитория мест
+- Сравнить охват на карте
+- Для карты выберите ровно два места.
+- Откройте их исходное исследование: для общего охвата нужны дома того же расчёта.
+- Общая аудитория считается по домам в обоих радиусах.
+- Общих жителей: ${overlap.percent===null?'нет данных':`${Math.round(overlap.percent)} %`}
+- Закрыть сравнение на карте
+- ${placeLabel(a)} и ${placeLabel(b)} · ≈ ${fmt(overlap.residents)} общих жителей
+- Доля от жителей объединённого охвата (${fmt(overlap.union)}). Общих домов: ${fmt(overlap.houses)}.
+- Эти места почти не отличаются по аудитории.
+
+## static/js/map-inspector.js
+
+- Закрыть выноску
+- ≈ ${fmt(rec.residents_in_radius)} жителей в ${fmt(rec.radius_m)} м · ${fmt(rec.competitors_in_radius)} конкурентов
+- Ближайший конкурент: ${distance(rec.nearest_competitor_m)}
+- Сохранено и добавлено в сравнение
+- Сохранено · в сравнении уже три места
+- Не удалось сохранить. Проверьте сообщение в сохранённых местах.
+- Сохранено
+- Оценка этой точки
+- Вне области расчёта
+- Выберите точку внутри границы области.
+- В этой части сетки нет оценки. Выберите другую точку.
+- По сравнению с лучшим: ${signed(d.score)} баллов · ${signed(d.residents)} жителей
+- Оценка относительная, как у рекомендаций.
+- Сохранить как своё место
+- Место ${rec.rank} · оценка
+- Сохранить
+- Подробнее
+- Центр спроса
+- ≈ ${fmt(center.residents)} жителей в кластере
+- Связанные места для проверки:
+- Место ${rec.rank} · ${scoreText(rec.score)}
+- В этом кластере нет отдельной рекомендации.
+
+## static/js/map-selection.js
+
+- Показать, как считается
+
 ## static/js/map.js
 
 - Подложка карты загрузилась не полностью. Анализ готовых районов доступен.
 - Не удалось загрузить модуль карты. Обновите страницу. Расчёт готовых районов доступен.
 - Обновить страницу
+- © &lt;a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener"&gt;участники OpenStreetMap&lt;/a&gt;
 - Центр выбран: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}. Нажмите «Найти места».
 - Конкурент
-- Скопление: ≈ ${fmt(c.residents)} жителей
+- Центр спроса ${index+1}
+- Центр спроса: ≈ ${fmt(c.residents)} жителей
 - Рекомендация ${r.rank}
+- Место ${r.rank}, оценка ${Math.round(r.score*100)} из 100
 - Место ${r.rank}
 - Группа домов: ${fmt(cell.count)} · жителей ≈ ${fmt(cell.residents)}
 - Жителей: ≈ ${fmt(house.residents)}
@@ -457,9 +499,8 @@
 - Свежесть данных
 - Пригодность данных
 - Причины ограничений
+- выбрано вручную
 - Не указана
-- ${context.business_name} · место ${rec.rank} · ${context.district_name}
-- Место ${rec.rank}
 - Координаты: ${coords(rec)}. Жителей в радиусе ${fmt(rec.radius_m)} м: ≈ ${fmt(rec.residents_in_radius)}. Конкурентов в радиусе: ${fmt(rec.competitors_in_radius)}. Ближайший конкурент: ${distance(rec.nearest_competitor_m)}.
 - Относительная оценка внутри расчёта: ${scoreText(rec.score)}.${includeContext ? ` Радиус модели: ${context.parameters.radius_m} м; коэффициент конкуренции: ${context.parameters.alpha.toLocaleString('ru-RU')}. ID расчёта: ${context.analysis_id}.` : ''}
 - Источник: ${sourceText(context.source)}. Дата данных: ${dateText(context.data_date)}${context.saved_at ? `. Сохранено: ${dateText(context.saved_at)}` : ''}.
@@ -490,6 +531,18 @@
 - Неизвестна дата домов или конкурентов; свежесть не оценена.
 - Самый ранний набор старше 7 дней; проверьте изменения на месте.
 
+## static/js/result-sheet.js
+
+- &lt;div class="sheet-top"&gt;&lt;button class="sheet-handle" type="button" aria-expanded="false"&gt;&lt;span class="sheet-summary"&gt;Мест нет&lt;/span&gt;&lt;span class="sheet-more"&gt;Подробнее &lt;span aria-hidden="true"&gt;⌃&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;&lt;button class="sheet-close" type="button" aria-label="Закрыть результаты"&gt;×&lt;/button&gt;&lt;/div&gt;&lt;div class="sheet-rail" aria-label="Места для проверки"&gt;&lt;/div&gt;
+- Закрыть результаты
+- Оценка и данные
+- ${places.length} ${places.length===1?'место':'места'} для проверки
+- Мест нет
+- ≈ ${fmt(rec.residents_in_radius)} жителей
+- ${fmt(rec.competitors_in_radius)} конкурентов
+- Попробуйте другую область или тип бизнеса.
+- Расчёт не завершён
+
 ## static/js/saved-places.js
 
 - Сохранённые данные повреждены. Список не восстановлен. Новое сохранение заменит повреждённую запись.
@@ -508,18 +561,16 @@
 - Сохранить для сравнения
 - Сохранить
 - ${label} — место ${b.dataset.rank}${exists&&state.comparison.size&gt;=3&&!selected?' — выбор сравнения заполнен':''}
-- ${item.business_name} · место ${rec.rank}
 - ≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов · радиус ${fmt(rec.radius_m)} м
 - Данные: ${dateText(item.data_date)} · ${sourceText(item.source)}
 - Сохранено: ${dateText(item.saved_at)}
 - ${scoreText(rec.score)} — только внутри своего расчёта
-- Сравнить ${item.business_name}, ${item.district_name}, место ${rec.rank}
+- Сравнить ${item.business_name}, ${item.district_name}, ${placeLabel(rec)}
 - Для сравнения можно выбрать до трёх мест.
 - Сравнить
 - Удалить
 - Место удалено из этого браузера.
-- Удалить ${item.business_name}, место ${rec.rank}
-- ${item.business_name} · место ${r.rank}
+- Удалить ${item.business_name}, ${placeLabel(rec)}
 - ${fmt(r.radius_m)} м
 
 ## static/js/scenario-report.js

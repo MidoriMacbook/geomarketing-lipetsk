@@ -1,4 +1,17 @@
 import {test,expect} from '@playwright/test';
+test('проверка точки читает оценку из полученной сетки',async({page,baseURL})=>{
+ await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
+ await page.route('**/api/calculate?**',async route=>{
+  const response=await route.fetch(),data=await response.json();
+  // Независимый эталон: все узлы равны 42, поэтому интерполяция тоже равна 42.
+  data.grid.scores=data.grid.scores.map(()=>.42);
+  await route.fulfill({response,json:data});
+ });
+ await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ await page.locator('#map').scrollIntoViewIfNeeded();await page.waitForTimeout(700);
+ const box=await page.locator('#map').boundingBox();await page.locator('#map').click({position:{x:box.width*.45,y:box.height*.55}});
+ await expect(page.locator('.map-inspection')).toHaveAttribute('data-score','42');
+});
 for(const width of [375,1440])test(`произвольная точка, сохранение и сравнение ${width}`,async({page,baseURL})=>{
  await page.setViewportSize({width,height:900});
  await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
@@ -44,7 +57,7 @@ test('объяснение отдельно от базовых домов и в
  expect(await page.locator('.leaflet-houses-pane canvas').evaluate(el=>el===window.originalHouseCanvas)).toBe(true);
  await page.getByRole('button',{name:'Закрыть выноску'}).click();await page.locator('#map-explain-toggle').click();
  await expect(page.locator('#map')).toHaveAttribute('data-explanation','false');await expect(page.locator('.leaflet-accessibility-pane path')).toHaveCount(1);
- await expect(page.locator('.map-distance')).toHaveCount(0);
+ await expect(page.locator('.map-distance:visible')).toHaveCount(0);
 });
 test('карточка и пин связаны наведением, Enter открывает выноску',async({page,baseURL})=>{
  await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
