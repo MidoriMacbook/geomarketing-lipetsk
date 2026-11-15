@@ -41,11 +41,12 @@ export function initMap() {
   map = L.map('map', {
     zoomControl: false
   }).setView([52.6088, 39.5992], 12);
+  map.attributionControl.setPrefix(false);
   L.control.zoom({
     position: 'topright'
   }).addTo(map);
   tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+    attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">участники OpenStreetMap</a>',
     maxZoom: 19
   });
   tiles.on('loading', () => {

@@ -121,6 +121,8 @@
 .map-legend button:active { transform:scale(.97); }
 .analysis-bar { background:var(--palette-sage-soft); color:var(--palette-ink); font-size:13px; padding-block:8px; }
 .analysis-bar .status-dot { background:var(--palette-sage-deep); }
+.leaflet-container .leaflet-control-attribution { background:var(--palette-cream); color:var(--palette-ink); padding:3px 7px; border-radius:6px 0 0 0; font:11px/1.4 var(--font-body); backdrop-filter:blur(4px); }
+.leaflet-container .leaflet-control-attribution a { color:var(--palette-ink); text-decoration:underline; }
 #map .recommendation-pin { position:relative; background:var(--palette-ink); color:var(--palette-cream); border:3px solid var(--palette-cream); box-shadow:0 3px 10px var(--color-shadow-strong); }
 #map .recommendation-pin.is-selected { background:var(--palette-rosewood-deep); color:var(--palette-cream); border-color:var(--palette-cream); outline:0; transform:scale(1.15); }
 #map .recommendation-pin.is-selected::after { content:""; position:absolute; inset:-7px; border:2px solid var(--palette-rosewood-deep); border-radius:50%; pointer-events:none; animation:place-radius 2.8s ease-out infinite; }
