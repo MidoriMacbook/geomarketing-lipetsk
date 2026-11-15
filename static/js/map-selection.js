@@ -21,7 +21,7 @@ export function createSelectionLayer(map){
   if(!visible){houses.clearLayers();rings.clearLayers();return;}
   const coverage=analysis.coverage(selected,selected.radius_m);
   const houseVisible=document.getElementById('layer-houses').checked,competitorVisible=document.getElementById('layer-competitors').checked;
-  reconcile(houses,houseMarkers,houseVisible?coverage.members:[],{radius:4,stroke:true,weight:1,color:token('--palette-ink'),fillColor:token('--palette-sky'),fillOpacity:1});
+  reconcile(houses,houseMarkers,houseVisible?coverage.members:[],{radius:4,stroke:true,weight:1,color:token('--palette-ink'),fillColor:token('--palette-sky-deep'),fillOpacity:1});
   reconcile(rings,ringMarkers,competitorVisible?coverage.nearby:[],{radius:9,color:token('--palette-rosewood-deep'),weight:2,fill:false});
   const origin=[selected.lat,selected.lng];
   if(coverage.nearest){
