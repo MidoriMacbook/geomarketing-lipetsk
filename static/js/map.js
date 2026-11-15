@@ -1,13 +1,14 @@
 import { state } from './state.js';
 import {createMapInspector} from './map-inspector.js';
 import {createSelectionLayer} from './map-selection.js';
+import {createMapComparison} from './map-comparison.js';
 import { $, fmt, node, animateUI, cancelUI, setRevealed, motionReduced, reveal } from './ui.js';
 
 let map = null, tiles = null, tileTimer = null, tileFailures = 0;
 let pointsRenderer = null, zonesRenderer = null;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
 let emphasized = new Set(), previewRank = null, houseData = [];
-let viewportRank=null, viewportTimer=null,inspector=null,selection=null,choosingCenter=false;
+let viewportRank=null, viewportTimer=null,inspector=null,selection=null,comparison=null,choosingCenter=false;
 const layers = {}, markers = new Map();
 const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const color = role => token(`--color-map-${role}`);
@@ -115,7 +116,8 @@ export function initMap() {
     const input=$('layer-'+button.dataset.layerKey);input.checked=!input.checked;input.dispatchEvent(new Event('change',{bubbles:true}));
   }));
   selection=createSelectionLayer(map);
-  inspector=createMapInspector(map,{selectPoint:rec=>{drawAccessCircle(rec);selection.select(rec);}});
+  inspector=createMapInspector(map,{selectPoint:rec=>{if(comparison?.isOpen())comparison.clear();drawAccessCircle(rec);selection.select(rec);}});
+  comparison=createMapComparison(map,{onOpen:()=>{clearTimeout(viewportTimer);inspector.close();selection.select(null);layers.accessibility.clearLayers();},onClose:()=>drawAccessRadius(state.selectedRank)});
   document.addEventListener('gm:choose-center',()=>{choosingCenter=true;});
   document.getElementById('district').addEventListener('change',()=>{choosingCenter=$('district').value==='custom';});
   map.on('click', e => {
@@ -196,7 +198,7 @@ export function iconFor(rank, selected) {
 
 export function drawMap(data) {
   if (!map)return;
-  choosingCenter=false;inspector.setData(data);selection.setData(data);
+  choosingCenter=false;inspector.setData(data);selection.setData(data);comparison.setData(data);
   Object.entries(layers).forEach(([key, layer]) => {
     if (key !== 'preview')layer.clearLayers();
   });
@@ -371,7 +373,7 @@ function centerVisiblePlace(rank){
 function schedulePlaceFrame(){
   if(!matchMedia('(max-width:600px)').matches)return;
   clearTimeout(viewportTimer);viewportTimer=setTimeout(()=>{
-    if(document.documentElement.dataset.sheetGesture==='true'||inspector?.isOpen())return;
+    if(document.documentElement.dataset.sheetGesture==='true'||inspector?.isOpen()||comparison?.isOpen())return;
     if(viewportRank===null)fitMobilePlaces();else centerVisiblePlace(viewportRank);
   },160);
 }
@@ -379,6 +381,7 @@ function schedulePlaceFrame(){
 export function clearAnalysisMap() {
   inspector?.setData(null);
   selection?.setData(null);
+  comparison?.setData(null);
   emphasized=new Set();previewRank=null;houseData=[];
   Object.keys(layerTimers).forEach(key=>{clearTimeout(layerTimers[key]);layerRevisions[key]=(layerRevisions[key]||0)+1;});
   markers.clear();

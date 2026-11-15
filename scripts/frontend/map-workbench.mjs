@@ -24,6 +24,11 @@ try{for(const width of [375,768,1440]){
    await page.locator('#map').evaluate(el=>scrollTo({top:scrollY+el.getBoundingClientRect().top-110,behavior:'instant'}));await page.waitForTimeout(700);
    await page.locator('.recommendation-pin').first().click();await page.waitForTimeout(650);await page.screenshot({path:`${dir}/${phase}-popover-${width}.png`});
   }
+  if(point==='coverage'){
+   await page.evaluate(async()=>{const {state}=await import('/static/js/state.js');const {savePlace}=await import('/static/js/saved-places.js');for(const rec of state.current.recommendations.slice(0,2))await savePlace(rec,{compare:true});});
+   if(width===375)await page.locator('.mobile-secondary-details>summary').filter({hasText:'Сохранённые места'}).click();
+   await page.locator('#compare-coverage').click();await page.waitForTimeout(600);await page.screenshot({path:`${dir}/${phase}-coverage-${width}.png`});
+  }
  }
  await page.close();
 }}finally{await browser.close();}

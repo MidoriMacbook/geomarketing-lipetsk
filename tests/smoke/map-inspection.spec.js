@@ -54,3 +54,9 @@ test('карточка и пин связаны наведением, Enter от
  await pin.focus();await page.keyboard.press('Enter');await expect(page.locator('.map-inspection')).toHaveAttribute('aria-label','Место 2 · оценка');await expect(card).toHaveClass(/selected/);
  await page.keyboard.press('Escape');await expect(page.locator('.map-inspection')).toHaveCount(0);
 });
+test('два сохранённых места показывают общую аудиторию по домам',async({page,baseURL})=>{
+ await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ await page.evaluate(async()=>{const {state}=await import('/static/js/state.js');const {savePlace}=await import('/static/js/saved-places.js');for(const rec of state.current.recommendations.slice(0,2))await savePlace(rec,{compare:true});});
+ await page.locator('#compare-coverage').click();await expect(page.locator('.map-overlap')).toBeVisible();await expect(page.locator('.map-overlap')).toContainText('Общих жителей: 0 %');
+ await page.getByRole('button',{name:'Закрыть сравнение на карте'}).click();await expect(page.locator('.map-overlap')).toBeHidden();
+});

@@ -71,5 +71,5 @@ export function createMapInspector(map,{selectPoint=()=>{}}={}){
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&popup?.isOpen()){event.preventDefault();close();map.getContainer().focus({preventScroll:true});}});
  document.addEventListener('gm:sheet-settled',keepVisible);
  window.addEventListener('resize',()=>requestAnimationFrame(keepVisible));
- return {inspect,openPlace,keepVisible,isOpen:()=>Boolean(popup?.isOpen()),setData(next){close();analysis=next?createMapAnalysis(next):null;}};
+ return {close,inspect,openPlace,keepVisible,isOpen:()=>Boolean(popup?.isOpen()),setData(next){close();analysis=next?createMapAnalysis(next):null;}};
 }

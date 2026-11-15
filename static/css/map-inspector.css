@@ -15,4 +15,8 @@
 #map[data-explanation=true] .leaflet-houses-pane canvas { opacity:.25; transition:opacity .3s ease; }
 .map-distance span { white-space:nowrap; font:12px/1.5 'Golos Text',sans-serif; padding:2px 6px; border:1px solid var(--palette-line); border-radius:6px; background:var(--palette-cream); color:var(--palette-ink); }
 .map-explain-toggle[aria-pressed=true] { background:var(--palette-pink-soft); color:var(--palette-rosewood-deep); border-color:currentColor; }
+.map-overlap { position:absolute; z-index:1001; top:12px; left:12px; right:64px; max-width:420px; padding:8px 12px; border:1px solid var(--palette-border); border-radius:12px; background:var(--palette-cream); color:var(--palette-ink); font:13px/1.4 'Golos Text',sans-serif; }
+.map-overlap-heading { display:flex; align-items:center; justify-content:space-between; }
+.map-overlap p { margin:4px 0; }.map-overlap small { font-size:12px; }.map-overlap-warning { color:var(--palette-rosewood-deep); font-weight:600; }
+.map-overlap-hint { color:var(--palette-ink-muted); font-size:14px; }
 @media(prefers-reduced-motion:reduce){#map[data-explanation=true] .leaflet-houses-pane canvas { transition:none; }}
