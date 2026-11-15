@@ -1,6 +1,5 @@
 /* Городской атлас: композиция, не новый набор компонентов. */
 :root { --radius-panel:20px; --radius-control:10px; --size-settings:260px; --text-kpi:2.8rem; --text-kpi-primary:3rem; }
-#reading-progress { position:fixed; inset:0 0 auto; height:3px; z-index:2100; background:var(--color-primary); transform:scaleX(var(--reading-progress,0)); transform-origin:left; pointer-events:none; }
 .header-reserve { padding:12px 24px 0; background:var(--color-page); }
 .site-header,.site-header.is-scrolled { max-width:1536px; margin:auto; padding:8px 12px 8px 20px; min-height:68px; border:1px solid var(--color-line); border-radius:40px; background:var(--color-header); gap:20px; }
 .site-header .brand { font-size:1rem; }
@@ -348,7 +347,7 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .page { padding-bottom:180px; }
  .saved-section,.scenarios-section { padding:16px; }
 }
-@media (prefers-reduced-motion:reduce) { #reading-progress { display:none; } .hero-art .atlas-city { transform:none!important; } }
+@media (prefers-reduced-motion:reduce) { .hero-art .atlas-city { transform:none!important; } }
 @media (max-width:600px) and (prefers-reduced-motion:reduce) {
  #recommendations:not([data-sheet-layout=false]) { transition:opacity 180ms ease-out!important; }
 }
@@ -359,7 +358,7 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .method-steps p { display:block; font-size:14px; }
  .method-steps .atlas-step { font-size:13px; }
 }
-@media print { #reading-progress,#nav-backdrop,.sheet-controls { display:none!important; } #recommendations[data-sheet-active] { position:static!important; transform:none!important; } }
+@media print { .sheet-scrim,#nav-backdrop,.sheet-controls { display:none!important; } #recommendations[data-sheet-active] { position:static!important; transform:none!important; } }
 
 /* Одинаковая мобильная компоновка до и после загрузки модулей. */
 @media (max-width:600px) {
@@ -369,3 +368,10 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  #mobile-settings-selection { min-height:2.9em; }
  #mobile-settings-state { min-height:2.9em; }
 }
+
+/* Нативная прокрутка остаётся доступной мыши, касанию и клавиатуре. */
+* { scrollbar-width:thin; scrollbar-color:var(--color-scrollbar) transparent; }
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-thumb { background:var(--color-scrollbar); border-radius:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-button { display:none; width:0; height:0; }
