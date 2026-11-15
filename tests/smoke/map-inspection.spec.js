@@ -46,3 +46,11 @@ test('объяснение отдельно от базовых домов и в
  await expect(page.locator('#map')).toHaveAttribute('data-explanation','false');await expect(page.locator('.leaflet-accessibility-pane path')).toHaveCount(1);
  await expect(page.locator('.map-distance')).toHaveCount(0);
 });
+test('карточка и пин связаны наведением, Enter открывает выноску',async({page,baseURL})=>{
+ await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ const pin=page.getByRole('button',{name:/Место 2, оценка/}),card=page.locator('#recommendation-list article[data-rank="2"]');
+ await pin.hover();await expect(card).toHaveClass(/is-preview/);await page.mouse.move(0,0);await expect(card).not.toHaveClass(/is-preview/);
+ await card.hover();await expect(pin.locator('.recommendation-pin')).toHaveClass(/is-preview/);
+ await pin.focus();await page.keyboard.press('Enter');await expect(page.locator('.map-inspection')).toHaveAttribute('aria-label','Место 2 · оценка');await expect(card).toHaveClass(/selected/);
+ await page.keyboard.press('Escape');await expect(page.locator('.map-inspection')).toHaveCount(0);
+});

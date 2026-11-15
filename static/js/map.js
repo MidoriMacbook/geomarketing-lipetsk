@@ -236,7 +236,7 @@ export function drawMap(data) {
       r.rank === state.selectedRank),
       zIndexOffset:r.rank===state.selectedRank?1000:0,
       title: `Рекомендация ${r.rank}`,
-      alt: `Место ${r.rank}`
+      alt: `Место ${r.rank}, оценка ${Math.round(r.score*100)} из 100`
     }).bindTooltip(`Место ${r.rank}`, {
       direction: 'top',
       offset: [0,
@@ -248,6 +248,15 @@ export function drawMap(data) {
       inspector.openPlace(r);
     });
     markers.set(r.rank, marker);
+    const element=marker.getElement();element.setAttribute('role','button');element.setAttribute('aria-label',`Место ${r.rank}, оценка ${Math.round(r.score*100)} из 100`);
+    const preview=active=>{
+      hoverPlace(r.rank,active);
+      document.querySelector(`#recommendation-list [data-rank="${r.rank}"]`)?.classList.toggle('is-preview',active);
+    };
+    element.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse')preview(true);});
+    element.addEventListener('pointerleave',()=>preview(false));
+    element.addEventListener('focus',()=>preview(true));element.addEventListener('blur',()=>preview(false));
+    element.addEventListener('keydown',event=>{if(event.key===' '||event.key==='Enter'){event.preventDefault();event.stopPropagation();marker.fire('click');}});
   });
   drawAccessRadius(state.selectedRank);
   animateUI(map.getPane('points'), [{ opacity: .3 }, { opacity: 1 }], 'map-points');
