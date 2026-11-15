@@ -145,6 +145,7 @@ export function initMobileWorkspace() {
  });
  byId('run').addEventListener('click',()=>{collapseAfterRun=mobile.matches&&dialog.open;},{capture:true});
  byId('mobile-custom-map').addEventListener('click',()=>{
+  document.dispatchEvent(new Event('gm:choose-center'));
   closeSettings({immediate:true});document.dispatchEvent(new Event('gm:map-focus'));const target=byId('map');if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'center'});
  });
  document.addEventListener('click',event=>{

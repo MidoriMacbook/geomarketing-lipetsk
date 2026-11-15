@@ -15,6 +15,11 @@ try{for(const width of [375,768,1440]){
   await page.screenshot({path:`${dir}/${phase}-hero-${width}.png`});
   await page.locator('#map-card').scrollIntoViewIfNeeded();await page.waitForTimeout(500);await page.screenshot({path:`${dir}/${phase}-map-${width}.png`});
   if(point==='sheet'&&width===375){await page.locator('.sheet-handle').click();await page.waitForTimeout(550);await page.screenshot({path:`${dir}/${phase}-expanded-${width}.png`});}
+  if(point==='inspection'){
+   await page.locator('#map').evaluate(el=>scrollTo({top:scrollY+el.getBoundingClientRect().top-110,behavior:'instant'}));await page.waitForTimeout(700);
+   const box=await page.locator('#map').boundingBox();await page.locator('#map').click({position:{x:box.width*.45,y:box.height*.55}});await page.waitForTimeout(600);
+   await page.screenshot({path:`${dir}/${phase}-point-${width}.png`});
+  }
  }
  await page.close();
 }}finally{await browser.close();}

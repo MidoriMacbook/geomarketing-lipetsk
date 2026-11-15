@@ -1,11 +1,12 @@
 import { state } from './state.js';
+import {createMapInspector} from './map-inspector.js';
 import { $, fmt, node, animateUI, cancelUI, setRevealed, motionReduced, reveal } from './ui.js';
 
 let map = null, tiles = null, tileTimer = null, tileFailures = 0;
 let pointsRenderer = null, zonesRenderer = null;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
 let emphasized = new Set(), previewRank = null, houseData = [];
-let viewportRank=null, viewportTimer=null;
+let viewportRank=null, viewportTimer=null,inspector=null,choosingCenter=false;
 const layers = {}, markers = new Map();
 const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const color = role => token(`--color-map-${role}`);
@@ -112,8 +113,11 @@ export function initMap() {
   document.querySelectorAll('[data-layer-key]').forEach(button=>button.addEventListener('click',()=>{
     const input=$('layer-'+button.dataset.layerKey);input.checked=!input.checked;input.dispatchEvent(new Event('change',{bubbles:true}));
   }));
+  inspector=createMapInspector(map);
+  document.addEventListener('gm:choose-center',()=>{choosingCenter=true;});
+  document.getElementById('district').addEventListener('change',()=>{choosingCenter=$('district').value==='custom';});
   map.on('click', e => {
-    if ($('district').value !== 'custom') return;
+    if ($('district').value !== 'custom'||(!choosingCenter&&state.current)) {inspector.inspect(e.latlng);return;}
     resetSelection();
     state.customPoint = [e.latlng.lat, e.latlng.lng];
     $('custom-hint').textContent = `Центр выбран: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}. Нажмите «Найти места».`;
@@ -190,6 +194,7 @@ export function iconFor(rank, selected) {
 
 export function drawMap(data) {
   if (!map)return;
+  choosingCenter=false;inspector.setData(data);
   Object.entries(layers).forEach(([key, layer]) => {
     if (key !== 'preview')layer.clearLayers();
   });
@@ -351,12 +356,13 @@ function centerVisiblePlace(rank){
 function schedulePlaceFrame(){
   if(!matchMedia('(max-width:600px)').matches)return;
   clearTimeout(viewportTimer);viewportTimer=setTimeout(()=>{
-    if(document.documentElement.dataset.sheetGesture==='true')return;
+    if(document.documentElement.dataset.sheetGesture==='true'||inspector?.isOpen())return;
     if(viewportRank===null)fitMobilePlaces();else centerVisiblePlace(viewportRank);
   },160);
 }
 
 export function clearAnalysisMap() {
+  inspector?.setData(null);
   emphasized=new Set();previewRank=null;houseData=[];
   Object.keys(layerTimers).forEach(key=>{clearTimeout(layerTimers[key]);layerRevisions[key]=(layerRevisions[key]||0)+1;});
   markers.clear();

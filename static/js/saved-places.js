@@ -1,4 +1,5 @@
 import { scoreText } from './result-format.js';
+import { manualPlaceId, placeLabel } from './map-analysis.js';
 import { state } from './state.js';
 import { $, fmt, coords, distance, STORAGE_KEY, node, button, dateText, sourceText, storageStatus, dataDate, reveal, animateUI, exitSnapshot, setRevealed } from './ui.js';
 import { checkedQuality, checkedExplanation } from './data-quality.js';
@@ -14,7 +15,7 @@ export function configureSaved(callbacks) {
 
 export function validSaved(item) {
   const r = item && item.recommendation;
-  return item && typeof item.id === 'string' && typeof item.analysis_id === 'string' && item.analysis_id.length > 0 && typeof item.business_name === 'string' && typeof item.district_name === 'string' && typeof item.saved_at === 'string' && Number.isFinite(Date.parse(item.saved_at)) && ['osm', 'cache', 'demo'].includes(item.source) && (item.data_date === null || (typeof item.data_date === 'string' && Number.isFinite(Date.parse(item.data_date)))) && typeof item.warning === 'string' && item.parameters && Number.isFinite(item.parameters.radius_m) && item.parameters.radius_m > 0 && Number.isFinite(item.parameters.alpha) && item.parameters.alpha > 0 && r && [r.rank, r.lat, r.lng, r.score, r.residents_in_radius, r.radius_m, r.competitors_in_radius].every(Number.isFinite) && Number.isInteger(r.rank) && r.rank >= 1 && r.rank <= 3 && r.score >= 0 && r.score <= 1 && r.lat >= -90 && r.lat <= 90 && r.lng >= -180 && r.lng <= 180 && r.radius_m === item.parameters.radius_m && Number.isInteger(r.competitors_in_radius) && r.competitors_in_radius >= 0 && r.residents_in_radius >= 0 && (r.nearest_competitor_m === null || (Number.isFinite(r.nearest_competitor_m) && r.nearest_competitor_m >= 0)) && item.id === `${item.analysis_id}:${r.rank}`;
+  return item && typeof item.id === 'string' && typeof item.analysis_id === 'string' && item.analysis_id.length > 0 && typeof item.business_name === 'string' && typeof item.district_name === 'string' && typeof item.saved_at === 'string' && Number.isFinite(Date.parse(item.saved_at)) && ['osm', 'cache', 'demo'].includes(item.source) && (item.data_date === null || (typeof item.data_date === 'string' && Number.isFinite(Date.parse(item.data_date)))) && typeof item.warning === 'string' && item.parameters && Number.isFinite(item.parameters.radius_m) && item.parameters.radius_m > 0 && Number.isFinite(item.parameters.alpha) && item.parameters.alpha > 0 && r && [r.rank, r.lat, r.lng, r.score, r.residents_in_radius, r.radius_m, r.competitors_in_radius].every(Number.isFinite) && Number.isInteger(r.rank) && ((r.rank >= 1 && r.rank <= 3 && r.origin !== 'manual') || (r.rank === 0 && r.origin === 'manual')) && r.score >= 0 && r.score <= 1 && r.lat >= -90 && r.lat <= 90 && r.lng >= -180 && r.lng <= 180 && r.radius_m === item.parameters.radius_m && Number.isInteger(r.competitors_in_radius) && r.competitors_in_radius >= 0 && r.residents_in_radius >= 0 && (r.nearest_competitor_m === null || (Number.isFinite(r.nearest_competitor_m) && r.nearest_competitor_m >= 0)) && item.id === (r.origin==='manual'?manualPlaceId(item.analysis_id,r):`${item.analysis_id}:${r.rank}`);
 }
 
 export function readSaved() {
@@ -91,10 +92,10 @@ export async function mutateSaved(mutate, allowRepair = false, removedId = null)
   }
 }
 
-export async function savePlace(rec) {
+export async function savePlace(rec, {compare=false}={}) {
   if (!state.current) return;
   // Фиксируем расчёт до ожидания блокировки: за это время фильтры и ответы могут измениться.
-  const id = `${state.current.analysis_id}:${rec.rank}`;
+  const id = rec.origin==='manual'?manualPlaceId(state.current.analysis_id,rec):`${state.current.analysis_id}:${rec.rank}`;
   const item = {
     id,
     analysis_id: state.current.analysis_id,
@@ -116,7 +117,7 @@ export async function savePlace(rec) {
       ...rec
     }
   };
-  await mutateSaved(latest => {
+  const result=await mutateSaved(latest => {
     if (latest.some(p => p.id === id)) return {
       message: 'Это место из этого расчёта уже сохранено.'
     };
@@ -129,6 +130,9 @@ export async function savePlace(rec) {
       message: 'Место сохранено в этом браузере.'
     };
   }, true);
+  const saved=state.saved.some(p=>p.id===id);
+  if(result.success&&saved&&compare&&state.comparison.size<3){state.comparison.add(id);renderSaved();}
+  return {...result,saved,id};
 }
 
 export function updateSaveButtons(feedback = false) {
@@ -168,14 +172,14 @@ export function renderSaved() {
     const rec = item.recommendation, card = node('article', 'saved-card');
     card.dataset.testid = 'saved-card';
     card.dataset.savedId = item.id;
-    card.append(node('h3', '', `${item.business_name} · место ${rec.rank}`), node('p', '', item.district_name), node('p', '', coords(rec)), node('p', 'saved-stats', `≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов · радиус ${fmt(rec.radius_m)} м`), node('p', '', `Данные: ${dateText(item.data_date)} · ${sourceText(item.source)}`), node('p', '', `Сохранено: ${dateText(item.saved_at)}`));
+    card.append(node('h3', '', `${item.business_name} · ${placeLabel(rec)}`), node('p', '', item.district_name), node('p', '', coords(rec)), node('p', 'saved-stats', `≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов · радиус ${fmt(rec.radius_m)} м`), node('p', '', `Данные: ${dateText(item.data_date)} · ${sourceText(item.source)}`), node('p', '', `Сохранено: ${dateText(item.saved_at)}`));
     card.append(node('p','saved-score',`${scoreText(rec.score)} — только внутри своего расчёта`));
     if (item.warning) card.append(node('p', '', item.warning));
     const actions = node('div', 'saved-card-actions'), label = node('label'), checkbox = node('input');
     checkbox.type = 'checkbox';
     checkbox.dataset.testid = 'compare-place';
     checkbox.checked = state.comparison.has(item.id);
-    checkbox.setAttribute('aria-label', `Сравнить ${item.business_name}, ${item.district_name}, место ${rec.rank}`);
+    checkbox.setAttribute('aria-label', `Сравнить ${item.business_name}, ${item.district_name}, ${placeLabel(rec)}`);
     checkbox.addEventListener('change', () => {
       if (checkbox.checked && state.comparison.size >= 3) {
         checkbox.checked = false;
@@ -191,7 +195,7 @@ export function renderSaved() {
       next: latest.filter(p => p.id !== item.id),
       message: 'Место удалено из этого браузера.'
     }), false, item.id));
-    remove.setAttribute('aria-label', `Удалить ${item.business_name}, место ${rec.rank}`);
+    remove.setAttribute('aria-label', `Удалить ${item.business_name}, ${placeLabel(rec)}`);
     actions.append(label, remove);
     card.append(actions);
     card.append(fieldChecksBlock(item.id, { readSaved }));
@@ -217,7 +221,7 @@ export function comparisonRows() {
 export function fillTable(body, items) {
   body.replaceChildren();
   items.forEach(item => {
-    const r = item.recommendation, tr = node('tr'), title = node('td', '', `${item.business_name} · место ${r.rank}`);
+    const r = item.recommendation, tr = node('tr'), title = node('td', '', `${item.business_name} · ${placeLabel(r)}`);
     title.append(node('small', '', item.district_name), node('small', '', coords(r)));
     tr.append(title, node('td', '', fmt(r.residents_in_radius)), node('td', '', `${fmt(r.radius_m)} м`), node('td', '', fmt(r.competitors_in_radius)), node('td', '', distance(r.nearest_competitor_m)), node('td', '', dateText(item.data_date)), node('td', '', scoreText(r.score)));
     body.append(tr);
