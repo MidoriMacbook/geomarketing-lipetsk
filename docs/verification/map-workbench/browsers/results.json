@@ -1,0 +1,30 @@
+[
+  {
+    "browser": "firefox",
+    "width": 375,
+    "errors": [],
+    "scrollbar": "none",
+    "horizontalOverflow": 0
+  },
+  {
+    "browser": "firefox",
+    "width": 1440,
+    "errors": [],
+    "scrollbar": "none",
+    "horizontalOverflow": 0
+  },
+  {
+    "browser": "webkit",
+    "width": 375,
+    "errors": [],
+    "scrollbar": "thin",
+    "horizontalOverflow": 0
+  },
+  {
+    "browser": "webkit",
+    "width": 1440,
+    "errors": [],
+    "scrollbar": "thin",
+    "horizontalOverflow": 0
+  }
+]

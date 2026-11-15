@@ -103,6 +103,9 @@ function enhance(select) {
       animateUI(value,[{opacity:.35,transform:'translateY(3px)'},{opacity:1,transform:'translateY(0)'}],'choice-value',{duration:'fast'});
     }
   }
+  // WebKit focuses the dialog on mouse down instead of its button. Keep focus
+  // on the combobox so focusout cannot close it before the toggle click arrives.
+  trigger.addEventListener('mousedown',event=>{event.preventDefault();trigger.focus({preventScroll:true});});
   trigger.addEventListener('click',()=>opened?close():open());
   trigger.addEventListener('keydown',event=>{
     const key=event.key,enabled=options.map((option,index)=>option.disabled?-1:index).filter(index=>index>=0);
