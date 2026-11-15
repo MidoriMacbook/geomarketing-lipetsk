@@ -1,0 +1,13 @@
+.ui-icon { width:20px; height:20px; flex:none; vertical-align:middle; pointer-events:none; }
+button[data-inline-icon],a[data-inline-icon] { display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+.choice-mark,.choice-option-mark { display:grid; place-items:center; }
+.choice-mark[hidden],.choice-option-mark[hidden] { display:none; }
+.directional-icon[data-inline-icon],.choice-arrow[data-inline-icon] { width:20px; height:20px; background:none; mask:none; -webkit-mask:none; }
+[data-inline-icon]::after { display:none!important; }
+summary>.ui-icon { position:absolute; right:0; top:calc(50% - 10px); transition:transform var(--motion-fast); }
+details[open]:not([data-expanded=false])>summary>.ui-icon { transform:rotate(180deg); }
+.sheet-more>.ui-icon { transform:rotate(180deg); }
+.sheet-close .ui-icon,.map-inspection-close .ui-icon { width:24px; height:24px; }
+.hero-links #hero-map-link>.ui-icon { grid-column:2; grid-row:1; }
+.field-checks>summary>.ui-icon,#data-summary>.ui-icon { position:static; grid-column:-1; align-self:center; }
+@media(prefers-reduced-motion:reduce){summary>.ui-icon { transition:none; }}

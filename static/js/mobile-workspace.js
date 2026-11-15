@@ -72,6 +72,7 @@ export function initMobileWorkspace() {
  }
  function openSettings(trigger=opener) {
   if(!mobile.matches)return;
+  window.scrollTo({left:scrollX,top:scrollY,behavior:'instant'});
   document.dispatchEvent(new Event('gm:settings-open'));
   settings.classList.remove('inline-settings');byId('mobile-settings-content').append(settings);
   ++revision;closing=false;collapseAfterRun=false;cancelUI(dialog);returnTo=trigger;

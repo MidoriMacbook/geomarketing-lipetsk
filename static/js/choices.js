@@ -1,3 +1,4 @@
+import {icon,businessIcon} from './icons.js';
 import { $, node, animateUI, cancelUI, cancelRevealsWithin, clearSnapshot, exitSnapshot, motionStagger } from './ui.js';
 
 let initialized=false,current=null;
@@ -21,7 +22,7 @@ function enhance(select) {
   select.before(wrapper);wrapper.append(select,trigger);document.body.append(menu);
   label.htmlFor=trigger.id;
   if(select.dataset.testid){trigger.dataset.testid=select.dataset.testid;delete select.dataset.testid;}
-  let opened=false,options=[],rows=[],active=-1,query='',typedAt=0;
+  let opened=false,options=[],rows=[],active=-1,query='',typedAt=0,scrollPositions=new Map();
 
   function close(focus=false,animate=true) {
     if(!opened)return;
@@ -50,11 +51,13 @@ function enhance(select) {
     const description=select.getAttribute('aria-describedby');
     if(description)trigger.setAttribute('aria-describedby',description);
     else trigger.removeAttribute('aria-describedby');
+    if(id==='business')mark.replaceChildren(icon(businessIcon(select.value)));
     value.textContent=select.selectedOptions[0]?.textContent||'Выберите вариант';
     options=[...select.options].filter(option=>!option.hidden);
     rows=options.map((option,index)=>{
       const row=node('div','choice-option'),symbol=node('span','choice-option-mark',id==='business'?option.textContent.trim()[0]:''),check=node('span','choice-check','✓');
       symbol.hidden=id!=='business';
+      if(id==='business')symbol.replaceChildren(icon(businessIcon(option.value)));
       row.id=`${id}-option-${index}`;row.dataset.index=index;row.setAttribute('role','option');
       row.setAttribute('aria-selected',String(option.value===select.value));
       if(option.disabled)row.setAttribute('aria-disabled','true');
@@ -80,6 +83,8 @@ function enhance(select) {
     if(available<44)return;
     Object.assign(menu.style,{width:`${width}px`,left:`${Math.max(16,Math.min(rect.left,innerWidth-width-16))}px`,maxHeight:`${available}px`,top:down?`${rect.bottom+8}px`:'auto',bottom:down?'auto':`${innerHeight-rect.top+8}px`});
     menu.hidden=false;opened=true;current=controller;query='';
+    scrollPositions=new Map([[document.scrollingElement,[scrollX,scrollY]]]);
+    for(let parent=trigger.parentElement;parent;parent=parent.parentElement)scrollPositions.set(parent,[parent.scrollLeft,parent.scrollTop]);
     trigger.setAttribute('aria-expanded','true');
     setActive(Math.max(0,options.findIndex(option=>option.value===select.value&&!option.disabled)));
     animateUI(menu,[{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}],'choice-open',{duration:'base',easing:'emphasized'});
@@ -135,7 +140,12 @@ function enhance(select) {
   document.addEventListener('pointerdown',event=>{if(opened&&!trigger.contains(event.target)&&!menu.contains(event.target))close();});
   document.addEventListener('focusin',event=>{if(opened&&!trigger.contains(event.target)&&!menu.contains(event.target))close();});
   document.addEventListener('change',event=>{if(opened&&event.target!==select)close();});
-  window.addEventListener('scroll',event=>{if(opened&&!(event.target instanceof Node&&menu.contains(event.target)))close(false,false);},true);
+  window.addEventListener('scroll',event=>{
+    if(!opened||(event.target instanceof Node&&menu.contains(event.target)))return;
+    const target=event.target===document?document.scrollingElement:event.target,previous=scrollPositions.get(target);
+    if(event.isTrusted&&previous&&target.scrollLeft===previous[0]&&target.scrollTop===previous[1])return;
+    close(false,false);
+  },true);
   window.addEventListener('resize',()=>close(false,false));
   window.addEventListener('beforeprint',()=>close(false,false));
   matchMedia('print').addEventListener('change',event=>{if(event.matches)close(false,false);});
