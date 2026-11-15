@@ -15,15 +15,17 @@ test('20 проходов через карту не раскрывают пан
  await expect(sheet).toHaveAttribute('data-snap','peek');
  expect(await page.evaluate(()=>scrollY)).toBe(0);
  await toMap(page);
- await expect(page.locator('.sheet-summary')).toHaveText('3 места · лучшее 100 из 100');
+ await expect(page.locator('.sheet-summary')).toHaveText('3 места для проверки');
  expect((await page.locator('#map').boundingBox()).height).toBeGreaterThanOrEqual(667*.55);
  const y=await page.evaluate(()=>scrollY);
  await page.evaluate(()=>{window.sheetStates=[];new MutationObserver(()=>window.sheetStates.push(document.querySelector('#recommendations').dataset.snap)).observe(document.querySelector('#recommendations'),{attributes:true,attributeFilter:['data-snap']});});
  for(let i=0;i<20;i++){
   await page.evaluate(smooth=>scrollTo({top:document.documentElement.scrollHeight,behavior:smooth?'smooth':'instant'}),i%2===0);
   await expect(sheet).toHaveAttribute('data-sheet-active','false');
+  await expect.poll(()=>page.evaluate(()=>Math.abs(scrollY-(document.documentElement.scrollHeight-innerHeight)))).toBeLessThan(2);
   await page.evaluate(({y,smooth})=>scrollTo({top:y,behavior:smooth?'smooth':'instant'}),{y,smooth:i%2===0});
   await expect(sheet).toHaveAttribute('data-sheet-active','true');
+  await expect.poll(()=>page.evaluate(target=>Math.abs(scrollY-target),y)).toBeLessThan(2);
   await expect(sheet).toHaveAttribute('data-snap','peek');
  }
  expect(await page.evaluate(()=>window.sheetStates.every(s=>s==='peek'))).toBe(true);
@@ -36,10 +38,11 @@ test('тап, жест, клавиши и пин: фон неподвижен, �
  await toMap(page);
  const sheet=page.locator('#recommendations'),handle=page.locator('.sheet-handle');
  const before=await page.locator('#map').boundingBox(),y=await page.evaluate(()=>scrollY);
- await handle.click();await expect(sheet).toHaveAttribute('data-snap','half');
+ await handle.click();await expect(sheet).toHaveAttribute('data-snap','expanded');
  await expect(page.locator('body')).toHaveCSS('position','fixed');
  await page.mouse.wheel(0,400);await page.waitForTimeout(400);
  expect((await page.locator('#map').boundingBox()).y).toBeCloseTo(before.y,0);
+ await page.keyboard.press('Escape');await page.waitForTimeout(550);
  const cdp=await page.context().newCDPSession(page),box=await handle.boundingBox(),point={x:box.x+80,y:box.y+24};
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});
  for(let i=1;i<=6;i++){
@@ -47,13 +50,13 @@ test('тап, жест, клавиши и пин: фон неподвижен, �
   expect((await page.locator('#map').boundingBox()).height).toBeCloseTo(before.height,0);
  }
  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
- await expect(sheet).toHaveAttribute('data-snap','full');
+ await expect(sheet).toHaveAttribute('data-snap','expanded');
  await page.keyboard.press('Escape');await expect(sheet).toHaveAttribute('data-snap','peek');
  expect(await page.evaluate(()=>scrollY)).toBe(y);
- await handle.press('ArrowUp');await expect(sheet).toHaveAttribute('data-snap','half');
+ await handle.press('ArrowUp');await expect(sheet).toHaveAttribute('data-snap','expanded');
  await handle.press('ArrowDown');await expect(sheet).toHaveAttribute('data-snap','peek');
  await page.waitForTimeout(500);await page.locator('.recommendation-pin').first().click();
- await expect(sheet).toHaveAttribute('data-snap','half');
+ await expect(sheet).toHaveAttribute('data-snap','peek');
  await expect.poll(async()=>{const circle=await page.locator('.leaflet-accessibility-pane path').boundingBox(),panel=await sheet.boundingBox(),map=await page.locator('#map').boundingBox();return circle.y>=Math.max(80,map.y)&&circle.y+circle.height<panel.y;}).toBe(true);
 });
 test('повторный расчёт оставляет peek, reduced motion меняет только opacity',async({page})=>{
@@ -65,4 +68,13 @@ test('повторный расчёт оставляет peek, reduced motion м
  const y=await page.evaluate(()=>scrollY);
  await page.evaluate(async()=>{const {state}=await import('/static/js/state.js');document.dispatchEvent(new CustomEvent('gm:analysis-rendered',{detail:{data:state.current}}));});
  await expect(sheet).toHaveAttribute('data-snap','peek');expect(await page.evaluate(()=>scrollY)).toBe(y);
+});
+test('лента выбирает без раскрытия, повтор открывает модальную панель',async({page})=>{
+ await toMap(page);const sheet=page.locator('#recommendations'),card=page.locator('.sheet-place').nth(1);
+ await card.tap();await expect(card).toHaveAttribute('aria-pressed','true');await expect(sheet).toHaveAttribute('data-snap','peek');
+ await expect(page.locator('body')).not.toHaveCSS('position','fixed');
+ await card.tap();await expect(sheet).toHaveAttribute('data-snap','expanded');await expect(sheet).toHaveAttribute('aria-modal','true');
+ expect(await page.locator('#site-header').evaluate(el=>!!el.closest('[inert]'))).toBe(true);
+ await page.locator('.sheet-close').tap();await expect(sheet).toHaveAttribute('data-snap','peek');
+ await page.locator('.sheet-handle').tap();await page.locator('.sheet-scrim').tap({position:{x:3,y:78}});await expect(sheet).toHaveAttribute('data-snap','peek');
 });

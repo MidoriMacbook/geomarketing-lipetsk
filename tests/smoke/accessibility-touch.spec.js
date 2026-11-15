@@ -10,10 +10,8 @@ test.beforeEach(async({page,baseURL})=>{
 test('видимые подписи входят в доступные имена действий',async({page})=>{
  await expect(page.locator('.brand')).toHaveAccessibleName(/ГеоМаркетинг Липецк.*Городская аналитика/);
  await page.locator('#map-card').scrollIntoViewIfNeeded();
- for(const [snap,label] of [['peek','Карта'],['half','Места'],['full','Все']]){
-  await expect(page.locator(`button[data-snap=${snap}]`)).toHaveAccessibleName(new RegExp('^'+label));
- }
- await page.locator('.sheet-handle').click();await page.locator('button[data-snap=full]').click();
+ await expect(page.locator('.sheet-handle')).toHaveAccessibleName(/3 места для проверки.*Подробнее/);
+ await page.locator('.sheet-handle').click();
  const save=page.getByTestId('save-place').first();
  await expect(save).toHaveAccessibleName(/^Сохранить для сравнения — место 1/);
  await save.click();await expect(save).toHaveAccessibleName(/^В сравнении — место 1/);
@@ -23,16 +21,16 @@ test('видимые подписи входят в доступные имен�
 test('касание ручки двигает панель, а касание карты не захватывает панель',async({page})=>{
  const cdp=await page.context().newCDPSession(page);
  await page.emulateMedia({reducedMotion:'reduce'});
- await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('.sheet-handle').click();
+ await page.locator('#map-card').scrollIntoViewIfNeeded();
  const handle=page.locator('.sheet-handle'),sheet=page.locator('#recommendations'),pane=page.locator('.leaflet-map-pane');
  const box=await handle.boundingBox(),x=box.x+box.width/2,y=box.y+box.height/2;
- const mapTransform=await pane.evaluate(el=>el.style.transform),scroll=await page.evaluate(()=>-parseFloat(document.body.style.top));
+ const mapTransform=await pane.evaluate(el=>el.style.transform),scroll=await page.evaluate(()=>scrollY);
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:y-220}]});
  await expect(sheet).toHaveAttribute('data-dragging','true');
  expect(await pane.evaluate(el=>el.style.transform)).toBe(mapTransform);
  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
- await expect(sheet).toHaveAttribute('data-snap','full');
+ await expect(sheet).toHaveAttribute('data-snap','expanded');
  expect(await page.evaluate(()=>-parseFloat(document.body.style.top))).toBe(scroll);
  const fullHandle=await handle.boundingBox(),fullStart={x:fullHandle.x+fullHandle.width/2,y:fullHandle.y+fullHandle.height/2};
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[fullStart]});

@@ -96,9 +96,7 @@ export function initMap() {
   });
   map.on('zoomend', drawHouses);
   document.addEventListener('gm:sheet-position',event=>{
-    if(event.detail.active&&event.detail.snap==='half'){
-      viewportRank=state.selectedRank;schedulePlaceFrame();
-    }else if(event.detail.active&&viewportRank===null)requestAnimationFrame(()=>fitMobilePlaces());
+    if(event.detail.active&&event.detail.snap==='peek'&&viewportRank===null)requestAnimationFrame(()=>fitMobilePlaces());
   });
   document.addEventListener('gm:show-place',event=>{
     viewportRank=event.detail.rank;schedulePlaceFrame();

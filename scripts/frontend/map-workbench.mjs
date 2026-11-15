@@ -14,6 +14,7 @@ try{for(const width of [375,768,1440]){
  }else{
   await page.screenshot({path:`${dir}/${phase}-hero-${width}.png`});
   await page.locator('#map-card').scrollIntoViewIfNeeded();await page.waitForTimeout(500);await page.screenshot({path:`${dir}/${phase}-map-${width}.png`});
+  if(point==='sheet'&&width===375){await page.locator('.sheet-handle').click();await page.waitForTimeout(550);await page.screenshot({path:`${dir}/${phase}-expanded-${width}.png`});}
  }
  await page.close();
 }}finally{await browser.close();}
