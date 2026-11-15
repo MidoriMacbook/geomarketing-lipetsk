@@ -10,4 +10,8 @@ details[open]:not([data-expanded=false])>summary>.ui-icon { transform:rotate(180
 .sheet-close .ui-icon,.map-inspection-close .ui-icon { width:24px; height:24px; }
 .hero-links #hero-map-link>.ui-icon { grid-column:2; grid-row:1; }
 .field-checks>summary>.ui-icon,#data-summary>.ui-icon { position:static; grid-column:-1; align-self:center; }
+@media(max-width:600px){
+ .recommendation .place-actions .save[data-inline-icon] { grid-template-columns:minmax(0,1fr) 20px; }
+ .recommendation .save>.ui-icon { grid-area:1/2; }
+}
 @media(prefers-reduced-motion:reduce){summary>.ui-icon { transition:none; }}

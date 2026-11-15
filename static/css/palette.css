@@ -6,7 +6,7 @@
 .choice-option[aria-selected=true],.choice-option.is-active { background:var(--palette-pink-soft); }
 .kpi-card,.data-section,.trust-status { background:var(--tint-data); }
 .recommendations,.saved-section,.comparison { background:var(--tint-decision); }
-.recommendation,.recommendation.selected,.saved-card,.sheet-place { background:var(--palette-cream); }
+#recommendations .recommendation,#recommendations .recommendation.selected,.saved-card,.sheet-place { background:var(--palette-cream); }
 .sheet-place[aria-pressed=true] { background:var(--palette-pink-soft); }
 .map-legend>[aria-pressed=true] { background:var(--tint-analysis); }
 .map-legend [data-layer=houses] .layer-sample { background:var(--palette-sky-deep); }
