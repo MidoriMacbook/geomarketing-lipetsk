@@ -47,6 +47,7 @@ test('пин открывает выноску над полосой, тольк
  await page.locator('.recommendation-pin').first().click();const popup=page.locator('.map-inspection');
  await expect(popup).toHaveAttribute('aria-label','Место 1 · оценка');await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','peek');
  await expect.poll(async()=>{const box=await popup.boundingBox(),sheet=await page.locator('#recommendations').boundingBox();return box.y>=80&&box.y+box.height<sheet.y;}).toBe(true);
+ await expect.poll(async()=>{const a=await popup.boundingBox(),b=await page.locator('.leaflet-control-zoom').boundingBox();return a.x+a.width<=b.x||b.x+b.width<=a.x||a.y+a.height<=b.y||b.y+b.height<=a.y;}).toBe(true);
  await popup.getByRole('button',{name:'Подробнее'}).click();await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','expanded');await expect(popup).toHaveCount(0);
 });
 test('объяснение отдельно от базовых домов и выключается без удаления круга',async({page,baseURL})=>{
