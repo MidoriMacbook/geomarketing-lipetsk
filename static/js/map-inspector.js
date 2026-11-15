@@ -5,12 +5,12 @@ import {savePlace} from './saved-places.js';
 import {scoreText} from './result-format.js';
 
 // Этот слой читает готовый расчёт. Он не меняет рекомендации или сетку сервера.
-export function createMapInspector(map,{selectPoint=()=>{}}={}){
- let analysis=null,popup=null;
+export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=()=>{}}={}){
+ let analysis=null,popup=null,data=null;
  const token=name=>getComputedStyle(document.documentElement).getPropertyValue(name).trim();
  const layer=L.layerGroup().addTo(map);
  map.getPane('popupPane').style.zIndex='1000';
- function close(){if(popup)map.closePopup(popup);popup=null;layer.clearLayers();}
+ function close(){if(popup){if(popup.getElement())popup.getElement().inert=true;map.closePopup(popup);}popup=null;layer.clearLayers();}
  function keepVisible(){
   if(!popup?.isOpen())return;
   const element=popup.getElement(),box=element.getBoundingClientRect(),rect=map.getContainer().getBoundingClientRect();
@@ -68,8 +68,15 @@ export function createMapInspector(map,{selectPoint=()=>{}}={}){
    if(!matchMedia('(max-width:600px)').matches){const card=document.querySelector(`#recommendation-list [data-rank="${rec.rank}"]`);card?.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'nearest'});}
   }));show(rec,box);
  }
+ function openDemand(center,index){
+  close();const box=card('Центр спроса');box.append(node('p','',`≈ ${fmt(center.residents)} жителей в кластере`));
+  const related=data.recommendations.filter(rec=>rec.cluster_id===index+1);
+  if(related.length){box.append(node('p','map-inspection-note','Связанные места для проверки:'));for(const rec of related)box.append(button(`Место ${rec.rank} · ${scoreText(rec.score)}`,'button secondary',()=>{selectRecommendation(rec);openPlace(rec);}));}
+  else box.append(node('p','map-inspection-note','В этом кластере нет отдельной рекомендации.'));
+  show(center,box);
+ }
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&popup?.isOpen()){event.preventDefault();close();map.getContainer().focus({preventScroll:true});}});
  document.addEventListener('gm:sheet-settled',keepVisible);
  window.addEventListener('resize',()=>requestAnimationFrame(keepVisible));
- return {close,inspect,openPlace,keepVisible,isOpen:()=>Boolean(popup?.isOpen()),setData(next){close();analysis=next?createMapAnalysis(next):null;}};
+ return {close,inspect,openPlace,openDemand,keepVisible,isOpen:()=>Boolean(popup?.isOpen()),setData(next){close();data=next;analysis=next?createMapAnalysis(next):null;}};
 }

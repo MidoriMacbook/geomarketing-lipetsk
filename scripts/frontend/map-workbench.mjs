@@ -29,6 +29,9 @@ try{for(const width of [375,768,1440]){
    if(width===375)await page.locator('.mobile-secondary-details>summary').filter({hasText:'Сохранённые места'}).click();
    await page.locator('#compare-coverage').click();await page.waitForTimeout(600);await page.screenshot({path:`${dir}/${phase}-coverage-${width}.png`});
   }
+  if(point==='centers'){
+   const center=page.getByRole('button',{name:'Центр спроса 1',exact:true});await center.focus();await center.press('Enter');await page.waitForTimeout(600);await page.screenshot({path:`${dir}/${phase}-center-${width}.png`});
+  }
  }
  await page.close();
 }}finally{await browser.close();}

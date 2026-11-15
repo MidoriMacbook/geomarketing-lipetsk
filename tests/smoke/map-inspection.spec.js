@@ -60,3 +60,8 @@ test('два сохранённых места показывают общую �
  await page.locator('#compare-coverage').click();await expect(page.locator('.map-overlap')).toBeVisible();await expect(page.locator('.map-overlap')).toContainText('Общих жителей: 0 %');
  await page.getByRole('button',{name:'Закрыть сравнение на карте'}).click();await expect(page.locator('.map-overlap')).toBeHidden();
 });
+test('центр спроса открывает жителей кластера и связанную рекомендацию',async({page,baseURL})=>{
+ await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ await page.getByRole('button',{name:'Центр спроса 1',exact:true}).click();await expect(page.locator('.map-inspection')).toContainText('жителей в кластере');
+ const related=page.locator('.map-inspection').getByRole('button',{name:/Место \d ·/});await expect(related).toHaveCount(1);await related.click();await expect(page.locator('.map-inspection')).toHaveCount(1);await expect(page.locator('.map-inspection')).toHaveAttribute('aria-label',/Место \d · оценка/);
+});

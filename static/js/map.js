@@ -116,7 +116,7 @@ export function initMap() {
     const input=$('layer-'+button.dataset.layerKey);input.checked=!input.checked;input.dispatchEvent(new Event('change',{bubbles:true}));
   }));
   selection=createSelectionLayer(map);
-  inspector=createMapInspector(map,{selectPoint:rec=>{if(comparison?.isOpen())comparison.clear();drawAccessCircle(rec);selection.select(rec);}});
+  inspector=createMapInspector(map,{selectPoint:rec=>{if(comparison?.isOpen())comparison.clear();drawAccessCircle(rec);selection.select(rec);},selectRecommendation:rec=>selectPlace(rec.rank,false)});
   comparison=createMapComparison(map,{onOpen:()=>{clearTimeout(viewportTimer);inspector.close();selection.select(null);layers.accessibility.clearLayers();},onClose:()=>drawAccessRadius(state.selectedRank)});
   document.addEventListener('gm:choose-center',()=>{choosingCenter=true;});
   document.getElementById('district').addEventListener('change',()=>{choosingCenter=$('district').value==='custom';});
@@ -224,14 +224,13 @@ export function drawMap(data) {
     fillColor: palette.competitor,
     fillOpacity: 1
   }).bindTooltip('Конкурент').addTo(layers.competitors));
-  data.centroids.forEach(c => L.circleMarker([c.lat, c.lng], {
-    renderer: dataRenderers.centroids,
-    radius: 9,
-    color: palette.centroid,
-    weight: 3,
-    fill: false,
-    dashArray: '3 2'
-  }).bindTooltip(`Скопление: ≈ ${fmt(c.residents)} жителей`).addTo(layers.centroids));
+  data.centroids.forEach((c,index)=>{
+    const marker=L.marker([c.lat,c.lng],{pane:'centroids',icon:L.divIcon({className:'demand-center',html:'<span aria-hidden="true"></span>',iconSize:[44,44],iconAnchor:[-18,22]}),alt:`Центр спроса ${index+1}`})
+      .bindTooltip(`Центр спроса: ≈ ${fmt(c.residents)} жителей`).addTo(layers.centroids);
+    const open=()=>inspector.openDemand(c,index);marker.on('click',open);
+    const element=marker.getElement();element.setAttribute('role','button');element.setAttribute('aria-label',`Центр спроса ${index+1}`);
+    element.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();open();}});
+  });
   data.recommendations.forEach(r => {
     const marker = L.marker([r.lat, r.lng], {
       icon: iconFor(r.rank,
