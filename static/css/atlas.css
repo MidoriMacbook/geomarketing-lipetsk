@@ -321,6 +321,7 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .sheet-controls .sheet-close { flex:0 0 44px; font-size:28px; }
  .sheet-more { font-size:12px; color:var(--color-primary); white-space:nowrap; }
  .sheet-rail { display:flex; overflow-x:auto; gap:8px; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain; padding-block:2px 6px; }
+ #recommendations[data-closing=true] .sheet-rail { position:absolute; top:63px; left:16px; right:16px; z-index:2; background:var(--tint-decision); }
  .sheet-controls .sheet-place { display:grid; text-align:left; gap:0; flex:0 0 168px; min-height:72px; padding:7px 12px; scroll-snap-align:start; border:1px solid var(--color-border); border-radius:12px; background:var(--color-surface); font-size:12px; line-height:18px; color:var(--color-ink); }
  .sheet-place strong { font-size:14px; }
  .sheet-place[aria-pressed=true] { background:var(--palette-pink-soft); border-color:var(--color-primary); box-shadow:inset 0 0 0 1px var(--color-primary); }

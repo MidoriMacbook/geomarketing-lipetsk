@@ -36,10 +36,12 @@ function isolate(on){
  }else if(!on&&isolation.length){for(const [el,value] of isolation)el.inert=value;isolation=[];}
 }
 function settle(){
- clearTimeout(settleTimer);delete sheet.dataset.moving;delete root.dataset.sheetGesture;map.style.removeProperty('--map-gesture-height');
+ clearTimeout(settleTimer);delete sheet.dataset.moving;delete sheet.dataset.closing;delete root.dataset.sheetGesture;map.style.removeProperty('--map-gesture-height');
  if(pending){pending=false;document.dispatchEvent(new CustomEvent('gm:sheet-settled',{detail:{active,snap}}));}
 }
 function setSnap(next){
+ if(snap==='expanded'&&next==='peek')sheet.dataset.closing='true';
+ else if(next==='expanded')delete sheet.dataset.closing;
  snap=next;sheet.dataset.snap=snap;active=layout&&ready&&(mapVisible||snap==='expanded');
  const expanded=layout&&snap==='expanded';
  sheet.dataset.sheetLayout=String(layout);sheet.dataset.sheetActive=String(active);sheet.inert=layout&&!active;
