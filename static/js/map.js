@@ -10,6 +10,7 @@ let accessPalette=null,focusDuration=400;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
 let emphasized = new Set(), previewRank = null, houseData = [];
 let viewportRank=null, viewportTimer=null,inspector=null,selection=null,comparison=null,choosingCenter=false;
+let manualViewport=false;
 const layers = {}, markers = new Map();
 const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const color = role => token(`--color-map-${role}`);
@@ -101,17 +102,23 @@ export function initMap() {
   });
   map.on('zoomend', drawHouses);
   document.addEventListener('gm:sheet-position',event=>{
-    if(event.detail.active&&event.detail.snap==='peek'&&viewportRank===null)requestAnimationFrame(()=>fitMobilePlaces());
+    if(event.detail.active&&event.detail.snap==='peek'&&viewportRank===null)requestAnimationFrame(()=>{if(!manualViewport)fitMobilePlaces();});
   });
   document.addEventListener('gm:show-place',event=>{
-    viewportRank=event.detail.rank;schedulePlaceFrame();
+    viewportRank=event.detail.rank;manualViewport=false;schedulePlaceFrame();
   });
   document.addEventListener('gm:pin-selected',event=>{
     viewportRank=event.detail.rank;
   });
   // После естественной прокрутки и остановки панели известна видимая часть карты.
   window.addEventListener('scroll',schedulePlaceFrame,{passive:true});
-  document.addEventListener('gm:analysis-rendered',()=>{viewportRank=null;clearTimeout(viewportTimer);});
+  document.addEventListener('gm:analysis-rendered',()=>{viewportRank=null;manualViewport=false;clearTimeout(viewportTimer);});
+  map.getContainer().addEventListener('pointerdown',event=>{
+    if(event.target.closest('.leaflet-popup,.leaflet-control-attribution'))return;
+    // Жест на карте получает приоритет перед отложенным кадрированием листа.
+    manualViewport=true;
+    clearTimeout(viewportTimer);
+  },{passive:true});
   const motionObserver=new IntersectionObserver(([entry])=>{map.getContainer().dataset.motionVisible=String(entry.isIntersecting);});
   motionObserver.observe(map.getContainer());
   document.querySelectorAll('[data-layer-key]').forEach(button=>button.addEventListener('click',()=>{
@@ -363,17 +370,17 @@ function fitMobilePlaces(data=state.current){
   if(!map||!matchMedia('(max-width:600px)').matches||!data?.recommendations?.length)return;
   const {top,bottom,usable}=visiblePadding();
   if(usable<40)return;
-  map.fitBounds(data.recommendations.map(r=>[r.lat,r.lng]),{paddingTopLeft:[36,top],paddingBottomRight:[36,bottom],maxZoom:16,animate:false});
+  map.fitBounds(data.recommendations.map(r=>[r.lat,r.lng]),{paddingTopLeft:[36,top],paddingBottomRight:[68,bottom],maxZoom:16,animate:false});
 }
 function centerVisiblePlace(rank){
   if(!map)return;
   const rec=state.current?.recommendations.find(r=>r.rank===rank);if(!rec)return;
   const {top,bottom,usable}=visiblePadding();if(usable<100)return;
   const bounds=L.latLng(rec.lat,rec.lng).toBounds(rec.radius_m*2);
-  map.flyToBounds(bounds,{paddingTopLeft:[24,top],paddingBottomRight:[24,bottom],maxZoom:16,animate:!motionReduced(),duration:.45});
+  map.flyToBounds(bounds,{paddingTopLeft:[28,top],paddingBottomRight:[62,bottom],maxZoom:16,animate:!motionReduced(),duration:.45});
 }
 function schedulePlaceFrame(){
-  if(!matchMedia('(max-width:600px)').matches)return;
+  if(!matchMedia('(max-width:600px)').matches||manualViewport)return;
   clearTimeout(viewportTimer);viewportTimer=setTimeout(()=>{
     if(document.documentElement.dataset.sheetGesture==='true'||inspector?.isOpen()||comparison?.isOpen())return;
     if(viewportRank===null)fitMobilePlaces();else centerVisiblePlace(viewportRank);

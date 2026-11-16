@@ -10,6 +10,7 @@ export function openSavedComparison(){
  if(!state.saved.length)return;
  const target=selected()?document.getElementById('comparison-title'):document.querySelector('#saved-list [data-testid="compare-place"]');
  if(!target)return;
+ document.dispatchEvent(new Event('gm:leave-results'));
  for(let parent=target.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;
  if(!target.hasAttribute('tabindex')&&target.tagName!=='INPUT')target.tabIndex=-1;
  target.focus({preventScroll:true});target.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:target.tagName==='INPUT'?'center':'start'});

@@ -172,9 +172,15 @@ export function renderSaved() {
     const rec = item.recommendation, card = node('article', 'saved-card');
     card.dataset.testid = 'saved-card';
     card.dataset.savedId = item.id;
-    card.append(node('h3', '', `${item.business_name} · ${placeLabel(rec)}`), node('p', '', item.district_name), node('p', '', coords(rec)), node('p', 'saved-stats', `≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов · радиус ${fmt(rec.radius_m)} м`), node('p', '', `Данные: ${dateText(item.data_date)} · ${sourceText(item.source)}`), node('p', '', `Сохранено: ${dateText(item.saved_at)}`));
+    card.append(node('h3', '', `${item.business_name} · ${placeLabel(rec)}`), node('p', '', item.district_name));
+    card.append(node('p', 'saved-stats', `≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов в ${fmt(rec.radius_m)} м`));
     card.append(node('p','saved-score',`${scoreText(rec.score)} — только внутри своего расчёта`));
-    if (item.warning) card.append(node('p', '', item.warning));
+    const metadata=node('details','saved-metadata');
+    metadata.append(node('summary','','Координаты и даты'),node('p','',coords(rec)),
+      node('p','',`Данные: ${dateText(item.data_date)} · ${sourceText(item.source)}`),
+      node('p','',`Сохранено: ${dateText(item.saved_at)}`));
+    if(item.warning)metadata.append(node('p','',item.warning));
+    card.append(metadata);
     const actions = node('div', 'saved-card-actions'), label = node('label'), checkbox = node('input');
     checkbox.type = 'checkbox';
     checkbox.dataset.testid = 'compare-place';
@@ -222,7 +228,7 @@ export function fillTable(body, items) {
   body.replaceChildren();
   items.forEach(item => {
     const r = item.recommendation, tr = node('tr'), title = node('td', '', `${item.business_name} · ${placeLabel(r)}`);
-    title.append(node('small', '', item.district_name), node('small', '', coords(r)));
+    title.append(node('small', '', item.district_name), node('small','comparison-coordinates',coords(r)));
     tr.append(title, node('td', '', fmt(r.residents_in_radius)), node('td', '', `${fmt(r.radius_m)} м`), node('td', '', fmt(r.competitors_in_radius)), node('td', '', distance(r.nearest_competitor_m)), node('td', '', dateText(item.data_date)), node('td', '', scoreText(r.score)));
     body.append(tr);
   });

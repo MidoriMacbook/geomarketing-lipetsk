@@ -1,11 +1,11 @@
-import {motionReduced,node,fmt} from './ui.js';
+import {motionReduced,node} from './ui.js';
 import {scoreText} from './result-format.js';
 import {state} from './state.js';
 import {selectPlace} from './recommendations.js';
 
 const root=document.documentElement,sheet=document.getElementById('recommendations'),map=document.getElementById('map');
 const mobile=matchMedia('(max-width:600px)'),controls=node('div','sheet-controls');
-controls.innerHTML='<div class="sheet-top"><button class="sheet-handle" type="button" aria-expanded="false"><span class="sheet-summary">Мест нет</span><span class="sheet-more">Подробнее <span aria-hidden="true">⌃</span></span></button><button class="sheet-close" type="button" aria-label="Закрыть результаты">×</button></div><div class="sheet-rail" aria-label="Места для проверки"></div>';
+controls.innerHTML='<div class="sheet-top"><button class="sheet-handle" type="button" aria-expanded="false"><span class="sheet-summary">Мест нет</span><span class="sheet-more">Показать места <span aria-hidden="true">⌃</span></span></button><button class="sheet-close" type="button" aria-label="Закрыть результаты">×</button></div><div class="sheet-rail" aria-label="Места для проверки"></div>';
 sheet.prepend(controls);
 const handle=controls.querySelector('.sheet-handle'),rail=controls.querySelector('.sheet-rail'),closeButton=controls.querySelector('.sheet-close');
 const scrim=node('button','sheet-scrim');scrim.type='button';scrim.tabIndex=-1;scrim.setAttribute('aria-label','Закрыть результаты');document.body.append(scrim);
@@ -14,7 +14,8 @@ const notes=[...sheet.querySelectorAll(':scope>.section-note,:scope>.recommendat
 const details=node('details','result-data-details'),summary=node('summary','','Оценка и данные');details.append(summary,...notes);
 let snap='peek',layout=false,active=false,ready=false,mapVisible=false,drag=null,skipClick=false,lastTapped=null;
 let savedScroll=null,isolation=[],key='',settleTimer=0,readyTimer=0,pending=false;
-const offset=()=>Math.max(0,sheet.getBoundingClientRect().height-148);
+const peekHeight=()=>128+Math.max(0,parseFloat(getComputedStyle(sheet).paddingBottom)-16);
+const offset=()=>Math.max(0,sheet.getBoundingClientRect().height-peekHeight());
 function lockPage(lock){
  if(lock&&!savedScroll){
   savedScroll={x:scrollX,y:scrollY,position:document.body.style.position,top:document.body.style.top,width:document.body.style.width};
@@ -51,7 +52,7 @@ function setSnap(next){
  if(expanded)sheet.setAttribute('aria-modal','true');else sheet.removeAttribute('aria-modal');
  handle.setAttribute('aria-expanded',String(expanded));closeButton.hidden=!expanded;rail.inert=expanded;
  sheet.style.setProperty('--sheet-offset',`${snap==='peek'?offset():0}px`);
- sheet.style.setProperty('--sheet-visible',`${snap==='peek'?148:sheet.getBoundingClientRect().height}px`);
+ sheet.style.setProperty('--sheet-visible',`${snap==='peek'?peekHeight():sheet.getBoundingClientRect().height}px`);
  [...sheet.children].filter(el=>el!==controls).forEach(el=>{el.inert=layout&&snap==='peek';});
  const nextKey=[snap,active,layout,innerWidth,innerHeight].join(':');
  if(key!==nextKey){
@@ -69,6 +70,7 @@ function close(){setSnap('peek');handle.focus({preventScroll:true});}
 function expand(rank){
  if(!layout)return;
  setSnap('expanded');
+ closeButton.focus({preventScroll:true});
  if(rank){
   const card=sheet.querySelector(`[data-rank="${rank}"]`),list=document.getElementById('result');
   if(card)requestAnimationFrame(()=>{list.scrollTop+=card.getBoundingClientRect().top-list.getBoundingClientRect().top;});
@@ -82,7 +84,8 @@ function renderRail(data){
  controls.querySelector('.sheet-summary').textContent=places.length?`${places.length} ${places.length===1?'место':'места'} для проверки`:'Мест нет';
  for(const rec of places){
   const card=node('button','sheet-place');card.type='button';card.dataset.rank=rec.rank;
-  card.append(node('strong','',`${rec.rank} · ${scoreText(rec.score)}`),node('span','',`≈ ${fmt(rec.residents_in_radius)} жителей`),node('span','',`${fmt(rec.competitors_in_radius)} конкурентов`));
+  card.setAttribute('aria-label',`Место ${rec.rank}, оценка ${scoreText(rec.score)}`);
+  card.append(node('strong','',`Место ${rec.rank}`),node('span','',scoreText(rec.score)));
   card.addEventListener('click',()=>{
    const repeat=lastTapped===rec.rank&&state.selectedRank===rec.rank;lastTapped=rec.rank;selectPlace(rec.rank,false,true);
    if(repeat)expand(rec.rank);else document.dispatchEvent(new CustomEvent('gm:show-place',{detail:{rank:rec.rank}}));
@@ -96,7 +99,7 @@ new IntersectionObserver(([entry])=>{
  if(visible!==mapVisible){mapVisible=visible;setSnap(snap);}
 },{threshold:[0,.2,.4,1]}).observe(map);
 new IntersectionObserver(([entry])=>{sheet.dataset.motionVisible=String(entry.isIntersecting);}).observe(sheet);
-handle.addEventListener('click',()=>{if(skipClick){skipClick=false;return;}snap==='peek'?expand():close();});
+handle.addEventListener('click',event=>{if(skipClick&&event.detail){skipClick=false;return;}snap==='peek'?expand():close();});
 closeButton.addEventListener('click',close);scrim.addEventListener('click',close);
 handle.addEventListener('keydown',event=>{if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();event.key==='ArrowUp'?expand():close();}});
 handle.addEventListener('pointerdown',event=>{
@@ -118,7 +121,7 @@ window.addEventListener('pointermove',event=>{
 });
 function endDrag(event){
  if(!drag||drag.id!==event.pointerId)return;
- const previous=drag;drag=null;delete sheet.dataset.dragging;skipClick=previous.moved;
+ const previous=drag;drag=null;delete sheet.dataset.dragging;skipClick=previous.moved&&event.type==='pointerup';
  if(!previous.moved)return;
  key='';setSnap(event.type==='pointerup'&&Math.abs(previous.delta||0)>60?(previous.delta<0?'expanded':'peek'):previous.snap);
 }
@@ -145,6 +148,7 @@ document.addEventListener('gm:place-details',event=>expand(event.detail.rank));
 document.addEventListener('gm:show-place',()=>setSnap('peek'));
 document.addEventListener('gm:map-focus',()=>setSnap('peek'));
 document.addEventListener('gm:settings-open',()=>setSnap('peek'));
+document.addEventListener('gm:leave-results',()=>setSnap('peek'));
 new MutationObserver(()=>{if(root.dataset.analysisState==='error'){clearTimeout(readyTimer);ready=true;controls.querySelector('.sheet-summary').textContent='Расчёт не завершён';setSnap('peek');}}).observe(root,{attributes:true,attributeFilter:['data-analysis-state']});
 window.addEventListener('resize',sync);mobile.addEventListener('change',sync);new ResizeObserver(sync).observe(document.getElementById('site-header'));
 let fontSize=root.style.fontSize;new MutationObserver(()=>{if(fontSize!==root.style.fontSize){fontSize=root.style.fontSize;sync();}}).observe(root,{attributes:true,attributeFilter:['style']});

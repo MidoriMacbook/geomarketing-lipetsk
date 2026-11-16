@@ -1,4 +1,5 @@
 export function focusWorkspaceMap() {
+  document.dispatchEvent(new Event('gm:map-focus'));
   const target=document.getElementById('map-title');
   if(!target)return;
   target.tabIndex=-1;target.focus({preventScroll:true});

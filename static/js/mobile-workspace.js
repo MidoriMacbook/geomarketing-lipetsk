@@ -10,6 +10,12 @@ export function initMobileWorkspace() {
  const bar=byId('mobile-settings-bar');
  const trust=byId('trust-status'),trustHome=document.createComment('trust-home');trust.before(trustHome);
  const legend=map.querySelector('.map-legend'),legendHome=document.createComment('legend-home');legend.before(legendHome);
+ const layerDisclosure=document.createElement('details'),layerToggle=document.createElement('summary');
+ layerDisclosure.className='mobile-map-layers';layerToggle.textContent='Слои карты';layerDisclosure.append(layerToggle);
+ layerDisclosure.addEventListener('keydown',event=>{
+  if(event.key!=='Escape'||!layerDisclosure.open)return;
+  event.preventDefault();layerDisclosure.open=false;layerToggle.focus({preventScroll:true});
+ });
  const key=map.querySelector('.map-pin-key'),keyHome=document.createComment('map-key-home');key.before(keyHome);
  const footer=document.createElement('div');footer.className='mobile-sheet-actions';dialog.append(footer);
  const home=document.createComment('settings-home'),runHome=document.createComment('run-home'),barHome=document.createComment('mobile-settings-bar-home');
@@ -89,7 +95,7 @@ export function initMobileWorkspace() {
   closeSettings({immediate:true,restoreFocus:false});
   if(mobile.matches){
    map.querySelector('.map-footer').append(trust);
-   map.querySelector('.analysis-bar').after(legend);
+   layerDisclosure.append(legend);map.querySelector('.analysis-bar').after(layerDisclosure);
    map.querySelector('.map-heading').append(key);
    workspace.prepend(bar,map);byId('mobile-settings-content').append(settings);settings.classList.remove('inline-settings');
    map.after(context,kpis,area);
@@ -98,7 +104,7 @@ export function initMobileWorkspace() {
    for(const item of sections){item.marker.after(item.details);item.details.append(item.section);}
   } else {
    trustHome.after(trust);
-   legendHome.after(legend);
+   legendHome.after(legend);layerDisclosure.open=false;layerDisclosure.remove();
    keyHome.after(key);
    settings.classList.remove('inline-settings');
    summaryHome.after(context,kpis,area);

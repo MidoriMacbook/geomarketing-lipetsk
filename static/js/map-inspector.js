@@ -11,8 +11,6 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
  const plural=new Intl.PluralRules('ru');
  const count=(n,forms)=>fmt(n)+' '+forms[plural.select(n)];
  const signed=n=>(n<0?'−':n>0?'+':'')+fmt(Math.abs(n));
- const intersects=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
- const pinBoxes=()=>[...map.getContainer().querySelectorAll('.recommendation-pin')].map(pin=>pin.getBoundingClientRect());
  let docked=false;
 
  const token=name=>getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -23,31 +21,31 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   if(!popup?.isOpen())return;
   const element=popup.getElement(),rect=map.getContainer().getBoundingClientRect();
   const sheet=document.getElementById('recommendations'),header=document.getElementById('site-header').getBoundingClientRect();
-  const bottom=Math.min(rect.bottom,innerHeight-(sheet.dataset.sheetActive==='true'?parseFloat(sheet.style.getPropertyValue('--sheet-visible'))||148:0))-12;
+  const viewport=window.visualViewport;
+  const viewportEnd=(viewport?.offsetTop??0)+(viewport?.height??innerHeight);
+  const sheetTop=sheet.dataset.sheetActive==='true'&&sheet.dataset.snap==='peek'?sheet.getBoundingClientRect().top:viewportEnd;
+  const bottom=Math.min(rect.bottom,sheetTop,viewportEnd)-12;
   const top=Math.max(rect.top,header.bottom)+12,left=Math.max(0,rect.left)+12,right=Math.min(innerWidth,rect.right)-12;
   const compact=mobile.matches&&element.querySelector('.map-inspection-compact');
   if(compact) {
-   element.style.setProperty('--inspection-max-height',Math.max(0,Math.floor((bottom-top+24)*.35))+'px');
+   element.style.setProperty('--inspection-max-height',Math.max(112,Math.floor((bottom-top+24)*.45))+'px');
    element.style.setProperty('--inspection-top',Math.max(0,top-rect.top)+'px');
    if(docked)return;
+   docked=true;
+   map.getContainer().append(element);
+   element.classList.add('map-inspection-docked');
+   const overlay=element.getBoundingClientRect();
+   const points=[anchor,...(data?.recommendations||[]).map(rec=>[rec.lat,rec.lng])];
+   const paddingTop=Math.max(32,overlay.bottom-rect.top+28);
+   const paddingBottom=Math.max(58,rect.bottom-bottom+24);
+   if(rect.height-paddingTop-paddingBottom>=48){
+    map.fitBounds(points,{paddingTopLeft:[32,paddingTop],paddingBottomRight:[64,paddingBottom],maxZoom:map.getZoom(),animate:false});
+   }
+   return;
   }
   const box=element.getBoundingClientRect();
   const dx=box.right>right?box.right-right:box.left<left?box.left-left:0;
   const dy=box.top<top?box.top-top:box.bottom>bottom?box.bottom-bottom:0;
-  if(compact) {
-   const projected={left:box.left-dx,right:box.right-dx,top:box.top-dy,bottom:box.bottom-dy};
-   if(box.height>bottom-top||pinBoxes().some(pin=>intersects(projected,pin))) {
-    docked=true;
-    map.getContainer().append(element);
-    element.classList.add('map-inspection-docked');
-    const overlay=element.getBoundingClientRect();
-    const point=map.latLngToContainerPoint(anchor);
-    const occupied=pinBoxes().filter(pin=>intersects(overlay,pin));
-    const push=Math.max(0,...occupied.map(pin=>Math.ceil(overlay.bottom-pin.top+8)),Math.ceil(overlay.bottom-(rect.top+point.y)+16));
-    if(push)map.panBy([0,-push],{animate:false});
-    return;
-   }
-  }
   if(dx||dy)map.panBy([dx,dy],{animate:!motionReduced(),duration:.3});
  }
  function show(point,content){
@@ -65,11 +63,11 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   box.classList.add('map-inspection-compact');
   const score=node('p','map-inspection-score',scoreText(rec.score));
   const reading=node('div','map-inspection-reading');
-  reading.append(score);box.append(reading);
+  reading.append(node('span','map-inspection-place-label',rec.origin==='manual'?'Ваша точка':`Место ${rec.rank}`),score);box.append(reading);
   const summary=node('p','map-inspection-mobile-summary');
   const residents=count(rec.residents_in_radius,{one:'житель',few:'жителя',many:'жителей',other:'жителей'});
   const rivals=count(rec.competitors_in_radius,{one:'конкурент',few:'конкурента',many:'конкурентов',other:'конкурентов'});
-  summary.textContent=`≈ ${residents} · ${rivals} · ${rec.nearest_competitor_m==null?'ближайший не найден':`ближайший ${distance(rec.nearest_competitor_m)}`}`;
+  summary.textContent=`В ${fmt(rec.radius_m)} м: ≈ ${residents} · ${rivals} по данным карты`;
   box.append(summary,node('p','map-inspection-desktop-facts',`≈ ${residents} в ${fmt(rec.radius_m)} м · ${rivals}`),
    node('p','map-inspection-desktop-facts',`Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`));
   if(Math.round(rec.score*100)<40)reading.append(node('span','map-inspection-weak','слабое место'));
@@ -89,7 +87,7 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   if(rec.origin==='manual'){
    save.replaceChildren(node('span','map-inspection-save-long',label),node('span','map-inspection-save-short','Сохранить'));
   }
-  actions.append(save,button('Подробнее','button secondary',showDetails));
+  actions.append(save,button('О месте','button secondary',showDetails));
   box.append(actions,feedback);
  }
  function relativeNote(box) {

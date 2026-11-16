@@ -1,7 +1,7 @@
 import { scoreText, SCORE_NOTE, placeDifference } from './result-format.js';
 import { state } from './state.js';
 import { deliverySummary } from './data-delivery.js';
-import { $, fmt, coords, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin, animateUI, cancelUI, motionReduced } from './ui.js';
+import { $, fmt, coords, node, button, reveal, setRevealed, motionStagger, cancelRevealsWithin, animateUI, cancelUI, motionReduced } from './ui.js';
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker, hoverPlace } from './map.js';
 import { updateReportAvailability } from './report.js';
@@ -278,20 +278,25 @@ export function showResult(data, { freshCalculation=false } = {}) {
   $('kpi-business').textContent = data.business_name;
   $('map-context').textContent = `${data.district_name} · ${data.business_name}`;
   if ($('analysis-context')) $('analysis-context').textContent = `${data.district_name} · ${data.business_name}`;
-  $('source').textContent = `Источник: ${sourceText(data.source)}. Дата самой ранней копии: ${dateText(dataDate(data))}. Число жителей оценено по данным домов. ${deliverySummary(data)}`.trim();
   const warning = [data.source === 'demo'?'Показаны демонстрационные данные: не используйте их для выбора места без проверки.': '', data.warning, data.notice].filter(Boolean).join(' ');
   $('data-warning').textContent = warning;
   $('data-warning').hidden = !warning;
   if (warning && newAnalysis) reveal($('data-warning'), 'notice');
   $('data-section').hidden = false;
-  $('data-quality')?.replaceChildren(qualityBlock(data, false, true));
+  const details=qualityBlock(data,false,true);
+  details.querySelector('.quality-summary').remove();
+  details.querySelector('.quality-limitation').remove();
+  const delivery=deliverySummary(data);
+  if(delivery)details.append(node('p','',delivery));
+  $('data-quality')?.replaceChildren(details);
   const quality = qualitySummary(data);
+  $('source').textContent = `${quality.source} · ${quality.freshness} · ${quality.completeness}`;
   const summary = `${state.openedScenarioId ? 'Сохранённый расчёт · ' : ''}${quality.source} · ${quality.freshness} · ${quality.completeness}`;
   if ($('trust-summary')) {
     $('trust-summary').dataset.resultSummary = summary;
     $('trust-summary').textContent = summary;
   }
-  if ($('data-summary')) $('data-summary').textContent = 'Даты, источники и ограничения';
+  if ($('data-summary')) $('data-summary').textContent = 'Даты и качество данных';
   updateReportAvailability();
   document.dispatchEvent(new CustomEvent('gm:analysis-rendered', { detail: { data } }));
 }

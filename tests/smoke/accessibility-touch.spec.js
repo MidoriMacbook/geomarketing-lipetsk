@@ -10,7 +10,7 @@ test.beforeEach(async({page,baseURL})=>{
 test('видимые подписи входят в доступные имена действий',async({page})=>{
  await expect(page.locator('.brand')).toHaveAccessibleName(/ГеоМаркетинг Липецк.*Городская аналитика/);
  await page.locator('#map-card').scrollIntoViewIfNeeded();
- await expect(page.locator('.sheet-handle')).toHaveAccessibleName(/3 места для проверки.*Подробнее/);
+ await expect(page.locator('.sheet-handle')).toHaveAccessibleName(/3 места для проверки.*Показать места/);
  await page.locator('.sheet-handle').click();
  const save=page.getByTestId('save-place').first();
  await expect(save).toHaveAccessibleName(/^Сохранить для сравнения — место 1/);

@@ -34,8 +34,11 @@ test('радиус выбранного места и четыре слоя по
   const circle=await page.locator('.leaflet-accessibility-pane path').boundingBox(),map=await page.locator('#map').boundingBox(),sheet=await page.locator('#recommendations').boundingBox();
   return circle.width>20&&circle.x>=map.x&&circle.x+circle.width<=map.x+map.width&&circle.y>=map.y&&circle.y+circle.height<sheet.y;
  }).toBe(true);
- const sheet=await page.locator('#recommendations').boundingBox();
- for(const layer of await page.locator('[data-layer-key]').all()){const box=await layer.boundingBox();expect(box.y).toBeGreaterThan(80);expect(box.y+box.height).toBeLessThan(sheet.y);}
+ const layers=page.locator('.mobile-map-layers');
+ await expect(layers).not.toHaveAttribute('open','');
+ await layers.locator('summary').click();
+ await expect(layers).toHaveAttribute('open','');
+ for(const layer of await page.locator('[data-layer-key]').all()){const box=await layer.boundingBox();expect(box.width).toBeGreaterThanOrEqual(44);expect(box.height).toBeGreaterThanOrEqual(44);expect(box.x+box.width).toBeLessThanOrEqual(375);}
  expect(errors).toEqual([]);
 });
 
