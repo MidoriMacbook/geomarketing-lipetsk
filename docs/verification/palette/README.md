@@ -31,3 +31,5 @@
 | Кремовый текст на тёмной панели | — | — | 10,90 |
 
 Расчёт использует относительную яркость sRGB: `(Lсветлый + 0,05) / (Lтёмный + 0,05)`. Компоненты каналов линеаризуются перед сложением с весами 0,2126 / 0,7152 / 0,0722. Таблица покрывает базовые пары сплошных цветов. Текст поверх внешних тайлов и все переходные кадры анимаций этим расчётом не проверялись. Исходные значения: [A](https://github.com/MidoriMacbook/geomarketing-lipetsk/blob/redesign/docs/verification/palette/A-contrast.json) · [B](https://github.com/MidoriMacbook/geomarketing-lipetsk/blob/redesign/docs/verification/palette/B-contrast.json) · [C](https://github.com/MidoriMacbook/geomarketing-lipetsk/blob/redesign/docs/verification/palette/C-contrast.json).
+
+Дополнительный замер вычисленных цветов в Chromium на 375 и 1440 px включал страницу, настройки и открытый список. Минимум среди проверенных элементов: A — 4,88:1; B — 5,35:1; C — 5,08:1. Подсветка «Порога зон» в C получила тёмный фон, чтобы сохранить контраст при наведении.

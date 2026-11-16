@@ -51,6 +51,7 @@
  --color-settings:var(--palette-ink); --color-settings-ink:var(--palette-cream);
  --color-settings-muted:var(--palette-cream); --color-settings-border:var(--palette-cream);
  --color-settings-line:var(--palette-line-on-dark); --color-settings-notice:var(--palette-ink);
+ --color-featured:var(--palette-map); --color-subtle:var(--palette-map);
  --color-settings-on-primary:var(--palette-ink); --color-settings-primary-hover:var(--palette-pink-soft);
  --color-choice-accent:var(--palette-cream); --color-choice-active:var(--palette-ink);
  color:var(--palette-cream); color-scheme:dark;
