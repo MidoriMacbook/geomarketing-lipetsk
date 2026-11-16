@@ -84,7 +84,9 @@
 #selection-note { margin:12px 0; line-height:1.5; }
 #map { min-height:510px; height:510px; flex-basis:510px; }
 .map-heading { background:var(--color-page); }
-.recommendations { grid-column:2; max-height:none; padding:24px 0; border:0; border-top:1px solid var(--color-line); border-radius:0; background:transparent; box-shadow:none; }
+.recommendations { grid-column:2; max-height:none; box-shadow:none; }
+#recommendations { padding:var(--space-6); border:var(--line) solid var(--color-line); border-radius:var(--radius-panel); background:var(--color-page); }
+#recommendations #result { margin:0; padding:0; }
 .sheet-home { grid-column:2; min-width:0; }
 #result,#result-empty { overflow:visible; }
 #recommendation-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
@@ -336,6 +338,8 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  #recommendations[data-dragging=true] { transition:none; }
  #recommendations:not([data-sheet-layout=false])>.section-heading { display:none; }
  #recommendations:not([data-sheet-layout=false]) #result { overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; padding-bottom:24px; min-height:0; max-height:none; flex:1 1 auto; }
+ #recommendations[data-sheet-layout=true] #result { padding-inline:var(--space-2); }
+ #recommendations[data-sheet-layout=true] .recommendations-context-row { margin-inline:var(--space-2); }
  #recommendations #result::-webkit-scrollbar { display:none; }
  .sheet-home { min-height:0; }
  #recommendations #result>.section-note { font-size:13px; margin-bottom:8px; }
