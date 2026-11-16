@@ -1,6 +1,8 @@
 /* Городской атлас: композиция, не новый набор компонентов. */
 :root { --radius-panel:20px; --radius-control:10px; --size-settings:260px; --text-kpi:2.8rem; --text-kpi-primary:3rem; }
-.header-reserve { padding:12px 24px 0; background:var(--color-page); }
+.header-reserve { padding:12px 24px 0; background:var(--color-page); isolation:isolate; }
+.header-reserve::before { content:""; position:absolute; inset:0; background:var(--palette-cream); z-index:0; pointer-events:none; }
+.header-reserve::after { content:""; position:absolute; top:100%; left:0; right:0; height:24px; background:linear-gradient(to bottom,var(--palette-cream),transparent); z-index:0; pointer-events:none; }
 .site-header,.site-header.is-scrolled { max-width:1536px; margin:auto; padding:8px 12px 8px 20px; min-height:68px; border:1px solid var(--color-line); border-radius:40px; background:var(--color-header); gap:20px; }
 .site-header .brand { font-size:1rem; }
 .site-header .brand small { font-size:.8125rem; }
