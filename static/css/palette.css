@@ -42,10 +42,12 @@
  --palette-sky:var(--palette-ink); --palette-sky-soft:var(--palette-cream); --palette-sky-deep:var(--palette-ink);
  --palette-sage-soft:var(--palette-cream); --palette-ink-muted:var(--palette-ink);
  --color-map-house:var(--palette-ink); --color-glow-blue:var(--color-glow);
- --palette-map-muted:var(--palette-cream);
+ --palette-map-muted:var(--palette-cream); --color-opportunity:var(--palette-rosewood-deep);
 }
 :root[data-theme=B] :is(.city-block.block-0,.city-radius) { fill:var(--palette-pink); stroke:var(--palette-rosewood-deep); }
 :root[data-theme=B] .analysis-bar .status-dot { background:var(--palette-rosewood-deep); }
+:root[data-theme=B] .place-difference { border-inline-start-color:var(--palette-rosewood-deep); }
+:root[data-theme=B] :is(.kpis,.area-details-grid)>div:nth-child(4) { --kpi-accent:var(--palette-rosewood-deep); }
 :root[data-theme=C] :is(.settings,.mobile-settings-dialog) {
  --color-settings-panel:var(--palette-ink); --color-settings-field:var(--palette-ink);
  --color-settings:var(--palette-ink); --color-settings-ink:var(--palette-cream);
