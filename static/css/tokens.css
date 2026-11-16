@@ -32,6 +32,7 @@
  --color-on-primary:var(--palette-cream); --color-accent:var(--palette-rosewood-deep); --color-signal:var(--color-accent);
  --color-selection-bg:rgba(180,106,114,.23); --color-selection-ink:var(--palette-ink);
  --color-scrollbar:rgb(180 106 114 / .4);
+ --color-information-bg:rgb(169 183 198 / .23);
  --color-featured:var(--palette-warm-selected); --color-selected:var(--palette-warm-selected);
  --color-recommendation:var(--palette-warm-raised); --color-recommendation-line:var(--palette-rosewood);
  --color-kpi-active:var(--palette-warm-selected); --color-opportunity:var(--palette-sage-deep);

@@ -139,7 +139,12 @@ export function showResult(data, { freshCalculation=false } = {}) {
   if(!selectionNote){selectionNote=node('p','hint');selectionNote.id='selection-note';$('recommendation-list').before(selectionNote);}
   const independent=data.recommendations[0]?.selection_method==='cluster_maxima_v1'&&data.recommendations.length<3;
   selectionNote.hidden=!independent;
-  selectionNote.textContent=independent?`По текущей модели в области нет трёх независимых зон. Найдено мест: ${data.recommendations.length}. Близкие варианты с общими жителями исключены.`:'';
+  selectionNote.replaceChildren();
+  if(independent){
+    const icon=node('span','note-icon','i');icon.setAttribute('aria-hidden','true');
+    const count=data.recommendations.length;
+    selectionNote.append(icon,node('span','',count===2?'В этой области найдено мест: 2. Третье не показано: оно пересекалось бы по жителям с уже выбранными.':'В этой области найдено мест: 1. Другие варианты не образуют независимые зоны спроса.'));
+  }
   $('recommendations-context').textContent = `${data.district_name} · ${data.business_name}`;
   $('recommendations-context').setAttribute('aria-label',`Параметры расчёта: ${data.district_name}, ${data.business_name}. Изменить параметры`);
   const contextIcon=node('span','directional-icon icon-forward');contextIcon.setAttribute('aria-hidden','true');$('recommendations-context').append(contextIcon);
@@ -259,11 +264,12 @@ export function showResult(data, { freshCalculation=false } = {}) {
     const savedId=`${data.analysis_id}:${rec.rank}`;if(state.saved.some(item=>item.id===savedId))card.dataset.savedFeedbackId=savedId;
     card.append(toggle, body);
     const difference=node('p','place-difference',placeDifference(rec));difference.hidden=!difference.textContent;
+    difference.title='Доля общих жителей рассчитана от жителей в радиусе этого места.';
     const entry = { card, body, content, toggle, heading, coordinate, metrics, brief,reasons,difference,secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
     mobileCards.set(rec.rank, entry);
     arrangeMobileCard(entry);
     $('recommendation-list').append(card);
-    countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: ' из 100', from: previous[0] });
+    countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: ' из 100', from: previous[0] });
     countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ', from: previous[1] });
     countTo(competition.querySelector('strong'), rec.competitors_in_radius, { animate: newAnalysis, from: previous[2] });
     if (newAnalysis) animateUI(card,[{opacity:0,transform:'translateY(var(--motion-distance-small))'},{opacity:1,transform:'translateY(0)'}],'calculation-result',{delay:motionStagger()*(3+index*2/3),duration:'workspace',easing:'emphasized'});

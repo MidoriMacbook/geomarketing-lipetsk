@@ -42,7 +42,7 @@ test('Каталог, расчёт, выбор места и сохранени�
   await expect(page.locator('#coords')).toContainText(/52\.\d+/);
   await page.getByTestId('recommendation-card').nth(1).locator('.place-select').click();
   await expect(page.getByTestId('recommendation-card').nth(1)).toHaveClass(/selected/);
-  await expect(page.getByTestId('recommendation-card').nth(1).locator('.place-difference')).toContainText('Общих домов');
+  await expect(page.getByTestId('recommendation-card').nth(1).locator('.place-difference')).toContainText('Общих жителей');
   await expect(page.locator('.recommendation-pin.is-selected')).toHaveCount(1);
 
   await page.locator('#scenario-save').click();
