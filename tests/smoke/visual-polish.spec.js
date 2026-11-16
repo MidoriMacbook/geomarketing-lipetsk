@@ -5,13 +5,21 @@ test.beforeEach(async({page,baseURL})=>{
  await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
 });
 
-test('курсив читается на всех ширинах и схема не заходит на буквы',async({page})=>{
- for(const width of [375,768,900,1280,1440,1920]){
+test('название помещается, а точка отделена от букв',async({page})=>{
+ for(const width of [320,375,601,768,900,1280,1440,1920]){
   await page.setViewportSize({width,height:1000});await page.goto('/');await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1100);
-  await expect(page.locator('#page-title em')).toHaveCSS('font-style','italic');
+  await expect(page.locator('#page-title em')).toHaveCSS('font-style',width<=600?'normal':'italic');
   await expect(page.locator('#page-title em')).toHaveCSS('color','rgb(143, 74, 83)');
-  const title=await page.locator('#page-title em').boundingBox(),art=await page.locator('#hero-art').boundingBox();
-  expect(art.y).toBeGreaterThanOrEqual(title.y+title.height);
+  const title=await page.locator('#page-title em').boundingBox();
+  const pin=await page.locator('.atlas-place-pin').boundingBox();
+  expect(pin.y).toBeGreaterThanOrEqual(title.y+title.height);
+  if(width<=600){
+   const geo=await page.locator('#page-title .hero-title-word').first().boundingBox();
+   const action=await page.locator('#hero-map-link').boundingBox();
+   const description=await page.locator('#hero-description').boundingBox();
+   expect(title.y).toBeGreaterThan(geo.y);
+   expect(action.y).toBeLessThan(description.y);
+  }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  }
 });
@@ -27,18 +35,16 @@ test('знак приблизительного числа сохраняетс�
  await expect(page.locator('[data-kpi=residents]>span').first()).toHaveText('Жителей в области');
 });
 
-test('аннотации читаются и не пересекаются, reduced motion отключает появление',async({page})=>{
+test('схема и действие доступны с отключённым движением',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
- for(const width of [375,768,1440,1920]){
-  await page.setViewportSize({width,height:1000});await page.goto('/');await page.evaluate(()=>document.fonts.ready);
-  const labels=await page.locator('.hero-annotation:visible').evaluateAll(groups=>groups.map(g=>{
-   const text=g.querySelector('text'),rect=g.querySelector('rect'),box=rect.getBoundingClientRect();
-   return {size:parseFloat(getComputedStyle(text).fontSize)*text.getScreenCTM().a,fill:getComputedStyle(rect).fill,opacity:getComputedStyle(g).opacity,animation:getComputedStyle(g).animationName,box:{x:box.x,y:box.y,right:box.right,bottom:box.bottom}};
-  }));
-  expect(labels).toHaveLength(width===375?2:3);
-  for(const label of labels){expect(label.size).toBeGreaterThanOrEqual(12);expect(label.fill).toBe('rgb(255, 247, 230)');expect(label.opacity).toBe('1');expect(label.animation).toBe('none');expect(label.box.x).toBeGreaterThanOrEqual(0);expect(label.box.right).toBeLessThanOrEqual(width);}
-  for(let i=0;i<labels.length;i++)for(let j=i+1;j<labels.length;j++){const a=labels[i].box,b=labels[j].box;expect(a.right<=b.x||b.right<=a.x||a.bottom<=b.y||b.bottom<=a.y).toBe(true);}
-  const coordinates=await page.locator('.atlas-coordinates').boundingBox(),art=await page.locator('#hero-art').boundingBox();expect(coordinates.y).toBeGreaterThanOrEqual(art.y+art.height);
+ for(const width of [375,768,1440]){
+  await page.setViewportSize({width,height:1000});await page.goto('/');
+  await expect(page.locator('#hero-map-link')).toBeVisible();
+  await expect(page.locator('.atlas-place-pin')).toBeVisible();
+  await expect(page.locator('.hero-route-mask')).toHaveCSS('animation-name','none');
+  const boxes=await page.locator('.hero-steps article').evaluateAll(items=>items.map(item=>item.getBoundingClientRect().width));
+  expect(boxes).toHaveLength(3);
+  expect(Math.max(...boxes)-Math.min(...boxes)).toBeLessThan(1);
  }
 });
 

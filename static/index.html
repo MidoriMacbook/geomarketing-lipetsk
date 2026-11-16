@@ -32,13 +32,13 @@
 <script src="/static/js/palette-preview.js" defer></script>
 <link rel="stylesheet" href="/static/css/palette.css">
 <link rel="stylesheet" href="/static/css/icons.css">
+<script src="/static/js/navigation.js" type="module"></script>
 <script src="/static/js/icons-ui.js" type="module"></script>
 <script src="/static/vendor/leaflet/leaflet.js" defer></script>
 <script src="/static/js/boot-status.js" defer></script>
 <script src="/static/vendor/material-web/material-components.js" type="module"></script>
 <script src="/static/js/app.js" type="module"></script>
 <script src="/static/js/kpi-interactions.js" type="module"></script>
-<script src="/static/js/navigation.js" type="module"></script>
 <script src="/static/js/hero-loader.js" defer></script>
 <script src="/static/js/atlas-interactions.js" type="module"></script>
 <script src="/static/js/hero-map-transition.js" type="module"></script>
@@ -55,11 +55,11 @@
 <main class="page">
 <section id="hero" class="intro editorial-hero" aria-labelledby="page-title">
   <div class="hero-copy">
-    <p class="eyebrow">Места для вашего бизнеса</p>
-    <h1 id="page-title" class="hero-title"><span class="hero-title-word">Гео</span><em class="hero-title-word">Маркетинг</em><span class="hero-city"> Липецк</span></h1>
+    <p class="eyebrow">Липецк / Атлас возможностей</p>
+    <h1 id="page-title" class="hero-title"><span class="hero-title-word">Гео</span><wbr><em class="hero-title-word">Маркетинг</em><span class="hero-city"> Липецк</span></h1>
     <div class="hero-editorial-row"><p class="hero-statement">У каждого бизнеса <br>есть <em>своё место.</em></p>
-      <div class="hero-intent"><p id="hero-description" class="hero-description">Сравните спрос и конкуренцию, чтобы выбрать место для своего бизнеса.</p>
-      <div class="hero-links"><span class="hero-magnet"><a id="hero-map-link" class="button primary" href="#workspace"><span>Найти места</span></a></span></div></div>
+      <div class="hero-intent"><p id="hero-description" class="hero-description">Изучите спрос и конкуренцию. Найдите места для своего бизнеса.</p>
+      <div class="hero-links"><span class="hero-magnet"><a id="hero-map-link" class="button primary" href="#workspace"><span>Найти места</span></a></span><a class="hero-text-action" href="#how-it-works">Как это работает <span class="directional-icon icon-forward" aria-hidden="true"></span></a></div></div>
     </div>
     <div class="hero-return-slot"><p id="hero-return-context" hidden></p></div>
   </div>
@@ -97,14 +97,16 @@
   <circle cx="545" cy="250" r="58" fill="var(--palette-rosewood)" fill-opacity=".12" stroke="var(--palette-rosewood)" stroke-dasharray="3 5"/>
   <path class="hero-route" clip-path="url(#hero-route-clip)" d="M330 355h60V190h155v60h175" stroke="var(--palette-rosewood-deep)" stroke-width="2" stroke-dasharray="5 6"/>
   <g fill="var(--palette-cream)" stroke="var(--palette-rosewood-deep)" stroke-width="2"><circle cx="330" cy="355" r="7"/><circle cx="720" cy="250" r="7"/></g>
-  <circle cx="545" cy="250" r="17" fill="var(--palette-rosewood-deep)" stroke="var(--palette-cream)" stroke-width="5"/>
+  <circle class="atlas-place-pin" cx="545" cy="250" r="17" fill="var(--palette-rosewood-deep)" stroke="var(--palette-cream)" stroke-width="5"/>
   <circle cx="545" cy="250" r="4" fill="var(--palette-cream)"/>
  </g>
- <g class="hero-annotation annotation-houses" transform="translate(20 50)" style="--annotation-order:0"><path d="M300 26H350L380 135"/><circle cx="380" cy="135" r="4"/><rect width="310" height="52" rx="10"/><text x="18" y="34">Дома и жители</text></g>
- <g class="hero-annotation annotation-radius" transform="translate(610 25)" style="--annotation-order:1"><path d="M120 52L80 110L50 227"/><circle cx="50" cy="227" r="4"/><rect width="470" height="52" rx="10"/><text x="18" y="34">Радиус пешей доступности</text></g>
- <g class="hero-annotation annotation-place" transform="translate(600 440)" style="--annotation-order:2"><path d="M160 0V-90L-55-190"/><circle cx="-55" cy="-190" r="4"/><rect width="360" height="52" rx="10"/><text x="18" y="34">Место для проверки</text></g>
 </svg></div>
   <div class="atlas-coordinates"><span>52.61° с. ш. / 39.58° в. д.</span><span>Липецкая область</span><a href="#workspace">К исследованию ↓</a></div>
+  <div class="hero-steps" aria-label="Как устроен поиск">
+    <article><span class="atlas-step">01 / Данные</span><h2>Город в деталях</h2><p>Дома и бизнес из OpenStreetMap</p></article>
+    <article><span class="atlas-step">02 / Анализ</span><h2>Спрос и окружение</h2><p>Оценка жителей и близости конкурентов</p></article>
+    <article><span class="atlas-step">03 / Решение</span><h2>Ваш следующий шаг</h2><p>Лучшее место в каждой независимой зоне спроса</p></article>
+  </div>
   <div id="hero-motion-root" aria-hidden="true"></div>
 </section>
   <div class="analysis-context-row"><span class="eyebrow">Область в цифрах</span><p id="analysis-context">Выберите район и категорию бизнеса</p></div>
@@ -138,11 +140,7 @@
     <div id="scenario-list" class="scenario-list"></div><section id="scenario-comparison" class="scenario-comparison" aria-label="Сравнение исследований" hidden></section>
   </section>
 <section id="how-it-works" class="method-section" aria-labelledby="method-title"><h2 id="method-title">От данных к решению</h2>
-  <div class="hero-steps method-steps" aria-label="Как устроен поиск">
-    <article><span class="atlas-step">01 / Данные</span><h3>Город в деталях</h3><p>Дома и бизнес из OpenStreetMap</p></article>
-    <article><span class="atlas-step">02 / Анализ</span><h3>Спрос и окружение</h3><p>Оценка жителей и близости конкурентов</p></article>
-    <article><span class="atlas-step">03 / Решение</span><h3>Ваш следующий шаг</h3><p>Лучшее место в каждой независимой зоне спроса</p></article>
-  </div>
+  <p>Сайт оценивает число жителей по жилым домам и учитывает близость конкурентов. На карте можно открыть показатели каждого места и сравнить варианты перед выездом.</p>
 <button id="model-button" class="button secondary" type="button">Подробнее о модели и ограничениях</button></section>
   <section id="data-section" class="data-section" aria-labelledby="data-title">
     <h2 id="data-title">Источники и ограничения</h2>

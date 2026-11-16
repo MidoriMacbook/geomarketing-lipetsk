@@ -1,8 +1,6 @@
 import { createElement, Fragment, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
-import { SplitText } from './hero/SplitText.js';
-import { BlurText } from './hero/BlurText.js';
 import { ScrollReveal } from './hero/ScrollReveal.js';
 import { PointerDrift } from './hero/PointerDrift.js';
 import { Magnet } from './hero/Magnet.js';
@@ -38,7 +36,6 @@ function HeroMotion({mount}) {
   const heroEnabled = enabled && conditions.heroVisible;
   useEffect(()=>{mount.dataset.heroState=!canObserve?'fallback':conditions.reduced?'reduced':conditions.print?'print':enabled?'active':'paused';},[mount,conditions,enabled,canObserve]);
   return createElement(Fragment,null,
-    createElement(SplitText,{enabled:heroEnabled}),createElement(BlurText,{enabled:heroEnabled}),
     createElement(ScrollReveal,{enabled}),createElement(PointerDrift,{enabled:heroEnabled}),
     createElement(Magnet,{enabled:heroEnabled}),createElement(CityMotion,{enabled:heroEnabled}));
 }

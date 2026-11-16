@@ -246,6 +246,7 @@ export function drawMap(data) {
       -12]
     }).addTo(layers.recommendations);
     marker.on('click', () => {
+      marker.closeTooltip();
       selectPlace(r.rank, false);
       document.dispatchEvent(new CustomEvent('gm:pin-selected',{detail:{rank:r.rank}}));
       inspector.openPlace(r);
