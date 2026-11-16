@@ -43,11 +43,7 @@ html[data-analysis-state=error] .status-dot { background:var(--color-on-dark); }
 @keyframes intro-reveal { from { opacity:0; transform:translateY(var(--motion-distance)); } to { opacity:1; transform:translateY(0); } }
 @keyframes progress-travel { from { transform:translateX(var(--motion-progress-start)) scaleX(var(--motion-progress-scale-start)); } to { transform:translateX(var(--motion-progress-end)) scaleX(var(--motion-progress-scale-end)); } }
 
-.choice-option[aria-selected=true] .choice-option-mark { background:var(--palette-sage); color:var(--palette-ink); }
-#business-listbox .choice-option[aria-selected=true] .choice-option-mark { background:var(--palette-sky); }
-@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
- .choice-trigger:hover:not(:disabled) { transform:translateY(-2px); }
-}
+.choice-option[aria-selected=true] .choice-option-mark { background:transparent; color:var(--palette-ink); }
 .recommendation { position:relative; }
 .recommendation.selected,.recommendation.selected.is-preview { border-color:var(--palette-rosewood); border-inline-start-color:var(--palette-rosewood); box-shadow:inset 0 0 0 1px var(--palette-rosewood); }
 .recommendation.is-preview:not(.selected) { border-color:var(--palette-sky-deep); }

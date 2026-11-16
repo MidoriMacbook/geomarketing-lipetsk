@@ -105,9 +105,16 @@ function enhance(select) {
   }
   // WebKit focuses the dialog on mouse down instead of its button. Keep focus
   // on the combobox so focusout cannot close it before the toggle click arrives.
+  const trackTouchFocus = event => {
+    trigger.toggleAttribute('data-touch-focus', event.pointerType === 'touch');
+  };
+  trigger.addEventListener('pointerdown',trackTouchFocus);
+  menu.addEventListener('pointerdown',trackTouchFocus);
+  trigger.addEventListener('blur',()=>trigger.removeAttribute('data-touch-focus'));
   trigger.addEventListener('mousedown',event=>{event.preventDefault();trigger.focus({preventScroll:true});});
   trigger.addEventListener('click',()=>opened?close():open());
   trigger.addEventListener('keydown',event=>{
+    trigger.removeAttribute('data-touch-focus');
     const key=event.key,enabled=options.map((option,index)=>option.disabled?-1:index).filter(index=>index>=0);
     if(key==='Tab'){close(false,false);return;}
     if(key==='Escape'){if(opened){event.preventDefault();close(true);}return;}

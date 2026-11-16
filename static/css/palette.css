@@ -61,3 +61,5 @@
 }
 :root[data-theme=C] #mobile-settings-close { background:var(--palette-ink); color:var(--palette-cream); border-color:currentColor; }
 
+
+.analysis-bar,.trust-status,#selection-note { border:var(--line) solid var(--panel-line); border-radius:var(--radius-control); }

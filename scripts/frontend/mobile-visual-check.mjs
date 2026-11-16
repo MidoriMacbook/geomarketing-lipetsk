@@ -7,7 +7,7 @@ const dir = 'docs/verification/mobile-safari/' + feature;
 await mkdir(dir, { recursive: true });
 const results = [];
 for (const engine of ['webkit', 'chromium']) {
-  if (feature !== 'menu' && engine === 'webkit' && feature !== 'popup') continue;
+  if (feature === 'icons' && engine === 'webkit') continue;
   const browser = engine === 'webkit' ? await webkit.launch() : await chromium.launch({ channel: 'chrome' });
   try {
     for (const width of [375, 768, 1440]) {
@@ -90,6 +90,61 @@ for (const engine of ['webkit', 'chromium']) {
         await page.waitForTimeout(350);
         await page.screenshot({ path: dir + '/' + phase + '-' + engine + '-' + width + '-point.png' });
         results.push({ engine, width, map: size, popup: await popup.boundingBox(), score: await popup.getAttribute('data-score') });
+      } else if (feature === 'fields' || feature === 'icons') {
+        if (width === 375) await page.locator('#mobile-settings-open').tap();
+        else await page.locator('#settings').evaluate(el => scrollTo(0, scrollY + el.getBoundingClientRect().top - 95));
+        const trigger = page.locator('#business-trigger');
+        const activate = locator => width === 1440 ? locator.click() : locator.tap();
+        const shot = name => page.screenshot({ path: dir + '/' + phase + '-' + engine + '-' + width + '-' + name + '.png', scale:'css' });
+        const style = () => trigger.evaluate(el => {
+          const s = getComputedStyle(el);
+          return { background:s.backgroundColor, border:s.borderColor, outline:s.outlineStyle };
+        });
+        const closed = await style();
+        await shot('closed');
+        await activate(trigger);
+        const list = page.locator('#business-listbox');
+        await expect(list).toBeVisible();
+        await page.waitForTimeout(450);
+        const open = await style();
+        await shot('open');
+        if (feature === 'icons') {
+          const icons = await list.locator('.choice-option-mark svg').evaluateAll(nodes => nodes.map(svg => ({
+            width: svg.getAttribute('width'), height: svg.getAttribute('height'),
+            stroke: svg.getAttribute('stroke-width'), path: svg.innerHTML
+          })));
+          expect(icons).toHaveLength(10);
+          expect(new Set(icons.map(icon => icon.path)).size).toBe(10);
+          expect(icons.every(icon => icon.width === '20' && icon.height === '20' && icon.stroke === '1.75')).toBe(true);
+          await list.evaluate(el => { el.scrollTop = el.scrollHeight; });
+          await shot('end');
+          const assets = await page.evaluate(async () => {
+            const brand = document.querySelector('.brand-icon svg');
+            const source = new DOMParser().parseFromString(await (await fetch('/static/assets/favicon.svg')).text(),'image/svg+xml').documentElement;
+            const sameMark = brand.innerHTML === source.innerHTML && brand.getAttribute('viewBox') === source.getAttribute('viewBox');
+            const urls = [...document.querySelectorAll('link[rel=icon][type="image/png"],link[rel=apple-touch-icon]')].map(link => link.href);
+            return { sameMark, sizes:await Promise.all(urls.map(async url => {
+              const img=new Image(); img.src=url; await img.decode(); return [img.naturalWidth,img.naturalHeight];
+            })) };
+          });
+          expect(assets.sizes).toEqual([[32,32],[180,180]]);
+          if (phase === 'after') expect(assets.sameMark).toBe(true);
+          results.push({engine,width,icons,assets});
+        } else {
+          await activate(list.getByRole('option',{name:'Аптека',exact:true}));
+          await expect(trigger).toHaveAttribute('aria-expanded','false');
+          await expect(trigger).toHaveText(/Аптека/);
+          await expect(list).toBeHidden();
+          await page.waitForTimeout(300);
+          const selected = await style();
+          if (phase === 'after' && width < 1440) {
+            expect(selected.background).toBe(closed.background);
+            expect(selected.border).toBe(closed.border);
+            expect(selected.outline).toBe('none');
+          }
+          await shot('selected');
+          results.push({engine,width,closed,open,selected});
+        }
       } else {
         await page.screenshot({ path: dir + '/' + phase + '-' + engine + '-' + width + '.png' });
       }
