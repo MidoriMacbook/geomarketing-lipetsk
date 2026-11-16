@@ -147,7 +147,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
   }
   $('recommendations-context').textContent = `${data.district_name} · ${data.business_name}`;
   $('recommendations-context').setAttribute('aria-label',`Параметры расчёта: ${data.district_name}, ${data.business_name}. Изменить параметры`);
-  const contextIcon=node('span','directional-icon icon-forward');contextIcon.setAttribute('aria-hidden','true');$('recommendations-context').append(contextIcon);
+  $('recommendations-context').append(node('span','context-action','Изменить параметры'));
   setRevealed($('result-empty'), !data.recommendations.length, 'empty');
   $('result').hidden = !data.recommendations.length;
   if (!data.recommendations.length) {
