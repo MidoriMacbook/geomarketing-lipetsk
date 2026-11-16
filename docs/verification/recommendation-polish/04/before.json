@@ -25,7 +25,7 @@
       },
       {
         "x": 25,
-        "y": 824.359375,
+        "y": 827.359375,
         "width": 325,
         "height": 93.640625
       }
@@ -67,7 +67,7 @@
         "tag": "SECTION",
         "id": "map-card",
         "class": "card map-card",
-        "text": "Карта возможностеймкр. Елецкий · Кофейня OpenStreetMapРасчёт",
+        "text": "Карта возможностеймкр. Елецкий · Кофейня OpenStreetMapВыбран",
         "radius": "16px",
         "padding": "0px",
         "weight": "400",
@@ -242,7 +242,7 @@
       {
         "tag": "ARTICLE",
         "id": "",
-        "class": "recommendation is-preview",
+        "class": "recommendation",
         "text": "2Место 226 из 100≈ 1 700 жителей · 0 конкурентовслабее лучше",
         "radius": "16px",
         "padding": "0px",
@@ -251,7 +251,7 @@
         "background": "rgb(255, 247, 230)",
         "overflow": 0,
         "x": 25,
-        "y": 824.359375,
+        "y": 827.359375,
         "width": 325,
         "height": 93.640625
       },
@@ -267,7 +267,7 @@
         "background": "rgb(137, 67, 78)",
         "overflow": 0,
         "x": 38,
-        "y": 1165.1875,
+        "y": 1168.1875,
         "width": 299,
         "height": 48.390625
       },
@@ -283,7 +283,7 @@
         "background": "rgb(255, 247, 230)",
         "overflow": 0,
         "x": 38,
-        "y": 1253.859375,
+        "y": 1256.859375,
         "width": 299,
         "height": 44
       },
@@ -299,7 +299,7 @@
         "background": "rgba(0, 0, 0, 0)",
         "overflow": 0,
         "x": 38,
-        "y": 1578.03125,
+        "y": 1581.03125,
         "width": 212.3125,
         "height": 46
       },

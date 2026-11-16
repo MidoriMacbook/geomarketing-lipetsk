@@ -112,7 +112,7 @@
 .mobile-rec-toggle>.place-strength { grid-column:2/4; grid-row:3; }
 .recommendation-data-note { font-size:13px; color:var(--color-muted); margin:0 0 16px; max-width:70ch; }
 .place-actions .button,.place-actions a { font-size:13px; min-height:44px; }
-.place-actions a { display:flex; gap:8px; padding:8px 12px; }
+.place-actions a { display:flex; gap:8px; padding:8px 12px; font-weight:600; }
 .place-actions .save { flex-basis:100%; }
 @media (min-width:601px) and (min-height:850px) { .workspace>.settings { position:sticky; top:calc(var(--header-offset,80px) + 20px); } }
 .place-metrics strong,.score,td { font-family:var(--font-body); font-variant-numeric:tabular-nums; }

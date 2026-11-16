@@ -1,6 +1,7 @@
 import {chromium,expect} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
+import {auditPresentation} from './presentation-audit.mjs';
 const [phase='before',point='01']=process.argv.slice(2),base=process.env.PREVIEW_URL||'http://127.0.0.1:5071';
 const dir=`docs/verification/recommendation-polish/${point}`;await mkdir(dir,{recursive:true});
 const states=point==='02'?['1','2','3']:point==='08'?['1','2','3','error','empty','saved','comparison']:['2'];
@@ -38,8 +39,9 @@ try{for(const width of [375,768,1440,1920])for(const stateName of states){
  }else if(width===375){
   await page.locator('#map').evaluate(el=>scrollTo({top:scrollY+el.getBoundingClientRect().top-110,behavior:'instant'}));await page.waitForTimeout(700);await page.locator('.sheet-handle').click();
  }else await page.locator('#recommendations').evaluate(el=>scrollTo({top:scrollY+el.getBoundingClientRect().top-110,behavior:'instant'}));
+ if(point==='04'){await page.evaluate(async()=>{const {selectPlace}=await import('/static/js/recommendations.js');selectPlace(1);});await page.mouse.move(0,0);}
  await page.waitForTimeout(1500);await page.screenshot({path:`${dir}/${phase}-${width}-${stateName}.png`});
- rows.push({width,state:stateName,errors,...await page.evaluate(()=>{
+ rows.push({width,state:stateName,errors,...(point==='08'?{audit:await page.evaluate(auditPresentation)}:{}),...await page.evaluate(()=>{
   const rect=el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
   const selector='.recommendation,.saved-card,.comparison,#selection-note,.notice,.kpi-card,.hero-steps article,.settings,.map-card,.site-header,.choice-trigger,.button,.sheet-place';
   return {overflow:document.documentElement.scrollWidth-innerWidth,section:rect(document.querySelector('#recommendations')),map:rect(document.querySelector('#map-card')),

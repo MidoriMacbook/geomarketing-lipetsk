@@ -20,7 +20,7 @@ for(const width of [375,1440])test(`произвольная точка, сох�
  const map=page.locator('#map'),box=await map.boundingBox();
  await map.click({position:{x:box.width*.45,y:box.height*.55}});
  const popup=page.locator('.map-inspection');await expect(popup).toHaveAttribute('aria-label','Оценка этой точки');
- await expect(popup.locator('.map-inspection-score')).toHaveText(/\d+ из 100/);
+ await expect(popup.locator('.map-inspection-score')).toHaveText(/\d+\sиз\s100/);
  if(width===375)await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','peek');
  await popup.getByRole('button',{name:'Сохранить как своё место'}).click();await expect(popup.getByRole('status')).toHaveText('Сохранено и добавлено в сравнение');
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('geomarketing.saved.v1')));

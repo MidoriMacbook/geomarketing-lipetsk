@@ -1,6 +1,9 @@
 .map-inspection-popup .leaflet-popup-content-wrapper,.map-inspection-popup .leaflet-popup-tip { background:var(--palette-cream); color:var(--palette-ink); }
 @media(max-width:600px){
  #map:has(.map-inspection-popup) .leaflet-top.leaflet-right { top:auto; bottom:32px; }
+ #map:has(.map-inspection-popup) .leaflet-control-zoom { display:flex; }
+ #map:has(.map-inspection-popup) .leaflet-control-zoom a { border-bottom:0; border-radius:0; }
+ #map:has(.map-inspection-popup) .leaflet-control-zoom a+a { border-left:1px solid var(--color-line); }
 }
 .map-inspection-popup .leaflet-popup-content-wrapper { border:1px solid var(--color-line); border-radius:var(--radius-lg); }
 .map-inspection-popup .leaflet-popup-content { margin:12px 14px; font:14px/1.4 'Golos Text',sans-serif; width:268px!important; max-width:calc(100vw - 96px); }
