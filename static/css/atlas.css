@@ -98,7 +98,13 @@
 .section-heading { border-bottom-width:1px; }
 .section-note { max-width:65ch; }
 .place-metrics { font-variant-numeric:tabular-nums; }
-.score-caption { flex-basis:100%; text-align:right; font:400 13px/1.4 var(--font-body); color:var(--color-muted); }
+.place-title { display:grid; grid-template-columns:auto minmax(0,1fr) auto; }
+.score-group { display:flex; align-items:center; gap:var(--space-1); white-space:nowrap; }
+.score-info { display:inline-grid; place-items:center; width:24px; height:24px; border:1px solid var(--color-border); border-radius:50%; font:500 13px var(--font-body); color:var(--color-ink); cursor:help; }
+.score-info:focus-visible { outline:var(--focus-width) solid var(--color-ink); outline-offset:var(--focus-offset); }
+.place-strength { display:inline-flex; align-items:center; justify-self:start; padding:var(--space-1) var(--space-2); border-radius:12px; background:var(--palette-pink); color:var(--palette-ink); font:500 12px/1.4 var(--font-body); }
+.place-title>.place-strength { grid-column:1/-1; }
+.mobile-rec-toggle>.place-strength { grid-column:2/4; grid-row:3; }
 .recommendation-data-note { font-size:13px; color:var(--color-muted); margin:0 0 16px; max-width:70ch; }
 .place-actions .button,.place-actions a { font-size:13px; min-height:44px; }
 .place-actions a { display:flex; gap:8px; padding:8px 12px; }

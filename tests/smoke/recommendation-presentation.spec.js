@@ -1,0 +1,12 @@
+import {test,expect} from '@playwright/test';
+test('слабый вариант обозначен по показанному баллу, координаты не перекрыты',async({page,baseURL})=>{
+ await page.setViewportSize({width:1440,height:1000});
+ await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
+ await page.route('**/api/calculate?**',async route=>{const response=await route.fetch(),data=await response.json();data.recommendations[1].score=.39;data.recommendations[2].score=.399;await route.fulfill({response,json:data});});
+ await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+ const second=page.getByTestId('recommendation-card').nth(1),third=page.getByTestId('recommendation-card').nth(2);
+ await expect(second.locator('.place-title .place-strength')).toHaveText('слабее лучшего');await expect(third.locator('.place-strength')).toHaveCount(0);
+ await expect(second.locator('.decision-headline')).toContainText('запасной вариант');
+ const heading=await second.locator('.place-title').boundingBox(),coords=await second.locator('.coords').boundingBox();expect(coords.y).toBeGreaterThanOrEqual(heading.y+heading.height);
+ await expect(second.locator('.score-info')).toHaveAttribute('aria-label',/Относительная оценка/);
+});
