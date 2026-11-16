@@ -12,18 +12,25 @@ if (header && menu && toggle) {
   const mobile = matchMedia('(max-width:900px)'), reduce = matchMedia('(prefers-reduced-motion:reduce)');
   const items = menu.querySelector('.nav-items'), indicator = menu.querySelector('.nav-indicator');
   const links = [...menu.querySelectorAll('a[href^="#"]')];
-  const backdrop=document.getElementById('nav-backdrop'),main=document.querySelector('main');
+  const dialog = document.getElementById('mobile-navigation');
+  const closeButton = document.getElementById('nav-close');
+  let lockedScroll;
   const isolate=open=>{
-    document.documentElement.dataset.navOpen=String(open);
-    if(backdrop)backdrop.hidden=!open;
-    if(main)main.inert=open;
+    const root = document.documentElement;
+    if (open) {
+      lockedScroll = window.scrollY;
+      root.style.setProperty('--nav-scroll-top', `-${lockedScroll}px`);
+    }
+    root.dataset.navOpen = String(open);
+    if (!open && lockedScroll !== undefined) {
+      window.scrollTo({ top: lockedScroll, behavior: 'instant' });
+      root.style.removeProperty('--nav-scroll-top');
+      lockedScroll = undefined;
+    }
   };
-  let modelFromMenu = false, navigationTimer, pendingNavigation;
+  let modelFromMenu = false;
   const syncOffset = () => document.documentElement.style.setProperty('--header-offset', `${Math.ceil(header.getBoundingClientRect().height)}px`);
-  const syncMenuCap = () => {
-    menu.style.setProperty('--nav-available-height', `${Math.max(44, innerHeight - header.getBoundingClientRect().bottom - 16)}px`);
-  };
-  const cancelNavigation = () => { clearTimeout(navigationTimer); pendingNavigation = null; };
+  const syncMenuCap = () => dialog.style.setProperty('--nav-top', `${Math.ceil(header.getBoundingClientRect().bottom) + 8}px`);
   const updateIndicator = () => {
     if (mobile.matches) return;
     const active = links.find(link => link.classList.contains('active') && !link.hidden);
@@ -42,58 +49,63 @@ if (header && menu && toggle) {
     updateIndicator();
   };
   const close = (returnFocus = false) => {
-    cancelNavigation();
+    const wasOpen = dialog.open;
+    const wasFocused = dialog.contains(document.activeElement);
     header.classList.remove('nav-open');
+    if (wasOpen) dialog.close();
     isolate(false);
     toggle.setAttribute('aria-expanded', 'false');
-    if (returnFocus || (mobile.matches && menu.contains(document.activeElement))) toggle.focus({ preventScroll:true });
-    menu.inert = mobile.matches;
-    if (mobile.matches) menu.setAttribute('aria-hidden', 'true');
-    else menu.removeAttribute('aria-hidden');
+    if (mobile.matches && (returnFocus || wasFocused)) toggle.focus({ preventScroll:true });
   };
   const sync = () => {
-    const hadMenuFocus = menu.contains(document.activeElement);
+    close();
     toggle.hidden = !mobile.matches;
-    close(mobile.matches && hadMenuFocus);
+    if (mobile.matches) dialog.append(menu);
+    else header.append(menu);
     syncMenuCap(); syncOffset(); updateIndicator();
   };
   toggle.addEventListener('click', () => {
-    cancelNavigation();
-    if (header.classList.contains('nav-open')) close();
-    else {
-      menu.inert = false; menu.removeAttribute('aria-hidden');
-      syncMenuCap(); header.classList.add('nav-open');
-      toggle.setAttribute('aria-expanded', 'true');
-      isolate(true);
-    }
+    if (!mobile.matches) return;
+    if (dialog.open) { close(true); return; }
+    syncMenuCap();
+    header.classList.add('nav-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    isolate(true);
+    dialog.showModal();
+    closeButton.focus({ preventScroll:true });
   });
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && header.classList.contains('nav-open')) { event.preventDefault(); close(true); }
-    if(event.key==='Tab'&&mobile.matches&&header.classList.contains('nav-open')){
-      const controls=[toggle,...menu.querySelectorAll('a[href],button')].filter(el=>!el.hidden&&el.getClientRects().length);
-      const first=controls[0],last=controls.at(-1);
-      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-    }
+  closeButton.addEventListener('click', () => close(true));
+  dialog.addEventListener('cancel', event => { event.preventDefault(); close(true); });
+  let backdropPress = false;
+  dialog.addEventListener('pointerdown', event => { backdropPress = event.target === dialog; });
+  dialog.addEventListener('click', event => {
+    if (!backdropPress || event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) close(true);
   });
-  let swipeStart=null;
-  menu.addEventListener('touchstart',event=>{swipeStart=event.touches[0]?.clientY;},{passive:true});
-  menu.addEventListener('touchend',event=>{if(swipeStart!==null&&swipeStart-event.changedTouches[0]?.clientY>60)close(true);swipeStart=null;},{passive:true});
-  document.addEventListener('pointerdown', event => {
-    if (!header.contains(event.target) && header.classList.contains('nav-open')) close(menu.contains(document.activeElement));
+  dialog.addEventListener('keydown', event => {
+    if (event.key !== 'Tab') return;
+    const controls = [closeButton, ...links.filter(link => !link.hidden)];
+    const first = controls[0], last = controls.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   });
-  document.addEventListener('focusin', event => {
-    if (!header.contains(event.target) && header.classList.contains('nav-open')) close();
-  });
+  let swipeStart;
+  dialog.addEventListener('touchstart', event => {
+    if (event.touches.length === 1 && dialog.scrollHeight === dialog.clientHeight) swipeStart = event.touches[0].clientY;
+  }, { passive:true });
+  dialog.addEventListener('touchend', event => {
+    if (swipeStart !== undefined && swipeStart - event.changedTouches[0].clientY > 60) close(true);
+    swipeStart = undefined;
+  }, { passive:true });
+  dialog.addEventListener('touchcancel', () => { swipeStart = undefined; });
   document.querySelectorAll('#nav-menu a[href^="#"], .header-cta, .atlas-coordinates a, .hero-links a[href^="#"], .workspace-return a[href^="#"], .skip-link[href^="#"]').forEach(link => link.addEventListener('click', event => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     const target = document.getElementById(link.hash.slice(1));
     if (!target) return;
     event.preventDefault();
-    const wait = mobile.matches && header.classList.contains('nav-open') && !reduce.matches;
     close();
     const navigate = () => {
-      pendingNavigation = null;
       history.pushState(null, '', link.hash);
       if(target.id==='map-title')focusWorkspaceMap();
       else {
@@ -103,12 +115,8 @@ if (header && menu && toggle) {
       }
       if (links.includes(link)) setActive(link);
     };
-    if (wait) { pendingNavigation = navigate; navigationTimer = setTimeout(navigate, 300); }
-    else navigate();
+    navigate();
   }));
-  reduce.addEventListener('change', () => {
-    if (reduce.matches && pendingNavigation) { clearTimeout(navigationTimer); pendingNavigation(); }
-  });
   document.getElementById('model-button')?.addEventListener('click', () => {
     modelFromMenu = mobile.matches && header.classList.contains('nav-open');
     if (modelFromMenu) close(true);
