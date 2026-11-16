@@ -43,8 +43,9 @@
 .data-section h2 { margin-bottom:var(--space-2); }
 .data-section #data-title { font-family:var(--font-body); font-size:var(--text-lg); font-weight:600; letter-spacing:0; }
 .data-section p { font-size:var(--text-sm); color:var(--color-muted); max-width:var(--size-copy-measure); }
-#data-details { margin-top:var(--space-4); border:0; border-radius:0; background:transparent; }
+#data-details { margin-top:var(--space-4); border:var(--line) solid var(--color-border); border-radius:var(--radius-md); background:var(--color-page); }
 #data-summary { display:grid; grid-template-columns:minmax(0,1fr) var(--direction-size,1rem); align-items:center; gap:var(--space-4); cursor:pointer; min-height:56px; padding:var(--space-4); font-size:var(--text-sm); font-weight:600; border-radius:inherit; }
+#data-details[open]>#data-summary { border-end-start-radius:0; border-end-end-radius:0; }
 #data-summary:focus-visible { outline:var(--focus-width) solid var(--color-primary); outline-offset:var(--focus-offset); }
 #data-details>.disclosure-body>.disclosure-content { padding:0 var(--space-4) var(--space-4); }
 #data-details>.disclosure-body>.disclosure-content>p,#data-details .button { margin-top:var(--space-3); }

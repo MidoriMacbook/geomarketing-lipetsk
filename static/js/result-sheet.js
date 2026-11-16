@@ -45,7 +45,7 @@ function setSnap(next){
  snap=next;sheet.dataset.snap=snap;active=layout&&ready&&(mapVisible||snap==='expanded');
  const expanded=layout&&snap==='expanded';
  sheet.dataset.sheetLayout=String(layout);sheet.dataset.sheetActive=String(active);sheet.inert=layout&&!active;
- lockPage(expanded||Boolean(drag));isolate(expanded);
+ lockPage(expanded||Boolean(drag?.moved));isolate(expanded);
  scrim.dataset.open=String(expanded);scrim.inert=!expanded;
  sheet.setAttribute('role',expanded?'dialog':'region');
  if(expanded)sheet.setAttribute('aria-modal','true');else sheet.removeAttribute('aria-modal');
@@ -100,24 +100,32 @@ handle.addEventListener('click',()=>{if(skipClick){skipClick=false;return;}snap=
 closeButton.addEventListener('click',close);scrim.addEventListener('click',close);
 handle.addEventListener('keydown',event=>{if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();event.key==='ArrowUp'?expand():close();}});
 handle.addEventListener('pointerdown',event=>{
- if(!active||event.button!==0)return;skipClick=false;
+ if(!active||!event.isPrimary||event.button!==0)return;skipClick=false;
  drag={id:event.pointerId,y:event.clientY,offset:new DOMMatrixReadOnly(getComputedStyle(sheet).transform).m42,snap,moved:false};
- map.style.setProperty('--map-gesture-height',`${map.getBoundingClientRect().height}px`);root.dataset.sheetGesture='true';
- lockPage(true);handle.setPointerCapture(event.pointerId);sheet.dataset.dragging='true';
+
 });
-handle.addEventListener('pointermove',event=>{
+window.addEventListener('pointermove',event=>{
  if(!drag||drag.id!==event.pointerId)return;
- drag.delta=event.clientY-drag.y;if(Math.abs(drag.delta)>6)drag.moved=true;
+ drag.delta=event.clientY-drag.y;
+ if(!drag.moved){
+  if(Math.abs(drag.delta)<=8)return;
+  drag.moved=true;
+  map.style.setProperty('--map-gesture-height',`${map.getBoundingClientRect().height}px`);
+  root.dataset.sheetGesture='true';sheet.dataset.dragging='true';
+  handle.setPointerCapture(event.pointerId);lockPage(true);
+ }
  sheet.style.setProperty('--sheet-offset',`${Math.max(0,Math.min(offset(),drag.offset+drag.delta))}px`);
 });
 function endDrag(event){
  if(!drag||drag.id!==event.pointerId)return;
  const previous=drag;drag=null;delete sheet.dataset.dragging;skipClick=previous.moved;
- key='';setSnap(event.type!=='pointercancel'&&Math.abs(previous.delta||0)>60?(previous.delta<0?'expanded':'peek'):previous.snap);
+ if(!previous.moved)return;
+ key='';setSnap(event.type==='pointerup'&&Math.abs(previous.delta||0)>60?(previous.delta<0?'expanded':'peek'):previous.snap);
 }
-handle.addEventListener('pointerup',endDrag);handle.addEventListener('pointercancel',endDrag);
-window.addEventListener('touchmove',event=>{if(drag&&event.cancelable)event.preventDefault();},{passive:false});
-window.addEventListener('wheel',event=>{if(drag&&event.cancelable)event.preventDefault();},{passive:false});
+window.addEventListener('pointerup',endDrag);window.addEventListener('pointercancel',endDrag);
+handle.addEventListener('lostpointercapture',endDrag);
+window.addEventListener('touchmove',event=>{if(drag?.moved&&event.cancelable)event.preventDefault();},{passive:false});
+window.addEventListener('wheel',event=>{if(drag?.moved&&event.cancelable)event.preventDefault();},{passive:false});
 sheet.addEventListener('transitionend',event=>{if(event.target===sheet&&event.propertyName===(motionReduced()?'opacity':'transform'))settle();});
 document.addEventListener('keydown',event=>{
  if(!layout||snap!=='expanded'||document.querySelector('dialog[open]'))return;

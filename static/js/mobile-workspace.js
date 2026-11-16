@@ -10,6 +10,7 @@ export function initMobileWorkspace() {
  const bar=byId('mobile-settings-bar');
  const trust=byId('trust-status'),trustHome=document.createComment('trust-home');trust.before(trustHome);
  const legend=map.querySelector('.map-legend'),legendHome=document.createComment('legend-home');legend.before(legendHome);
+ const key=map.querySelector('.map-pin-key'),keyHome=document.createComment('map-key-home');key.before(keyHome);
  const footer=document.createElement('div');footer.className='mobile-sheet-actions';dialog.append(footer);
  const home=document.createComment('settings-home'),runHome=document.createComment('run-home'),barHome=document.createComment('mobile-settings-bar-home');
  settings.before(home);byId('run').before(runHome);bar.before(barHome);
@@ -89,6 +90,7 @@ export function initMobileWorkspace() {
   if(mobile.matches){
    map.querySelector('.map-footer').append(trust);
    map.querySelector('.analysis-bar').after(legend);
+   map.querySelector('.map-heading').append(key);
    workspace.prepend(bar,map);byId('mobile-settings-content').append(settings);settings.classList.remove('inline-settings');
    map.after(context,kpis,area);
    secondary.append(cards.houses,cards.competitors);
@@ -97,6 +99,7 @@ export function initMobileWorkspace() {
   } else {
    trustHome.after(trust);
    legendHome.after(legend);
+   keyHome.after(key);
    settings.classList.remove('inline-settings');
    summaryHome.after(context,kpis,area);
    barHome.after(bar);home.after(settings);settings.after(map);

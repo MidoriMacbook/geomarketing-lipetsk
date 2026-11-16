@@ -21,7 +21,7 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
  function close(){if(popup){if(popup.getElement())popup.getElement().inert=true;map.closePopup(popup);}popup=null;anchor=null;docked=false;layer.clearLayers();}
  function keepVisible(){
   if(!popup?.isOpen())return;
-  const element=popup.getElement(),box=element.getBoundingClientRect(),rect=map.getContainer().getBoundingClientRect();
+  const element=popup.getElement(),rect=map.getContainer().getBoundingClientRect();
   const sheet=document.getElementById('recommendations'),header=document.getElementById('site-header').getBoundingClientRect();
   const bottom=Math.min(rect.bottom,innerHeight-(sheet.dataset.sheetActive==='true'?parseFloat(sheet.style.getPropertyValue('--sheet-visible'))||148:0))-12;
   const top=Math.max(rect.top,header.bottom)+12,left=Math.max(0,rect.left)+12,right=Math.min(innerWidth,rect.right)-12;
@@ -31,6 +31,7 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
    element.style.setProperty('--inspection-top',Math.max(0,top-rect.top)+'px');
    if(docked)return;
   }
+  const box=element.getBoundingClientRect();
   const dx=box.right>right?box.right-right:box.left<left?box.left-left:0;
   const dy=box.top<top?box.top-top:box.bottom>bottom?box.bottom-bottom:0;
   if(compact) {
@@ -63,14 +64,15 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
  function facts(box,rec){
   box.classList.add('map-inspection-compact');
   const score=node('p','map-inspection-score',scoreText(rec.score));
-  box.append(score);
+  const reading=node('div','map-inspection-reading');
+  reading.append(score);box.append(reading);
   const summary=node('p','map-inspection-mobile-summary');
   const residents=count(rec.residents_in_radius,{one:'житель',few:'жителя',many:'жителей',other:'жителей'});
   const rivals=count(rec.competitors_in_radius,{one:'конкурент',few:'конкурента',many:'конкурентов',other:'конкурентов'});
   summary.textContent=`≈ ${residents} · ${rivals} · ${rec.nearest_competitor_m==null?'ближайший не найден':`ближайший ${distance(rec.nearest_competitor_m)}`}`;
   box.append(summary,node('p','map-inspection-desktop-facts',`≈ ${residents} в ${fmt(rec.radius_m)} м · ${rivals}`),
    node('p','map-inspection-desktop-facts',`Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`));
-  if(Math.round(rec.score*100)<40)box.insertBefore(node('span','map-inspection-weak','слабое место'),summary);
+  if(Math.round(rec.score*100)<40)reading.append(node('span','map-inspection-weak','слабое место'));
  }
  function saveAction(box,rec,label,showDetails){
   const actions=node('div','map-inspection-actions');
@@ -96,6 +98,7 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   const info=button('i','map-inspection-info',()=>{
    note.hidden=!note.hidden;
    info.setAttribute('aria-expanded',String(!note.hidden));
+   requestAnimationFrame(keepVisible);
   });
   info.title=note.textContent;
   info.setAttribute('aria-label','Об относительной оценке');

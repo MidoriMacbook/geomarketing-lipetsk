@@ -68,3 +68,15 @@
 
 .hero-steps .atlas-step { align-self:start; width:fit-content; padding:4px 8px; border-radius:var(--radius-sm); }
 :root[data-theme=B] .hero-steps article:first-child .atlas-step { background:var(--palette-cream); }
+
+#data-section,#map-card,#recommendations,.settings { border:1px solid var(--palette-border); }
+.map-inspection-popup .leaflet-popup-content-wrapper { background:var(--palette-cream); border-color:var(--palette-border); }
+.map-inspection-popup .leaflet-popup-tip { background:var(--palette-cream); }
+.map-pin-key summary::after { display:none; }
+.map-heading .map-pin-key { grid-column:2; grid-row:1; justify-self:end; align-self:center; z-index:401; }
+.map-heading .map-pin-key>div { top:calc(100% + 8px); bottom:auto; max-width:calc(100vw - 64px); }
+@media (max-width:600px) {
+ .map-heading:has(.map-pin-key) { display:grid; grid-template-columns:minmax(0,1fr) 44px; column-gap:8px; }
+ .map-heading .map-badge { display:none; }
+ .sheet-handle .sheet-more { font-weight:600; }
+}
