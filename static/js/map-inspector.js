@@ -14,7 +14,7 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
  const intersects=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
  const pinBoxes=()=>[...map.getContainer().querySelectorAll('.recommendation-pin')].map(pin=>pin.getBoundingClientRect());
  let docked=false;
- 
+
  const token=name=>getComputedStyle(document.documentElement).getPropertyValue(name).trim();
  const layer=L.layerGroup().addTo(map);
  map.getPane('popupPane').style.zIndex='1000';

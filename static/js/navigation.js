@@ -86,9 +86,11 @@ if (header && menu && toggle) {
   dialog.addEventListener('keydown', event => {
     if (event.key !== 'Tab') return;
     const controls = [closeButton, ...links.filter(link => !link.hidden)];
-    const first = controls[0], last = controls.at(-1);
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    const current = controls.indexOf(document.activeElement);
+    const next = current < 0 ? (event.shiftKey ? controls.length - 1 : 0)
+      : (current + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
+    event.preventDefault();
+    controls[next].focus();
   });
   let swipeStart;
   dialog.addEventListener('touchstart', event => {

@@ -1,7 +1,6 @@
 .brand { display:flex; align-items:center; gap:var(--space-3); text-decoration:none; font-size:var(--text-xl); font-weight:700; letter-spacing:var(--tracking-tight); min-width:0; max-width:100%; }
-.brand-icon { width:var(--size-logo); height:var(--size-logo); flex-shrink:0; display:grid; place-items:center; border-radius:var(--radius-control); background:var(--color-primary); color:var(--color-on-primary); }
-.brand-icon svg { width:100%; height:100%; stroke:currentColor; stroke-width:1.5; }
-.brand-icon svg circle:last-child { fill:currentColor; stroke:none; }
+.brand-icon { width:var(--size-logo); height:var(--size-logo); flex-shrink:0; display:grid; place-items:center; }
+.brand-icon img { display:block; width:100%; height:100%; }
 .brand>span:last-child { min-width:0; overflow-wrap:anywhere; }
 .brand small { display:block; font-size:var(--text-xs); color:var(--color-muted); font-weight:400; letter-spacing:0; margin-top:var(--space-1); }
 .site-header nav { display:flex; align-items:center; gap:var(--space-2); font-size:var(--text-sm); }

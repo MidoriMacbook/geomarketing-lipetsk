@@ -1,7 +1,6 @@
 /* Linen is the default. B and C are previews selected by the page URL. */
 :root {
- --palette-linen:#F8EEDB; --palette-linen-line:#E6D8C0; --palette-misty-marker:#7F8FA3;
- --palette-ink-muted:#5B6672; --palette-rosewood-deep:#8F4A53;
+ --palette-ink-muted:var(--palette-linen-muted); --palette-rosewood-deep:var(--palette-linen-rosewood);
  --panel-fill:var(--palette-linen); --panel-line:var(--palette-linen-line);
  --tint-data:var(--panel-fill); --tint-analysis:var(--panel-fill); --tint-decision:var(--panel-fill);
  --color-surface:var(--panel-fill); --color-surface-muted:var(--panel-fill);
@@ -29,9 +28,9 @@
 }
 #recommendations .sheet-place[aria-pressed=true],.choice-option[aria-selected=true] { background:var(--palette-pink); color:var(--palette-ink); }
 .choice-option[aria-selected=true] :is(.choice-check,.choice-option-mark) { color:var(--palette-ink); }
-.hero-steps article:first-child :is(.step,.step-number),.area-strip .step { background:var(--palette-sage); color:var(--palette-ink); }
-.settings .step,.hero-steps article:nth-child(2) :is(.step,.step-number) { background:var(--palette-sky-soft); color:var(--palette-ink); }
-#recommendations .step,.hero-steps article:nth-child(3) :is(.step,.step-number) { background:var(--palette-pink); color:var(--palette-ink); }
+.hero-steps article:first-child .atlas-step { background:var(--palette-sage); color:var(--palette-ink); }
+.settings .step,.hero-steps article:nth-child(2) .atlas-step { background:var(--palette-sky-soft); color:var(--palette-ink); }
+#recommendations .step,.hero-steps article:nth-child(3) .atlas-step { background:var(--palette-pink); color:var(--palette-ink); }
 .city-block.block-1 { fill:var(--palette-linen-line); }
 .map-legend>[aria-pressed=true] { background:var(--panel-fill); color:var(--palette-ink); }
 .map-legend [data-layer=houses] .layer-sample { background:var(--color-map-house); }
@@ -63,3 +62,6 @@
 
 
 .analysis-bar,.trust-status,#selection-note { border:var(--line) solid var(--panel-line); border-radius:var(--radius-control); }
+
+.hero-steps .atlas-step { align-self:start; width:fit-content; padding:4px 8px; border-radius:var(--radius-sm); }
+:root[data-theme=B] .hero-steps article:first-child .atlas-step { background:var(--palette-cream); }

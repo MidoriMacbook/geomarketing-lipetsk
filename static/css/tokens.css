@@ -1,5 +1,7 @@
 /* Базовые → смысловые → компонентные токены. Все литералы цветов находятся здесь. */
 :root {
+ --palette-linen:#F8EEDB; --palette-linen-line:#E6D8C0; --palette-misty-marker:#7F8FA3;
+ --palette-linen-muted:#5B6672; --palette-linen-rosewood:#8F4A53;
  --palette-cream:#FFF7E6; --palette-ink:#2D3A47;
  --palette-pink:#F7C8D3; --palette-rosewood:#B46A72; --palette-sage:#A8B58A;
  --palette-sky:#A9B7C6;

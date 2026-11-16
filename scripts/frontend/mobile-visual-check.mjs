@@ -67,10 +67,28 @@ for (const engine of ['webkit', 'chromium']) {
           expect(last.bottom).toBeLessThanOrEqual(last.viewport[1]);
           expect(last.right).toBeLessThanOrEqual(last.viewport[0]);
           expect(last.hit).toBe(true);
-          expect(backdropColor?.[0]).not.toEqual(backdropColor?.[1]);
+          expect(backdropColor).toBeDefined();
+          const [surface, scrim] = backdropColor;
+          expect(surface.slice(0,3).reduce((sum,n,i)=>sum+Math.abs(n-scrim[i]),0)).toBeGreaterThan(30);
           await page.locator('#nav-menu a[href="#saved-section"]').tap();
           await expect(page).toHaveURL(/#saved-section$/);
           await expect(page.locator('#nav-toggle')).toHaveAttribute('aria-expanded', 'false');
+          await page.waitForTimeout(550);
+          await page.evaluate(async () => {
+            scrollTo({top:500,behavior:'instant'});
+            await new Promise(requestAnimationFrame);
+          });
+          const previousScroll = await page.evaluate(()=>scrollY);
+          expect(previousScroll).toBeGreaterThan(300);
+          const toggle = await page.locator('#nav-toggle').boundingBox();
+          await page.touchscreen.tap(toggle.x+toggle.width/2,toggle.y+toggle.height/2);
+          await expect(page.locator('#nav-close')).toBeFocused();
+          await page.keyboard.press('Tab');
+          await expect(page.locator('#mobile-navigation')).toContainText('Сохранённые');
+          expect(await page.evaluate(()=>document.querySelector('#mobile-navigation').contains(document.activeElement))).toBe(true);
+          await page.keyboard.press('Escape');
+          await expect(page.locator('#mobile-navigation')).toBeHidden();
+          await expect.poll(()=>page.evaluate(()=>scrollY)).toBe(previousScroll);
         }
       } else if (feature === 'popup') {
         await page.locator('#map').evaluate(el => scrollTo(0, scrollY + el.getBoundingClientRect().top - 95));
@@ -89,7 +107,16 @@ for (const engine of ['webkit', 'chromium']) {
         await expect(popup).toBeVisible();
         await page.waitForTimeout(350);
         await page.screenshot({ path: dir + '/' + phase + '-' + engine + '-' + width + '-point.png' });
-        results.push({ engine, width, map: size, popup: await popup.boundingBox(), score: await popup.getAttribute('data-score') });
+        const popupSize = await popup.boundingBox();
+        const score = await popup.getAttribute('data-score');
+        if (phase === 'after' && width === 375) {
+          expect(score).toMatch(/^\d+$/);
+          expect(popupSize.height).toBeLessThanOrEqual(size.height * .35);
+          expect(popupSize.width).toBeLessThanOrEqual(Math.min(width - 32,340));
+          await expect(popup.getByRole('button',{name:'Сохранить',exact:true})).toBeVisible();
+          await expect(popup.getByRole('button',{name:'Подробнее',exact:true})).toBeVisible();
+        }
+        results.push({ engine, width, map: size, popup: popupSize, score });
       } else if (feature === 'fields' || feature === 'icons') {
         if (width === 375) await page.locator('#mobile-settings-open').tap();
         else await page.locator('#settings').evaluate(el => scrollTo(0, scrollY + el.getBoundingClientRect().top - 95));
@@ -119,9 +146,9 @@ for (const engine of ['webkit', 'chromium']) {
           await list.evaluate(el => { el.scrollTop = el.scrollHeight; });
           await shot('end');
           const assets = await page.evaluate(async () => {
-            const brand = document.querySelector('.brand-icon svg');
-            const source = new DOMParser().parseFromString(await (await fetch('/static/assets/favicon.svg')).text(),'image/svg+xml').documentElement;
-            const sameMark = brand.innerHTML === source.innerHTML && brand.getAttribute('viewBox') === source.getAttribute('viewBox');
+            const brand = document.querySelector('.brand-icon img');
+            await brand?.decode();
+            const sameMark = Boolean(brand && [...document.querySelectorAll('link[rel=icon]')].some(link => link.href === brand.currentSrc));
             const urls = [...document.querySelectorAll('link[rel=icon][type="image/png"],link[rel=apple-touch-icon]')].map(link => link.href);
             return { sameMark, sizes:await Promise.all(urls.map(async url => {
               const img=new Image(); img.src=url; await img.decode(); return [img.naturalWidth,img.naturalHeight];
