@@ -50,8 +50,9 @@ html[data-analysis-state=error] .status-dot { background:var(--color-on-dark); }
  .choice-trigger:hover:not(:disabled) { transform:translateY(-2px); }
 }
 .recommendation { position:relative; }
-.recommendation::before { content:""; position:absolute; left:0; top:var(--space-4); height:var(--space-8); width:var(--line-strong); border-radius:var(--radius-pill); background:var(--color-recommendation-line); opacity:0; transform:scaleY(.3); transform-origin:top; pointer-events:none; transition:transform var(--motion-workspace) var(--ease-emphasized),opacity var(--motion-workspace); }
-.recommendation:first-child::before,.recommendation.selected::before,.recommendation.is-preview::before { opacity:1; transform:scaleY(1); }
+.recommendation.selected { border-color:var(--palette-rosewood); box-shadow:inset 0 0 0 1px var(--palette-rosewood); }
+.recommendation.is-preview:not(.selected) { border-color:var(--palette-sky-deep); }
+#recommendation-list :focus-visible { outline:var(--focus-width) solid var(--palette-ink); outline-offset:var(--focus-offset); }
 @keyframes selection-mark { from { transform:scaleY(.2); opacity:.3; } to { transform:scaleY(1); opacity:1; } }
 /* Повторная анимация показателя сохраняет точное число и все данные отчёта. */
 :is(.kpis,.area-details-grid)>div { position:relative; isolation:isolate; overflow:hidden; padding-bottom:var(--space-5); --kpi-accent:var(--palette-rosewood); transition:background-color var(--motion-workspace),border-color var(--motion-workspace); }
