@@ -6,24 +6,53 @@ import {scoreText} from './result-format.js';
 
 // Этот слой читает готовый расчёт. Он не меняет рекомендации или сетку сервера.
 export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=()=>{}}={}){
- let analysis=null,popup=null,data=null;
+ let analysis=null,popup=null,data=null,anchor=null;
+ const mobile=matchMedia('(max-width:600px)');
+ const plural=new Intl.PluralRules('ru');
+ const count=(n,forms)=>fmt(n)+' '+forms[plural.select(n)];
+ const signed=n=>(n<0?'−':n>0?'+':'')+fmt(Math.abs(n));
+ const intersects=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+ const pinBoxes=()=>[...map.getContainer().querySelectorAll('.recommendation-pin')].map(pin=>pin.getBoundingClientRect());
+ let docked=false;
+ 
  const token=name=>getComputedStyle(document.documentElement).getPropertyValue(name).trim();
  const layer=L.layerGroup().addTo(map);
  map.getPane('popupPane').style.zIndex='1000';
- function close(){if(popup){if(popup.getElement())popup.getElement().inert=true;map.closePopup(popup);}popup=null;layer.clearLayers();}
+ function close(){if(popup){if(popup.getElement())popup.getElement().inert=true;map.closePopup(popup);}popup=null;anchor=null;docked=false;layer.clearLayers();}
  function keepVisible(){
   if(!popup?.isOpen())return;
   const element=popup.getElement(),box=element.getBoundingClientRect(),rect=map.getContainer().getBoundingClientRect();
   const sheet=document.getElementById('recommendations'),header=document.getElementById('site-header').getBoundingClientRect();
   const bottom=Math.min(rect.bottom,innerHeight-(sheet.dataset.sheetActive==='true'?parseFloat(sheet.style.getPropertyValue('--sheet-visible'))||148:0))-12;
   const top=Math.max(rect.top,header.bottom)+12,left=Math.max(0,rect.left)+12,right=Math.min(innerWidth,rect.right)-12;
+  const compact=mobile.matches&&element.querySelector('.map-inspection-compact');
+  if(compact) {
+   element.style.setProperty('--inspection-max-height',Math.max(0,Math.floor((bottom-top+24)*.35))+'px');
+   element.style.setProperty('--inspection-top',Math.max(0,top-rect.top)+'px');
+   if(docked)return;
+  }
   const dx=box.right>right?box.right-right:box.left<left?box.left-left:0;
   const dy=box.top<top?box.top-top:box.bottom>bottom?box.bottom-bottom:0;
+  if(compact) {
+   const projected={left:box.left-dx,right:box.right-dx,top:box.top-dy,bottom:box.bottom-dy};
+   if(box.height>bottom-top||pinBoxes().some(pin=>intersects(projected,pin))) {
+    docked=true;
+    map.getContainer().append(element);
+    element.classList.add('map-inspection-docked');
+    const overlay=element.getBoundingClientRect();
+    const point=map.latLngToContainerPoint(anchor);
+    const occupied=pinBoxes().filter(pin=>intersects(overlay,pin));
+    const push=Math.max(0,...occupied.map(pin=>Math.ceil(overlay.bottom-pin.top+8)),Math.ceil(overlay.bottom-(rect.top+point.y)+16));
+    if(push)map.panBy([0,-push],{animate:false});
+    return;
+   }
+  }
   if(dx||dy)map.panBy([dx,dy],{animate:!motionReduced(),duration:.3});
  }
  function show(point,content){
+  anchor=[point.lat,point.lng];
   popup=L.popup({className:'map-inspection-popup',closeButton:false,autoPan:false,keepInView:false,maxWidth:300,minWidth:240,offset:[0,-12]})
-   .setLatLng([point.lat,point.lng]).setContent(content).openOn(map);
+   .setLatLng(anchor).setContent(content).openOn(map);
   requestAnimationFrame(keepVisible);
  }
  function card(title){
@@ -32,11 +61,21 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   x.setAttribute('aria-label','Закрыть выноску');heading.append(h,x);box.append(heading);return box;
  }
  function facts(box,rec){
-  box.append(node('p','map-inspection-score',scoreText(rec.score)),node('p','',`≈ ${fmt(rec.residents_in_radius)} жителей в ${fmt(rec.radius_m)} м · ${fmt(rec.competitors_in_radius)} конкурентов`),node('p','',`Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`));
+  box.classList.add('map-inspection-compact');
+  const score=node('p','map-inspection-score',scoreText(rec.score));
+  box.append(score);
+  const summary=node('p','map-inspection-mobile-summary');
+  const residents=count(rec.residents_in_radius,{one:'житель',few:'жителя',many:'жителей',other:'жителей'});
+  const rivals=count(rec.competitors_in_radius,{one:'конкурент',few:'конкурента',many:'конкурентов',other:'конкурентов'});
+  summary.textContent=`≈ ${residents} · ${rivals} · ${rec.nearest_competitor_m==null?'ближайший не найден':`ближайший ${distance(rec.nearest_competitor_m)}`}`;
+  box.append(summary,node('p','map-inspection-desktop-facts',`≈ ${residents} в ${fmt(rec.radius_m)} м · ${rivals}`),
+   node('p','map-inspection-desktop-facts',`Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`));
+  if(Math.round(rec.score*100)<40)box.insertBefore(node('span','map-inspection-weak','слабое место'),summary);
  }
- function saveAction(box,rec,label){
+ function saveAction(box,rec,label,showDetails){
+  const actions=node('div','map-inspection-actions');
   const feedback=node('p','map-inspection-feedback');feedback.setAttribute('role','status');
-  const save=button(label,'button secondary',async()=>{
+  const save=button(label,'button secondary map-inspection-save',async()=>{
    save.disabled=true;
    const result=await savePlace(rec,{compare:true});
    if(!box.isConnected)return;
@@ -44,29 +83,56 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
    feedback.textContent=result?.saved?(state.comparison.has(result.id)?'Сохранено и добавлено в сравнение':'Сохранено · в сравнении уже три места'):'Не удалось сохранить. Проверьте сообщение в сохранённых местах.';
    if(result?.saved){save.textContent='Сохранено';save.disabled=true;}
    requestAnimationFrame(keepVisible);
-  });box.append(save,feedback);
+  });
+  if(rec.origin==='manual'){
+   save.replaceChildren(node('span','map-inspection-save-long',label),node('span','map-inspection-save-short','Сохранить'));
+  }
+  actions.append(save,button('Подробнее','button secondary',showDetails));
+  box.append(actions,feedback);
+ }
+ function relativeNote(box) {
+  const note=node('p','map-inspection-note','Оценка относительная, как у рекомендаций.');
+  note.hidden=true;
+  const info=button('i','map-inspection-info',()=>{
+   note.hidden=!note.hidden;
+   info.setAttribute('aria-expanded',String(!note.hidden));
+  });
+  info.title=note.textContent;
+  info.setAttribute('aria-label','Об относительной оценке');
+  info.setAttribute('aria-expanded','false');
+  box.append(info,note);
  }
  function inspect(point){
   if(!analysis)return;
   close();const sample=analysis.sample(point),box=card(sample.inside?'Оценка этой точки':'Вне области расчёта');
-  L.circleMarker([point.lat,point.lng],{radius:7,weight:2,color:token('--color-primary'),fillColor:token('--palette-cream'),fillOpacity:1,interactive:false}).addTo(layer);
+  L.marker([point.lat,point.lng],{interactive:false,keyboard:false,icon:L.divIcon({className:'map-probe-target',iconSize:[20,20]})}).addTo(layer);
   if(!sample.inside)box.append(node('p','','Выберите точку внутри границы области.'));
   else if(!sample.available)box.append(node('p','','В этой части сетки нет оценки. Выберите другую точку.'));
   else{
    const rec=sample.recommendation;selectPoint(rec);facts(box,rec);box.dataset.score=String(Math.round(rec.score*100));
-   if(sample.difference){const d=sample.difference,signed=n=>n>0?`+${fmt(n)}`:fmt(n);box.append(node('p','map-inspection-difference',`По сравнению с лучшим: ${signed(d.score)} баллов · ${signed(d.residents)} жителей`));}
-   box.append(node('p','map-inspection-note','Оценка относительная, как у рекомендаций.'));
-   saveAction(box,rec,'Сохранить как своё место');
+   relativeNote(box);
+   const details=node('div','map-inspection-more');details.hidden=true;
+   details.append(node('p','',`Радиус охвата: ${fmt(rec.radius_m)} м`));
+   if(sample.difference){
+    const d=sample.difference, heading=d.score<0?'Хуже лучшего':d.score>0?'Лучше лучшего':'На уровне лучшего';
+    details.append(node('p','map-inspection-difference',`${heading}: ${signed(d.score)} баллов, ${signed(d.residents)} жителей`));
+   }
+   saveAction(box,rec,'Сохранить как своё место',event=>{
+    details.hidden=!details.hidden;
+    event.currentTarget.setAttribute('aria-expanded',String(!details.hidden));
+    if(!details.hidden)details.scrollIntoView({block:'nearest'});
+   });
+   box.append(details);
   }
   show(point,box);
  }
  function openPlace(rec){
   close();const box=card(`Место ${rec.rank} · оценка`);facts(box,rec);
-  saveAction(box,rec,'Сохранить');
-  box.append(button('Подробнее','button secondary',()=>{
+  relativeNote(box);
+  saveAction(box,rec,'Сохранить',()=>{
    close();document.dispatchEvent(new CustomEvent('gm:place-details',{detail:{rank:rec.rank}}));
    if(!matchMedia('(max-width:600px)').matches){const card=document.querySelector(`#recommendation-list [data-rank="${rec.rank}"]`);card?.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'nearest'});}
-  }));show(rec,box);
+  });show(rec,box);
  }
  function openDemand(center,index){
   close();const box=card('Центр спроса');box.append(node('p','',`≈ ${fmt(center.residents)} жителей в кластере`));
