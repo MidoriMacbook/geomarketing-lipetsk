@@ -89,7 +89,9 @@
 #recommendations #result { margin:0; padding:0; }
 .sheet-home { grid-column:2; min-width:0; }
 #result,#result-empty { overflow:visible; }
-#recommendation-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+#recommendations #recommendation-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:var(--space-3); }
+#recommendations #recommendation-list:has(>.recommendation:only-child) { grid-template-columns:minmax(0,720px); justify-content:center; }
+#recommendations #recommendation-list>.recommendation { margin:0; }
 .recommendation { min-width:0; margin:0; border-radius:16px; background:var(--color-page); }
 .recommendation.selected { background:var(--palette-pink-soft); }
 .section-heading h2,#map-title { font:500 1.8rem/1.15 var(--font-display); letter-spacing:-.035em; }
@@ -325,6 +327,8 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .sheet-rail { display:flex; overflow-x:auto; gap:8px; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain; padding-block:2px 6px; }
  #recommendations[data-closing=true] .sheet-rail { position:absolute; top:63px; left:16px; right:16px; z-index:2; background:var(--tint-decision); }
  .sheet-controls .sheet-place { display:grid; text-align:left; gap:0; flex:0 0 168px; min-height:72px; padding:7px 12px; scroll-snap-align:start; border:1px solid var(--color-border); border-radius:12px; background:var(--color-surface); font-size:12px; line-height:18px; color:var(--color-ink); }
+ .sheet-rail:has(>.sheet-place:only-child)>.sheet-place { flex-basis:100%; }
+ .sheet-rail:has(>.sheet-place:nth-child(2):last-child)>.sheet-place { flex:1 1 0; min-width:0; }
  .sheet-place strong { font-size:14px; }
  .sheet-place[aria-pressed=true] { background:var(--palette-pink-soft); border-color:var(--color-primary); box-shadow:inset 0 0 0 1px var(--color-primary); }
  .sheet-empty { font-size:13px; padding:8px 4px; }
