@@ -30,7 +30,12 @@ if (header && menu && toggle) {
   };
   let modelFromMenu = false;
   const syncOffset = () => document.documentElement.style.setProperty('--header-offset', `${Math.ceil(header.getBoundingClientRect().height)}px`);
-  const syncMenuCap = () => dialog.style.setProperty('--nav-top', `${Math.ceil(header.getBoundingClientRect().bottom) + 8}px`);
+  const syncViewport = () => {
+    if (!dialog.open) return;
+    const viewport = window.visualViewport;
+    dialog.style.setProperty('--nav-viewport-top', `${viewport?.offsetTop ?? 0}px`);
+    dialog.style.setProperty('--nav-viewport-height', `${viewport?.height ?? innerHeight}px`);
+  };
   const updateIndicator = () => {
     if (mobile.matches) return;
     const active = links.find(link => link.classList.contains('active') && !link.hidden);
@@ -62,18 +67,19 @@ if (header && menu && toggle) {
     toggle.hidden = !mobile.matches;
     if (mobile.matches) dialog.append(menu);
     else header.append(menu);
-    syncMenuCap(); syncOffset(); updateIndicator();
+    syncOffset(); updateIndicator();
   };
   toggle.addEventListener('click', () => {
     if (!mobile.matches) return;
     if (dialog.open) { close(true); return; }
-    syncMenuCap();
+    dialog.showModal();
+    isolate(true);
     header.classList.add('nav-open');
     toggle.setAttribute('aria-expanded', 'true');
-    isolate(true);
-    dialog.showModal();
+    syncViewport();
     closeButton.focus({ preventScroll:true });
   });
+  dialog.addEventListener('close', () => { if (!dialog.open && lockedScroll !== undefined) close(true); });
   closeButton.addEventListener('click', () => close(true));
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(true); });
   let backdropPress = false;
@@ -90,7 +96,8 @@ if (header && menu && toggle) {
     const next = current < 0 ? (event.shiftKey ? controls.length - 1 : 0)
       : (current + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
     event.preventDefault();
-    controls[next].focus();
+    controls[next].focus({ preventScroll:true });
+    controls[next].scrollIntoView({ block:'nearest' });
   });
   let swipeStart;
   dialog.addEventListener('touchstart', event => {
@@ -140,10 +147,12 @@ if (header && menu && toggle) {
   mobile.addEventListener('change', sync);
   sync(); header.dataset.navigationReady = 'true'; syncOffset();
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(() => { syncMenuCap(); syncOffset(); updateIndicator(); }).observe(header);
+    new ResizeObserver(() => { syncOffset(); updateIndicator(); }).observe(header);
     new ResizeObserver(updateIndicator).observe(items);
   }
-  window.addEventListener('resize', () => { syncMenuCap(); syncOffset(); updateIndicator(); });
+  window.addEventListener('resize', () => { syncViewport(); syncOffset(); updateIndicator(); });
+  window.visualViewport?.addEventListener('resize',syncViewport);
+  window.visualViewport?.addEventListener('scroll',syncViewport);
   window.addEventListener('scroll', updateSection, {passive:true});
   document.fonts?.ready.then(updateIndicator);
 }
