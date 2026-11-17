@@ -53,6 +53,7 @@ function setSnap(next){
  handle.setAttribute('aria-expanded',String(expanded));closeButton.hidden=!expanded;rail.inert=expanded;
  sheet.style.setProperty('--sheet-offset',`${snap==='peek'?offset():0}px`);
  sheet.style.setProperty('--sheet-visible',`${snap==='peek'?peekHeight():sheet.getBoundingClientRect().height}px`);
+ root.style.setProperty('--results-inset',`${layout&&ready?(snap==='peek'?peekHeight():sheet.getBoundingClientRect().height):0}px`);
  [...sheet.children].filter(el=>el!==controls).forEach(el=>{el.inert=layout&&snap==='peek';});
  const nextKey=[snap,active,layout,innerWidth,innerHeight].join(':');
  if(key!==nextKey){

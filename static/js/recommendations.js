@@ -1,7 +1,7 @@
 import { scoreText, SCORE_NOTE, placeDifference } from './result-format.js';
 import { state } from './state.js';
 import { deliverySummary } from './data-delivery.js';
-import { $, fmt, coords, node, button, reveal, setRevealed, motionStagger, cancelRevealsWithin, animateUI, cancelUI, motionReduced } from './ui.js';
+import { $, fmt, coords, node, button, reveal, setRevealed, motionStagger, cancelRevealsWithin, animateUI, cancelUI, motionReduced, dataDate } from './ui.js';
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker, hoverPlace } from './map.js';
 import { updateReportAvailability } from './report.js';
@@ -294,7 +294,11 @@ export function showResult(data, { freshCalculation=false } = {}) {
   const summary = `${state.openedScenarioId ? 'Сохранённый расчёт · ' : ''}${quality.source} · ${quality.freshness} · ${quality.completeness}`;
   if ($('trust-summary')) {
     $('trust-summary').dataset.resultSummary = summary;
-    $('trust-summary').textContent = summary;
+    const date=dataDate(data);
+    const compact=data.source==='demo'?'Демонстрационные данные':`OpenStreetMap · ${date?'обновлено '+new Date(date).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'}):'дата неизвестна'}`;
+    $('trust-summary').dataset.compactSummary=compact;
+    $('trust-summary').textContent = compact;
+    $('trust-summary').title=summary;
   }
   if ($('data-summary')) $('data-summary').textContent = 'Даты и качество данных';
   updateReportAvailability();
