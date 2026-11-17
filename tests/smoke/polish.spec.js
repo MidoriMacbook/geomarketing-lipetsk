@@ -12,6 +12,17 @@ test('задержанные стили и модули не сдвигают р
  expect(await page.evaluate(()=>window.shifts.reduce((a,b)=>a+b,0))).toBeLessThan(.05);
 });
 
+test('до загрузки шрифтов заголовок сохраняет две строки, источник скрыт над картой',async({page,baseURL})=>{
+ await page.setViewportSize({width:375,height:667});
+ await page.route('**/*',r=>new URL(r.request().url()).origin!==baseURL||['script','font'].includes(r.request().resourceType())?r.abort():r.continue());
+ await page.goto('/');
+ const words=page.locator('#page-title .hero-title-word');
+ const geo=await words.first().boundingBox(),marketing=await words.last().boundingBox();
+ expect(marketing.y).toBeGreaterThan(geo.y+geo.height-1);
+ await expect(page.locator('.map-heading>#trust-status')).not.toBeVisible();
+ const header=await page.locator('#site-header').boundingBox();expect(header.height).toBeLessThan(80);
+});
+
 test('долгое первое подключение использует существующую строку статуса',async({page,baseURL})=>{
  await page.setViewportSize({width:375,height:812});
  await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());

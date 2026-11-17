@@ -78,6 +78,14 @@
 
 ## Коммиты и файлы
 
+### Поправка после CI
+
+Первый Linux CI обнаружил скачок при загрузке шрифтов: CLS 0,0897 в тесте с задержкой ресурсов, хотя локальный полный набор прошёл. В кадрах trace видны смена одной строки заголовка на две и чип над картой до инициализации. Исправлено: строки заголовка заданы до загрузки шрифта с сохранением копирования «ГеоМаркетинг»; скрытие чипа над картой больше не перекрывается его новым стилем; у бренда указан компактный запасной Arial. Порог теста 0,05 не ослаблялся.
+
+Добавлена регрессия с полностью недоступными шрифтами и скриптами. После поправки 14 целевых тестов Chromium прошли; три локальных замера CLS с задержкой 350 мс: 0,0104 / 0,0083 / 0,0068. Это тест загрузки, не новые прогоны Lighthouse. Основные 55 smoke и 14 WebKit выше относятся к версии до этой небольшой поправки; итоговый CI доступен в [запусках ветки redesign](https://github.com/MidoriMacbook/geomarketing-lipetsk/actions/workflows/test.yml?query=branch%3Aredesign).
+
+[Начальное состояние до](https://github.com/MidoriMacbook/geomarketing-lipetsk/blob/redesign/docs/verification/mobile-refinement/loading-before-375.png) · [после](https://github.com/MidoriMacbook/geomarketing-lipetsk/blob/redesign/docs/verification/mobile-refinement/loading-after-375.png) · [измерения](https://github.com/MidoriMacbook/geomarketing-lipetsk/blob/redesign/docs/verification/mobile-refinement/loading-cls.json) · [сценарий](https://github.com/MidoriMacbook/geomarketing-lipetsk/blob/redesign/scripts/frontend/loading-layout-check.mjs) · [регрессия](https://github.com/MidoriMacbook/geomarketing-lipetsk/blob/redesign/tests/smoke/polish.spec.js).
+
 - [источники под картой](https://github.com/MidoriMacbook/geomarketing-lipetsk/commit/ee27c8f)
 - [компактное сравнение мест](https://github.com/MidoriMacbook/geomarketing-lipetsk/commit/ce7f646)
 - [подробности выбранного места](https://github.com/MidoriMacbook/geomarketing-lipetsk/commit/88d29b7)
