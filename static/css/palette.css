@@ -10,7 +10,10 @@ html { scroll-padding-top:0; scroll-padding-bottom:var(--results-inset,0px); }
 html[data-source-open=true] body { position:fixed; top:var(--source-scroll-top); width:100%; }
 @media (max-width:600px) {
  #map-card .map-heading>#trust-status { display:none; }
- .site-header .brand { font-family:'Golos Text',Arial,sans-serif; }
+ .site-header .brand { font-family:var(--font-body); gap:8px; min-height:44px; }
+ .site-header .brand small { display:none; }
+ .site-header .brand>span:last-child { max-width:none; }
+ .site-header #nav-toggle { flex:0 0 auto; min-width:44px; min-height:44px; }
  .page { padding-bottom:calc(var(--results-inset,0px) + 24px); }
  #map-card .map-footer { margin-bottom:0; }
  .sheet-home:has(>[data-sheet-layout=true]) { display:contents; }
