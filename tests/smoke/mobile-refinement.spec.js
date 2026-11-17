@@ -13,7 +13,7 @@ for(const [width,height] of [[375,667],[390,844],[768,1024]]){
    expect(top.y).toBeGreaterThanOrEqual(header.y+header.height);
    const chip=page.locator('#trust-summary');await chip.scrollIntoViewIfNeeded();
    expect(await chip.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
-   if(width<=600)expect(await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--results-inset')))).toBeGreaterThanOrEqual(128);
+   if(width<=600)await expect(page.locator('#map-card .map-footer')).toHaveCSS('margin-bottom','0px');
    await chip.tap();const dialog=page.locator('#source-dialog');await expect(dialog).toBeVisible();
    await expect(dialog.locator('#data-quality')).toContainText('Дома');
    await page.keyboard.press('Escape');await expect(dialog).not.toBeVisible();await expect(chip).toBeFocused();

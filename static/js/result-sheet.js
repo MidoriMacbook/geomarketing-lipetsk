@@ -16,6 +16,11 @@ let snap='peek',layout=false,active=false,ready=false,mapVisible=false,drag=null
 let savedScroll=null,isolation=[],key='',settleTimer=0,readyTimer=0,pending=false;
 const peekHeight=()=>128+Math.max(0,parseFloat(getComputedStyle(sheet).paddingBottom)-16);
 const offset=()=>Math.max(0,sheet.getBoundingClientRect().height-peekHeight());
+function syncReserve(){
+ // Резерв нужен для прокрутки к последнему действию, а не как пустой блок под картой.
+ const height=active&&sheet.isConnected?Math.min(sheet.getBoundingClientRect().height,snap==='peek'?peekHeight():Infinity):0;
+ root.style.setProperty('--results-inset',`${height}px`);
+}
 function lockPage(lock){
  if(lock&&!savedScroll){
   savedScroll={x:scrollX,y:scrollY,position:document.body.style.position,top:document.body.style.top,width:document.body.style.width};
@@ -53,7 +58,7 @@ function setSnap(next){
  handle.setAttribute('aria-expanded',String(expanded));closeButton.hidden=!expanded;rail.inert=expanded;
  sheet.style.setProperty('--sheet-offset',`${snap==='peek'?offset():0}px`);
  sheet.style.setProperty('--sheet-visible',`${snap==='peek'?peekHeight():sheet.getBoundingClientRect().height}px`);
- root.style.setProperty('--results-inset',`${layout&&ready?(snap==='peek'?peekHeight():sheet.getBoundingClientRect().height):0}px`);
+ syncReserve();
  [...sheet.children].filter(el=>el!==controls).forEach(el=>{el.inert=layout&&snap==='peek';});
  const nextKey=[snap,active,layout,innerWidth,innerHeight].join(':');
  if(key!==nextKey){
@@ -152,6 +157,7 @@ document.addEventListener('gm:settings-open',()=>setSnap('peek'));
 document.addEventListener('gm:leave-results',()=>setSnap('peek'));
 new MutationObserver(()=>{if(root.dataset.analysisState==='error'){clearTimeout(readyTimer);ready=true;controls.querySelector('.sheet-summary').textContent='Расчёт не завершён';setSnap('peek');}}).observe(root,{attributes:true,attributeFilter:['data-analysis-state']});
 window.addEventListener('resize',sync);mobile.addEventListener('change',sync);new ResizeObserver(sync).observe(document.getElementById('site-header'));
+new ResizeObserver(()=>{sheet.style.setProperty('--sheet-offset',`${snap==='peek'?offset():0}px`);syncReserve();}).observe(sheet);
 let fontSize=root.style.fontSize;new MutationObserver(()=>{if(fontSize!==root.style.fontSize){fontSize=root.style.fontSize;sync();}}).observe(root,{attributes:true,attributeFilter:['style']});
 window.addEventListener('beforeprint',()=>{layout=false;setSnap('peek');});window.addEventListener('afterprint',sync);
 matchMedia('(prefers-reduced-motion:reduce)').addEventListener('change',()=>{drag=null;delete sheet.dataset.dragging;settle();sync();});

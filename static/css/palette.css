@@ -12,7 +12,8 @@ html[data-source-open=true] body { position:fixed; top:var(--source-scroll-top);
  #map-card .map-heading>#trust-status { display:none; }
  .site-header .brand { font-family:'Golos Text',Arial,sans-serif; }
  .page { padding-bottom:calc(var(--results-inset,0px) + 24px); }
- #map-card .map-footer { margin-bottom:var(--results-inset,0px); }
+ #map-card .map-footer { margin-bottom:0; }
+ .sheet-home:has(>[data-sheet-layout=true]) { display:contents; }
  .source-dialog { margin:auto 0 0; width:100%; max-width:none; max-height:85dvh; border-radius:24px 24px 0 0; padding:24px 16px max(24px,env(safe-area-inset-bottom)); }
 }
 :root {
