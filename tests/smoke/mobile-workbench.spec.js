@@ -48,6 +48,7 @@ test('три места сравниваются с возвратом к выб
  await page.locator('#comparison-guide-open').tap();
  await expect(sheet).toHaveAttribute('data-snap','peek');
  await expect(page.locator('#comparison-title')).toBeFocused();
+ await expect(sheet).toHaveAttribute('data-sheet-active','false');
  const table=page.locator('#comparison .table-scroll');
  await expect(table.locator('thead th')).toHaveCount(4);
  await expect(table.locator('tbody tr')).toHaveCount(8);

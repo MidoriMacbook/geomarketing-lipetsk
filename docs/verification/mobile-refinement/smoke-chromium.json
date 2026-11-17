@@ -1,0 +1,13 @@
+{
+  "engine": "chromium",
+  "errors": [],
+  "scope": "full smoke suite",
+  "stats": {
+    "startTime": "2026-11-17T04:48:47.776Z",
+    "duration": 178776.62600000002,
+    "expected": 55,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

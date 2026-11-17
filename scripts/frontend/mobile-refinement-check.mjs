@@ -34,6 +34,17 @@ try {
    else {for(const check of await page.getByTestId('compare-place').all())await check.check();await page.locator('#comparison-title').evaluate(el=>el.scrollIntoView({block:'start'}));}
    await page.waitForTimeout(400);await shot('comparison');
    row.table=await page.locator('#comparison .table-scroll').evaluate(el=>({width:el.clientWidth,scroll:el.scrollWidth,pageOverflow:document.documentElement.scrollWidth-innerWidth}));
+   if(phase!=='before'&&width<=600){
+    expect(row.table.scroll).toBe(row.table.width);
+    await page.locator('#compare-coverage').tap();await shot('pairs');
+    await page.getByRole('button',{name:'Сравнить варианты 1 и 3',exact:true}).tap();
+    await expect(page.locator('.map-overlap')).toBeVisible();await shot('coverage');
+    await page.getByRole('button',{name:'Закрыть сравнение на карте'}).tap();
+    await page.getByTestId('compare-place').last().evaluate(el=>el.click());
+    await page.locator('#comparison-title').evaluate(el=>el.scrollIntoView({block:'start',behavior:'instant'}));
+    await expect(page.locator('#recommendations')).toHaveAttribute('data-sheet-active','false');
+    await page.waitForTimeout(600);await shot('comparison-two');
+   }
    await page.locator('#comparison-map-link').tap();await page.waitForTimeout(500);
    await page.locator('#trust-details-link').tap();await page.waitForTimeout(400);await shot('source');
   }catch(e){row.failure=e.message;}

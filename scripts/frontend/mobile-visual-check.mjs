@@ -3,18 +3,18 @@ import { mkdir, writeFile } from 'node:fs/promises';
 
 const [phase, feature = 'menu'] = process.argv.slice(2);
 const base = process.env.PREVIEW_URL || 'http://127.0.0.1:5071';
-const dir = 'docs/verification/mobile-safari/' + feature;
+const dir = process.env.CAPTURE_DIR || 'docs/verification/mobile-safari/' + feature;
 await mkdir(dir, { recursive: true });
 const results = [];
 for (const engine of ['webkit', 'chromium']) {
   if (feature === 'icons' && engine === 'webkit') continue;
   const browser = engine === 'webkit' ? await webkit.launch() : await chromium.launch({ channel: 'chrome' });
   try {
-    for (const width of [375, 768, 1440]) {
+    for (const [width,height] of (process.env.SCREEN_CASES?JSON.parse(process.env.SCREEN_CASES):[[375,844],[768,844],[1440,900]])) {
       const profile = engine === 'webkit' ? devices['iPhone 13'] : devices['Pixel 7'];
       const page = await browser.newPage(width === 1440
-        ? { viewport: { width, height: 900 } }
-        : { ...profile, viewport: { width, height: 844 } });
+        ? { viewport: { width, height } }
+        : { ...profile, viewport: { width, height } });
       await page.route('**/*', route => new URL(route.request().url()).origin === base ? route.continue() : route.abort());
       const ready = async () => {
         await page.goto(base);

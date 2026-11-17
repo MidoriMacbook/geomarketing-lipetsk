@@ -1,0 +1,13 @@
+{
+  "stats": {
+    "startTime": "2026-11-17T04:52:02.02Z",
+    "duration": 38918.733,
+    "expected": 14,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "engine": "webkit",
+  "errors": [],
+  "scope": "mobile-refinement, mobile-workbench, map-inspection"
+}
