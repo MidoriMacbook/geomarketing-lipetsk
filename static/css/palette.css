@@ -134,9 +134,9 @@ html[data-source-open=true] body { position:fixed; top:var(--source-scroll-top);
 }
 @media (max-width:600px) {
  .intro.editorial-hero { padding-top:16px; }
- .intro .hero-title { font-size:min(15vw,5.4rem); line-height:.92; margin:22px 0 18px; max-width:min(100%,5.55em); white-space:normal; }
+ .intro .hero-title { font-size:clamp(40px,14.3vw,86px); line-height:1; margin:22px 0 18px; max-width:100%; white-space:normal; }
  .intro .hero-title .hero-title-word { display:inline-block; width:100%; white-space:nowrap; }
- .intro .hero-title em { font-style:normal; padding:0; }
+ .intro .hero-title em { font-style:italic; padding-inline:.025em .08em; }
  .hero-title .hero-city { margin-top:18px; }
  .hero-editorial-row { min-height:0; }
  .hero-statement { margin-bottom:12px; }

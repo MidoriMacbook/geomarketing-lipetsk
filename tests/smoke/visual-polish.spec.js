@@ -8,7 +8,7 @@ test.beforeEach(async({page,baseURL})=>{
 test('название помещается, а точка отделена от букв',async({page})=>{
  for(const width of [320,375,601,768,900,1280,1440,1920]){
   await page.setViewportSize({width,height:1000});await page.goto('/');await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1100);
-  await expect(page.locator('#page-title em')).toHaveCSS('font-style',width<=600?'normal':'italic');
+  await expect(page.locator('#page-title em')).toHaveCSS('font-style','italic');
   await expect(page.locator('#page-title em')).toHaveCSS('color','rgb(143, 74, 83)');
   const title=await page.locator('#page-title em').boundingBox();
   const pin=await page.locator('.atlas-place-pin').boundingBox();
