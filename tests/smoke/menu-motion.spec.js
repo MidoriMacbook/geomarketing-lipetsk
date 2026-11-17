@@ -3,13 +3,22 @@ test.use({viewport:{width:375,height:667},isMobile:true,hasTouch:true});
 test('меню проходит промежуточные состояния и отменяет незавершённое открытие',async({page})=>{
  await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
  const panel=page.locator('#mobile-navigation'),toggle=page.locator('#nav-toggle');
- const frames=await page.evaluate(async()=>{
+ const {frames,interpolation}=await page.evaluate(async()=>{
   const panel=document.querySelector('#mobile-navigation'),rows=[],start=performance.now();
+  let interpolation;
+  const observer=new MutationObserver(()=>{
+   if(panel.dataset.phase!=='open')return;observer.disconnect();
+   // Sample CSS interpolation at a fixed animation time, independent of CI frame scheduling.
+   const animations=panel.getAnimations();
+   for(const animation of animations){animation.pause();animation.currentTime=120;}
+   interpolation=+getComputedStyle(panel).opacity;
+   for(const animation of animations)animation.play();
+  });observer.observe(panel,{attributes:true,attributeFilter:['data-phase']});
   document.querySelector('#nav-toggle').click();
-  await new Promise(resolve=>{const frame=()=>{const s=getComputedStyle(panel);rows.push({t:performance.now()-start,opacity:+s.opacity,y:new DOMMatrixReadOnly(s.transform).m42});if(performance.now()-start<400)requestAnimationFrame(frame);else resolve();};frame();});return rows;
+  await new Promise(resolve=>{const frame=()=>{const s=getComputedStyle(panel);rows.push({t:performance.now()-start,opacity:+s.opacity,y:new DOMMatrixReadOnly(s.transform).m42});if(performance.now()-start<400)requestAnimationFrame(frame);else resolve();};frame();});observer.disconnect();return {frames:rows,interpolation};
  });
  expect(frames[0].opacity).toBe(0);expect(frames[0].y).toBe(-8);
- expect(frames.filter(f=>f.opacity>0&&f.opacity<1).length).toBeGreaterThan(1);
+ expect(interpolation).toBeGreaterThan(0);expect(interpolation).toBeLessThan(1);
  await expect(panel).toHaveCSS('opacity','1');
  await page.keyboard.press('Escape');await expect(panel).not.toBeVisible();await expect(toggle).toBeFocused();
  await toggle.evaluate(el=>{el.click();el.click();el.click();});await expect(panel).toHaveCSS('opacity','1');
