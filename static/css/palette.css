@@ -1,6 +1,6 @@
 /* Linen is the default. B and C are previews selected by the page URL. */
 html { scroll-padding-top:0; scroll-padding-bottom:var(--results-inset,0px); }
-:is(section[id],h2[id],h3[id],#map,.mobile-map-layers) { scroll-margin-top:calc(var(--header-offset,80px) + 8px); }
+:is(section[id],h2[id],h3[id],#workspace,#map,.mobile-map-layers) { scroll-margin-top:calc(var(--header-offset,80px) + 8px); }
 #trust-status { display:flex; align-items:flex-start; flex-direction:column; gap:0; padding:8px 12px; }
 #trust-summary { display:block; width:fit-content; max-width:100%; min-height:44px; padding:8px; border:1px solid var(--panel-line); border-radius:12px; background:var(--color-page); color:var(--palette-ink); font:500 12px/20px 'Golos Text',sans-serif; white-space:nowrap; cursor:pointer; }
 #trust-details-link { align-self:flex-start; min-height:44px; padding:4px 8px; font-size:13px; }
@@ -196,4 +196,19 @@ html[data-source-open=true] body { position:fixed; top:var(--source-scroll-top);
  #comparison :is(th,td) { padding:8px; }
  #comparison th:last-child { min-width:140px; }
  #map:has(.map-inspection-docked) .leaflet-tooltip-pane { visibility:hidden; }
+}
+
+.coverage-actions { margin-block:12px; }
+.coverage-pairs { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.coverage-pair { min-height:44px; padding:8px 16px; border:1px solid var(--palette-border); border-radius:20px; background:var(--color-page); color:var(--palette-ink); font:inherit; cursor:pointer; }
+@media (max-width:600px) {
+ #comparison .table-scroll { overflow:visible; }
+ #comparison .table-scroll::before { display:none; }
+ #comparison table.comparison-transposed { width:100%; min-width:0; table-layout:fixed; font-size:12px; }
+ #comparison .comparison-transposed :is(th,td) { position:static; width:auto; min-width:0; max-width:none; padding:8px 4px; white-space:normal; overflow-wrap:normal; word-break:normal; }
+ #comparison .comparison-transposed tr>:first-child { position:sticky; left:0; width:96px; min-width:96px; max-width:96px; background:var(--panel-fill); z-index:1; }
+ #comparison .comparison-transposed th { font-size:12px; }
+ #comparison .comparison-transposed th small { display:block; font-weight:400; font-size:11px; margin-top:4px; }
+ #comparison .comparison-transposed tbody td { text-align:center; }
+ #comparison .comparison-transposed thead th:not(:first-child) { text-align:center; }
 }

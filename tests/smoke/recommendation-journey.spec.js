@@ -23,7 +23,8 @@ test('Мобильные рекомендации объясняют разли�
  await cards.nth(1).getByTestId('save-place').click();
  await expect(page.locator('#comparison-guide-count')).toContainText('1 из 3');
  await cards.first().getByTestId('save-place').click();await page.locator('#comparison-guide-open').click();
- await expect(page.locator('#comparison tbody tr')).toHaveCount(2);
+ await expect(page.locator('#comparison thead th')).toHaveCount(3);
+ await expect(page.locator('#comparison tbody tr').first()).toContainText('Жителей');
  expect(errors).toEqual([]);
 });
 

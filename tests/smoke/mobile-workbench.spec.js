@@ -49,15 +49,24 @@ test('три места сравниваются с возвратом к выб
  await expect(sheet).toHaveAttribute('data-snap','peek');
  await expect(page.locator('#comparison-title')).toBeFocused();
  const table=page.locator('#comparison .table-scroll');
- await expect(table.locator('tbody tr')).toHaveCount(3);
+ await expect(table.locator('thead th')).toHaveCount(4);
+ await expect(table.locator('tbody tr')).toHaveCount(8);
  const metrics=await table.evaluate(el=>{
-  const boundary=el.getBoundingClientRect(),first=el.querySelector('tbody td'),second=first.nextElementSibling;
+  const boundary=el.getBoundingClientRect(),first=el.querySelector('tbody th'),second=first.nextElementSibling;
   const initial=second.getBoundingClientRect().right<=boundary.right;
   el.scrollLeft=el.scrollWidth;
   return {initial,last:el.querySelector('td:last-child').getBoundingClientRect().right<=boundary.right+2,
    sticky:Math.abs(first.getBoundingClientRect().left-boundary.left)<=2,overflow:document.documentElement.scrollWidth-innerWidth};
  });
  expect(metrics).toEqual({initial:true,last:true,sticky:true,overflow:0});
+ expect(await table.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+ await page.locator('#compare-coverage').tap();
+ await expect(page.locator('.coverage-pair')).toHaveCount(3);
+ for(const label of ['Сравнить варианты 1 и 2','Сравнить варианты 1 и 3','Сравнить варианты 2 и 3']){
+  await page.getByRole('button',{name:label,exact:true}).tap();
+  await expect(page.locator('.map-overlap')).toBeVisible();
+  await page.getByRole('button',{name:'Закрыть сравнение на карте'}).tap();
+ }
  await page.locator('#comparison-map-link').tap();
  await expect(page.locator('#map-title')).toBeFocused();
  await expect(page.locator('.recommendation-pin.is-selected')).toHaveText(rank);

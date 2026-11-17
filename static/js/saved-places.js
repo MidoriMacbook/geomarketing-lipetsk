@@ -239,7 +239,7 @@ export function renderComparison() {
   const comparison = $('comparison'), wasVisible = !comparison.hidden;
   const focusHidden=!rows.length&&comparison.contains(document.activeElement);
   setRevealed(comparison, !!rows.length, 'comparison');
-  fillTable($('comparison').querySelector('tbody'), rows);
+  fillComparison(rows);
   if (wasVisible && rows.length) reveal(comparison.querySelector('table'), 'comparison-update', { duration: 'fast' });
   updateReportAvailability();
   document.dispatchEvent(new CustomEvent('gm:comparison-changed'));
@@ -249,3 +249,33 @@ export function renderComparison() {
     target.focus({preventScroll:true});
   }
 }
+
+const compactComparison=matchMedia('(max-width:600px)');
+let comparisonHead;
+function fillComparison(rows){
+  const table=$('comparison').querySelector('table'),head=table.tHead,body=table.tBodies[0];
+  comparisonHead??=head.innerHTML;
+  table.classList.toggle('comparison-transposed',compactComparison.matches);
+  table.parentElement.setAttribute('aria-label',compactComparison.matches?'Сравнение мест по показателям':'Таблица сравнения, доступна горизонтальная прокрутка');
+  if(!compactComparison.matches){head.innerHTML=comparisonHead;fillTable(body,rows);return;}
+  const header=node('tr'),label=node('th','','Показатель');label.scope='col';header.append(label);
+  for(const [i,item] of rows.entries()){
+    const cell=node('th','',placeLabel(item.recommendation));cell.scope='col';
+    cell.append(node('small','',`Вариант ${i+1}`));header.append(cell);
+  }
+  head.replaceChildren(header);body.replaceChildren();
+  const fields=[
+    ['Жителей ≈',item=>fmt(item.recommendation.residents_in_radius)],
+    ['Конкуренты в радиусе',item=>fmt(item.recommendation.competitors_in_radius)],
+    ['Радиус',item=>`${fmt(item.recommendation.radius_m)}\u00a0м`],
+    ['Ближайший конкурент',item=>distance(item.recommendation.nearest_competitor_m)],
+    ['Балл из 100',item=>scoreText(item.recommendation.score)],
+    ['Дата данных',item=>dateText(item.data_date)],
+    ['Категория',item=>item.business_name],['Область',item=>item.district_name]
+  ];
+  for(const [title,value] of fields){
+    const row=node('tr'),name=node('th','',title);name.scope='row';row.append(name);
+    rows.forEach(item=>row.append(node('td','',value(item))));body.append(row);
+  }
+}
+compactComparison.addEventListener('change',()=>fillComparison(comparisonRows()));

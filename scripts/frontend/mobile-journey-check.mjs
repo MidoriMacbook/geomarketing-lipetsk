@@ -97,7 +97,8 @@ try {
     for(const checkbox of await checks.all())await checkbox.check();
     await page.locator('#comparison').scrollIntoViewIfNeeded();
    }
-   await expect(page.locator('#comparison tbody tr')).toHaveCount(data.recommendations.length);
+   if(mobile&&!process.env.CAPTURE_REF)await expect(page.locator('#comparison thead th')).toHaveCount(data.recommendations.length+1);
+   else await expect(page.locator('#comparison tbody tr')).toHaveCount(data.recommendations.length);
    await page.locator('#comparison-title').evaluate(el=>el.scrollIntoView({block:'start'}));
    await shot('comparison');
    const back=page.locator('#comparison-map-link');
