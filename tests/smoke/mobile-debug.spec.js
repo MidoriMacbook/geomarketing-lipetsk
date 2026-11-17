@@ -13,4 +13,9 @@ test('диагностика включается только по ссылке
  await page.getByRole('button',{name:'Скрыть',exact:true}).tap();await expect(page.locator('#debug-toggle')).toBeVisible();
  await page.locator('#debug-toggle').tap();await expect(page.locator('#mobile-debug')).toBeVisible();
  await page.getByRole('button',{name:'Обновить',exact:true}).tap();
+ await page.getByRole('button',{name:'Скрыть',exact:true}).tap();
+ await page.locator('#map').evaluate(el=>scrollTo({top:scrollY+el.getBoundingClientRect().top-110,behavior:'instant'}));
+ await page.locator('.sheet-handle').tap();await expect(page.locator('#recommendations')).toHaveAttribute('data-snap','expanded');
+ await page.locator('#debug-toggle').tap();await page.getByRole('button',{name:'Обновить',exact:true}).tap();
+ await expect(page.locator('#mobile-debug pre')).toContainText('Панель: expanded');
 });

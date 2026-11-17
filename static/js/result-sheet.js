@@ -34,7 +34,7 @@ function isolate(on){
  if(on&&!isolation.length){
   for(let branch=sheet;branch.parentElement;branch=branch.parentElement){
    for(const sibling of branch.parentElement.children){
-    if(sibling===branch||sibling===scrim||['SCRIPT','STYLE','LINK'].includes(sibling.tagName))continue;
+    if(sibling===branch||sibling===scrim||sibling.matches('#mobile-debug,#debug-toggle')||['SCRIPT','STYLE','LINK'].includes(sibling.tagName))continue;
     isolation.push([sibling,sibling.inert]);sibling.inert=true;
    }
    if(branch.parentElement===document.body)break;

@@ -1,6 +1,6 @@
 import {chromium} from '@playwright/test';
 import {writeFile,mkdir} from 'node:fs/promises';
-const base='http://127.0.0.1:5071',dir='docs/verification/map-workbench/performance';await mkdir(dir,{recursive:true});const b=await chromium.launch({channel:'chrome'}),results=[];
+const base='http://127.0.0.1:5071',dir=process.env.CAPTURE_DIR||'docs/verification/map-workbench/performance';await mkdir(dir,{recursive:true});const b=await chromium.launch({channel:'chrome'}),results=[];
 try{for(const width of [375,1440]){
  const p=await b.newPage({viewport:{width,height:900}});await p.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.abort());
  await p.addInitScript(()=>{window.testCLS=0;new PerformanceObserver(list=>{for(const e of list.getEntries())if(!e.hadRecentInput)window.testCLS+=e.value;}).observe({type:'layout-shift',buffered:true});});

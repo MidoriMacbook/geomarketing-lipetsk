@@ -7,7 +7,8 @@ test('слабый вариант обозначен по показанному
  const second=page.getByTestId('recommendation-card').nth(1),third=page.getByTestId('recommendation-card').nth(2);
  await expect(second.locator('.place-title .place-strength')).toHaveText('слабее лучшего');await expect(third.locator('.place-strength')).toHaveCount(0);
  await expect(second.locator('.decision-headline')).toContainText('запасной вариант');
- const heading=await second.locator('.place-title').boundingBox(),coords=await second.locator('.coords').boundingBox();expect(coords.y).toBeGreaterThanOrEqual(heading.y+heading.height);
+ // Read both rectangles in one frame: reveal animation can move the card between two protocol calls.
+ expect(await second.evaluate(el=>el.querySelector('.coords').getBoundingClientRect().top-el.querySelector('.place-title').getBoundingClientRect().bottom)).toBeGreaterThanOrEqual(0);
  await expect(second.locator('.score-info')).toHaveAttribute('aria-label',/Относительная оценка/);
  const first=page.getByTestId('recommendation-card').first();
  await first.locator('.place-select').click();
