@@ -15,7 +15,11 @@ if (header && menu && toggle) {
   const links = [...menu.querySelectorAll('a[href^="#"]')];
   const dialog = document.getElementById('mobile-navigation');
   const closeButton = document.getElementById('nav-close');
-  let lockedScroll;
+  let lockedScroll, revision=0, closeTimer, closeResolve, firstFrame, secondFrame;
+  const cancelTransition=()=>{
+    revision++;clearTimeout(closeTimer);cancelAnimationFrame(firstFrame);cancelAnimationFrame(secondFrame);
+    closeResolve?.(false);closeResolve=undefined;
+  };
   const isolate=open=>{
     const root = document.documentElement;
     if (open) {
@@ -59,17 +63,23 @@ if (header && menu && toggle) {
     });
     updateIndicator();
   };
-  const close = (returnFocus = false) => {
+  const close = (returnFocus = false, immediate = false) => {
     const wasOpen = dialog.open;
     const wasFocused = dialog.contains(document.activeElement);
+    cancelTransition();
     header.classList.remove('nav-open');
-    if (wasOpen) dialog.close();
-    isolate(false);
     toggle.setAttribute('aria-expanded', 'false');
-    if (mobile.matches && (returnFocus || wasFocused)) toggle.focus({ preventScroll:true });
+    dialog.dataset.phase='closing';
+    const finish=()=>{
+      if(dialog.open)dialog.close();
+      isolate(false);dialog.dataset.phase='closed';
+      if (mobile.matches && (returnFocus || wasFocused)) toggle.focus({ preventScroll:true });
+    };
+    if(!wasOpen||immediate){finish();return Promise.resolve(true);}
+    return new Promise(resolve=>{closeResolve=resolve;closeTimer=setTimeout(()=>{closeResolve=undefined;finish();resolve(true);},200);});
   };
   const sync = () => {
-    close();
+    close(false,true);
     toggle.hidden = !mobile.matches;
     if (mobile.matches) dialog.append(menu);
     else header.append(menu);
@@ -77,15 +87,16 @@ if (header && menu && toggle) {
   };
   toggle.addEventListener('click', () => {
     if (!mobile.matches) return;
-    if (dialog.open) { close(true); return; }
-    dialog.showModal();
-    isolate(true);
+    if (dialog.open&&dialog.dataset.phase!=='closing') { close(true); return; }
+    cancelTransition();const current=revision;
+    if(!dialog.open){dialog.dataset.phase='opening';dialog.showModal();isolate(true);}
     header.classList.add('nav-open');
     toggle.setAttribute('aria-expanded', 'true');
     syncViewport();
     closeButton.focus({ preventScroll:true });
+    firstFrame=requestAnimationFrame(()=>{secondFrame=requestAnimationFrame(()=>{if(current===revision&&dialog.open)dialog.dataset.phase='open';});});
   });
-  dialog.addEventListener('close', () => { if (!dialog.open && lockedScroll !== undefined) close(true); });
+  dialog.addEventListener('close', () => { if (!dialog.open && lockedScroll !== undefined) close(true,true); });
   closeButton.addEventListener('click', () => close(true));
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(true); });
   let backdropPress = false;
@@ -119,7 +130,6 @@ if (header && menu && toggle) {
     const target = document.getElementById(link.hash.slice(1));
     if (!target) return;
     event.preventDefault();
-    close();
     const navigate = () => {
       history.pushState(null, '', link.hash);
       if(target.id==='map-title')focusWorkspaceMap();
@@ -130,11 +140,11 @@ if (header && menu && toggle) {
       }
       if (links.includes(link)) setActive(link);
     };
-    navigate();
+    if(dialog.open)close().then(finished=>{if(finished)navigate();});else navigate();
   }));
   document.getElementById('model-button')?.addEventListener('click', () => {
     modelFromMenu = mobile.matches && header.classList.contains('nav-open');
-    if (modelFromMenu) close(true);
+    if (modelFromMenu) close(false,true);
   }, { capture:true });
   document.getElementById('model-dialog')?.addEventListener('close', () => {
     if (modelFromMenu) { modelFromMenu = false; toggle.focus({ preventScroll:true }); }
