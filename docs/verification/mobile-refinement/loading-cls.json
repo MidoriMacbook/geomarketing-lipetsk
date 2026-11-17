@@ -1,0 +1,127 @@
+[
+  {
+    "run": 1,
+    "cls": 0.010423427300468345,
+    "shifts": [
+      {
+        "value": 0.005511835248368075,
+        "time": 408,
+        "nodes": [
+          "text",
+          "text",
+          "text",
+          "text",
+          "text"
+        ]
+      },
+      {
+        "value": 0.00017808407548512866,
+        "time": 419.80000001192093,
+        "nodes": [
+          "text"
+        ]
+      },
+      {
+        "value": 0.004703162158145066,
+        "time": 1595,
+        "nodes": [
+          "map-card",
+          "mobile-settings-state",
+          "mobile-settings-label"
+        ]
+      },
+      {
+        "value": 0.00003034581847007531,
+        "time": 1650.2000000476837,
+        "nodes": [
+          "mobile-settings-label"
+        ]
+      }
+    ]
+  },
+  {
+    "run": 2,
+    "cls": 0.008254265224222864,
+    "shifts": [
+      {
+        "value": 0.00198144923843497,
+        "time": 426.39999997615814,
+        "nodes": [
+          "text",
+          "hero-text-action",
+          "text",
+          "text",
+          "mobile-settings-label"
+        ]
+      },
+      {
+        "value": 0.0015393080091727536,
+        "time": 440.39999997615814,
+        "nodes": [
+          "text",
+          "text",
+          "text",
+          "text",
+          "text"
+        ]
+      },
+      {
+        "value": 0.004703162158145066,
+        "time": 1623.1000000238419,
+        "nodes": [
+          "map-card",
+          "mobile-settings-state",
+          "mobile-settings-label"
+        ]
+      },
+      {
+        "value": 0.00003034581847007531,
+        "time": 1704.5,
+        "nodes": [
+          "mobile-settings-label"
+        ]
+      }
+    ]
+  },
+  {
+    "run": 3,
+    "cls": 0.006774624348847743,
+    "shifts": [
+      {
+        "value": 0.0015215256881587354,
+        "time": 411.9000000357628,
+        "nodes": [
+          "text",
+          "text",
+          "text",
+          "text"
+        ]
+      },
+      {
+        "value": 0.0005195906840738673,
+        "time": 426.5,
+        "nodes": [
+          "hero-text-action",
+          "mobile-settings-label",
+          "text"
+        ]
+      },
+      {
+        "value": 0.004703162158145066,
+        "time": 1627.4000000357628,
+        "nodes": [
+          "map-card",
+          "mobile-settings-state",
+          "mobile-settings-label"
+        ]
+      },
+      {
+        "value": 0.00003034581847007531,
+        "time": 1696,
+        "nodes": [
+          "mobile-settings-label"
+        ]
+      }
+    ]
+  }
+]

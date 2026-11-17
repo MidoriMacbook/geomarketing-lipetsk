@@ -62,3 +62,19 @@ renderer. No Tailwind, CDN dependency, WebGL or second React application tree.
 Build: `pnpm build:hero`. Verify reproducibility, source hashes and <=180 KiB
 gzip budget: `pnpm check:hero`. The existing Material scripts/output are separate.
 The bundle retains package license banners; full notices are in LICENSES.txt.
+
+## Atlas redesign, 2026-11-10
+
+The existing pinned adapters remain in use, without a Vite migration or new
+dependencies. Current official component pages were checked:
+https://reactbits.dev/text-animations/split-text,
+https://reactbits.dev/text-animations/blur-text,
+https://reactbits.dev/animations/magnet.
+The current upstream LICENSE.md still specifies MIT + Commons Clause.
+
+SplitText now enters at 16px / 500ms and opacity .65 on wide screens. On phones,
+it animates the two existing static heading spans at 12px / 500ms without
+splitting/recreating their DOM: late re-splitting materially worsened mobile LCP.
+BlurText now uses 3px blur / 8px travel / 450ms without a delay; the text remains
+readable throughout. The native SVG atlas has a finite 4.5-second entrance.
+The existing visibility/reduced-motion lifecycle still controls the island.

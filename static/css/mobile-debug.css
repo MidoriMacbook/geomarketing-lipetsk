@@ -1,0 +1,6 @@
+#mobile-debug { position:fixed; inset:0; z-index:10000; overflow:auto; padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left)); background:var(--palette-cream); color:var(--palette-ink); font:10px/1.2 monospace; }
+#mobile-debug[hidden],#debug-toggle[hidden] { display:none; }
+.debug-toolbar { display:flex; gap:4px; align-items:center; }
+#mobile-debug button,#debug-toggle { min-height:44px; padding:4px 8px; border:1px solid var(--palette-rosewood-deep); border-radius:8px; background:var(--palette-cream); color:var(--palette-ink); font:12px/1.2 sans-serif; }
+#mobile-debug pre { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.2; margin:8px 0 0; user-select:text; font-family:monospace; }
+#debug-toggle { position:fixed; z-index:10000; right:8px; bottom:max(8px,env(safe-area-inset-bottom)); }

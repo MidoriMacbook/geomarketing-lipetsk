@@ -1,0 +1,458 @@
+[
+  {
+    "width": 375,
+    "state": "cover",
+    "selector": ".brand",
+    "text": "ГеоМаркетинг ЛипецкГородская аналитика",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 10.9,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "700"
+  },
+  {
+    "width": 375,
+    "state": "cover",
+    "selector": "#page-title em",
+    "text": "Маркетинг",
+    "ink": [
+      143,
+      74,
+      83
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 6.02,
+    "font": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+    "weight": "500"
+  },
+  {
+    "width": 375,
+    "state": "cover",
+    "selector": ".hero-statement",
+    "text": "У каждого бизнеса есть своё место.",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 10.9,
+    "font": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+    "weight": "400"
+  },
+  {
+    "width": 375,
+    "state": "cover",
+    "selector": "#hero-map-link",
+    "text": "Найти места",
+    "ink": [
+      255,
+      247,
+      230
+    ],
+    "fill": [
+      143,
+      74,
+      83
+    ],
+    "ratio": 6.02,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "600"
+  },
+  {
+    "width": 375,
+    "state": "cover",
+    "selector": ".hero-description",
+    "text": "Изучите спрос и конкуренцию. Найдите места для своего бизнеса.",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 10.9,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "400"
+  },
+  {
+    "width": 375,
+    "state": "menu",
+    "selector": "#mobile-navigation-title",
+    "text": "Разделы сайта",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 10.9,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "600"
+  },
+  {
+    "width": 375,
+    "state": "menu",
+    "selector": "#nav-menu a.active",
+    "text": "Карта и анализ",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      247,
+      200,
+      211
+    ],
+    "ratio": 7.83,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "400"
+  },
+  {
+    "width": 375,
+    "state": "settings",
+    "selector": "#district-value",
+    "text": "мкр. Елецкий",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      248,
+      238,
+      219
+    ],
+    "ratio": 10.09,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "500"
+  },
+  {
+    "width": 375,
+    "state": "settings",
+    "selector": "#business-value",
+    "text": "Кофейня",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      248,
+      238,
+      219
+    ],
+    "ratio": 10.09,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "500"
+  },
+  {
+    "width": 375,
+    "state": "settings",
+    "selector": "#run",
+    "text": "Найти места",
+    "ink": [
+      255,
+      247,
+      230
+    ],
+    "fill": [
+      143,
+      74,
+      83
+    ],
+    "ratio": 6.02,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "600"
+  },
+  {
+    "width": 375,
+    "state": "map",
+    "selector": "#map-title",
+    "text": "Карта возможностей",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      248,
+      238,
+      219
+    ],
+    "ratio": 10.09,
+    "font": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+    "weight": "500"
+  },
+  {
+    "width": 375,
+    "state": "map",
+    "selector": "#trust-summary",
+    "text": "OpenStreetMap · обновлено 17.11",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 10.9,
+    "font": "\"Golos Text\", sans-serif",
+    "weight": "500"
+  },
+  {
+    "width": 375,
+    "state": "map",
+    "selector": "#trust-details-link",
+    "text": "Проверить детали",
+    "ink": [
+      143,
+      74,
+      83
+    ],
+    "fill": [
+      248,
+      238,
+      219
+    ],
+    "ratio": 5.58,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "600"
+  },
+  {
+    "width": 1440,
+    "state": "cover",
+    "selector": ".brand",
+    "text": "ГеоМаркетинг ЛипецкГородская аналитика",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 10.9,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "700"
+  },
+  {
+    "width": 1440,
+    "state": "cover",
+    "selector": "#page-title em",
+    "text": "Маркетинг",
+    "ink": [
+      143,
+      74,
+      83
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 6.02,
+    "font": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+    "weight": "500"
+  },
+  {
+    "width": 1440,
+    "state": "cover",
+    "selector": ".hero-statement",
+    "text": "У каждого бизнеса есть своё место.",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 10.9,
+    "font": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+    "weight": "400"
+  },
+  {
+    "width": 1440,
+    "state": "cover",
+    "selector": "#hero-map-link",
+    "text": "Найти места",
+    "ink": [
+      255,
+      247,
+      230
+    ],
+    "fill": [
+      143,
+      74,
+      83
+    ],
+    "ratio": 6.02,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "600"
+  },
+  {
+    "width": 1440,
+    "state": "cover",
+    "selector": ".hero-description",
+    "text": "Изучите спрос и конкуренцию. Найдите места для своего бизнеса.",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 10.9,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "400"
+  },
+  {
+    "width": 1440,
+    "state": "settings",
+    "selector": "#district-value",
+    "text": "мкр. Елецкий",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      248,
+      238,
+      219
+    ],
+    "ratio": 10.09,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "500"
+  },
+  {
+    "width": 1440,
+    "state": "settings",
+    "selector": "#business-value",
+    "text": "Кофейня",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      248,
+      238,
+      219
+    ],
+    "ratio": 10.09,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "500"
+  },
+  {
+    "width": 1440,
+    "state": "settings",
+    "selector": "#run",
+    "text": "Найти места",
+    "ink": [
+      255,
+      247,
+      230
+    ],
+    "fill": [
+      143,
+      74,
+      83
+    ],
+    "ratio": 6.02,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "600"
+  },
+  {
+    "width": 1440,
+    "state": "map",
+    "selector": "#map-title",
+    "text": "Карта возможностей",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      248,
+      238,
+      219
+    ],
+    "ratio": 10.09,
+    "font": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+    "weight": "500"
+  },
+  {
+    "width": 1440,
+    "state": "map",
+    "selector": "#trust-summary",
+    "text": "OpenStreetMap · обновлено 17.11",
+    "ink": [
+      45,
+      58,
+      71
+    ],
+    "fill": [
+      255,
+      247,
+      230
+    ],
+    "ratio": 10.9,
+    "font": "\"Golos Text\", sans-serif",
+    "weight": "500"
+  },
+  {
+    "width": 1440,
+    "state": "map",
+    "selector": "#trust-details-link",
+    "text": "Проверить детали",
+    "ink": [
+      143,
+      74,
+      83
+    ],
+    "fill": [
+      248,
+      238,
+      219
+    ],
+    "ratio": 5.58,
+    "font": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "weight": "600"
+  }
+]

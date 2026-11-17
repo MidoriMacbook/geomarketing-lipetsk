@@ -1,0 +1,110 @@
+{
+  "url": "https://geomarketing-lipetsk-redesign.onrender.com",
+  "network": "Fast 3G: 1.6 Mbps / 750 Kbps, latency 150 ms",
+  "cpu": 4,
+  "shifts": [
+    {
+      "value": 0.00002882852754657154,
+      "time": 3656.7999999999884,
+      "sources": [
+        {
+          "node": "mobile-settings-label",
+          "from": {
+            "x": 275.03125,
+            "y": 694.734375,
+            "width": 70,
+            "height": 19.5,
+            "top": 694.734375,
+            "right": 345.03125,
+            "bottom": 714.234375,
+            "left": 275.03125
+          },
+          "to": {
+            "x": 280.390625,
+            "y": 694.734375,
+            "width": 65,
+            "height": 19.5,
+            "top": 694.734375,
+            "right": 345.390625,
+            "bottom": 714.234375,
+            "left": 280.390625
+          }
+        }
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "time": 1246.5,
+      "workspace": 652.34375,
+      "menu": true,
+      "artOpacity": "1"
+    },
+    {
+      "time": 1849.5,
+      "workspace": 650.34375,
+      "menu": true,
+      "artOpacity": "1"
+    },
+    {
+      "time": 8731.200000000012,
+      "workspace": 650.34375,
+      "menu": true,
+      "artOpacity": "1"
+    }
+  ],
+  "cls": 0.00002882852754657154,
+  "navigation": {
+    "name": "https://geomarketing-lipetsk-redesign.onrender.com/",
+    "entryType": "navigation",
+    "startTime": 0,
+    "duration": 4038,
+    "navigationId": 3808,
+    "initiatorType": "navigation",
+    "deliveryType": "",
+    "nextHopProtocol": "h2",
+    "renderBlockingStatus": "non-blocking",
+    "contentType": "text/html",
+    "contentEncoding": "br",
+    "workerStart": 0,
+    "workerRouterEvaluationStart": 0,
+    "workerCacheLookupStart": 0,
+    "workerMatchedSourceType": "",
+    "workerFinalSourceType": "",
+    "redirectStart": 0,
+    "redirectEnd": 0,
+    "fetchStart": 0.5,
+    "domainLookupStart": 0.5,
+    "domainLookupEnd": 0.5,
+    "connectStart": 10.200000000011642,
+    "secureConnectionStart": 10.200000000011642,
+    "connectEnd": 75.20000000001164,
+    "requestStart": 75.29999999998836,
+    "responseStart": 225.40000000002328,
+    "firstInterimResponseStart": 0,
+    "finalResponseHeadersStart": 225.40000000002328,
+    "responseEnd": 288.5,
+    "transferSize": 8935,
+    "encodedBodySize": 8635,
+    "decodedBodySize": 31058,
+    "responseStatus": 200,
+    "serverTiming": [],
+    "unloadEventStart": 0,
+    "unloadEventEnd": 0,
+    "domInteractive": 289.9000000000233,
+    "domContentLoadedEventStart": 2705.0999999999767,
+    "domContentLoadedEventEnd": 2705.2000000000116,
+    "domComplete": 4037.9000000000233,
+    "loadEventStart": 4038,
+    "loadEventEnd": 4038,
+    "type": "navigate",
+    "redirectCount": 0,
+    "activationStart": 0,
+    "criticalCHRestart": 0,
+    "notRestoredReasons": null,
+    "confidence": {
+      "randomizedTriggerRate": 0.4994798,
+      "value": "high"
+    }
+  }
+}

@@ -17,7 +17,7 @@ export default defineConfig({
   outputDir: 'tests/artifacts/smoke/runs',
   use: {
     baseURL,
-    browserName: 'chromium',
+    browserName: process.env.PLAYWRIGHT_BROWSER || 'chromium',
     viewport: { width: 1440, height: 1000 },
     serviceWorkers: 'block',
     trace: 'retain-on-failure',

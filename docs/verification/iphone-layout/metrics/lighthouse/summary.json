@@ -1,0 +1,57 @@
+[
+  {
+    "run": 1,
+    "time": "2026-11-17T19:24:50.106Z",
+    "version": "13.6.0",
+    "LCP_ms": 1308.2365,
+    "CLS": 0.004572856771594857,
+    "TBT_ms": 82.5,
+    "Performance": 99,
+    "Accessibility": 100,
+    "transfer_bytes": 701085
+  },
+  {
+    "run": 2,
+    "time": "2026-11-17T19:25:18.987Z",
+    "version": "13.6.0",
+    "LCP_ms": 1457.8005,
+    "CLS": 0.00002554282339051162,
+    "TBT_ms": 140,
+    "Performance": 98,
+    "Accessibility": 100,
+    "transfer_bytes": 701108
+  },
+  {
+    "run": 3,
+    "time": "2026-11-17T19:25:34.777Z",
+    "version": "13.6.0",
+    "LCP_ms": 1443.1970000000001,
+    "CLS": 0.004598399594985369,
+    "TBT_ms": 133.5,
+    "Performance": 98,
+    "Accessibility": 100,
+    "transfer_bytes": 701134
+  },
+  {
+    "run": 4,
+    "time": "2026-11-17T19:25:51.010Z",
+    "version": "13.6.0",
+    "LCP_ms": 1436.3519999999999,
+    "CLS": 0.00002554282339051162,
+    "TBT_ms": 116,
+    "Performance": 99,
+    "Accessibility": 100,
+    "transfer_bytes": 700907
+  },
+  {
+    "run": 5,
+    "time": "2026-11-17T19:26:05.152Z",
+    "version": "13.6.0",
+    "LCP_ms": 1366.2544999999998,
+    "CLS": 0.00002554282339051162,
+    "TBT_ms": 202,
+    "Performance": 96,
+    "Accessibility": 100,
+    "transfer_bytes": 700835
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "width": 375,
+    "state": "loading",
+    "overflow": false,
+    "heading": "Ищем подходящие места"
+  },
+  {
+    "width": 375,
+    "state": "error",
+    "overflow": false,
+    "heading": "Расчёт пока недоступен"
+  },
+  {
+    "width": 375,
+    "state": "no-data",
+    "overflow": false,
+    "heading": "Подходящих мест не найдено"
+  },
+  {
+    "width": 768,
+    "state": "loading",
+    "overflow": false,
+    "heading": "Ищем подходящие места"
+  },
+  {
+    "width": 768,
+    "state": "error",
+    "overflow": false,
+    "heading": "Расчёт пока недоступен"
+  },
+  {
+    "width": 768,
+    "state": "no-data",
+    "overflow": false,
+    "heading": "Подходящих мест не найдено"
+  },
+  {
+    "width": 1440,
+    "state": "loading",
+    "overflow": false,
+    "heading": "Ищем подходящие места"
+  },
+  {
+    "width": 1440,
+    "state": "error",
+    "overflow": false,
+    "heading": "Расчёт пока недоступен"
+  },
+  {
+    "width": 1440,
+    "state": "no-data",
+    "overflow": false,
+    "heading": "Подходящих мест не найдено"
+  },
+  {
+    "width": 1920,
+    "state": "loading",
+    "overflow": false,
+    "heading": "Ищем подходящие места"
+  },
+  {
+    "width": 1920,
+    "state": "error",
+    "overflow": false,
+    "heading": "Расчёт пока недоступен"
+  },
+  {
+    "width": 1920,
+    "state": "no-data",
+    "overflow": false,
+    "heading": "Подходящих мест не найдено"
+  }
+]

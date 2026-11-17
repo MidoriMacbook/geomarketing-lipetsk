@@ -71,6 +71,16 @@ test('valid old/new API snapshots and demo effective radius remain readable', ()
   assert.equal(validateScenario(demo), true);
 });
 
+test('кластерный отбор сохраняется в исследовании вместе со старым архивом',async()=>{
+ const old=fixture(),current=fixture(2);
+ Object.assign(current.analysis.recommendations[0],{selection_method:'cluster_maxima_v1',cluster_id:2,independent_zones:1,comparison_to_best:null});
+ current.analysis.best=clone(current.analysis.recommendations[0]);
+ await mutateScenarios(()=>[old,current]);
+ assert.deepEqual(readScenarios(),[old,current]);
+ assert.equal(readScenarios()[0].analysis.recommendations[0].selection_method,undefined);
+ assert.equal(readScenarios()[1].analysis.best.independent_zones,1);
+});
+
 const invalidCases = {
   'missing UUID': item => { item.id = 'x'; },
   'overlong name': item => { item.name = 'x'.repeat(81); },

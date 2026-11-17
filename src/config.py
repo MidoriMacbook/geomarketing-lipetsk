@@ -45,6 +45,9 @@ LIPETSK_BOUNDS = {'lat': (52.50, 52.72), 'lng': (39.35, 39.80)}
 MIN_RADIUS, MAX_RADIUS = 500, 1500
 GRID_SIZE = 60
 N_CLUSTERS = 3
+CLUSTER_RANDOM_STATE = 42
+# Зоны с большинством общих жителей меньшего радиуса не считаем независимыми.
+MAX_SHARED_RESIDENTS_FRACTION = 0.5
 LOW_DATA_RESIDENTS = 3000  # меньше жителей в районе — предупреждаем о неполных данных
 MIN_HOUSES = 5          # меньше — считаем, что в OSM для района мало данных
 DEMO_HALF_SIZE_M = 600  # размер области анализа для демо-данных

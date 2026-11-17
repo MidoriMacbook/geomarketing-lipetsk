@@ -1,0 +1,10 @@
+{
+  "point": "05",
+  "phase": "before",
+  "cpu": 4,
+  "background": "rgb(32, 42, 50)",
+  "selection": {
+    "background": "rgb(247, 200, 211)",
+    "color": "rgb(45, 58, 71)"
+  }
+}

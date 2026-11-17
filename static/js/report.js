@@ -1,3 +1,4 @@
+import {placeLabel} from './map-analysis.js';
 import { scoreText, scoreValue } from './result-format.js';
 import { state } from './state.js';
 import { $, fmt, coords, distance, LIMITATIONS, node, dateText, sourceText, dataDate } from './ui.js';
@@ -15,7 +16,7 @@ export function exportCSV() {
   const rows = [['Категория', 'Район', 'Место', 'Широта', 'Долгота', 'Жителей (оценка)', 'Радиус, м', 'Конкурентов в радиусе', 'Ближайший конкурент, м', 'Относительная оценка (только внутри расчёта) — из 100', 'ID расчёта', 'Коэффициент конкуренции', 'Дата данных', 'Дата сохранения', 'Источник', 'Предупреждения', 'Ограничения модели', 'Свежесть данных', 'Пригодность данных', 'Причины ограничений'], ...state.saved.map(i => {
     const r = i.recommendation;
     const quality=qualitySummary(i);
-    return [i.business_name, i.district_name, r.rank, r.lat, r.lng, r.residents_in_radius, r.radius_m, r.competitors_in_radius, r.nearest_competitor_m, scoreValue(r.score), i.analysis_id, i.parameters.alpha, i.data_date || 'Не указана', i.saved_at, sourceText(i.source), i.warning, LIMITATIONS,quality.freshness,quality.completeness,quality.reasons.join(' | ')];
+    return [i.business_name, i.district_name, r.origin==='manual'?'выбрано вручную':r.rank, r.lat, r.lng, r.residents_in_radius, r.radius_m, r.competitors_in_radius, r.nearest_competitor_m, scoreValue(r.score), i.analysis_id, i.parameters.alpha, i.data_date || 'Не указана', i.saved_at, sourceText(i.source), i.warning, LIMITATIONS,quality.freshness,quality.completeness,quality.reasons.join(' | ')];
   })];
   const blob = new Blob(['\uFEFF', rows.map(row => row.map(csvCell).join(';')).join('\r\n')], {
     type: 'text/csv;charset=utf-8'
@@ -35,9 +36,9 @@ export function updateReportAvailability() {
 export function reportPlace(rec, context, { includeContext = true } = {}) {
   const block = node('article', 'report-place');
   block.append(
-    node('h3', '', includeContext ? `${context.business_name} · место ${rec.rank} · ${context.district_name}` : `Место ${rec.rank}`),
-    node('p', '', `Координаты: ${coords(rec)}. Жителей в радиусе ${fmt(rec.radius_m)} м: ≈ ${fmt(rec.residents_in_radius)}. Конкурентов в радиусе: ${fmt(rec.competitors_in_radius)}. Ближайший конкурент: ${distance(rec.nearest_competitor_m)}.`),
-    node('p', '', `Относительная оценка внутри расчёта: ${scoreText(rec.score)}.${includeContext ? ` Радиус модели: ${context.parameters.radius_m} м; коэффициент конкуренции: ${context.parameters.alpha}. ID расчёта: ${context.analysis_id}.` : ''}`)
+    node('h3', '', includeContext ? `${context.business_name} · ${placeLabel(rec)} · ${context.district_name}` : placeLabel(rec)),
+    node('p', '', `Координаты: ${coords(rec)}. Жителей в радиусе ${fmt(rec.radius_m)} м: ≈ ${fmt(rec.residents_in_radius)}. Конкурентов в радиусе: ${fmt(rec.competitors_in_radius)}. Ближайший конкурент: ${distance(rec.nearest_competitor_m)}.`),
+    node('p', '', `Относительная оценка внутри расчёта: ${scoreText(rec.score)}.${includeContext ? ` Радиус модели: ${context.parameters.radius_m} м; коэффициент конкуренции: ${context.parameters.alpha.toLocaleString('ru-RU')}. ID расчёта: ${context.analysis_id}.` : ''}`)
   );
   if (includeContext) {
     block.append(node('p', '', `Источник: ${sourceText(context.source)}. Дата данных: ${dateText(context.data_date)}${context.saved_at ? `. Сохранено: ${dateText(context.saved_at)}` : ''}.`));
@@ -55,9 +56,9 @@ function reportAnalysis(context) {
   block.append(
     node('h2', '', 'Текущий расчёт'),
     node('h3', '', `${context.district_name} · ${context.business_name}`),
-    node('p', '', `Центр области: ${center.map(value => value.toFixed(5)).join(', ')}. Радиус области: ${fmt(areaRadius)} м. Радиус модели: ${fmt(context.parameters.radius_m)} м; коэффициент конкуренции: ${context.parameters.alpha}.`),
+    node('p', '', `Центр области: ${center.map(value => value.toFixed(5)).join(', ')}. Радиус области: ${fmt(areaRadius)} м. Радиус модели: ${fmt(context.parameters.radius_m)} м; коэффициент конкуренции: ${context.parameters.alpha.toLocaleString('ru-RU')}.`),
     node('p', '', `Дата расчёта: ${context.calculated_at ? new Date(context.calculated_at).toLocaleString('ru-RU') : 'Не указана'}. ID расчёта: ${context.analysis_id}.`),
-    node('p', '', `В выборке: ≈ ${fmt(context.stats.residents)} жителей, ${fmt(context.stats.houses)} домов, ${fmt(context.stats.competitors)} конкурентов, включая соседние территории.`),
+    node('p', '', `В выборке: ≈ ${fmt(context.stats.residents)} жителей, ${fmt(context.stats.houses)} домов, ${fmt(context.stats.competitors)} конкурентов, включая соседние территории.`),
     qualityBlock(context)
   );
   return block;

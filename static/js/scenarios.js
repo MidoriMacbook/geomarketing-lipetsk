@@ -124,7 +124,7 @@ function renderComparison() {
   const rows = [
     ['Область', item => item.analysis.district_name],
     ['Центр / радиус области', item => `${(item.selection.custom_point || item.analysis.analysis_context?.center || item.analysis.center).join(', ')} / ${fmt(item.selection.area_radius_m)} м`],
-    ['Категория / радиус модели / коэффициент', item => `${item.analysis.business_name} / ${fmt(item.analysis.parameters.radius_m)} м / ${item.analysis.parameters.alpha}`],
+    ['Категория / радиус модели / коэффициент', item => `${item.analysis.business_name} / ${fmt(item.analysis.parameters.radius_m)} м / ${item.analysis.parameters.alpha.toLocaleString('ru-RU')}`],
     ['Порог зон', item => `${item.view.threshold}%`],
     ['Дата расчёта / сохранения', item => `${timestamp(item.analysis.calculated_at)} / ${timestamp(item.saved_at)}`],
     ['Источник / свежесть / полнота', item => { const q = qualitySummary(item.analysis); return `${q.source}. ${q.freshness}. ${q.completeness}`; }],

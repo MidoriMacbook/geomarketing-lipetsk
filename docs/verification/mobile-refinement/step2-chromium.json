@@ -1,0 +1,53 @@
+[
+  {
+    "width": 375,
+    "height": 667,
+    "engine": "chromium",
+    "coverHeight": 523.09375,
+    "menu": {
+      "opacity": "1",
+      "top": 12,
+      "bottom": 259,
+      "visible": true
+    },
+    "table": {
+      "width": 315,
+      "scroll": 315,
+      "pageOverflow": 0
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "engine": "chromium",
+    "coverHeight": 527.21875,
+    "menu": {
+      "opacity": "1",
+      "top": 12,
+      "bottom": 259,
+      "visible": true
+    },
+    "table": {
+      "width": 330,
+      "scroll": 330,
+      "pageOverflow": 0
+    }
+  },
+  {
+    "width": 768,
+    "height": 1024,
+    "engine": "chromium",
+    "coverHeight": 828.71875,
+    "menu": {
+      "opacity": "1",
+      "top": 12,
+      "bottom": 259,
+      "visible": true
+    },
+    "table": {
+      "width": 684,
+      "scroll": 760,
+      "pageOverflow": 0
+    }
+  }
+]

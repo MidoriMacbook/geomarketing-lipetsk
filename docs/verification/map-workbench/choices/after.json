@@ -1,0 +1,14 @@
+[
+  {
+    "width": 375,
+    "secondTap": "false"
+  },
+  {
+    "width": 768,
+    "secondTap": "false"
+  },
+  {
+    "width": 1440,
+    "secondTap": "false"
+  }
+]

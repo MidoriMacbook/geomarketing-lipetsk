@@ -1,0 +1,10 @@
+{
+  "point": "02",
+  "phase": "before",
+  "cpu": 4,
+  "moving": {
+    "visibility": "hidden",
+    "height": 32,
+    "scrollTop": 0
+  }
+}

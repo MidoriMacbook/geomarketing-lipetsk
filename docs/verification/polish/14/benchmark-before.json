@@ -1,0 +1,254 @@
+{
+  "phase": "before",
+  "source_version": "de6e5170846256863e933821b0694ce0b06bae74a0474ff18c49f0eee6da0f8c",
+  "fetched_at": 1794395759.8063166,
+  "business": "cafe",
+  "baseline_ref": "9905f82",
+  "threads": 1,
+  "repeats": 7,
+  "cases": [
+    {
+      "key": "center",
+      "center": [
+        52.6122,
+        39.5843
+      ],
+      "radius": 1000,
+      "houses": 360,
+      "median_ms": 35.772999999608146,
+      "runs_ms": [
+        38.6222999986785,
+        34.62239999862504,
+        39.037099999404745,
+        35.43849999914528,
+        34.865700003138045,
+        36.36780000306317,
+        35.772999999608146
+      ],
+      "grid_sha256": "62f98f5bd0d217674461a44da9101b94cbf832addcb616378da872f2880c6a21",
+      "recommendations": [
+        {
+          "rank": 1,
+          "lat": 52.61235269506795,
+          "lng": 39.587569127263855,
+          "score": 1.0,
+          "residents_in_radius": 8037,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 479
+        },
+        {
+          "rank": 2,
+          "lat": 52.613268865475646,
+          "lng": 39.58404852867201,
+          "score": 0.8004476567273474,
+          "residents_in_radius": 5803,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 459
+        },
+        {
+          "rank": 3,
+          "lat": 52.61082574438846,
+          "lng": 39.58455147132799,
+          "score": 0.6600618237565142,
+          "residents_in_radius": 5676,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 412
+        }
+      ],
+      "pairs": [
+        {
+          "places": [
+            1,
+            2
+          ],
+          "distance_m": 258.2,
+          "shared_houses": 17,
+          "shared_residents": 4237
+        },
+        {
+          "places": [
+            1,
+            3
+          ],
+          "distance_m": 264.8,
+          "shared_houses": 27,
+          "shared_residents": 3200
+        },
+        {
+          "places": [
+            2,
+            3
+          ],
+          "distance_m": 273.3,
+          "shared_houses": 21,
+          "shared_residents": 3446
+        }
+      ]
+    },
+    {
+      "key": "eleytsky",
+      "center": [
+        52.5935,
+        39.48
+      ],
+      "radius": 1000,
+      "houses": 153,
+      "median_ms": 15.788299999258015,
+      "runs_ms": [
+        13.763299997663125,
+        14.65480000115349,
+        21.39750000060303,
+        16.22479999787174,
+        15.064200000779238,
+        15.788299999258015,
+        18.290200001501944
+      ],
+      "grid_sha256": "5d9fa14a9399d3804796acb1b35ba475fec59f4be0074d25da5c029209f23c55",
+      "recommendations": [
+        {
+          "rank": 1,
+          "lat": 52.596095816155135,
+          "lng": 39.48728955574016,
+          "score": 1.0,
+          "residents_in_radius": 7862,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 448
+        },
+        {
+          "rank": 2,
+          "lat": 52.593652695067945,
+          "lng": 39.48728955574016,
+          "score": 0.7309568528843001,
+          "residents_in_radius": 4702,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 411
+        },
+        {
+          "rank": 3,
+          "lat": 52.59762276683463,
+          "lng": 39.49030592363264,
+          "score": 0.7281814127898694,
+          "residents_in_radius": 4901,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 415
+        }
+      ],
+      "pairs": [
+        {
+          "places": [
+            1,
+            2
+          ],
+          "distance_m": 271.2,
+          "shared_houses": 10,
+          "shared_residents": 4702
+        },
+        {
+          "places": [
+            1,
+            3
+          ],
+          "distance_m": 264.8,
+          "shared_houses": 10,
+          "shared_residents": 4750
+        },
+        {
+          "places": [
+            2,
+            3
+          ],
+          "distance_m": 485.3,
+          "shared_houses": 5,
+          "shared_residents": 2487
+        }
+      ]
+    },
+    {
+      "key": "small",
+      "center": [
+        52.592,
+        39.487
+      ],
+      "radius": 500,
+      "houses": 12,
+      "median_ms": 8.939299998019123,
+      "runs_ms": [
+        10.232300002826378,
+        8.396000001084758,
+        7.866899999498855,
+        12.048199998389464,
+        10.146000000531785,
+        8.939299998019123,
+        8.489600000757491
+      ],
+      "grid_sha256": "cbc8a68ae248f3501779b6f369ce14e79a88d759a5d5bb4c6cacf98221156110",
+      "recommendations": [
+        {
+          "rank": 1,
+          "lat": 52.59497755382501,
+          "lng": 39.48712567769313,
+          "score": 1.0,
+          "residents_in_radius": 4702,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 421
+        },
+        {
+          "rank": 2,
+          "lat": 52.59283982287372,
+          "lng": 39.4883824546244,
+          "score": 0.728572431761833,
+          "residents_in_radius": 4737,
+          "radius_m": 350,
+          "competitors_in_radius": 0,
+          "nearest_competitor_m": 370
+        },
+        {
+          "rank": 3,
+          "lat": 52.595741029164756,
+          "lng": 39.49064465310069,
+          "score": 0.6510518246272192,
+          "residents_in_radius": 5793,
+          "radius_m": 350,
+          "competitors_in_radius": 1,
+          "nearest_competitor_m": 236
+        }
+      ],
+      "pairs": [
+        {
+          "places": [
+            1,
+            2
+          ],
+          "distance_m": 252.0,
+          "shared_houses": 7,
+          "shared_residents": 4219
+        },
+        {
+          "places": [
+            1,
+            3
+          ],
+          "distance_m": 252.0,
+          "shared_houses": 9,
+          "shared_residents": 4611
+        },
+        {
+          "places": [
+            2,
+            3
+          ],
+          "distance_m": 356.3,
+          "shared_houses": 8,
+          "shared_residents": 4737
+        }
+      ]
+    }
+  ]
+}
