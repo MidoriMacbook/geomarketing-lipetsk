@@ -199,6 +199,18 @@ html[data-source-open=true] body { position:fixed; top:var(--source-scroll-top);
 }
 
 .coverage-actions { margin-block:12px; }
+.map-inspection-score { display:inline-flex; align-items:center; gap:4px; }
+.map-inspection .map-inspection-info { position:relative; flex:none; width:28px; height:28px; margin:0; font:500 12px/1 'Golos Text',sans-serif; }
+.map-inspection-info::after { content:''; position:absolute; inset:-8px; }
+.map-place-details { display:flex; justify-content:center; align-items:center; gap:8px; }
+.map-details-chevron { width:6px; height:6px; border-top:1.5px solid currentColor; border-right:1.5px solid currentColor; transform:rotate(45deg); }
+.map-inspection .map-inspection-note[hidden] { display:none; }
+@media (max-width:600px) {
+ .map-inspection-compact { grid-template-columns:minmax(0,1fr) 44px; }
+ .map-inspection-compact .map-inspection-close { grid-column:2; }
+ .map-inspection-compact .map-inspection-score { white-space:nowrap; }
+ .map-inspection-compact .map-inspection-info { margin:0; }
+}
 .coverage-pairs { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
 .coverage-pair { min-height:44px; padding:8px 16px; border:1px solid var(--palette-border); border-radius:20px; background:var(--color-page); color:var(--palette-ink); font:inherit; cursor:pointer; }
 @media (max-width:600px) {

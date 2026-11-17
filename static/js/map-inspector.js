@@ -87,11 +87,13 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   if(rec.origin==='manual'){
    save.replaceChildren(node('span','map-inspection-save-long',label),node('span','map-inspection-save-short','Сохранить'));
   }
-  actions.append(save,button('О месте','button secondary',showDetails));
+  const more=button('О месте','button secondary map-place-details',showDetails);
+  more.append(node('span','map-details-chevron'));more.lastChild.setAttribute('aria-hidden','true');
+  actions.append(save,more);
   box.append(actions,feedback);
  }
  function relativeNote(box) {
-  const note=node('p','map-inspection-note','Оценка относительная, как у рекомендаций.');
+  const note=node('p','map-inspection-note','Оценка относительная: сравнивает точки внутри этого расчёта');
   note.hidden=true;
   const info=button('i','map-inspection-info',()=>{
    note.hidden=!note.hidden;
@@ -99,9 +101,10 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
    requestAnimationFrame(keepVisible);
   });
   info.title=note.textContent;
-  info.setAttribute('aria-label','Об относительной оценке');
+  info.setAttribute('aria-label',note.textContent);
   info.setAttribute('aria-expanded','false');
-  box.append(info,note);
+  box.querySelector('.map-inspection-score').append(info);
+  box.append(note);
  }
  function inspect(point){
   if(!analysis)return;
