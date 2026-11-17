@@ -41,7 +41,9 @@ test('тап, жест, клавиши и пин: фон неподвижен, �
  const before=await page.locator('#map').boundingBox(),y=await page.evaluate(()=>scrollY);
  await handle.click();await expect(sheet).toHaveAttribute('data-snap','expanded');
  await expect(page.locator('body')).toHaveCSS('position','fixed');
- await page.mouse.wheel(0,400);await page.waitForTimeout(400);
+ if(page.context().browser().browserType().name()==='webkit')await page.keyboard.press('PageDown');
+ else await page.mouse.wheel(0,400);
+ await page.waitForTimeout(400);
  expect((await page.locator('#map').boundingBox()).y).toBeCloseTo(before.y,0);
  await page.keyboard.press('Escape');await page.waitForTimeout(550);
  const cdp=await gestureDriver(page),box=await handle.boundingBox(),point={x:box.x+80,y:box.y+24};

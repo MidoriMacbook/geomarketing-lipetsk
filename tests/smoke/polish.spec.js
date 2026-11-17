@@ -62,7 +62,9 @@ test('меню и место параметров существуют до за
   await route.continue();
  });
  await page.goto('/',{waitUntil:'commit'});
- await expect(page.locator('#nav-toggle')).toBeVisible();await page.evaluate(()=>document.fonts.ready);
+ await expect(page.locator('#nav-toggle')).toBeVisible();
+ // WebKit's fonts.ready also waits for document load, which this gate deliberately blocks.
+ await page.evaluate(()=>Promise.all(['500 16px "Golos Text"','400 54px "Playfair Display"','italic 500 54px "Playfair Display"'].map(font=>document.fonts.load(font,'ГеоМаркетинг'))));
  const before=await page.locator('#workspace').boundingBox(),bar=await page.locator('#mobile-settings-bar').boundingBox();
  release();await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
  const after=await page.locator('#workspace').boundingBox(),ready=await page.locator('#mobile-settings-bar').boundingBox();
