@@ -4,6 +4,8 @@ for(const [width,height] of [[375,667],[390,844],[768,1024]]){
   test.use({viewport:{width,height},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
   test('источник открывается листом без потери позиции',async({page})=>{
    await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
+   await expect(page.locator('.hero-city')).toHaveCount(0);
+   if(width===375)expect(await page.locator('.editorial-hero').evaluate(el=>el.getBoundingClientRect().height)).toBeLessThanOrEqual(height*.7);
    await page.locator('#hero-map-link').tap();
    const layers=page.locator(width<=600?'.mobile-map-layers':'#map-title');
    await layers.evaluate(el=>el.scrollIntoView({block:'start',behavior:'instant'}));

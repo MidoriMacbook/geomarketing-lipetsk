@@ -127,7 +127,7 @@ html[data-source-open=true] body { position:fixed; top:var(--source-scroll-top);
  .atlas-coordinates { margin-top:0; }
 }
 @media (max-width:600px) {
- .intro.editorial-hero { padding-top:24px; }
+ .intro.editorial-hero { padding-top:16px; }
  .intro .hero-title { font-size:min(15vw,5.4rem); line-height:.92; margin:22px 0 18px; max-width:min(100%,5.55em); white-space:normal; }
  .intro .hero-title .hero-title-word { display:inline; white-space:nowrap; }
  .intro .hero-title em { font-style:normal; padding:0; }
@@ -179,17 +179,18 @@ html[data-source-open=true] body { position:fixed; top:var(--source-scroll-top);
  #comparison :is(td,th):nth-child(2) { min-width:94px; }
  #comparison td:first-child small { font-size:.75rem; }
  .intro.editorial-hero { margin-bottom:16px; }
- .hero-art { height:132px; }
+ .hero-art { height:120px; }
  .intro .atlas-coordinates { display:flex; flex-wrap:wrap; gap:4px 12px; margin:2px 0 0; font-size:.75rem; }
  .intro .atlas-coordinates a,.intro .hero-steps { display:none; }
 }
 @media (min-width:601px) and (max-width:900px) {
- .intro .hero-title { margin-bottom:12px; }
+ .intro .hero-title { margin-bottom:32px; }
  .hero-editorial-row { gap:16px; }
  .hero-intent { width:min(47%,330px); }
  #settings .choice-value { overflow-wrap:normal; }
  #settings #run { margin-top:16px; }
 }
+@media (min-width:901px) { .intro .hero-title { margin-bottom:40px; } }
 
 @media (max-width:600px) {
  #comparison .comparison-coordinates { display:none; }

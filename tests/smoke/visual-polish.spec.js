@@ -55,7 +55,7 @@ test('заголовок копируется без разрыва назван
    const range=document.createRange();range.setStartBefore(h.firstElementChild);range.setEndAfter(h.querySelector('em'));
    const selection=getSelection();selection.removeAllRanges();selection.addRange(range);
    const rects=[...range.getClientRects()],top=Math.min(...rects.map(r=>r.top)),bottom=Math.max(...rects.map(r=>r.bottom));
-   return {text:selection.toString(),topGap:top-document.querySelector('.hero-copy>.eyebrow').getBoundingClientRect().bottom,bottomGap:h.querySelector('.hero-city').getBoundingClientRect().top-bottom,overflow:document.documentElement.scrollWidth>innerWidth};
+   return {text:selection.toString(),topGap:top-document.querySelector('.hero-copy>.eyebrow').getBoundingClientRect().bottom,bottomGap:document.querySelector('.hero-statement').getBoundingClientRect().top-bottom,overflow:document.documentElement.scrollWidth>innerWidth};
   });
   expect(result.text).toBe('ГеоМаркетинг');expect(result.topGap).toBeGreaterThan(5);expect(result.bottomGap).toBeGreaterThan(5);expect(result.overflow).toBe(false);
  }

@@ -30,7 +30,12 @@ if (header && menu && toggle) {
     }
   };
   let modelFromMenu = false;
-  const syncOffset = () => document.documentElement.style.setProperty('--header-offset', `${Math.ceil(header.getBoundingClientRect().height)}px`);
+  // Подложка шапки и её градиент также закрывают содержимое при переходе к якорю.
+  const syncOffset = () => {
+    const reserve=header.closest('.header-reserve');
+    const fade=reserve?parseFloat(getComputedStyle(reserve,'::after').height)||0:0;
+    document.documentElement.style.setProperty('--header-offset', `${Math.ceil(header.getBoundingClientRect().bottom+fade)}px`);
+  };
   const syncViewport = () => {
     if (!dialog.open) return;
     const viewport = window.visualViewport;
