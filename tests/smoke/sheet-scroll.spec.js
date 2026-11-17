@@ -1,3 +1,4 @@
+import {gestureDriver,throttleCPU} from './gesture-driver.js';
 import {test,expect} from '@playwright/test';
 test.use({viewport:{width:375,height:667},isMobile:true,hasTouch:true});
 test.beforeEach(async({page,baseURL})=>{
@@ -43,7 +44,7 @@ test('тап, жест, клавиши и пин: фон неподвижен, �
  await page.mouse.wheel(0,400);await page.waitForTimeout(400);
  expect((await page.locator('#map').boundingBox()).y).toBeCloseTo(before.y,0);
  await page.keyboard.press('Escape');await page.waitForTimeout(550);
- const cdp=await page.context().newCDPSession(page),box=await handle.boundingBox(),point={x:box.x+80,y:box.y+24};
+ const cdp=await gestureDriver(page),box=await handle.boundingBox(),point={x:box.x+80,y:box.y+24};
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});
  for(let i=1;i<=6;i++){
   await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:point.x,y:point.y-i*30}]});

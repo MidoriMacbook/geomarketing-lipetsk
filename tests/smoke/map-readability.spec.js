@@ -1,10 +1,11 @@
+import {gestureDriver,throttleCPU} from './gesture-driver.js';
 import {test,expect} from '@playwright/test';
 
 test('слои сохраняют состояние, выбранное место видно над плотной застройкой',async({page,baseURL})=>{
  await page.route('**/*',route=>new URL(route.request().url()).origin===baseURL?route.continue():route.abort());
  await page.goto('/');
  await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
- const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
+ await throttleCPU(page);
  const result=await page.evaluate(async()=>{
   const {state}=await import('/static/js/state.js');
   const {drawMap,selectMarker}=await import('/static/js/map.js');

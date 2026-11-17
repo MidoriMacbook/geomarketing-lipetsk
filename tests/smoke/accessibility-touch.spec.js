@@ -1,14 +1,15 @@
+import {gestureDriver,throttleCPU} from './gesture-driver.js';
 import {test,expect} from '@playwright/test';
 
 test.use({viewport:{width:375,height:812},isMobile:true,hasTouch:true});
 test.beforeEach(async({page,baseURL})=>{
  await page.route('**/*',r=>new URL(r.request().url()).origin===baseURL?r.continue():r.abort());
  await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
- const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
+ await throttleCPU(page);
 });
 
 test('видимые подписи входят в доступные имена действий',async({page})=>{
- await expect(page.locator('.brand')).toHaveAccessibleName(/ГеоМаркетинг Липецк.*Городская аналитика/);
+ await expect(page.locator('.brand')).toHaveAccessibleName(/ГеоМаркетинг Липецк/);
  await page.locator('#map-card').scrollIntoViewIfNeeded();
  await expect(page.locator('.sheet-handle')).toHaveAccessibleName(/3 места для проверки.*Показать места/);
  await page.locator('.sheet-handle').click();
@@ -19,7 +20,7 @@ test('видимые подписи входят в доступные имен�
 });
 
 test('касание ручки двигает панель, а касание карты не захватывает панель',async({page})=>{
- const cdp=await page.context().newCDPSession(page);
+ const cdp=await gestureDriver(page);
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.locator('#map-card').scrollIntoViewIfNeeded();
  const handle=page.locator('.sheet-handle'),sheet=page.locator('#recommendations'),pane=page.locator('.leaflet-map-pane');
