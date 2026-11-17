@@ -1,0 +1,16 @@
+import {test,expect} from '@playwright/test';
+test.use({viewport:{width:375,height:667},isMobile:true,hasTouch:true});
+test('диагностика включается только по ссылке и собирает измерения без изменения данных',async({page})=>{
+ await page.goto('/');await expect(page.locator('#mobile-debug')).toHaveCount(0);await expect(page.locator('meta[name=robots]')).toHaveCount(0);
+ const saved=await page.evaluate(()=>JSON.stringify(localStorage));
+ await page.goto('/?debug=1');await expect(page.locator('#mobile-debug')).toBeVisible();
+ await expect(page.locator('meta[name=robots]')).toHaveAttribute('content','noindex,nofollow');
+ await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(100);
+ const result=await page.evaluate(()=>({data:window.geoDebug.snapshot(),saved:JSON.stringify(localStorage),height:document.querySelector('#mobile-debug').scrollHeight,view:innerHeight}));
+ expect(result.saved).toBe(saved);expect(result.data.faces.length).toBeGreaterThan(0);
+ expect(result.data.fonts.italic.width).toBeGreaterThan(0);expect(result.data.viewport.width).toBe(375);
+ expect(result.height).toBeLessThanOrEqual(result.view+1);
+ await page.getByRole('button',{name:'Скрыть',exact:true}).tap();await expect(page.locator('#debug-toggle')).toBeVisible();
+ await page.locator('#debug-toggle').tap();await expect(page.locator('#mobile-debug')).toBeVisible();
+ await page.getByRole('button',{name:'Обновить',exact:true}).tap();
+});
