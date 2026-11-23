@@ -1,0 +1,29 @@
+{
+  "center": {
+    "response_sha256_windows": "d44ada89b63ca1d490d135a076ce25bbff38fc9840f02ba95a076b03b5166df2",
+    "grid_sha256": "aad9eaec8f6f9b5bfb76d93b53ec9a89d402e778a4c25b0997100e656a6b4ea3",
+    "recommendations": [
+      [
+        52.61235269506795,
+        39.587569127263855,
+        1.0
+      ]
+    ]
+  },
+  "eleytsky": {
+    "response_sha256_windows": "74f868d0620d9b808d7c48e31f2c3cca0f591f787e41ae7aa117256942532737",
+    "grid_sha256": "ede7c05e4d5aaa7e28fd3e064ea9cc2f45313f1eb72bc1c064af6f6025831b4c",
+    "recommendations": [
+      [
+        52.596095816155135,
+        39.48728955574016,
+        1.0
+      ],
+      [
+        52.587239502214075,
+        39.474721356188155,
+        0.2598399291452214
+      ]
+    ]
+  }
+}

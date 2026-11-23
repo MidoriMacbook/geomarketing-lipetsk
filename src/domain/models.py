@@ -19,6 +19,7 @@ class CacheInfo:
     stale: bool = False
     warning: str | None = None
     provenance: dict | None = None
+    competitor_ids: tuple[str | None, ...] = ()
 
     def __bool__(self):
         return self.cached
@@ -32,6 +33,7 @@ class LoadedData:
     warning: str | None
     metadata: dict = field(default_factory=dict)
     delivery: dict | None = None
+    competitor_ids: tuple[str | None, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -39,3 +41,4 @@ class ScoringResult:
     recommendations: list[dict]
     grid: dict
     centroids: list[dict]
+    scores: np.ndarray = field(repr=False, compare=False)
