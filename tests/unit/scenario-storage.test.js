@@ -36,6 +36,23 @@ beforeEach(() => {
 });
 const code = expected => error => error.code === expected;
 
+test('откат читает архив версии 2 и сохраняет поправки при изменении заметки', async () => {
+  const record = fixture();
+  record.analysis.correction_context = {
+    version: 1, base_competitors: [],
+    applied: { added: [{ id: 'manual-a', lat: 52.6, lng: 39.501 }], removed: [] },
+    counts: { added: 1, removed: 0 },
+  };
+  const raw = JSON.stringify({ schema_version: 2, scenarios: [record] });
+  records.set(SCENARIO_KEY, raw);
+  assert.deepEqual(readScenarios(), [record]);
+  assert.equal(records.get(SCENARIO_KEY), raw);
+  await mutateScenarios(items => items.map(item => ({ ...item, note: 'Проверено после отката' })));
+  assert.deepEqual(JSON.parse(records.get(SCENARIO_KEY)), {
+    schema_version: 2, scenarios: [{ ...record, note: 'Проверено после отката' }],
+  });
+});
+
 test('roundtrip and latest-read edit/delete do not alter separate saved places', async () => {
   assert.equal(SCENARIO_KEY, 'geomarketing.scenarios.v1');
   assert.equal(SCENARIO_LIMIT, 6);
@@ -218,7 +235,7 @@ test('quota and blocked reads preserve original raw value and report unavailable
 });
 
 test('corrupt JSON, bad envelope, version and oversize retain original raw and block writes', async () => {
-  for (const [raw, expected] of [['{bad', 'invalid'], ['[]', 'invalid'], ['{"schema_version":2,"scenarios":[]}', 'unsupported'], [JSON.stringify({ schema_version: 1, scenarios: [fixture(), fixture()] }), 'invalid'], ['x'.repeat(1250001), 'invalid']]) {
+  for (const [raw, expected] of [['{bad', 'invalid'], ['[]', 'invalid'], ['{"schema_version":3,"scenarios":[]}', 'unsupported'], [JSON.stringify({ schema_version: 1, scenarios: [fixture(), fixture()] }), 'invalid'], ['x'.repeat(1250001), 'invalid']]) {
     records.set(SCENARIO_KEY, raw);
     assert.throws(readScenarios, error => error.code === expected && error.raw === raw);
     await assert.rejects(mutateScenarios(() => []), code(expected));
@@ -249,7 +266,7 @@ test('repair only removes exact still damaged raw under lock and preserves good/
   records.set(SCENARIO_KEY, '{new broken');
   await assert.rejects(clearDamagedScenarios('{old broken'), code('conflict'));
   assert.equal(records.get(SCENARIO_KEY), '{new broken');
-  records.set(SCENARIO_KEY, '{"schema_version":2,"scenarios":[]}');
+  records.set(SCENARIO_KEY, '{"schema_version":3,"scenarios":[]}');
   await clearDamagedScenarios(records.get(SCENARIO_KEY)); assert.equal(records.has(SCENARIO_KEY), false);
 });
 
