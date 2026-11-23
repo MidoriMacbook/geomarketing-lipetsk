@@ -37,13 +37,13 @@ function arrangeMobileCard(entry) {
     brief.hidden = false;
     briefDetails.append(brief,placeDetails,explanation);
     secondaryActions.prepend(showOnMap);
-    content.append(heading,metrics,reasons,entry.difference,actions,confirmation,secondaryActions,briefDetails);
+    content.append(heading,entry.correctionDelta,metrics,reasons,entry.difference,actions,confirmation,secondaryActions,briefDetails);
     placeDetails.open = false;
     briefDetails.open = false;
   } else {
     brief.hidden = false;
     actions.append(save, copy, osm);
-    content.append(heading, coordinate, metrics, reasons, entry.difference, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,secondaryActions);
+    content.append(heading, coordinate, entry.correctionDelta, metrics, reasons, entry.difference, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,secondaryActions);
     placeDetails.open = true;
     briefDetails.open = true;
   }
@@ -123,7 +123,7 @@ export function selectPlace(rank, pan = false, feedback = false) {
   selectMarker(rank, pan, changed || feedback);
 }
 
-export function showResult(data, { freshCalculation=false } = {}) {
+export function showResult(data, { freshCalculation=false, preserveViewport=false } = {}) {
   const newAnalysis = freshCalculation || renderedAnalysisId !== data.analysis_id;
   renderedAnalysisId = data.analysis_id;
   const previousExpanded = new Map([...mobileCards.values()].map(({ card }) => [card.dataset.counterKey, card.dataset.mobileExpanded === 'true']));
@@ -164,7 +164,8 @@ export function showResult(data, { freshCalculation=false } = {}) {
     card.dataset.testid = 'recommendation-card';
     card.dataset.rank = rec.rank;
     card.dataset.counterKey = `${rec.lat}:${rec.lng}:${rec.radius_m}`;
-    card.dataset.mobileExpanded = String(!newAnalysis && previousExpanded.has(card.dataset.counterKey) ? previousExpanded.get(card.dataset.counterKey) : index === 0);
+    card.dataset.mobileExpanded = String((!newAnalysis || preserveViewport) && previousExpanded.has(card.dataset.counterKey)
+      ? previousExpanded.get(card.dataset.counterKey) : index === 0);
     connectCardPreview(card, rec.rank);
     const body = node('div', 'recommendation-body');
     const clip = node('div', 'recommendation-clip'), content = node('div', 'recommendation-content');
@@ -265,7 +266,22 @@ export function showResult(data, { freshCalculation=false } = {}) {
     card.append(toggle, body);
     const difference=node('p','place-difference',placeDifference(rec));difference.hidden=!difference.textContent;
     difference.title='Доля общих жителей рассчитана от жителей в радиусе этого места.';
-    const entry = { card, body, content, toggle, heading, coordinate, metrics, brief,reasons,difference,secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
+    const correctionDelta = node('p', 'correction-delta');
+    const delta = rec.correction_delta;
+    const hasCorrections = data.correction_context?.counts.added || data.correction_context?.counts.removed;
+    correctionDelta.hidden = !delta || !hasCorrections;
+    if (delta && hasCorrections) {
+      const points = Math.round(rec.score * 100) - Math.round(delta.baseline_score * 100);
+      const magnitude = Math.abs(points);
+      const unit = new Intl.PluralRules('ru').select(magnitude);
+      const scoreChange = points
+        ? `Изменилось из-за поправок · ${points > 0 ? '+' : '−'}${fmt(magnitude)} ${{one:'балл',few:'балла',many:'баллов'}[unit]}`
+        : 'Баллы в этой точке не изменились';
+      correctionDelta.textContent = delta.is_new_location ? `Новое место · ${scoreChange.toLocaleLowerCase('ru-RU')}` : scoreChange;
+      correctionDelta.title = 'Разница для тех же координат. Поправки могут изменить относительную шкалу оценки.';
+      explanation.append(node('p', 'hint', correctionDelta.title));
+    }
+    const entry = { card, body, content, toggle, heading, coordinate, metrics, brief,reasons,difference,correctionDelta,secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
     mobileCards.set(rec.rank, entry);
     arrangeMobileCard(entry);
     $('recommendation-list').append(card);
@@ -302,5 +318,5 @@ export function showResult(data, { freshCalculation=false } = {}) {
   }
   if ($('data-summary')) $('data-summary').textContent = 'Даты и качество данных';
   updateReportAvailability();
-  document.dispatchEvent(new CustomEvent('gm:analysis-rendered', { detail: { data } }));
+  document.dispatchEvent(new CustomEvent('gm:analysis-rendered', { detail: { data, preserveViewport } }));
 }

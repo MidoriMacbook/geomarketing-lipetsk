@@ -12,6 +12,7 @@ let emphasized = new Set(), previewRank = null, houseData = [];
 let viewportRank=null, viewportTimer=null,inspector=null,selection=null,comparison=null,choosingCenter=false;
 let manualViewport=false;
 const layers = {}, markers = new Map();
+let correctionView = { mode: null, draft: { added: [], removed: [] }, pending: false };
 const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const color = role => token(`--color-map-${role}`);
 const size = role => parseFloat(token(`--size-${role}`));
@@ -21,10 +22,13 @@ function readPalette(roles) {
   return Object.fromEntries(roles.map(role => [role, styles.getPropertyValue(`--color-map-${role}`).trim()]));
 }
 let resetSelection = () => {}, selectPlace = () => {};
+let correctionTap = () => false, removeCompetitor = () => {};
 
 export function configureMap(callbacks) {
   resetSelection = callbacks.resetSelection;
   selectPlace = callbacks.selectPlace;
+  correctionTap = callbacks.correctionTap;
+  removeCompetitor = callbacks.removeCompetitor;
 }
 
 export function mapWarning() {
@@ -84,6 +88,7 @@ export function initMap() {
     map.createPane(key);map.getPane(key).style.zIndex=String(parseInt(token('--z-points'),10)+index+1);
     dataRenderers[key]=L.canvas({pane:key,padding:.5});
   });
+  map.createPane('corrections').style.zIndex = '620';
   ['houses','competitors','centroids','zones','recommendations'].forEach(key=>{
     const pane=map.getPane(key==='recommendations'?'markerPane':key);
     pane.dataset.focusPane=key;
@@ -97,7 +102,7 @@ export function initMap() {
   zonesRenderer = L.canvas({
     pane: 'zones'
   });
-  ['zones', 'houses', 'competitors', 'centroids', 'recommendations', 'boundary', 'preview', 'accessibility'].forEach(key => {
+  ['zones', 'houses', 'competitors', 'centroids', 'recommendations', 'boundary', 'preview', 'accessibility', 'corrections'].forEach(key => {
     layers[key] = L.layerGroup().addTo(map);
   });
   map.on('zoomend', drawHouses);
@@ -112,7 +117,12 @@ export function initMap() {
   });
   // После естественной прокрутки и остановки панели известна видимая часть карты.
   window.addEventListener('scroll',schedulePlaceFrame,{passive:true});
-  document.addEventListener('gm:analysis-rendered',()=>{viewportRank=null;manualViewport=false;clearTimeout(viewportTimer);});
+  document.addEventListener('gm:analysis-rendered',event=>{
+    clearTimeout(viewportTimer);
+    if (event.detail.preserveViewport) { manualViewport=true; return; }
+    viewportRank=null;
+    manualViewport=false;
+  });
   map.getContainer().addEventListener('pointerdown',event=>{
     if(event.target.closest('.leaflet-popup,.leaflet-control-attribution'))return;
     // Жест на карте получает приоритет перед отложенным кадрированием листа.
@@ -128,10 +138,13 @@ export function initMap() {
   inspector=createMapInspector(map,{selectPoint:rec=>{if(comparison?.isOpen())comparison.clear();drawAccessCircle(rec);selection.select(rec);},selectRecommendation:rec=>selectPlace(rec.rank,false)});
   comparison=createMapComparison(map,{onOpen:()=>{clearTimeout(viewportTimer);inspector.close();selection.select(null);layers.accessibility.clearLayers();},onClose:()=>drawAccessRadius(state.selectedRank)});
   document.addEventListener('gm:choose-center',()=>{choosingCenter=true;});
-  document.getElementById('district').addEventListener('change',()=>{choosingCenter=$('district').value==='custom';});
   map.on('click', e => {
-    if ($('district').value !== 'custom'||(!choosingCenter&&state.current)) {inspector.inspect(e.latlng);return;}
-    resetSelection();
+    const selectCenter = $('district').value === 'custom' && (choosingCenter || !state.current);
+    if (!selectCenter) {
+      if (!correctionTap(e.latlng)) inspector.inspect(e.latlng);
+      return;
+    }
+    if (resetSelection() === false) { choosingCenter = false; return; }
     state.customPoint = [e.latlng.lat, e.latlng.lng];
     $('custom-hint').textContent = `Центр выбран: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}. Нажмите «Найти места».`;
     reveal($('custom-hint'), 'notice');
@@ -162,8 +175,9 @@ export function initMap() {
   animateUI($('map'), [{ opacity: 0 }, { opacity: 1 }], 'map-reveal', { duration: 'slow' });
 }
 
-export function updateCustomUI() {
+export function updateCustomUI({ chooseCenter = false } = {}) {
   const custom = $('district').value === 'custom';
+  if (chooseCenter) choosingCenter = custom;
   setRevealed($('custom-box'), custom, 'custom');
   $('district').setAttribute('aria-controls', 'custom-box');
   $('district').setAttribute('aria-expanded', String(custom));
@@ -205,8 +219,13 @@ export function iconFor(rank, selected) {
   });
 }
 
-export function drawMap(data) {
+export function drawMap(data, { preserveViewport = false } = {}) {
   if (!map)return;
+  if (preserveViewport) {
+    manualViewport = true;
+    viewportRank = null;
+    clearTimeout(viewportTimer);
+  }
   choosingCenter=false;inspector.setData(data);selection.setData(data);comparison.setData(data);
   Object.entries(layers).forEach(([key, layer]) => {
     if (key !== 'preview')layer.clearLayers();
@@ -225,14 +244,7 @@ export function drawMap(data) {
     fill: false
   }).addTo(layers.boundary);
   houseData=data.houses;drawHouses();
-  data.competitors.forEach(c => L.circleMarker([c.lat, c.lng], {
-    renderer: dataRenderers.competitors,
-    radius: 5,
-    color: palette['competitor-outline'],
-    weight: 2,
-    fillColor: palette.competitor,
-    fillOpacity: 1
-  }).bindTooltip('Конкурент').addTo(layers.competitors));
+  drawCompetitors(data);
   data.centroids.forEach((c,index)=>{
     const marker=L.marker([c.lat,c.lng],{pane:'centroids',icon:L.divIcon({className:'demand-center',html:'<span aria-hidden="true"></span>',iconSize:[44,44],iconAnchor:[-18,22]}),alt:`Центр спроса ${index+1}`})
       .bindTooltip(`Центр спроса: ≈ ${fmt(c.residents)} жителей`).addTo(layers.centroids);
@@ -272,6 +284,99 @@ export function drawMap(data) {
   drawAccessRadius(state.selectedRank);
   animateUI(map.getPane('points'), [{ opacity: .3 }, { opacity: 1 }], 'map-points');
   syncMapLayers(false);
+}
+
+export function updateCorrectionMap(view) {
+  correctionView = view;
+  if (!map) return;
+  map.getContainer().dataset.correctionMode = view.mode || '';
+  if (state.current) drawCompetitors(state.current);
+}
+
+export function beginMapCorrections() {
+  inspector?.close();
+  comparison?.clear();
+  if (map && state.current && !map.getBounds().contains(state.current.center)) {
+    fitCalculationArea(state.current);
+  }
+  manualViewport = true;
+  clearTimeout(viewportTimer);
+  document.dispatchEvent(new CustomEvent('gm:map-focus'));
+}
+
+function correctionMarker(point, { removable = false, pending = false, colocated = [] } = {}) {
+  const manual = point.source === 'manual';
+  const icon = L.divIcon({
+    className: `correction-marker${!manual ? ' is-removable' : ''}${pending ? ' is-pending' : ''}`,
+    html: node('span', '', colocated.length > 1 ? colocated.length : removable ? '−' : '+'),
+    iconSize: [44, 44],
+    iconAnchor: [22, 22],
+  });
+  const label = manual ? (removable ? 'Убрать конкурента · добавлен вручную' : 'Конкурент · добавлен вручную')
+    : colocated.length > 1 ? `Выбрать конкурента OpenStreetMap · меток: ${colocated.length}` : 'Убрать конкурента OpenStreetMap';
+  const marker = L.marker([point.lat, point.lng], { pane: 'corrections', icon, alt: label })
+    .bindTooltip(label).addTo(layers.corrections);
+  const element = marker.getElement();
+  element.setAttribute('aria-label', label);
+  element.dataset.competitorId = point.id;
+  const open = () => {
+    if (removable) { marker.closeTooltip(); removeCompetitor(point, colocated); }
+    else marker.openTooltip();
+  };
+  marker.on('click', open);
+  element.addEventListener('keydown', event => {
+    if (event.key !== ' ' && event.key !== 'Enter') return;
+    event.preventDefault();
+    event.stopPropagation();
+    open();
+  });
+}
+
+function drawCompetitors(data) {
+  const { mode, draft, pending } = correctionView;
+  layers.competitors.clearLayers();
+  layers.corrections.clearLayers();
+  layers.corrections.addTo(map);
+  const palette = readPalette(['competitor', 'competitor-outline']);
+  const context = data.correction_context;
+  const editPoints = Boolean(context && mode);
+  const removed = new Set(editPoints ? draft.removed : []);
+  const points = editPoints ? context.base_competitors : data.competitors;
+  const candidates = new Map();
+  for (const point of points) {
+    if (point.source === 'manual' || removed.has(point.id)) continue;
+    if (mode === 'remove' && point.id) {
+      const key = `${point.lat}:${point.lng}`;
+      const group = candidates.get(key) || [];
+      group.push(point);
+      candidates.set(key, group);
+      continue;
+    }
+    L.circleMarker([point.lat, point.lng], {
+      renderer: dataRenderers.competitors,
+      radius: 5,
+      color: palette['competitor-outline'],
+      weight: 2,
+      fillColor: palette.competitor,
+      fillOpacity: 1,
+    }).bindTooltip('Конкурент').on('click', event => {
+      if (mode) L.DomEvent.stopPropagation(event);
+    }).addTo(layers.competitors);
+  }
+  for (const group of candidates.values()) correctionMarker(group[0], { removable: true, colocated: group });
+  const additions = editPoints ? draft.added : context?.applied.added || [];
+  const appliedIds = new Set(context?.applied.added.map(point => point.id));
+  for (const point of additions) correctionMarker({ ...point, source: 'manual' }, {
+    removable: mode === 'remove',
+    pending: pending && !appliedIds.has(point.id),
+  });
+  syncCorrectionLayer();
+}
+
+function syncCorrectionLayer() {
+  const enabled = correctionView.mode || $('layer-competitors').checked;
+  if (enabled) layers.corrections.addTo(map);
+  else layers.corrections.remove();
 }
 // Экранная сетка — только представление суммы жителей, исходные дома не меняются.
 function drawHouses() {
@@ -349,6 +454,10 @@ export function drawZones() {
 export function fitArea(data) {
   if (!map)return;
   if(matchMedia('(max-width:600px)').matches&&data.recommendations?.length){fitMobilePlaces(data);return;}
+  fitCalculationArea(data);
+}
+
+function fitCalculationArea(data) {
   const [lat, lng] = data.center, dLat = data.half_m/111000, dLng = data.half_m/(111000*Math.cos(lat*Math.PI/180));
   map.fitBounds([[lat-dLat, lng-dLng], [lat+dLat, lng+dLng]], {
     padding: [25,
@@ -436,6 +545,7 @@ export function hoverPlace(rank, active) {
 
 export function toggleLayer(key, enabled) {
   preferences[key]=enabled;
+  if (map && key === 'competitors') syncCorrectionLayer();
   syncMapLayers();
 }
 

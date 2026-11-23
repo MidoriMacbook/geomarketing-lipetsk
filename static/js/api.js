@@ -46,10 +46,15 @@ export async function fetchCatalog(signal) {
   return response.json();
 }
 
-export async function fetchCalculation(params, signal) {
-  const response = await fetch(`/api/calculate?${params}`, {
-    signal
-  });
+export async function fetchCalculation(params, signal, corrections) {
+  const response = corrections === undefined
+    ? await fetch(`/api/calculate?${params}`, { signal })
+    : await fetch('/api/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...Object.fromEntries(params), corrections }),
+      signal,
+    });
   if (!response.ok) {
     let msg;
     try {

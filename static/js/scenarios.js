@@ -89,7 +89,10 @@ async function submit(event) {
     if (!latest.some(item => item.id === id)) throw Object.assign(new Error('Scenario was deleted'), { code: 'conflict' });
     return latest.map(item => item.id === id ? { ...item, name, note, updated_at: now } : item);
   }, id ? 'Исследование изменено.' : 'Исследование сохранено в этом браузере.');
-  if (ok) closeDialog($('scenario-dialog'));
+  if (ok) {
+    if (record) document.dispatchEvent(new CustomEvent('gm:scenario-saved', { detail: { analysis: record.analysis } }));
+    closeDialog($('scenario-dialog'));
+  }
   else { $('scenario-form-error').textContent = $('scenario-status').textContent; $('scenario-form-error').hidden = false; }
 }
 
@@ -168,7 +171,10 @@ function render() {
       actions.append(control); return control;
     };
     add('Открыть на карте', 'scenario-open', async () => {
-      try { await callbacks.restoreScenario(item); status(`Открыто исследование «${item.name}». Снимок восстановлен без нового запроса геоданных.`); }
+      try {
+        if (await callbacks.restoreScenario(item) === false) return;
+        status(`Открыто исследование «${item.name}». Снимок восстановлен без нового запроса геоданных.`);
+      }
       catch { status('Этот район или категория недоступны в текущем каталоге. Снимок сохранён: его можно читать, сравнивать и экспортировать. Текущая карта не изменена.'); }
     });
     add('Изменить', 'scenario-edit', () => editDialog(item), true);

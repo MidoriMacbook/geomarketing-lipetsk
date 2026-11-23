@@ -146,6 +146,7 @@ document.addEventListener('keydown',event=>{
  }
 });
 document.addEventListener('gm:analysis-rendered',event=>{
+ if(event.detail.preserveViewport){renderRail(event.detail.data);if(ready)sync();return;}
  clearTimeout(readyTimer);renderRail(event.detail.data);ready=false;setSnap('peek');
  readyTimer=setTimeout(()=>{ready=true;sync();},175);
 });

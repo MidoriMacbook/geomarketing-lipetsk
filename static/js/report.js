@@ -78,7 +78,7 @@ export function printFieldChecklist(analysis, place) {
   const report = $('print-report-content');
   const address = typeof place.address === 'string' && place.address.trim() ? place.address : '________________________';
   report.replaceChildren(
-    node('h1', '', 'Чек-лист проверки на месте'),
+    node('h1', 'field-checklist-heading', 'Чек-лист проверки на месте'),
     node('p', '', `${analysis.district_name} · ${analysis.business_name} · ${placeLabel(place)}`),
     node('p', '', `Адрес: ${address}`),
     node('p', '', `Координаты: ${coords(place)}. Относительная оценка внутри расчёта: ${scoreText(place.score)}.`)
