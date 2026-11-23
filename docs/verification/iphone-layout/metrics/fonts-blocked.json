@@ -1,0 +1,262 @@
+{
+  "time": "2026-11-17T14:28:45.907Z",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+  "viewport": {
+    "width": 375,
+    "height": 667,
+    "dpr": 1,
+    "visualWidth": 375,
+    "visualHeight": 667,
+    "visualTop": 0,
+    "svh": 667,
+    "dvh": 667,
+    "lvh": 667,
+    "safe": [
+      "0px",
+      "0px",
+      "0px",
+      "0px"
+    ]
+  },
+  "support": {
+    "backdrop": true,
+    "dialog": true,
+    "has": true,
+    "scrollTimeline": true,
+    "reducedMotion": false
+  },
+  "faces": [
+    {
+      "family": "Onest",
+      "style": "normal",
+      "weight": "100 900",
+      "status": "unloaded",
+      "range": "U+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116"
+    },
+    {
+      "family": "Onest",
+      "style": "normal",
+      "weight": "100 900",
+      "status": "unloaded",
+      "range": "U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD"
+    },
+    {
+      "family": "Playfair Display",
+      "style": "normal",
+      "weight": "400 900",
+      "status": "error",
+      "range": "U+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116"
+    },
+    {
+      "family": "Playfair Display",
+      "style": "normal",
+      "weight": "400 900",
+      "status": "error",
+      "range": "U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD"
+    },
+    {
+      "family": "Playfair Display",
+      "style": "italic",
+      "weight": "400 900",
+      "status": "error",
+      "range": "U+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116"
+    },
+    {
+      "family": "Playfair Display",
+      "style": "italic",
+      "weight": "400 900",
+      "status": "error",
+      "range": "U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD"
+    },
+    {
+      "family": "Golos Text",
+      "style": "normal",
+      "weight": "400 800",
+      "status": "error",
+      "range": "U+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116"
+    },
+    {
+      "family": "Golos Text",
+      "style": "normal",
+      "weight": "400 800",
+      "status": "error",
+      "range": "U+0-FF, U+131, U+152-153, U+2000-206F, U+2116, U+2191, U+2193, U+2212"
+    },
+    {
+      "family": "Golos Fallback",
+      "style": "normal",
+      "weight": "normal",
+      "status": "loaded",
+      "range": "U+0-10FFFF"
+    }
+  ],
+  "control": "ГеоМаркетинг 0123456789",
+  "fonts": {
+    "brand": {
+      "family": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "style": "normal",
+      "weight": "700",
+      "size": "14px",
+      "check": false,
+      "width": 298.2,
+      "fallback": {
+        "serif": 284.3,
+        "sans": 304.9,
+        "Arial": 304.9,
+        "Georgia": 343.1
+      }
+    },
+    "h1": {
+      "family": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+      "style": "normal",
+      "weight": "400",
+      "size": "53.625px",
+      "check": false,
+      "width": 299.8,
+      "fallback": {
+        "serif": 272.4,
+        "sans": 294.9,
+        "Arial": 294.9,
+        "Georgia": 299.8
+      }
+    },
+    "italic": {
+      "family": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+      "style": "italic",
+      "weight": "500",
+      "size": "53.625px",
+      "check": false,
+      "width": 309.5,
+      "fallback": {
+        "serif": 276.5,
+        "sans": 308.6,
+        "Arial": 308.6,
+        "Georgia": 309.5
+      }
+    },
+    "menu": {
+      "family": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "style": "normal",
+      "weight": "400",
+      "size": "16px",
+      "check": false,
+      "width": 298.2,
+      "fallback": {
+        "serif": 272.4,
+        "sans": 294.9,
+        "Arial": 294.9,
+        "Georgia": 299.8
+      }
+    },
+    "body": {
+      "family": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "style": "normal",
+      "weight": "400",
+      "size": "16px",
+      "check": false,
+      "width": 298.2,
+      "fallback": {
+        "serif": 272.4,
+        "sans": 294.9,
+        "Arial": 294.9,
+        "Georgia": 299.8
+      }
+    }
+  },
+  "gap": {
+    "map": {
+      "top": 795.8,
+      "bottom": 1182.7,
+      "height": 386.9,
+      "documentTop": 795.8,
+      "display": "block",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingBottom": "0px",
+      "minHeight": "367px"
+    },
+    "card": {
+      "top": 644.8,
+      "bottom": 1325.2,
+      "height": 680.4,
+      "documentTop": 644.8,
+      "display": "flex",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingBottom": "0px",
+      "minHeight": "0px"
+    },
+    "footer": {
+      "top": 1182.7,
+      "bottom": 1324.2,
+      "height": 141.5,
+      "documentTop": 1182.7,
+      "display": "flex",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingBottom": "8px",
+      "minHeight": "auto"
+    },
+    "panel": {
+      "top": 667,
+      "bottom": 1254,
+      "height": 587,
+      "documentTop": 667,
+      "display": "flex",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingBottom": "16px",
+      "minHeight": "0px"
+    },
+    "next": {
+      "top": 1341.2,
+      "bottom": 1410.5,
+      "height": 69.3,
+      "documentTop": 1341.2,
+      "display": "flex",
+      "marginTop": "4px",
+      "marginBottom": "0px",
+      "paddingBottom": "8px",
+      "minHeight": "auto"
+    },
+    "workspace": {
+      "top": 556.8,
+      "bottom": 1647.1,
+      "height": 1090.3,
+      "documentTop": 556.8,
+      "display": "flex",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingBottom": "0px",
+      "minHeight": "0px"
+    },
+    "page": {
+      "top": 76,
+      "bottom": 2746.2,
+      "height": 2670.2,
+      "documentTop": 76,
+      "display": "block",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingBottom": "24px",
+      "minHeight": "0px"
+    },
+    "mapGap": 158.5,
+    "cardGap": 16,
+    "reserve": "0px",
+    "panelVisible": "false",
+    "snap": "peek",
+    "sheetOffset": "458.953125px"
+  },
+  "cls": 0.0018600948775986817,
+  "shifts": [
+    {
+      "time": 301.89999997615814,
+      "value": 0.001820437045345393
+    },
+    {
+      "time": 362,
+      "value": 0.00003965783225328865
+    }
+  ]
+}

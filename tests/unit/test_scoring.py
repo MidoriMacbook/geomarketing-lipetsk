@@ -35,7 +35,8 @@ class ScoringTests(unittest.TestCase):
     def test_empty_competitors_preserve_useful_recommendations(self):
         result = scoring.score_locations(self.houses, np.empty((0, 2)), self.center,
                                          1000, BUSINESS_CATALOG['grocery'])
-        self.assertEqual(len(result.recommendations), 3)
+        # Эти шесть домов образуют один общий радиус, а не три независимых места.
+        self.assertEqual(len(result.recommendations), 1)
         self.assertEqual(result.recommendations[0]['score'], 1)
         for item in result.recommendations:
             self.assertEqual(item['competitors_in_radius'], 0)

@@ -1,3 +1,4 @@
+import {icon,businessIcon} from './icons.js';
 import { $, node, animateUI, cancelUI, cancelRevealsWithin, clearSnapshot, exitSnapshot, motionStagger } from './ui.js';
 
 let initialized=false,current=null;
@@ -10,7 +11,8 @@ function enhance(select) {
   trigger.type='button';trigger.id=`${id}-trigger`;
   trigger.setAttribute('role','combobox');trigger.setAttribute('aria-haspopup','listbox');
   trigger.setAttribute('aria-controls',`${id}-listbox`);trigger.setAttribute('aria-expanded','false');
-  const value=node('span','choice-value'),mark=node('span','choice-mark',id==='business'?'▦':'⌖'),arrow=node('span','choice-arrow');
+  const value=node('span','choice-value'),mark=node('span','choice-mark',id==='business'?'▦':''),arrow=node('span','choice-arrow');
+  mark.hidden=id!=='business';
   mark.setAttribute('aria-hidden','true');arrow.setAttribute('aria-hidden','true');
   value.id=`${id}-value`;
   trigger.setAttribute('aria-labelledby',`${label.id} ${value.id}`);
@@ -20,7 +22,7 @@ function enhance(select) {
   select.before(wrapper);wrapper.append(select,trigger);document.body.append(menu);
   label.htmlFor=trigger.id;
   if(select.dataset.testid){trigger.dataset.testid=select.dataset.testid;delete select.dataset.testid;}
-  let opened=false,options=[],rows=[],active=-1,query='',typedAt=0,anchorTop=0;
+  let opened=false,options=[],rows=[],active=-1,query='',typedAt=0,scrollPositions=new Map();
 
   function close(focus=false,animate=true) {
     if(!opened)return;
@@ -49,10 +51,13 @@ function enhance(select) {
     const description=select.getAttribute('aria-describedby');
     if(description)trigger.setAttribute('aria-describedby',description);
     else trigger.removeAttribute('aria-describedby');
+    if(id==='business')mark.replaceChildren(icon(businessIcon(select.value)));
     value.textContent=select.selectedOptions[0]?.textContent||'Выберите вариант';
     options=[...select.options].filter(option=>!option.hidden);
     rows=options.map((option,index)=>{
-      const row=node('div','choice-option'),symbol=node('span','choice-option-mark',id==='business'?option.textContent.trim()[0]:'⌖'),check=node('span','choice-check','✓');
+      const row=node('div','choice-option'),symbol=node('span','choice-option-mark',id==='business'?option.textContent.trim()[0]:''),check=node('span','choice-check','✓');
+      symbol.hidden=id!=='business';
+      if(id==='business')symbol.replaceChildren(icon(businessIcon(option.value)));
       row.id=`${id}-option-${index}`;row.dataset.index=index;row.setAttribute('role','option');
       row.setAttribute('aria-selected',String(option.value===select.value));
       if(option.disabled)row.setAttribute('aria-disabled','true');
@@ -73,12 +78,13 @@ function enhance(select) {
     window.scrollTo({left:scrollX,top:scrollY,behavior:'instant'});
     const rect=trigger.getBoundingClientRect(),preferred=parseFloat(getComputedStyle(menu).getPropertyValue('--size-choice-menu'))||256;
     const width=Math.min(Math.max(rect.width,preferred),innerWidth-32);
-    anchorTop=rect.top;
     const below=innerHeight-rect.bottom-16,above=rect.top-16,down=below>=240||below>=above;
     const available=Math.max(0,Math.min(320,down?below:above));
     if(available<44)return;
     Object.assign(menu.style,{width:`${width}px`,left:`${Math.max(16,Math.min(rect.left,innerWidth-width-16))}px`,maxHeight:`${available}px`,top:down?`${rect.bottom+8}px`:'auto',bottom:down?'auto':`${innerHeight-rect.top+8}px`});
     menu.hidden=false;opened=true;current=controller;query='';
+    scrollPositions=new Map([[document.scrollingElement,[scrollX,scrollY]]]);
+    for(let parent=trigger.parentElement;parent;parent=parent.parentElement)scrollPositions.set(parent,[parent.scrollLeft,parent.scrollTop]);
     trigger.setAttribute('aria-expanded','true');
     setActive(Math.max(0,options.findIndex(option=>option.value===select.value&&!option.disabled)));
     animateUI(menu,[{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}],'choice-open',{duration:'base',easing:'emphasized'});
@@ -97,10 +103,20 @@ function enhance(select) {
       animateUI(value,[{opacity:.35,transform:'translateY(3px)'},{opacity:1,transform:'translateY(0)'}],'choice-value',{duration:'fast'});
     }
   }
+  // WebKit focuses the dialog on mouse down instead of its button. Keep focus
+  // on the combobox so focusout cannot close it before the toggle click arrives.
+  const trackTouchFocus = event => {
+    trigger.toggleAttribute('data-touch-focus', event.pointerType === 'touch');
+  };
+  trigger.addEventListener('pointerdown',trackTouchFocus);
+  menu.addEventListener('pointerdown',trackTouchFocus);
+  trigger.addEventListener('blur',()=>trigger.removeAttribute('data-touch-focus'));
+  trigger.addEventListener('mousedown',event=>{event.preventDefault();trigger.focus({preventScroll:true});});
   trigger.addEventListener('click',()=>opened?close():open());
   trigger.addEventListener('keydown',event=>{
+    trigger.removeAttribute('data-touch-focus');
     const key=event.key,enabled=options.map((option,index)=>option.disabled?-1:index).filter(index=>index>=0);
-    if(key==='Tab'){if(opened)choose(active,false);return;}
+    if(key==='Tab'){close(false,false);return;}
     if(key==='Escape'){if(opened){event.preventDefault();close(true);}return;}
     if(['ArrowDown','ArrowUp','Home','End','PageDown','PageUp','Enter',' '].includes(key)){
       event.preventDefault();const wasOpen=opened;open();if(!opened||!enabled.length)return;
@@ -129,12 +145,17 @@ function enhance(select) {
   // Совместимое событие мыши после касания не должно уводить фокус из combobox.
   // Само касание не отменяется: длинный список остаётся прокручиваемым.
   menu.addEventListener('mousedown',event=>event.preventDefault());
-  menu.addEventListener('pointermove',event=>{const row=event.target.closest('.choice-option');if(row&&options[+row.dataset.index]&&!options[+row.dataset.index].disabled)setActive(+row.dataset.index);});
+  menu.addEventListener('pointermove',event=>{if(event.pointerType!=='mouse')return;const row=event.target.closest('.choice-option');if(row&&options[+row.dataset.index]&&!options[+row.dataset.index].disabled)setActive(+row.dataset.index);});
   menu.addEventListener('click',event=>{const row=event.target.closest('.choice-option');if(row)choose(+row.dataset.index);});
   document.addEventListener('pointerdown',event=>{if(opened&&!trigger.contains(event.target)&&!menu.contains(event.target))close();});
   document.addEventListener('focusin',event=>{if(opened&&!trigger.contains(event.target)&&!menu.contains(event.target))close();});
   document.addEventListener('change',event=>{if(opened&&event.target!==select)close();});
-  window.addEventListener('scroll',event=>{if(opened&&!menu.contains(event.target)&&Math.abs(trigger.getBoundingClientRect().top-anchorTop)>1)close(false,false);},true);
+  window.addEventListener('scroll',event=>{
+    if(!opened||(event.target instanceof Node&&menu.contains(event.target)))return;
+    const target=event.target===document?document.scrollingElement:event.target,previous=scrollPositions.get(target);
+    if(event.isTrusted&&previous&&target.scrollLeft===previous[0]&&target.scrollTop===previous[1])return;
+    close(false,false);
+  },true);
   window.addEventListener('resize',()=>close(false,false));
   window.addEventListener('beforeprint',()=>close(false,false));
   matchMedia('print').addEventListener('change',event=>{if(event.matches)close(false,false);});

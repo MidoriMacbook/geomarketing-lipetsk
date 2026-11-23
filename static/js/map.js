@@ -1,10 +1,16 @@
 import { state } from './state.js';
+import {createMapInspector} from './map-inspector.js';
+import {createSelectionLayer} from './map-selection.js';
+import {createMapComparison} from './map-comparison.js';
 import { $, fmt, node, animateUI, cancelUI, setRevealed, motionReduced, reveal } from './ui.js';
 
 let map = null, tiles = null, tileTimer = null, tileFailures = 0;
 let pointsRenderer = null, zonesRenderer = null;
+let accessPalette=null,focusDuration=400;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
-let emphasized = new Set(), previewRank = null;
+let emphasized = new Set(), previewRank = null, houseData = [];
+let viewportRank=null, viewportTimer=null,inspector=null,selection=null,comparison=null,choosingCenter=false;
+let manualViewport=false;
 const layers = {}, markers = new Map();
 const token = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const color = role => token(`--color-map-${role}`);
@@ -40,11 +46,13 @@ export function initMap() {
   map = L.map('map', {
     zoomControl: false
   }).setView([52.6088, 39.5992], 12);
+  accessPalette={line:token('--palette-rosewood-deep'),fill:token('--palette-pink')};focusDuration=parseFloat(token('--motion-map-focus'))||400;
+  map.attributionControl.setPrefix(false);
   L.control.zoom({
     position: 'topright'
   }).addTo(map);
   tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+    attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">участники OpenStreetMap</a>',
     maxZoom: 19
   });
   tiles.on('loading', () => {
@@ -67,6 +75,9 @@ export function initMap() {
   });
   map.createPane('zones');
   map.getPane('zones').style.zIndex = token('--z-zones');
+  map.createPane('accessibility');
+  map.getPane('accessibility').style.zIndex = '410';
+  map.getPane('accessibility').style.pointerEvents = 'none';
   map.createPane('points');
   map.getPane('points').style.zIndex = token('--z-points');
   ['houses','competitors','centroids'].forEach((key,index)=>{
@@ -86,11 +97,40 @@ export function initMap() {
   zonesRenderer = L.canvas({
     pane: 'zones'
   });
-  ['zones', 'houses', 'competitors', 'centroids', 'recommendations', 'boundary', 'preview'].forEach(key => {
+  ['zones', 'houses', 'competitors', 'centroids', 'recommendations', 'boundary', 'preview', 'accessibility'].forEach(key => {
     layers[key] = L.layerGroup().addTo(map);
   });
+  map.on('zoomend', drawHouses);
+  document.addEventListener('gm:sheet-position',event=>{
+    if(event.detail.active&&event.detail.snap==='peek'&&viewportRank===null)requestAnimationFrame(()=>{if(!manualViewport)fitMobilePlaces();});
+  });
+  document.addEventListener('gm:show-place',event=>{
+    viewportRank=event.detail.rank;manualViewport=false;schedulePlaceFrame();
+  });
+  document.addEventListener('gm:pin-selected',event=>{
+    viewportRank=event.detail.rank;
+  });
+  // После естественной прокрутки и остановки панели известна видимая часть карты.
+  window.addEventListener('scroll',schedulePlaceFrame,{passive:true});
+  document.addEventListener('gm:analysis-rendered',()=>{viewportRank=null;manualViewport=false;clearTimeout(viewportTimer);});
+  map.getContainer().addEventListener('pointerdown',event=>{
+    if(event.target.closest('.leaflet-popup,.leaflet-control-attribution'))return;
+    // Жест на карте получает приоритет перед отложенным кадрированием листа.
+    manualViewport=true;
+    clearTimeout(viewportTimer);
+  },{passive:true});
+  const motionObserver=new IntersectionObserver(([entry])=>{map.getContainer().dataset.motionVisible=String(entry.isIntersecting);});
+  motionObserver.observe(map.getContainer());
+  document.querySelectorAll('[data-layer-key]').forEach(button=>button.addEventListener('click',()=>{
+    const input=$('layer-'+button.dataset.layerKey);input.checked=!input.checked;input.dispatchEvent(new Event('change',{bubbles:true}));
+  }));
+  selection=createSelectionLayer(map);
+  inspector=createMapInspector(map,{selectPoint:rec=>{if(comparison?.isOpen())comparison.clear();drawAccessCircle(rec);selection.select(rec);},selectRecommendation:rec=>selectPlace(rec.rank,false)});
+  comparison=createMapComparison(map,{onOpen:()=>{clearTimeout(viewportTimer);inspector.close();selection.select(null);layers.accessibility.clearLayers();},onClose:()=>drawAccessRadius(state.selectedRank)});
+  document.addEventListener('gm:choose-center',()=>{choosingCenter=true;});
+  document.getElementById('district').addEventListener('change',()=>{choosingCenter=$('district').value==='custom';});
   map.on('click', e => {
-    if ($('district').value !== 'custom') return;
+    if ($('district').value !== 'custom'||(!choosingCenter&&state.current)) {inspector.inspect(e.latlng);return;}
     resetSelection();
     state.customPoint = [e.latlng.lat, e.latlng.lng];
     $('custom-hint').textContent = `Центр выбран: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}. Нажмите «Найти места».`;
@@ -99,6 +139,7 @@ export function initMap() {
   });
   let resizeFrame = null, lastWidth = 0, lastHeight = 0;
   const resizeMap = () => {
+    if(document.documentElement.dataset.sheetGesture==='true')return;
     if (resizeFrame !== null) return;
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = null;
@@ -111,6 +152,10 @@ export function initMap() {
   };
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resizeMap).observe(map.getContainer());
   window.addEventListener('resize', resizeMap);
+  document.addEventListener('gm:sheet-settled',()=>{
+    map.invalidateSize({pan:true,animate:false,debounceMoveend:true});
+    schedulePlaceFrame();
+  });
   matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
     if (event.matches) { map.stop(); syncMapLayers(false); }
   });
@@ -162,6 +207,7 @@ export function iconFor(rank, selected) {
 
 export function drawMap(data) {
   if (!map)return;
+  choosingCenter=false;inspector.setData(data);selection.setData(data);comparison.setData(data);
   Object.entries(layers).forEach(([key, layer]) => {
     if (key !== 'preview')layer.clearLayers();
   });
@@ -178,55 +224,114 @@ export function drawMap(data) {
     dashArray: '4 6',
     fill: false
   }).addTo(layers.boundary);
-  data.houses.forEach(h => L.circleMarker([h.lat, h.lng], {
-    renderer: dataRenderers.houses,
-    radius: 2.5+Math.sqrt(h.residents)/6,
-    color: palette.outline,
-    weight: 1,
-    fillColor: palette.house,
-    fillOpacity: .78
-  }).bindTooltip(`Жителей: ≈ ${fmt(h.residents)}`).addTo(layers.houses));
+  houseData=data.houses;drawHouses();
   data.competitors.forEach(c => L.circleMarker([c.lat, c.lng], {
     renderer: dataRenderers.competitors,
-    radius: 6,
+    radius: 5,
     color: palette['competitor-outline'],
     weight: 2,
     fillColor: palette.competitor,
     fillOpacity: 1
   }).bindTooltip('Конкурент').addTo(layers.competitors));
-  data.centroids.forEach(c => L.circleMarker([c.lat, c.lng], {
-    renderer: dataRenderers.centroids,
-    radius: 9,
-    color: palette.centroid,
-    weight: 3,
-    fill: false,
-    dashArray: '3 2'
-  }).bindTooltip(`Скопление: ≈ ${fmt(c.residents)} жителей`).addTo(layers.centroids));
+  data.centroids.forEach((c,index)=>{
+    const marker=L.marker([c.lat,c.lng],{pane:'centroids',icon:L.divIcon({className:'demand-center',html:'<span aria-hidden="true"></span>',iconSize:[44,44],iconAnchor:[-18,22]}),alt:`Центр спроса ${index+1}`})
+      .bindTooltip(`Центр спроса: ≈ ${fmt(c.residents)} жителей`).addTo(layers.centroids);
+    const open=()=>inspector.openDemand(c,index);marker.on('click',open);
+    const element=marker.getElement();element.setAttribute('role','button');element.setAttribute('aria-label',`Центр спроса ${index+1}`);
+    element.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();open();}});
+  });
   data.recommendations.forEach(r => {
     const marker = L.marker([r.lat, r.lng], {
       icon: iconFor(r.rank,
       r.rank === state.selectedRank),
+      zIndexOffset:r.rank===state.selectedRank?1000:0,
       title: `Рекомендация ${r.rank}`,
-      alt: `Место ${r.rank}`
+      alt: `Место ${r.rank}, оценка ${Math.round(r.score*100)} из 100`
     }).bindTooltip(`Место ${r.rank}`, {
       direction: 'top',
       offset: [0,
       -12]
     }).addTo(layers.recommendations);
-    marker.on('click', () => selectPlace(r.rank, false));
+    marker.on('click', () => {
+      marker.closeTooltip();
+      selectPlace(r.rank, false);
+      document.dispatchEvent(new CustomEvent('gm:pin-selected',{detail:{rank:r.rank}}));
+      inspector.openPlace(r);
+    });
     markers.set(r.rank, marker);
+    const element=marker.getElement();element.setAttribute('role','button');element.setAttribute('aria-label',`Место ${r.rank}, оценка ${Math.round(r.score*100)} из 100`);
+    const preview=active=>{
+      hoverPlace(r.rank,active);
+      document.querySelector(`#recommendation-list [data-rank="${r.rank}"]`)?.classList.toggle('is-preview',active);
+    };
+    element.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse')preview(true);});
+    element.addEventListener('pointerleave',()=>preview(false));
+    element.addEventListener('focus',()=>preview(true));element.addEventListener('blur',()=>preview(false));
+    element.addEventListener('keydown',event=>{if(event.key===' '||event.key==='Enter'){event.preventDefault();event.stopPropagation();marker.fire('click');}});
   });
+  drawAccessRadius(state.selectedRank);
   animateUI(map.getPane('points'), [{ opacity: .3 }, { opacity: 1 }], 'map-points');
   syncMapLayers(false);
 }
+// Экранная сетка — только представление суммы жителей, исходные дома не меняются.
+function drawHouses() {
+  if(!map)return;
+  layers.houses.clearLayers();
+  const zoom=map.getZoom(), palette=readPalette(['house']);
+  const options={renderer:dataRenderers.houses,stroke:false,fillColor:palette.house,fillOpacity:.42};
+  if(zoom<=13){
+    const cells=new Map(),cellSize=24;
+    for(const house of houseData){
+      const point=map.project([house.lat,house.lng],zoom),x=Math.floor(point.x/cellSize),y=Math.floor(point.y/cellSize),key=x+':'+y;
+      const cell=cells.get(key)||{x,y,residents:0,count:0};cell.residents+=house.residents;cell.count++;cells.set(key,cell);
+    }
+    const max=Math.max(1,...[...cells.values()].map(c=>c.residents));
+    for(const cell of cells.values()){
+      const a=map.unproject([cell.x*cellSize,cell.y*cellSize],zoom),b=map.unproject([(cell.x+1)*cellSize,(cell.y+1)*cellSize],zoom);
+      L.rectangle([a,b],{...options,fillOpacity:.12+.28*Math.sqrt(cell.residents/max)})
+        .bindTooltip(`Группа домов: ${fmt(cell.count)} · жителей ≈ ${fmt(cell.residents)}`).addTo(layers.houses);
+    }
+    map.getContainer().dataset.housesView='grid';
+  }else{
+    for(const house of houseData){
+      const radius=Math.min(zoom<=14?3:5,2+Math.sqrt(house.residents)/80*Math.max(1,zoom-13));
+      L.circleMarker([house.lat,house.lng],{...options,radius})
+        .bindTooltip(`Жителей: ≈ ${fmt(house.residents)}`).addTo(layers.houses);
+    }
+    map.getContainer().dataset.housesView='points';
+  }
+}
+function drawAccessRadius(rank){
+  const rec=state.current?.recommendations.find(r=>r.rank===rank);
+  drawAccessCircle(rec);selection?.select(rec);
+}
+function drawAccessCircle(rec){
+  if(!map)return;
+  layers.accessibility.clearLayers();
+  if(!rec)return;
+  L.circle([rec.lat,rec.lng],{pane:'accessibility',radius:rec.radius_m,interactive:false,
+    color:accessPalette.line,weight:2,opacity:.7,fillColor:accessPalette.fill,fillOpacity:.1,dashArray:'6 5'}).addTo(layers.accessibility);
+}
+
 const mix = (a, b, t) => '#'+[1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i+2), 16)+(parseInt(b.slice(i, i+2), 16)-parseInt(a.slice(i, i+2), 16))*t).toString(16).padStart(2, '0')).join('');
+let zoneSnapshot=null;
 
 export function drawZones() {
   if (!map)return;
+  // cancelUI синхронно вызывает cleanup; не обращаемся затем к сброшенной ссылке.
+  const previous=zoneSnapshot;
+  if(previous){zoneSnapshot=null;cancelUI(previous);previous.remove();}
+  const oldCanvas=map.getPane('zones').querySelector('canvas');
+  if(oldCanvas&&!motionReduced()&&state.current){
+    const snapshot=oldCanvas.cloneNode();snapshot.getContext('2d').drawImage(oldCanvas,0,0);
+    snapshot.style.pointerEvents='none';snapshot.setAttribute('aria-hidden','true');
+    oldCanvas.after(snapshot);zoneSnapshot=snapshot;
+    animateUI(snapshot,[{opacity:1},{opacity:0}],'zone-crossfade',{duration:'base',cleanup:()=>{snapshot.remove();if(zoneSnapshot===snapshot)zoneSnapshot=null;}});
+  }
   layers.zones.clearLayers();
   if (!state.current||!state.current.grid)return;
   const g = state.current.grid, threshold = +$('thr').value/100, dLat = (g.lat_max-g.lat_min)/(g.n-1), dLng = (g.lng_max-g.lng_min)/(g.n-1), renderer = zonesRenderer;
-  const palette = readPalette(['zone-low', 'zone-high']);
+  const palette = readPalette(['zone-low', 'zone-mid', 'zone-high']);
   g.scores.forEach((score, i) => {
     if (score<threshold)return;
     const t = Math.max(0, Math.min(1, (score-threshold)/(1-threshold))), lat = g.lat_min+Math.floor(i/g.n)*dLat, lng = g.lng_min+(i%g.n)*dLng;
@@ -234,16 +339,16 @@ export function drawZones() {
       renderer,
       stroke: false,
       interactive: false,
-      fillColor: mix(palette['zone-low'], palette['zone-high'], t),
-      fillOpacity: .18+.24*t
+      fillColor: t<.5?mix(palette['zone-low'],palette['zone-mid'],t*2):mix(palette['zone-mid'],palette['zone-high'],(t-.5)*2),
+      fillOpacity: .32+.28*t
     }).addTo(layers.zones);
   });
-  animateUI(map.getPane('zones'), [{ opacity: .25 }, { opacity: 1 }], 'map-zones');
   syncMapLayers(false);
 }
 
 export function fitArea(data) {
   if (!map)return;
+  if(matchMedia('(max-width:600px)').matches&&data.recommendations?.length){fitMobilePlaces(data);return;}
   const [lat, lng] = data.center, dLat = data.half_m/111000, dLng = data.half_m/(111000*Math.cos(lat*Math.PI/180));
   map.fitBounds([[lat-dLat, lng-dLng], [lat+dLat, lng+dLng]], {
     padding: [25,
@@ -252,8 +357,41 @@ export function fitArea(data) {
   });
 }
 
+function visiblePadding(){
+  const rect=map.getContainer().getBoundingClientRect(),sheet=$('recommendations');
+  const header=$('site-header').getBoundingClientRect().bottom;
+  const sheetTop=sheet.dataset.sheetActive==='true'?innerHeight-parseFloat(sheet.style.getPropertyValue('--sheet-visible')||'0'):innerHeight;
+  const top=Math.max(28,header-rect.top+24);
+  const bottom=Math.max(28,rect.bottom-sheetTop+28);
+  // При полностью раскрытом списке карту не перекадрируем.
+  return {top,bottom,usable:rect.height-top-bottom};
+}
+function fitMobilePlaces(data=state.current){
+  if(!map||!matchMedia('(max-width:600px)').matches||!data?.recommendations?.length)return;
+  const {top,bottom,usable}=visiblePadding();
+  if(usable<40)return;
+  map.fitBounds(data.recommendations.map(r=>[r.lat,r.lng]),{paddingTopLeft:[36,top],paddingBottomRight:[68,bottom],maxZoom:16,animate:false});
+}
+function centerVisiblePlace(rank){
+  if(!map)return;
+  const rec=state.current?.recommendations.find(r=>r.rank===rank);if(!rec)return;
+  const {top,bottom,usable}=visiblePadding();if(usable<100)return;
+  const bounds=L.latLng(rec.lat,rec.lng).toBounds(rec.radius_m*2);
+  map.flyToBounds(bounds,{paddingTopLeft:[28,top],paddingBottomRight:[62,bottom],maxZoom:16,animate:!motionReduced(),duration:.45});
+}
+function schedulePlaceFrame(){
+  if(!matchMedia('(max-width:600px)').matches||manualViewport)return;
+  clearTimeout(viewportTimer);viewportTimer=setTimeout(()=>{
+    if(document.documentElement.dataset.sheetGesture==='true'||inspector?.isOpen()||comparison?.isOpen())return;
+    if(viewportRank===null)fitMobilePlaces();else centerVisiblePlace(viewportRank);
+  },160);
+}
+
 export function clearAnalysisMap() {
-  emphasized=new Set();previewRank=null;
+  inspector?.setData(null);
+  selection?.setData(null);
+  comparison?.setData(null);
+  emphasized=new Set();previewRank=null;houseData=[];
   Object.keys(layerTimers).forEach(key=>{clearTimeout(layerTimers[key]);layerRevisions[key]=(layerRevisions[key]||0)+1;});
   markers.clear();
   Object.entries(layers).forEach(([key, layer]) => {
@@ -270,17 +408,19 @@ export function selectMarker(rank, pan, changed = false) {
   previewRank=null;
   markers.forEach((marker, r) => {
     const pin = marker.getElement()?.querySelector('.recommendation-pin');
+    marker.setZIndexOffset(r===rank?1000:0);
     pin?.classList.toggle('is-selected', r === rank);
     pin?.classList.remove('is-preview');
     if (r !== rank) cancelUI(pin);
   });
+  drawAccessRadius(rank);
   if (changed) {
     const pin = markers.get(rank)?.getElement()?.querySelector('.recommendation-pin');
     animateUI(pin, [{ transform: 'scale(1)' }, { transform: 'scale(var(--motion-pulse-scale))', offset: .45 }, { transform: 'scale(1)' }], 'marker-pulse', { duration: 420, easing: 'spring' });
   }
   const rec = state.current?.recommendations.find(r => r.rank === rank);
   if (map&&rec&&pan) map.panTo([rec.lat, rec.lng], {
-    animate: !motionReduced()
+    animate: !motionReduced(),duration:.5,easeLinearity:.25
   });
   syncMapLayers();
 }
@@ -309,13 +449,16 @@ function syncLegend() {
   if(previewRank || (!active.size && state.current?.recommendations?.length))active.add('places');
   document.querySelectorAll('.map-legend>[data-layer]').forEach(item=>{
     const selected=active.has(item.dataset.layer);item.dataset.active=String(selected);
+    const key=item.dataset.layerKey, enabled=preferences[key]!==false||emphasized.has(key);
+    item.setAttribute('aria-pressed',String(enabled));
+    const label=item.querySelector('.layer-state');if(label)label.textContent=enabled?'вкл':'выкл';
     if(selected)item.setAttribute('aria-current','true');else item.removeAttribute('aria-current');
   });
 }
 
 function syncMapLayers(animate=true) {
   syncLegend();if(!map)return;
-  const duration=animate&&!motionReduced()?parseFloat(token('--motion-map-focus'))||400:0;
+  const duration=animate&&!motionReduced()?focusDuration:0;
   ['houses','competitors','centroids','zones','recommendations'].forEach(key=>{
     const pane=map.getPane(key==='recommendations'?'markerPane':key),layer=layers[key];
     if(!layer)return;

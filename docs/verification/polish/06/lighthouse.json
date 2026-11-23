@@ -1,0 +1,322 @@
+[
+  {
+    "run": 1,
+    "date": "2026-11-12T03:54:21.442Z",
+    "url": "https://geomarketing-lipetsk-redesign.onrender.com/",
+    "lighthouse": "13.6.0",
+    "lcp_ms": 1362.6600000000003,
+    "cls": 0.00002688718251632802,
+    "tbt_ms": 31,
+    "performance": 100,
+    "accessibility": 100,
+    "bytes": 677198,
+    "settings": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "viewport": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "shifts": {
+      "type": "table",
+      "headings": [
+        {
+          "key": "node",
+          "valueType": "node",
+          "subItemsHeading": {
+            "key": "extra"
+          },
+          "label": "Element"
+        },
+        {
+          "key": "score",
+          "valueType": "numeric",
+          "subItemsHeading": {
+            "key": "cause",
+            "valueType": "text"
+          },
+          "granularity": 0.001,
+          "label": "Layout shift score"
+        }
+      ],
+      "items": [
+        {
+          "node": {
+            "type": "node",
+            "lhId": "page-1-SPAN",
+            "path": "1,HTML,1,BODY,5,MAIN,2,DIV,0,DIV,0,BUTTON,0,SPAN",
+            "selector": "div#workspace > div#mobile-settings-bar > button#mobile-settings-open > span.mobile-settings-label",
+            "boundingRect": {
+              "top": 705,
+              "bottom": 725,
+              "left": 317,
+              "right": 381,
+              "width": 64,
+              "height": 20
+            },
+            "snippet": "<span class=\"mobile-settings-label\">",
+            "nodeLabel": "Изменить"
+          },
+          "score": 0.00002688718251632802
+        }
+      ]
+    },
+    "failedAccessibility": []
+  },
+  {
+    "run": 2,
+    "date": "2026-11-12T03:54:34.977Z",
+    "url": "https://geomarketing-lipetsk-redesign.onrender.com/",
+    "lighthouse": "13.6.0",
+    "lcp_ms": 1302.716,
+    "cls": 0,
+    "tbt_ms": 45,
+    "performance": 100,
+    "accessibility": 100,
+    "bytes": 677351,
+    "settings": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "viewport": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "shifts": {
+      "type": "table",
+      "headings": [
+        {
+          "key": "node",
+          "valueType": "node",
+          "subItemsHeading": {
+            "key": "extra"
+          },
+          "label": "Element"
+        },
+        {
+          "key": "score",
+          "valueType": "numeric",
+          "subItemsHeading": {
+            "key": "cause",
+            "valueType": "text"
+          },
+          "granularity": 0.001,
+          "label": "Layout shift score"
+        }
+      ],
+      "items": []
+    },
+    "failedAccessibility": []
+  },
+  {
+    "run": 3,
+    "date": "2026-11-12T03:54:48.454Z",
+    "url": "https://geomarketing-lipetsk-redesign.onrender.com/",
+    "lighthouse": "13.6.0",
+    "lcp_ms": 1291.8049999999998,
+    "cls": 0,
+    "tbt_ms": 23,
+    "performance": 100,
+    "accessibility": 100,
+    "bytes": 677217,
+    "settings": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "viewport": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "shifts": {
+      "type": "table",
+      "headings": [
+        {
+          "key": "node",
+          "valueType": "node",
+          "subItemsHeading": {
+            "key": "extra"
+          },
+          "label": "Element"
+        },
+        {
+          "key": "score",
+          "valueType": "numeric",
+          "subItemsHeading": {
+            "key": "cause",
+            "valueType": "text"
+          },
+          "granularity": 0.001,
+          "label": "Layout shift score"
+        }
+      ],
+      "items": []
+    },
+    "failedAccessibility": []
+  },
+  {
+    "run": 4,
+    "date": "2026-11-12T03:55:01.933Z",
+    "url": "https://geomarketing-lipetsk-redesign.onrender.com/",
+    "lighthouse": "13.6.0",
+    "lcp_ms": 1200.596,
+    "cls": 0.00002688718251632802,
+    "tbt_ms": 30,
+    "performance": 100,
+    "accessibility": 100,
+    "bytes": 677177,
+    "settings": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "viewport": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "shifts": {
+      "type": "table",
+      "headings": [
+        {
+          "key": "node",
+          "valueType": "node",
+          "subItemsHeading": {
+            "key": "extra"
+          },
+          "label": "Element"
+        },
+        {
+          "key": "score",
+          "valueType": "numeric",
+          "subItemsHeading": {
+            "key": "cause",
+            "valueType": "text"
+          },
+          "granularity": 0.001,
+          "label": "Layout shift score"
+        }
+      ],
+      "items": [
+        {
+          "node": {
+            "type": "node",
+            "lhId": "page-1-SPAN",
+            "path": "1,HTML,1,BODY,5,MAIN,2,DIV,0,DIV,0,BUTTON,0,SPAN",
+            "selector": "div#workspace > div#mobile-settings-bar > button#mobile-settings-open > span.mobile-settings-label",
+            "boundingRect": {
+              "top": 705,
+              "bottom": 725,
+              "left": 317,
+              "right": 381,
+              "width": 64,
+              "height": 20
+            },
+            "snippet": "<span class=\"mobile-settings-label\">",
+            "nodeLabel": "Изменить"
+          },
+          "score": 0.00002688718251632802
+        }
+      ]
+    },
+    "failedAccessibility": []
+  },
+  {
+    "run": 5,
+    "date": "2026-11-12T03:55:15.653Z",
+    "url": "https://geomarketing-lipetsk-redesign.onrender.com/",
+    "lighthouse": "13.6.0",
+    "lcp_ms": 1161.009,
+    "cls": 0.00002688718251632802,
+    "tbt_ms": 30,
+    "performance": 100,
+    "accessibility": 100,
+    "bytes": 677166,
+    "settings": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "viewport": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "shifts": {
+      "type": "table",
+      "headings": [
+        {
+          "key": "node",
+          "valueType": "node",
+          "subItemsHeading": {
+            "key": "extra"
+          },
+          "label": "Element"
+        },
+        {
+          "key": "score",
+          "valueType": "numeric",
+          "subItemsHeading": {
+            "key": "cause",
+            "valueType": "text"
+          },
+          "granularity": 0.001,
+          "label": "Layout shift score"
+        }
+      ],
+      "items": [
+        {
+          "node": {
+            "type": "node",
+            "lhId": "page-1-SPAN",
+            "path": "1,HTML,1,BODY,5,MAIN,2,DIV,0,DIV,0,BUTTON,0,SPAN",
+            "selector": "div#workspace > div#mobile-settings-bar > button#mobile-settings-open > span.mobile-settings-label",
+            "boundingRect": {
+              "top": 705,
+              "bottom": 725,
+              "left": 317,
+              "right": 381,
+              "width": 64,
+              "height": 20
+            },
+            "snippet": "<span class=\"mobile-settings-label\">",
+            "nodeLabel": "Изменить"
+          },
+          "score": 0.00002688718251632802
+        }
+      ]
+    },
+    "failedAccessibility": []
+  }
+]

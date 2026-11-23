@@ -36,6 +36,23 @@ beforeEach(() => {
 });
 const code = expected => error => error.code === expected;
 
+test('откат читает архив версии 2 и сохраняет поправки при изменении заметки', async () => {
+  const record = fixture();
+  record.analysis.correction_context = {
+    version: 1, base_competitors: [],
+    applied: { added: [{ id: 'manual-a', lat: 52.6, lng: 39.501 }], removed: [] },
+    counts: { added: 1, removed: 0 },
+  };
+  const raw = JSON.stringify({ schema_version: 2, scenarios: [record] });
+  records.set(SCENARIO_KEY, raw);
+  assert.deepEqual(readScenarios(), [record]);
+  assert.equal(records.get(SCENARIO_KEY), raw);
+  await mutateScenarios(items => items.map(item => ({ ...item, note: 'Проверено после отката' })));
+  assert.deepEqual(JSON.parse(records.get(SCENARIO_KEY)), {
+    schema_version: 2, scenarios: [{ ...record, note: 'Проверено после отката' }],
+  });
+});
+
 test('roundtrip and latest-read edit/delete do not alter separate saved places', async () => {
   assert.equal(SCENARIO_KEY, 'geomarketing.scenarios.v1');
   assert.equal(SCENARIO_LIMIT, 6);
@@ -69,6 +86,16 @@ test('valid old/new API snapshots and demo effective radius remain readable', ()
   const demo = enriched(); demo.analysis.source = 'demo'; demo.analysis.half_m = 600;
   demo.analysis.data_quality.source = 'demo'; demo.analysis.data_quality.freshness.status = 'demo'; demo.analysis.data_quality.freshness.oldest_data_at = null;
   assert.equal(validateScenario(demo), true);
+});
+
+test('кластерный отбор сохраняется в исследовании вместе со старым архивом',async()=>{
+ const old=fixture(),current=fixture(2);
+ Object.assign(current.analysis.recommendations[0],{selection_method:'cluster_maxima_v1',cluster_id:2,independent_zones:1,comparison_to_best:null});
+ current.analysis.best=clone(current.analysis.recommendations[0]);
+ await mutateScenarios(()=>[old,current]);
+ assert.deepEqual(readScenarios(),[old,current]);
+ assert.equal(readScenarios()[0].analysis.recommendations[0].selection_method,undefined);
+ assert.equal(readScenarios()[1].analysis.best.independent_zones,1);
 });
 
 const invalidCases = {
@@ -208,7 +235,7 @@ test('quota and blocked reads preserve original raw value and report unavailable
 });
 
 test('corrupt JSON, bad envelope, version and oversize retain original raw and block writes', async () => {
-  for (const [raw, expected] of [['{bad', 'invalid'], ['[]', 'invalid'], ['{"schema_version":2,"scenarios":[]}', 'unsupported'], [JSON.stringify({ schema_version: 1, scenarios: [fixture(), fixture()] }), 'invalid'], ['x'.repeat(1250001), 'invalid']]) {
+  for (const [raw, expected] of [['{bad', 'invalid'], ['[]', 'invalid'], ['{"schema_version":3,"scenarios":[]}', 'unsupported'], [JSON.stringify({ schema_version: 1, scenarios: [fixture(), fixture()] }), 'invalid'], ['x'.repeat(1250001), 'invalid']]) {
     records.set(SCENARIO_KEY, raw);
     assert.throws(readScenarios, error => error.code === expected && error.raw === raw);
     await assert.rejects(mutateScenarios(() => []), code(expected));
@@ -239,7 +266,7 @@ test('repair only removes exact still damaged raw under lock and preserves good/
   records.set(SCENARIO_KEY, '{new broken');
   await assert.rejects(clearDamagedScenarios('{old broken'), code('conflict'));
   assert.equal(records.get(SCENARIO_KEY), '{new broken');
-  records.set(SCENARIO_KEY, '{"schema_version":2,"scenarios":[]}');
+  records.set(SCENARIO_KEY, '{"schema_version":3,"scenarios":[]}');
   await clearDamagedScenarios(records.get(SCENARIO_KEY)); assert.equal(records.has(SCENARIO_KEY), false);
 });
 

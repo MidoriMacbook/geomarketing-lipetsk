@@ -37,7 +37,8 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(set(data['stats']), {'houses', 'residents', 'competitors'})
         self.assertEqual(set(data['grid']), {'n', 'lat_min', 'lat_max', 'lng_min', 'lng_max', 'scores'})
         recommendation_keys = {'rank', 'lat', 'lng', 'score', 'residents_in_radius',
-                               'radius_m', 'competitors_in_radius', 'nearest_competitor_m', 'explanation'}
+                               'radius_m', 'competitors_in_radius', 'nearest_competitor_m', 'explanation',
+                               'selection_method', 'cluster_id', 'independent_zones', 'comparison_to_best'}
         for item in data['recommendations'] + [data['best']]:
             self.assertEqual(set(item), recommendation_keys)
         for item in data['centroids'] + data['houses']:

@@ -1,0 +1,57 @@
+{
+  "conditions": "Lighthouse 13.6.0, Chrome, mobile simulated throttling, CPU ×4, localhost:5057, реальные данные OSM; пять последовательных прогонов без параллельных тестов",
+  "runs": [
+    {
+      "run": 1,
+      "performance": 95,
+      "accessibility": 98,
+      "lcpMs": 2135.1850414279875,
+      "cls": 0.078377131782461
+    },
+    {
+      "run": 2,
+      "performance": 95,
+      "accessibility": 98,
+      "lcpMs": 2119.3762,
+      "cls": 0.07824680576777829
+    },
+    {
+      "run": 3,
+      "performance": 94,
+      "accessibility": 98,
+      "lcpMs": 2124.5933867038407,
+      "cls": 0.078377131782461
+    },
+    {
+      "run": 4,
+      "performance": 93,
+      "accessibility": 98,
+      "lcpMs": 2121.9501022508657,
+      "cls": 0.078377131782461
+    },
+    {
+      "run": 5,
+      "performance": 95,
+      "accessibility": 98,
+      "lcpMs": 2114.179,
+      "cls": 0.08138502222337507
+    }
+  ],
+  "summary": {
+    "performance": {
+      "median": 95,
+      "min": 93,
+      "max": 95
+    },
+    "lcpMs": {
+      "median": 2121.9501022508657,
+      "min": 2114.179,
+      "max": 2135.1850414279875
+    },
+    "cls": {
+      "median": 0.078377131782461,
+      "min": 0.07824680576777829,
+      "max": 0.08138502222337507
+    }
+  }
+}

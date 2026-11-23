@@ -1,7 +1,17 @@
-export const SCORE_NOTE = 'Баллы сравнивают точки только внутри этого расчёта. Это не вероятность успеха.';
+export const SCORE_NOTE = 'Баллы сравнивают точки только внутри этого расчёта.';
+export function placeDifference(rec) {
+ const value=rec?.comparison_to_best;
+ if(rec?.selection_method!=='cluster_maxima_v1'||!value||!Number.isFinite(value.distance_m)||!Number.isInteger(value.shared_houses))return '';
+ const distance=Math.round(value.distance_m).toLocaleString('ru-RU');
+ const fraction=value.shared_residents_fraction;
+ const overlap=Number.isFinite(fraction)&&fraction>=0&&fraction<=1
+  ?fraction===0?'Общих жителей в радиусах нет':`Общих жителей с лучшим местом — ${(fraction*100).toLocaleString('ru-RU',{maximumFractionDigits:1})} %`
+  :'Доля общих жителей не оценена';
+ return `Расстояние до лучшего места — ${distance} м. ${overlap}.`;
+}
 export const OSM_LIMITATION = 'OpenStreetMap может быть неполной или устаревшей. Оценка жителей не является переписью населения.';
 export const scoreValue = value => Number.isFinite(value) && value >= 0 && value <= 1 ? Math.round(value * 100) : null;
-export const scoreText = value => scoreValue(value) === null ? 'Не оценено' : `${scoreValue(value)} из 100`;
+export const scoreText = value => scoreValue(value) === null ? 'Не оценено' : `${scoreValue(value)} из 100`;
 export function localTimestamp(value) {
  const date=value===null||value===undefined?null:new Date(value);
  return date&&Number.isFinite(date.getTime())?date.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'дата не указана';

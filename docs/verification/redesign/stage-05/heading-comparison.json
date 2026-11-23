@@ -1,0 +1,38 @@
+[
+  {
+    "width": 375,
+    "variant": "A",
+    "heroHeight": 511.84375,
+    "overflow": false
+  },
+  {
+    "width": 375,
+    "variant": "B",
+    "heroHeight": 511.84375,
+    "overflow": false
+  },
+  {
+    "width": 375,
+    "variant": "C",
+    "heroHeight": 511.84375,
+    "overflow": false
+  },
+  {
+    "width": 1440,
+    "variant": "A",
+    "heroHeight": 564.4375,
+    "overflow": false
+  },
+  {
+    "width": 1440,
+    "variant": "B",
+    "heroHeight": 564.4375,
+    "overflow": false
+  },
+  {
+    "width": 1440,
+    "variant": "C",
+    "heroHeight": 571.4375,
+    "overflow": false
+  }
+]

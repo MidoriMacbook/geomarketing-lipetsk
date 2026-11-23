@@ -1,0 +1,167 @@
+{
+  "open": [
+    {
+      "ms": 18,
+      "opacity": 0,
+      "y": -8,
+      "backdrop": 0,
+      "open": true
+    },
+    {
+      "ms": 20,
+      "opacity": 0,
+      "y": -8,
+      "backdrop": 0,
+      "open": true
+    },
+    {
+      "ms": 52,
+      "opacity": 0,
+      "y": -8,
+      "backdrop": 0,
+      "open": true
+    },
+    {
+      "ms": 67,
+      "opacity": 0.102133,
+      "y": -7.182932,
+      "backdrop": 0.102133,
+      "open": true
+    },
+    {
+      "ms": 146,
+      "opacity": 0.555799,
+      "y": -3.553605,
+      "backdrop": 0.555799,
+      "open": true
+    },
+    {
+      "ms": 219,
+      "opacity": 0.867206,
+      "y": -1.062351,
+      "backdrop": 0.867206,
+      "open": true
+    },
+    {
+      "ms": 279,
+      "opacity": 0.994771,
+      "y": -0.041831,
+      "backdrop": 0.994771,
+      "open": true
+    },
+    {
+      "ms": 355,
+      "opacity": 1,
+      "y": 0,
+      "backdrop": 1,
+      "open": true
+    },
+    {
+      "ms": 419,
+      "opacity": 1,
+      "y": 0,
+      "backdrop": 1,
+      "open": true
+    }
+  ],
+  "close": [
+    {
+      "ms": 0,
+      "opacity": 1,
+      "y": 0,
+      "backdrop": 1,
+      "open": true
+    },
+    {
+      "ms": 63,
+      "opacity": 0.732954,
+      "y": -2.136364,
+      "backdrop": 0.732954,
+      "open": true
+    },
+    {
+      "ms": 128,
+      "opacity": 0.19412,
+      "y": -6.447039,
+      "backdrop": 0.19412,
+      "open": true
+    },
+    {
+      "ms": 199,
+      "opacity": 0,
+      "y": -8,
+      "backdrop": 0,
+      "open": true
+    },
+    {
+      "ms": 238,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    },
+    {
+      "ms": 270,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    },
+    {
+      "ms": 299,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    },
+    {
+      "ms": 315,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    },
+    {
+      "ms": 332,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    },
+    {
+      "ms": 347,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    },
+    {
+      "ms": 363,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    },
+    {
+      "ms": 380,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    },
+    {
+      "ms": 394,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    },
+    {
+      "ms": 410,
+      "opacity": 0,
+      "y": 0,
+      "backdrop": 0,
+      "open": false
+    }
+  ]
+}

@@ -14,16 +14,19 @@ from waitress import serve
 from app import create_app
 from src.domain.models import LoadedData
 from src.services import analysis_service
+from src.utils.geo import to_latlng
 
 
 def controlled_load_data(area, business, refresh):
     """Строит одинаковые исходные данные относительно выбранного центра."""
     lat, lng = area['center']
-    offsets = [(0.0001, 0.0001, 600), (0.0002, 0.0003, 700),
-               (-0.0002, -0.0002, 800), (-0.0003, 0.0004, 900),
-               (0.0003, -0.0003, 1000), (0.0004, -0.0004, 1100)]
-    houses = np.array([[lat + dy, lng + dx, residents]
-                       for dy, dx, residents in offsets], dtype=float)
+    # Три реальные зоны спроса вместо шести домов в одном общем радиусе.
+    scale = min(1, area['radius'] / 1000)
+    offsets = [(-600, 0, 600), (-580, 20, 700),
+               (350, -600, 800), (370, -580, 900),
+               (350, 600, 1000), (330, 580, 1100)]
+    houses = np.array([[*to_latlng(np.array([x, y]) * scale, lat, lng), residents]
+                       for x, y, residents in offsets], dtype=float)
     competitors = np.array([[lat, lng + 0.0005], [lat + 0.001, lng]], dtype=float)
     fetched_at = datetime.now(timezone.utc).timestamp()
     metadata = {kind: {'cached': True, 'fetched_at': fetched_at,

@@ -1,8 +1,13 @@
 /* Базовые → смысловые → компонентные токены. Все литералы цветов находятся здесь. */
 :root {
+ --palette-linen:#F8EEDB; --palette-linen-line:#E6D8C0; --palette-misty-marker:#7F8FA3;
+ --palette-linen-muted:#5B6672; --palette-linen-rosewood:#8F4A53;
  --palette-cream:#FFF7E6; --palette-ink:#2D3A47;
  --palette-pink:#F7C8D3; --palette-rosewood:#B46A72; --palette-sage:#A8B58A;
  --palette-sky:#A9B7C6;
+ --palette-sky-soft:#E9EDF1; --palette-sky-deep:#667D92;
+ --palette-sage-light:#E1E6D4;
+ --tint-data:var(--palette-cream); --tint-analysis:var(--palette-sky-soft); --tint-decision:var(--palette-pink-soft);
  /* Контрастные оттенки получены из шести цветов исходной палитры. */
  --palette-rosewood-deep:#89434E; --palette-rosewood-hover:#71343F;
  --palette-ink-muted:#596470; --palette-border:rgb(45 58 71 / .57); --palette-line:rgb(45 58 71 / .14);
@@ -10,7 +15,8 @@
  --palette-warm-raised:#FEF2E2; --palette-warm-selected:#FAE9DE;
  --palette-sage-deep:#53623D; --palette-error:#8B303E; --palette-error-soft:#FBEAEC;
  --palette-map:#202A32; --palette-map-surface:#2D3A47; --palette-map-muted:#D3DCE2;
- --palette-map-line:#AFBDC8; --palette-map-zone-low:#657251; --palette-map-zone-high:#C3D09F;
+ --palette-map-line:#AFBDC8; --palette-map-zone-low:#A9B7C6; --palette-map-zone-mid:#D0A4AE; --palette-map-zone-high:#89434E;
+ --color-map-zone-mid:var(--palette-map-zone-mid);
  --color-page:var(--palette-cream); --color-surface:var(--palette-warm); --color-surface-muted:var(--palette-paper);
  --color-settings:var(--palette-paper); --color-saved:var(--palette-warm); --color-ink:var(--palette-ink);
  --color-settings-panel:var(--palette-warm);
@@ -26,14 +32,16 @@
  --color-panel-dark:var(--palette-map); --color-on-dark:var(--palette-cream); --color-muted-on-dark:var(--palette-map-muted);
  --color-line-on-dark:var(--palette-map-line); --color-primary:var(--palette-rosewood-deep); --color-primary-hover:var(--palette-rosewood-hover);
  --color-on-primary:var(--palette-cream); --color-accent:var(--palette-rosewood-deep); --color-signal:var(--color-accent);
- --color-selection-bg:var(--palette-pink); --color-selection-ink:var(--palette-ink);
+ --color-selection-bg:rgba(180,106,114,.23); --color-selection-ink:var(--palette-ink);
+ --color-scrollbar:rgb(180 106 114 / .4);
+ --color-information-bg:rgb(169 183 198 / .23);
  --color-featured:var(--palette-warm-selected); --color-selected:var(--palette-warm-selected);
  --color-recommendation:var(--palette-warm-raised); --color-recommendation-line:var(--palette-rosewood);
  --color-kpi-active:var(--palette-warm-selected); --color-opportunity:var(--palette-sage-deep);
  --color-error:var(--palette-error); --color-error-bg:var(--palette-error-soft); --color-notice-bg:var(--palette-sage-soft);
  --color-map-canvas:var(--palette-map); --color-map-primary:var(--palette-pink); --color-map-house:var(--palette-sky);
  --color-map-competitor:var(--palette-rosewood); --color-map-centroid:var(--palette-sage);
- --color-map-competitor-outline:var(--palette-pink);
+ --color-map-competitor-outline:var(--palette-cream);
  --color-map-zone-low:var(--palette-map-zone-low); --color-map-zone-high:var(--palette-map-zone-high);
  --color-map-outline:var(--palette-map); --color-map-surface:var(--palette-map-surface);
  --color-map-ink:var(--palette-cream); --color-map-muted:var(--palette-map-muted); --color-map-line:var(--palette-map-line);
@@ -45,16 +53,17 @@
  --color-hero-line:var(--palette-line); --color-hero-wash:var(--palette-pink-soft); --color-hero-paper:var(--palette-paper);
  --color-print-page:var(--palette-cream); --color-print-ink:var(--palette-ink); --color-print-muted:var(--palette-ink-muted);
  --color-print-settings:var(--palette-paper); --color-print-line:var(--palette-line);
- --map-tile-filter:grayscale(1) invert(.94) contrast(.85) brightness(1.15);
- --font-body:"Onest",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ --map-tile-filter:grayscale(.65) sepia(.18) saturate(.65) contrast(.92);
+ --font-body:"Golos Text","Golos Fallback",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
  --font-display:"Playfair Display",Georgia,"Times New Roman",serif;
  --font-mono:ui-monospace,"Cascadia Code",Consolas,monospace;
- --text-action:.875rem; --text-xs:.75rem; --text-sm:.8125rem; --text-base:1rem; --text-lg:1.125rem; --text-xl:1.375rem;
+ --text-action:.875rem; --text-xs:.8125rem; --text-sm:.8125rem; --text-base:1rem; --text-lg:1.125rem; --text-xl:1.375rem;
  --text-kpi:2.25rem; --text-kpi-primary:3.25rem; --text-title:clamp(3.5rem,5.2vw,5.5rem);
  --text-title-mobile:clamp(2.75rem,11vw,4rem);
- --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px;
+ --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px;
  --space-6:24px; --space-7:32px; --space-8:40px; --space-9:56px; --space-10:72px;
- --radius-control:6px; --radius-panel:10px; --radius-round:50%; --radius-pill:999px;
+ --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px; --radius-xxl:24px;
+ --radius-control:var(--radius-sm); --radius-panel:var(--radius-xl); --radius-round:50%; --radius-pill:var(--radius-xxl);
  --line:1px; --line-strong:2px; --focus-width:3px; --focus-offset:3px;
  --shadow-control:0 4px 16px var(--color-shadow-soft);
  --shadow-panel:0 2px 8px var(--color-shadow-soft); --shadow-dialog:0 28px 90px var(--color-shadow-strong);

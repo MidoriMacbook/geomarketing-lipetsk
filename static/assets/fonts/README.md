@@ -14,4 +14,9 @@ The UI uses font-display: swap and system fallbacks. No runtime external font re
 Onest (variable100–900, normal) используется для интерфейса с24октября2026.
 Кириллица/латиница: локальные WOFF2; лицензия Onest-OFL.txt, источники и SHA256
 в onest-SOURCES.txt. Старые шрифты сохранены как лицензированные ресурсы,
-но Golos/Unbounded не подключаются текущим интерфейсом.
+но Unbounded не подключается текущим интерфейсом.
+
+В ветке `redesign` от 10 ноября 2026 интерфейс использует Golos Text (400–800),
+а заголовки — Playfair Display. Проверены три пары на реальном названии,
+кнопках и числах. Проверка Chrome CSS.getPlatformFontsForNode подтверждает
+локальные кириллические глифы обоих шрифтов, без системной подстановки.

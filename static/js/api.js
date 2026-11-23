@@ -56,7 +56,8 @@ export async function fetchCalculation(params, signal) {
       msg = (await response.json()).message;
     }
     catch {}
-    const error = new Error(msg||`Сервер ответил кодом ${response.status}`);
+    const error = new Error(msg||'Не удалось получить данные. Попробуйте повторить расчёт.');
+    error.status = response.status;
     error.user = [400, 503].includes(response.status);
     throw error;
   }

@@ -1,0 +1,27 @@
+{
+  "repository": "https://github.com/tabler/tabler-icons",
+  "revision": "4581ad20d8d13e24f6c3be75caaea1c4ad6c4b35",
+  "icons": [
+    "coffee",
+    "first-aid-kit",
+    "basket",
+    "bread",
+    "scissors",
+    "burger",
+    "flower",
+    "paw",
+    "barbell",
+    "dental",
+    "chevron-down",
+    "x",
+    "arrow-right",
+    "arrow-up-right",
+    "bookmark",
+    "arrows-diff",
+    "copy",
+    "download",
+    "check",
+    "map-pin"
+  ],
+  "adaptation": "stroke-width 1.75; inline SVG, currentColor"
+}

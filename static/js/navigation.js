@@ -1,4 +1,5 @@
 export function focusWorkspaceMap() {
+  document.dispatchEvent(new Event('gm:map-focus'));
   const target=document.getElementById('map-title');
   if(!target)return;
   target.tabIndex=-1;target.focus({preventScroll:true});
@@ -12,12 +13,39 @@ if (header && menu && toggle) {
   const mobile = matchMedia('(max-width:900px)'), reduce = matchMedia('(prefers-reduced-motion:reduce)');
   const items = menu.querySelector('.nav-items'), indicator = menu.querySelector('.nav-indicator');
   const links = [...menu.querySelectorAll('a[href^="#"]')];
-  let modelFromMenu = false, navigationTimer, pendingNavigation;
-  const syncOffset = () => document.documentElement.style.setProperty('--header-offset', `${Math.ceil(header.getBoundingClientRect().height)}px`);
-  const syncMenuCap = () => {
-    menu.style.setProperty('--nav-available-height', `${Math.max(44, innerHeight - header.getBoundingClientRect().bottom - 16)}px`);
+  const dialog = document.getElementById('mobile-navigation');
+  const closeButton = document.getElementById('nav-close');
+  let lockedScroll, revision=0, closeTimer, closeResolve, firstFrame, secondFrame;
+  const cancelTransition=()=>{
+    revision++;clearTimeout(closeTimer);cancelAnimationFrame(firstFrame);cancelAnimationFrame(secondFrame);
+    closeResolve?.(false);closeResolve=undefined;
   };
-  const cancelNavigation = () => { clearTimeout(navigationTimer); pendingNavigation = null; };
+  const isolate=open=>{
+    const root = document.documentElement;
+    if (open) {
+      lockedScroll = window.scrollY;
+      root.style.setProperty('--nav-scroll-top', `-${lockedScroll}px`);
+    }
+    root.dataset.navOpen = String(open);
+    if (!open && lockedScroll !== undefined) {
+      window.scrollTo({ top: lockedScroll, behavior: 'instant' });
+      root.style.removeProperty('--nav-scroll-top');
+      lockedScroll = undefined;
+    }
+  };
+  let modelFromMenu = false;
+  // Подложка шапки и её градиент также закрывают содержимое при переходе к якорю.
+  const syncOffset = () => {
+    const reserve=header.closest('.header-reserve');
+    const fade=reserve?parseFloat(getComputedStyle(reserve,'::after').height)||0:0;
+    document.documentElement.style.setProperty('--header-offset', `${Math.ceil(header.getBoundingClientRect().bottom+fade)}px`);
+  };
+  const syncViewport = () => {
+    if (!dialog.open) return;
+    const viewport = window.visualViewport;
+    dialog.style.setProperty('--nav-viewport-top', `${viewport?.offsetTop ?? 0}px`);
+    dialog.style.setProperty('--nav-viewport-height', `${viewport?.height ?? innerHeight}px`);
+  };
   const updateIndicator = () => {
     if (mobile.matches) return;
     const active = links.find(link => link.classList.contains('active') && !link.hidden);
@@ -35,48 +63,74 @@ if (header && menu && toggle) {
     });
     updateIndicator();
   };
-  const close = (returnFocus = false) => {
-    cancelNavigation();
+  const close = (returnFocus = false, immediate = false) => {
+    const wasOpen = dialog.open;
+    const wasFocused = dialog.contains(document.activeElement);
+    cancelTransition();
     header.classList.remove('nav-open');
     toggle.setAttribute('aria-expanded', 'false');
-    if (returnFocus || (mobile.matches && menu.contains(document.activeElement))) toggle.focus({ preventScroll:true });
-    menu.inert = mobile.matches;
-    if (mobile.matches) menu.setAttribute('aria-hidden', 'true');
-    else menu.removeAttribute('aria-hidden');
+    dialog.dataset.phase='closing';
+    const finish=()=>{
+      if(dialog.open)dialog.close();
+      isolate(false);dialog.dataset.phase='closed';
+      if (mobile.matches && (returnFocus || wasFocused)) toggle.focus({ preventScroll:true });
+    };
+    if(!wasOpen||immediate){finish();return Promise.resolve(true);}
+    return new Promise(resolve=>{closeResolve=resolve;closeTimer=setTimeout(()=>{closeResolve=undefined;finish();resolve(true);},200);});
   };
   const sync = () => {
-    const hadMenuFocus = menu.contains(document.activeElement);
+    close(false,true);
     toggle.hidden = !mobile.matches;
-    close(mobile.matches && hadMenuFocus);
-    syncMenuCap(); syncOffset(); updateIndicator();
+    if (mobile.matches) dialog.append(menu);
+    else header.append(menu);
+    syncOffset(); updateIndicator();
   };
   toggle.addEventListener('click', () => {
-    cancelNavigation();
-    if (header.classList.contains('nav-open')) close();
-    else {
-      menu.inert = false; menu.removeAttribute('aria-hidden');
-      syncMenuCap(); header.classList.add('nav-open');
-      toggle.setAttribute('aria-expanded', 'true');
-    }
+    if (!mobile.matches) return;
+    if (dialog.open&&dialog.dataset.phase!=='closing') { close(true); return; }
+    cancelTransition();const current=revision;
+    if(!dialog.open){dialog.dataset.phase='opening';dialog.showModal();isolate(true);}
+    header.classList.add('nav-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    syncViewport();
+    closeButton.focus({ preventScroll:true });
+    firstFrame=requestAnimationFrame(()=>{secondFrame=requestAnimationFrame(()=>{if(current===revision&&dialog.open)dialog.dataset.phase='open';});});
   });
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && header.classList.contains('nav-open')) { event.preventDefault(); close(true); }
+  dialog.addEventListener('close', () => { if (!dialog.open && lockedScroll !== undefined) close(true,true); });
+  closeButton.addEventListener('click', () => close(true));
+  dialog.addEventListener('cancel', event => { event.preventDefault(); close(true); });
+  let backdropPress = false;
+  dialog.addEventListener('pointerdown', event => { backdropPress = event.target === dialog; });
+  dialog.addEventListener('click', event => {
+    if (!backdropPress || event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) close(true);
   });
-  document.addEventListener('pointerdown', event => {
-    if (!header.contains(event.target) && header.classList.contains('nav-open')) close(menu.contains(document.activeElement));
+  dialog.addEventListener('keydown', event => {
+    if (event.key !== 'Tab') return;
+    const controls = [closeButton, ...links.filter(link => !link.hidden)];
+    const current = controls.indexOf(document.activeElement);
+    const next = current < 0 ? (event.shiftKey ? controls.length - 1 : 0)
+      : (current + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
+    event.preventDefault();
+    controls[next].focus({ preventScroll:true });
+    controls[next].scrollIntoView({ block:'nearest' });
   });
-  document.addEventListener('focusin', event => {
-    if (!header.contains(event.target) && header.classList.contains('nav-open')) close();
-  });
-  document.querySelectorAll('#nav-menu a[href^="#"], .hero-links a[href^="#"], .workspace-return a[href^="#"], .skip-link[href^="#"]').forEach(link => link.addEventListener('click', event => {
+  let swipeStart;
+  dialog.addEventListener('touchstart', event => {
+    if (event.touches.length === 1 && dialog.scrollHeight === dialog.clientHeight) swipeStart = event.touches[0].clientY;
+  }, { passive:true });
+  dialog.addEventListener('touchend', event => {
+    if (swipeStart !== undefined && swipeStart - event.changedTouches[0].clientY > 60) close(true);
+    swipeStart = undefined;
+  }, { passive:true });
+  dialog.addEventListener('touchcancel', () => { swipeStart = undefined; });
+  document.querySelectorAll('#nav-menu a[href^="#"], .header-cta, .atlas-coordinates a, .hero-links a[href^="#"], .workspace-return a[href^="#"], .skip-link[href^="#"]').forEach(link => link.addEventListener('click', event => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     const target = document.getElementById(link.hash.slice(1));
     if (!target) return;
     event.preventDefault();
-    const wait = mobile.matches && header.classList.contains('nav-open') && !reduce.matches;
-    close();
     const navigate = () => {
-      pendingNavigation = null;
       history.pushState(null, '', link.hash);
       if(target.id==='map-title')focusWorkspaceMap();
       else {
@@ -86,15 +140,11 @@ if (header && menu && toggle) {
       }
       if (links.includes(link)) setActive(link);
     };
-    if (wait) { pendingNavigation = navigate; navigationTimer = setTimeout(navigate, 300); }
-    else navigate();
+    if(dialog.open)close().then(finished=>{if(finished)navigate();});else navigate();
   }));
-  reduce.addEventListener('change', () => {
-    if (reduce.matches && pendingNavigation) { clearTimeout(navigationTimer); pendingNavigation(); }
-  });
   document.getElementById('model-button')?.addEventListener('click', () => {
     modelFromMenu = mobile.matches && header.classList.contains('nav-open');
-    if (modelFromMenu) close(true);
+    if (modelFromMenu) close(false,true);
   }, { capture:true });
   document.getElementById('model-dialog')?.addEventListener('close', () => {
     if (modelFromMenu) { modelFromMenu = false; toggle.focus({ preventScroll:true }); }
@@ -113,10 +163,12 @@ if (header && menu && toggle) {
   mobile.addEventListener('change', sync);
   sync(); header.dataset.navigationReady = 'true'; syncOffset();
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(() => { syncMenuCap(); syncOffset(); updateIndicator(); }).observe(header);
+    new ResizeObserver(() => { syncOffset(); updateIndicator(); }).observe(header);
     new ResizeObserver(updateIndicator).observe(items);
   }
-  window.addEventListener('resize', () => { syncMenuCap(); syncOffset(); updateIndicator(); });
+  window.addEventListener('resize', () => { syncViewport(); syncOffset(); updateIndicator(); });
+  window.visualViewport?.addEventListener('resize',syncViewport);
+  window.visualViewport?.addEventListener('scroll',syncViewport);
   window.addEventListener('scroll', updateSection, {passive:true});
   document.fonts?.ready.then(updateIndicator);
 }

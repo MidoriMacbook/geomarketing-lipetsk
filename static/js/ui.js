@@ -2,7 +2,7 @@ import { SCORE_NOTE } from './result-format.js';
 export const $ = id => document.getElementById(id);
 export const fmt = n => Math.round(n).toLocaleString('ru-RU');
 export const coords = p => `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`;
-export const distance = n => n === null ? 'Не найдены в данных области' : `${fmt(n)} м`;
+export const distance = n => n === null ? 'Не найдены в данных области' : `${fmt(n)} м`;
 export const STORAGE_KEY = 'geomarketing.saved.v1';
 export const LIMITATIONS = 'Число жителей оценено по квартирам либо площади и этажности домов, а не по переписи. Расстояния по прямой. Данные OpenStreetMap могут быть неполными или устаревшими. Модель не учитывает аренду, наличие помещений, пешеходные маршруты, доходы и поток посетителей. Относительную оценку нельзя сравнивать между разными расчётами. '+SCORE_NOTE;
 export const node = (tag, className, text) => {
@@ -240,11 +240,12 @@ export function setAnalysisState(value, message) {
   const trust = $('trust-summary');
   if (trust) {
     const summary = trust.dataset.resultSummary || '';
-    trust.textContent = value === 'refreshing' ? `Обновляем данные · предыдущий расчёт. ${summary}`
+    trust.title = value === 'refreshing' ? `Обновляем данные · предыдущий расчёт. ${summary}`
       : value === 'error' && summary ? `Обновление не удалось · предыдущий расчёт. ${summary}`
       : value === 'initial' && summary ? `Параметры изменены · показан предыдущий расчёт. ${summary}`
       : value === 'initial' || value === 'calculating' ? 'Данные ещё не оценены · выполните расчёт'
       : summary || 'Данные ещё не оценены';
+    trust.textContent=trust.dataset.compactSummary||'OpenStreetMap · дата неизвестна';
   }
 }
 
@@ -333,13 +334,29 @@ export function initMotion() {
     if(element.matches('details'))syncNativeDetails(element);
     element.querySelectorAll('details').forEach(syncNativeDetails);
   }))).observe(document.body,{childList:true,subtree:true});
-  $('trust-details-link')?.addEventListener('click', event => {
-    const details = $('data-details'), summary = $('data-summary');
-    if (!details || !summary) return;
-    event.preventDefault(); cancelUI(disclosures.get(details)); details.open = true;
-    summary.focus({ preventScroll: true });
-    $('data-section').scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'start' });
+  const dataDialog=node('dialog','source-dialog');dataDialog.id='source-dialog';
+  dataDialog.setAttribute('aria-labelledby','source-dialog-title');
+  const dataHeading=node('h2','','Источники и ограничения');dataHeading.id='source-dialog-title';
+  const dataClose=button('×','source-dialog-close',()=>dataDialog.close());dataClose.setAttribute('aria-label','Закрыть сведения о данных');
+  dataDialog.append(dataHeading,dataClose);document.body.append(dataDialog);
+  const content=$('data-details').querySelector('.disclosure-body'),contentHome=document.createComment('data-content');content.before(contentHome);
+  let dataOpener=null,dataScroll=0;
+  const openData=event=>{
+    event.preventDefault();document.dispatchEvent(new Event('gm:leave-results'));
+    dataOpener=event.currentTarget;dataScroll=scrollY;dataDialog.append(content);
+    document.documentElement.style.setProperty('--source-scroll-top',`-${dataScroll}px`);
+    document.documentElement.dataset.sourceOpen='true';dataDialog.showModal();dataClose.focus({preventScroll:true});
+  };
+  dataDialog.addEventListener('close',()=>{
+    contentHome.after(content);delete document.documentElement.dataset.sourceOpen;
+    scrollTo({top:dataScroll,behavior:'instant'});dataOpener?.focus({preventScroll:true});
   });
+  dataDialog.addEventListener('click',event=>{
+    if(event.target!==dataDialog)return;const r=dataDialog.getBoundingClientRect();
+    if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dataDialog.close();
+  });
+  $('trust-details-link')?.addEventListener('click',openData);
+  $('trust-summary')?.addEventListener('click',openData);
 }
 
 const dialogBounds = new WeakMap();

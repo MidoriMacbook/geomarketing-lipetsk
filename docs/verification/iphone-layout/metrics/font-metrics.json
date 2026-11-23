@@ -1,0 +1,152 @@
+[
+  {
+    "width": 375,
+    "fonts": {
+      "brand": {
+        "family": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "style": "normal",
+        "weight": "700",
+        "size": "14px",
+        "check": true,
+        "width": 322.1,
+        "fallback": {
+          "serif": 284.3,
+          "sans": 304.9,
+          "Arial": 304.9,
+          "Georgia": 343.1
+        }
+      },
+      "h1": {
+        "family": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+        "style": "normal",
+        "weight": "400",
+        "size": "53.625px",
+        "check": true,
+        "width": 283.5,
+        "fallback": {
+          "serif": 272.4,
+          "sans": 294.9,
+          "Arial": 294.9,
+          "Georgia": 299.8
+        }
+      },
+      "italic": {
+        "family": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+        "style": "italic",
+        "weight": "500",
+        "size": "53.625px",
+        "check": true,
+        "width": 289,
+        "fallback": {
+          "serif": 276.5,
+          "sans": 308.6,
+          "Arial": 308.6,
+          "Georgia": 309.5
+        }
+      },
+      "menu": {
+        "family": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "style": "normal",
+        "weight": "400",
+        "size": "16px",
+        "check": true,
+        "width": 312.6,
+        "fallback": {
+          "serif": 272.4,
+          "sans": 294.9,
+          "Arial": 294.9,
+          "Georgia": 299.8
+        }
+      },
+      "body": {
+        "family": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "style": "normal",
+        "weight": "400",
+        "size": "16px",
+        "check": true,
+        "width": 312.6,
+        "fallback": {
+          "serif": 272.4,
+          "sans": 294.9,
+          "Arial": 294.9,
+          "Georgia": 299.8
+        }
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "fonts": {
+      "brand": {
+        "family": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "style": "normal",
+        "weight": "700",
+        "size": "16px",
+        "check": true,
+        "width": 322.1,
+        "fallback": {
+          "serif": 284.3,
+          "sans": 304.9,
+          "Arial": 304.9,
+          "Georgia": 343.1
+        }
+      },
+      "h1": {
+        "family": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+        "style": "normal",
+        "weight": "400",
+        "size": "141.12px",
+        "check": true,
+        "width": 283.5,
+        "fallback": {
+          "serif": 272.4,
+          "sans": 294.9,
+          "Arial": 294.9,
+          "Georgia": 299.8
+        }
+      },
+      "italic": {
+        "family": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+        "style": "italic",
+        "weight": "500",
+        "size": "141.12px",
+        "check": true,
+        "width": 289,
+        "fallback": {
+          "serif": 276.5,
+          "sans": 308.6,
+          "Arial": 308.6,
+          "Georgia": 309.5
+        }
+      },
+      "menu": {
+        "family": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "style": "normal",
+        "weight": "600",
+        "size": "13px",
+        "check": true,
+        "width": 318.8,
+        "fallback": {
+          "serif": 284.3,
+          "sans": 304.9,
+          "Arial": 304.9,
+          "Georgia": 343.1
+        }
+      },
+      "body": {
+        "family": "\"Golos Text\", \"Golos Fallback\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        "style": "normal",
+        "weight": "400",
+        "size": "16px",
+        "check": true,
+        "width": 312.6,
+        "fallback": {
+          "serif": 272.4,
+          "sans": 294.9,
+          "Arial": 294.9,
+          "Georgia": 299.8
+        }
+      }
+    }
+  }
+]

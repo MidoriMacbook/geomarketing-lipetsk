@@ -14,7 +14,8 @@ export function initWorkspaceReturn(){
   const text=recent?`${recent.label} · ${recent.data.district_name} · ${recent.data.business_name}`:'';
   const appeared=context.hidden&&!!text;
   context.textContent=text;context.title=text;context.hidden=!text;
-  link.querySelector('span').textContent=text?'Вернуться к карте':'Открыть карту';
+  link.querySelector('span').textContent=text?'Вернуться к карте':'Найти места';
+  link.href=text?'#map-title':'#workspace';
   if(text)link.setAttribute('aria-describedby',context.id);else link.removeAttribute('aria-describedby');
   if(appeared)animateUI(context,[{opacity:0},{opacity:1}],'workspace-return',{duration:'fast'});
  }

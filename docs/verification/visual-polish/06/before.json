@@ -1,0 +1,45 @@
+[
+  {
+    "name": "hero",
+    "time": 2003.5999999940395,
+    "snap": "half",
+    "scrollY": 0,
+    "mapHeight": 346.828125,
+    "cls": 0
+  },
+  {
+    "name": "appear-0",
+    "time": 2064.699999988079,
+    "snap": "half",
+    "scrollY": 918,
+    "mapHeight": 346.828125,
+    "cls": 0
+  },
+  {
+    "name": "appear-100",
+    "time": 2264.0999999940395,
+    "snap": "half",
+    "active": "true",
+    "scrollY": 918,
+    "mapHeight": 346.828125,
+    "cls": 0.0005476602028820672
+  },
+  {
+    "name": "appear-200",
+    "time": 2320,
+    "snap": "half",
+    "active": "true",
+    "scrollY": 918,
+    "mapHeight": 346.828125,
+    "cls": 0.0005476602028820672
+  },
+  {
+    "name": "appear-400",
+    "time": 2472.7999999821186,
+    "snap": "half",
+    "active": "true",
+    "scrollY": 918,
+    "mapHeight": 346.828125,
+    "cls": 0.0005476602028820672
+  }
+]

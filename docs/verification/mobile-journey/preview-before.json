@@ -1,0 +1,162 @@
+[
+  {
+    "width": 375,
+    "height": 667,
+    "errors": [],
+    "anchor": {
+      "header": {
+        "top": 8,
+        "bottom": 70.5,
+        "left": 16,
+        "right": 359
+      },
+      "settings": {
+        "top": 87.09375,
+        "bottom": 195.375,
+        "left": 16,
+        "right": 359
+      },
+      "layers": {
+        "top": 312.375,
+        "bottom": 364.375,
+        "left": 17,
+        "right": 358
+      },
+      "map": {
+        "top": 364.375,
+        "bottom": 751.234375,
+        "left": 17,
+        "right": 358
+      }
+    },
+    "source": "cache",
+    "recommendations": 2,
+    "popup": {
+      "zoom": [
+        256,
+        413.234375,
+        348,
+        461.234375
+      ],
+      "pins": [
+        [
+          248,
+          260.375,
+          292,
+          304.375
+        ],
+        [
+          80.69999694824219,
+          433.07501220703125,
+          131.3000030517578,
+          483.67498779296875
+        ]
+      ],
+      "layerWidth": [
+        341,
+        754
+      ],
+      "sheet": [
+        0,
+        519,
+        375,
+        1105.953125
+      ],
+      "peekCards": [
+        [
+          17,
+          588,
+          183.5,
+          660
+        ],
+        [
+          191.5,
+          588,
+          358,
+          660
+        ]
+      ]
+    },
+    "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#comparison-map-link')\u001b[22m\n\u001b[2m    - locator resolved to <a href=\"#map-title\" id=\"comparison-map-link\" class=\"button secondary\">Вернуться к карте</a>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - element is outside of the viewport\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - element is outside of the viewport\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - element is outside of the viewport\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "anchor": {
+      "header": {
+        "top": 8,
+        "bottom": 70.5,
+        "left": 16,
+        "right": 374
+      },
+      "settings": {
+        "top": 87.21875,
+        "bottom": 195.5,
+        "left": 16,
+        "right": 374
+      },
+      "layers": {
+        "top": 312.5,
+        "bottom": 364.5,
+        "left": 17,
+        "right": 373
+      },
+      "map": {
+        "top": 364.5,
+        "bottom": 854.015625,
+        "left": 17,
+        "right": 373
+      }
+    },
+    "source": "cache",
+    "recommendations": 2,
+    "popup": {
+      "zoom": [
+        271,
+        515.015625,
+        363,
+        563.015625
+      ],
+      "pins": [
+        [
+          255,
+          259.5,
+          299,
+          303.5
+        ],
+        [
+          87.69999694824219,
+          432.20001220703125,
+          138.3000030517578,
+          482.79998779296875
+        ]
+      ],
+      "layerWidth": [
+        356,
+        754
+      ],
+      "sheet": [
+        0,
+        696,
+        390,
+        1438.71875
+      ],
+      "peekCards": [
+        [
+          17,
+          765,
+          191,
+          837
+        ],
+        [
+          199,
+          765,
+          373,
+          837
+        ]
+      ]
+    },
+    "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#comparison-map-link')\u001b[22m\n\u001b[2m    - locator resolved to <a href=\"#map-title\" id=\"comparison-map-link\" class=\"button secondary\">Вернуться к карте</a>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - element is outside of the viewport\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - element is outside of the viewport\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - element is outside of the viewport\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+  }
+]

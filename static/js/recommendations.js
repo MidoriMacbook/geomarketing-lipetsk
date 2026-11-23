@@ -1,7 +1,7 @@
-import { scoreText, SCORE_NOTE } from './result-format.js';
+import { scoreText, SCORE_NOTE, placeDifference } from './result-format.js';
 import { state } from './state.js';
 import { deliverySummary } from './data-delivery.js';
-import { $, fmt, coords, node, button, dateText, sourceText, dataDate, reveal, setRevealed, motionStagger, cancelRevealsWithin, animateUI, cancelUI, motionReduced } from './ui.js';
+import { $, fmt, coords, node, button, reveal, setRevealed, motionStagger, cancelRevealsWithin, animateUI, cancelUI, motionReduced, dataDate } from './ui.js';
 import { savePlace, updateSaveButtons } from './saved-places.js';
 import { selectMarker, hoverPlace } from './map.js';
 import { updateReportAvailability } from './report.js';
@@ -30,20 +30,20 @@ function expandMobileCard(entry, expanded, animate = false) {
 function arrangeMobileCard(entry) {
   const { body, content, heading, coordinate, metrics, brief, reasons, secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, briefDetails } = entry;
   cancelUI(body);
-  metrics.children[1].querySelector('small').textContent=mobileRecommendations.matches?'конкурентов OSM':'конкурентов в радиусе';
+  metrics.children[1].querySelector('small').textContent='конкурентов в радиусе';
   if (mobileRecommendations.matches) {
     placeContent.append(coordinate, entry.linkActions);
     entry.linkActions.append(copy, osm);
     brief.hidden = false;
     briefDetails.append(brief,placeDetails,explanation);
     secondaryActions.prepend(showOnMap);
-    content.append(heading,metrics,reasons,actions,confirmation,secondaryActions,briefDetails);
+    content.append(heading,metrics,reasons,entry.difference,actions,confirmation,secondaryActions,briefDetails);
     placeDetails.open = false;
     briefDetails.open = false;
   } else {
     brief.hidden = false;
     actions.append(save, copy, osm);
-    content.append(heading, coordinate, metrics, reasons, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,secondaryActions);
+    content.append(heading, coordinate, metrics, reasons, entry.difference, brief, actions, confirmation, explanation, showOnMap, placeDetails, briefDetails,secondaryActions);
     placeDetails.open = true;
     briefDetails.open = true;
   }
@@ -135,16 +135,26 @@ export function showResult(data, { freshCalculation=false } = {}) {
   if (previewCard) previewPlace(previewCard, +previewCard.dataset.rank, false);
   mobileCards.clear();
   $('recommendation-list').replaceChildren();
+  let selectionNote=$('selection-note');
+  if(!selectionNote){selectionNote=node('p','hint');selectionNote.id='selection-note';$('recommendation-list').before(selectionNote);}
+  const independent=data.recommendations[0]?.selection_method==='cluster_maxima_v1'&&data.recommendations.length<3;
+  selectionNote.hidden=!independent;
+  selectionNote.replaceChildren();
+  if(independent){
+    const icon=node('span','note-icon','i');icon.setAttribute('aria-hidden','true');
+    const count=data.recommendations.length;
+    selectionNote.append(icon,node('span','',count===2?'В этой области найдено мест: 2. Третье не показано: оно пересекалось бы по жителям с уже выбранными.':'В этой области найдено мест: 1. Другие варианты не образуют независимые зоны спроса.'));
+  }
   $('recommendations-context').textContent = `${data.district_name} · ${data.business_name}`;
   $('recommendations-context').setAttribute('aria-label',`Параметры расчёта: ${data.district_name}, ${data.business_name}. Изменить параметры`);
-  const contextIcon=node('span','directional-icon icon-forward');contextIcon.setAttribute('aria-hidden','true');$('recommendations-context').append(contextIcon);
+  $('recommendations-context').append(node('span','context-action','Изменить параметры'));
   setRevealed($('result-empty'), !data.recommendations.length, 'empty');
   $('result').hidden = !data.recommendations.length;
   if (!data.recommendations.length) {
     $('result-empty').querySelector('h3').textContent = 'Подходящих мест не найдено';
     $('result-empty').querySelector('p').textContent = 'В области не хватает спроса для рекомендации. Попробуйте другую область или увеличьте её радиус.';
   }
-  countTo($('kpi-residents'), Math.round(data.stats.residents), { animate: newAnalysis });
+  countTo($('kpi-residents'), Math.round(data.stats.residents), { animate: newAnalysis, prefix: '≈\u00a0' });
   countTo($('kpi-houses'), data.stats.houses, { animate: newAnalysis });
   countTo($('kpi-competitors'), data.stats.competitors, { animate: newAnalysis });
   countTo($('kpi-places'), data.recommendations.length, { animate: newAnalysis });
@@ -170,9 +180,11 @@ export function showResult(data, { freshCalculation=false } = {}) {
     toggle.setAttribute('aria-controls', body.id);
     const decision=recommendationDecision(rec),score=node('span','mobile-rec-score',scoreText(rec.score));
     score.setAttribute('aria-label',`${scoreText(rec.score)} — ${SCORE_NOTE}`);
-    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference',`≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов`));
+    toggle.append(node('span', 'rank', rec.rank), node('span', 'mobile-rec-name', index === 0 ? 'Лучшее место' : `Место ${rec.rank}`),score,node('span','mobile-rec-difference',`≈ ${fmt(rec.residents_in_radius)} жителей · ${fmt(rec.competitors_in_radius)} конкурентов`));
+    const weaker=Number.isFinite(rec.score)&&rec.score>=0&&Math.round(rec.score*100)<40;
+    if(weaker)toggle.append(node('span','place-strength','слабее лучшего'));
     const reasons=node('section','mobile-reasons decision-reasons'),reasonList=node('ul');
-    reasons.append(node('h4','','Почему это место'),node('p','decision-headline',recommendationBrief(rec).demand),reasonList);
+    reasons.append(node('h3','','Почему это место'),node('p','decision-headline',weaker?'Заметно слабее лучшего места: подходит как запасной вариант':recommendationBrief(rec).demand),reasonList);
     // Население уже показано крупно в метриках: это та же фактическая причина,
     // а не второй экземпляр числа в списке. Остальные причины — максимум две.
     decision.reasons.filter(text=>!text.startsWith('≈ ')).forEach(text=>reasonList.append(node('li','',text)));
@@ -180,20 +192,26 @@ export function showResult(data, { freshCalculation=false } = {}) {
     const heading = node('div', 'place-title'), select = button(`Место ${rec.rank}`, 'place-select', () => selectPlace(rec.rank));
     select.setAttribute('aria-pressed', rec.rank === state.selectedRank);
     select.setAttribute('aria-label', `Показать место ${rec.rank} на карте`);
-    heading.append(node('span', 'rank', rec.rank), select, node('span', 'score', scoreText(rec.score)));
+    const scoreGroup=node('span','score-group'),scoreInfo=node('span','score-info','i');
+    scoreInfo.tabIndex=0;scoreInfo.setAttribute('role','note');scoreInfo.setAttribute('aria-label',`Относительная оценка внутри расчёта. ${SCORE_NOTE}`);scoreInfo.title=SCORE_NOTE;
+    scoreGroup.append(node('span','score',scoreText(rec.score)),scoreInfo);
+    heading.append(node('span', 'rank', rec.rank), select, scoreGroup);
+    if(weaker)heading.append(node('span','place-strength','слабее лучшего'));
+    heading.querySelector('.score').title=SCORE_NOTE;
     const coordinate = node('p', 'coords', coords(rec));
     if (!index)coordinate.id = 'coords';
     const metrics = node('div', 'place-metrics'), people = node('div'), competition = node('div');
-    people.append(node('strong', '', `≈ ${fmt(rec.residents_in_radius)}`), node('small', '', `жителей в ${fmt(rec.radius_m)} м`));
-    competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов OSM'));
+    people.append(node('strong', '', `≈ ${fmt(rec.residents_in_radius)}`), node('small', '', `жителей в ${fmt(rec.radius_m)} м`));
+    competition.append(node('strong', '', fmt(rec.competitors_in_radius)), node('small', '', 'конкурентов в радиусе'));
     metrics.append(people, competition);
-    const showOnMap = button('Показать на карте', 'button secondary action-tertiary mobile-show-place', () => {
-      selectPlace(rec.rank, true);
+    const showOnMap = button('Показать на карте', 'button secondary mobile-show-place', () => {
+      selectPlace(rec.rank, false);
+      document.dispatchEvent(new CustomEvent('gm:show-place',{detail:{rank:rec.rank}}));
       const map = $('map');
-      if (map) { if(!map.hasAttribute('tabindex'))map.tabIndex=-1;map.focus({ preventScroll: true });map.scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'center' }); }
+      if (map) { if(!map.hasAttribute('tabindex'))map.tabIndex=-1;map.focus({ preventScroll: true });$('map-card').scrollIntoView({ behavior: motionReduced() ? 'instant' : 'smooth', block: 'start' }); }
     });
     const brief = node('dl', 'recommendation-brief'), summary = recommendationBrief(rec);
-    for (const [key, label] of [['demand', 'Спрос'], ['competition', 'Конкуренция'], ['nearest', 'Ближайший конкурент'], ['check', 'Проверить на месте']]) {
+    for (const [key, label] of [['competition', 'Влияние конкурентов'], ['nearest', 'Ближайший конкурент'], ['check', 'Проверить на месте']]) {
       const row = node('div');
       row.append(node('dt', '', label), node('dd', key === 'nearest' ? 'nearest' : '', summary[key]));
       brief.append(row);
@@ -216,7 +234,7 @@ export function showResult(data, { freshCalculation=false } = {}) {
     });
     save.dataset.testid = 'save-place';
     save.dataset.rank = rec.rank;
-    const copy = button('Координаты', 'button secondary', async() => {
+    const copy = button('Копировать координаты', 'button secondary', async() => {
       try {
         await navigator.clipboard.writeText(`${rec.lat.toFixed(6)}, ${rec.lng.toFixed(6)}`);
         copy.textContent = 'Скопировано';
@@ -226,8 +244,9 @@ export function showResult(data, { freshCalculation=false } = {}) {
         copy.title = 'Координаты указаны на карточке — выделите и скопируйте их.';
       }
     });
+    copy.title='Скопировать широту и долготу';copy.setAttribute('aria-label',`Копировать координаты места ${rec.rank}`);
     if (!index)copy.id = 'copy';
-    const osm = node('a'),externalIcon=node('span','directional-icon icon-external');externalIcon.setAttribute('aria-hidden','true');osm.append(externalIcon);
+    const osm = node('a'),externalIcon=node('span','directional-icon icon-external');externalIcon.setAttribute('aria-hidden','true');osm.append(document.createTextNode('Открыть на карте'),externalIcon);osm.title='Открыть в OpenStreetMap в новой вкладке';
     osm.href = `https://www.openstreetmap.org/?mlat=${rec.lat}&mlon=${rec.lng}#map=18/${rec.lat}/${rec.lng}`;
     osm.target = '_blank';
     osm.rel = 'noopener';
@@ -238,17 +257,19 @@ export function showResult(data, { freshCalculation=false } = {}) {
     placeDetails.append(node('summary', '', 'Координаты и ссылки'), placeContent);
     const briefDetails = node('details', 'mobile-rec-details');
     briefDetails.append(node('summary', '', 'Подробнее о месте'));
-    const explanation = explanationBlock(rec);
+    const explanation = explanationBlock(rec,{compact:true});
     const check = node('p','mobile-field-check',recommendationBrief(rec).check);
-    briefDetails.append(node('h4','','Проверить на месте'),check);
+    briefDetails.append(node('h3','','Проверить на месте'),check);
     const secondaryActions=node('div','mobile-save-secondary'),compare=button('Сравнить','compare-saved-link',openSavedComparison);compare.hidden=true;secondaryActions.append(compare);
     const savedId=`${data.analysis_id}:${rec.rank}`;if(state.saved.some(item=>item.id===savedId))card.dataset.savedFeedbackId=savedId;
     card.append(toggle, body);
-    const entry = { card, body, content, toggle, heading, coordinate, metrics, brief,reasons,secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
+    const difference=node('p','place-difference',placeDifference(rec));difference.hidden=!difference.textContent;
+    difference.title='Доля общих жителей рассчитана от жителей в радиусе этого места.';
+    const entry = { card, body, content, toggle, heading, coordinate, metrics, brief,reasons,difference,secondaryActions, actions, save, copy, osm, confirmation, explanation, showOnMap, placeDetails, placeContent, linkActions, briefDetails };
     mobileCards.set(rec.rank, entry);
     arrangeMobileCard(entry);
     $('recommendation-list').append(card);
-    countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: ' из 100', from: previous[0] });
+    countTo(heading.querySelector('.score'), Math.round(rec.score * 100), { animate: newAnalysis, suffix: ' из 100', from: previous[0] });
     countTo(people.querySelector('strong'), Math.round(rec.residents_in_radius), { animate: newAnalysis, prefix: '≈ ', from: previous[1] });
     countTo(competition.querySelector('strong'), rec.competitors_in_radius, { animate: newAnalysis, from: previous[2] });
     if (newAnalysis) animateUI(card,[{opacity:0,transform:'translateY(var(--motion-distance-small))'},{opacity:1,transform:'translateY(0)'}],'calculation-result',{delay:motionStagger()*(3+index*2/3),duration:'workspace',easing:'emphasized'});
@@ -257,20 +278,29 @@ export function showResult(data, { freshCalculation=false } = {}) {
   $('kpi-business').textContent = data.business_name;
   $('map-context').textContent = `${data.district_name} · ${data.business_name}`;
   if ($('analysis-context')) $('analysis-context').textContent = `${data.district_name} · ${data.business_name}`;
-  $('source').textContent = `Источник: ${sourceText(data.source)}. Дата самой ранней копии: ${dateText(dataDate(data))}. Число жителей оценено по данным домов. ${deliverySummary(data)}`.trim();
   const warning = [data.source === 'demo'?'Показаны демонстрационные данные: не используйте их для выбора места без проверки.': '', data.warning, data.notice].filter(Boolean).join(' ');
   $('data-warning').textContent = warning;
   $('data-warning').hidden = !warning;
   if (warning && newAnalysis) reveal($('data-warning'), 'notice');
   $('data-section').hidden = false;
-  $('data-quality')?.replaceChildren(qualityBlock(data, false, true));
+  const details=qualityBlock(data,false,true);
+  details.querySelector('.quality-summary').remove();
+  details.querySelector('.quality-limitation').remove();
+  const delivery=deliverySummary(data);
+  if(delivery)details.append(node('p','',delivery));
+  $('data-quality')?.replaceChildren(details);
   const quality = qualitySummary(data);
+  $('source').textContent = `${quality.source} · ${quality.freshness} · ${quality.completeness}`;
   const summary = `${state.openedScenarioId ? 'Сохранённый расчёт · ' : ''}${quality.source} · ${quality.freshness} · ${quality.completeness}`;
   if ($('trust-summary')) {
     $('trust-summary').dataset.resultSummary = summary;
-    $('trust-summary').textContent = summary;
+    const date=dataDate(data);
+    const compact=data.source==='demo'?'Демонстрационные данные':`OpenStreetMap · ${date?'обновлено '+new Date(date).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'}):'дата неизвестна'}`;
+    $('trust-summary').dataset.compactSummary=compact;
+    $('trust-summary').textContent = compact;
+    $('trust-summary').title=summary;
   }
-  if ($('data-summary')) $('data-summary').textContent = 'Даты, источники и ограничения';
+  if ($('data-summary')) $('data-summary').textContent = 'Даты и качество данных';
   updateReportAvailability();
   document.dispatchEvent(new CustomEvent('gm:analysis-rendered', { detail: { data } }));
 }
