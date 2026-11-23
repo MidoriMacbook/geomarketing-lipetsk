@@ -94,6 +94,18 @@ test('исследование с поправками проверяет про
   assert.equal(validateScenario(value), false);
 });
 
+test('повторное обновление читает архив версии 2 и сохраняет поправки при изменении заметки', async () => {
+  const record = corrected();
+  const raw = JSON.stringify({ schema_version: 2, scenarios: [record] });
+  records.set(SCENARIO_KEY, raw);
+  assert.deepEqual(readScenarios(), [record]);
+  assert.equal(records.get(SCENARIO_KEY), raw);
+  await mutateScenarios(items => items.map(item => ({ ...item, note: 'Проверено после отката' })));
+  assert.deepEqual(JSON.parse(records.get(SCENARIO_KEY)), {
+    schema_version: 2, scenarios: [{ ...record, note: 'Проверено после отката' }],
+  });
+});
+
 test('roundtrip and latest-read edit/delete do not alter separate saved places', async () => {
   assert.equal(SCENARIO_KEY, 'geomarketing.scenarios.v1');
   assert.equal(SCENARIO_LIMIT, 6);

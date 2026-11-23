@@ -144,8 +144,8 @@ function storedRaw() {
   catch { throw failure('unavailable'); }
 }
 
-function parseRecords(raw) {
-  if (raw === null) return [];
+function parseEnvelope(raw) {
+  if (raw === null) return { schema_version: 1, scenarios: [] };
   if (typeof raw !== 'string' || raw.length > KEY_SIZE) throw failure('invalid', raw);
   let envelope;
   try { envelope = JSON.parse(raw); }
@@ -154,11 +154,11 @@ function parseRecords(raw) {
   if (![1, SCHEMA_VERSION].includes(envelope.schema_version)) throw failure('unsupported', raw);
   const records = envelope.scenarios;
   if (!Array.isArray(records) || records.length > SCENARIO_LIMIT || !records.every(validateScenario) || new Set(records.map(item => item.id)).size !== records.length) throw failure('invalid', raw);
-  return records;
+  return envelope;
 }
 
 export function readScenarios() {
-  return parseRecords(storedRaw());
+  return parseEnvelope(storedRaw()).scenarios;
 }
 
 async function withLock(callback) {
@@ -172,14 +172,14 @@ async function withLock(callback) {
 
 export function mutateScenarios(mutate) {
   return withLock(() => {
-    const latest = readScenarios();
-    const next = mutate(latest);
+    const envelope = parseEnvelope(storedRaw());
+    const next = mutate(envelope.scenarios);
     if (!Array.isArray(next)) throw failure('invalid');
     if (next.length > SCENARIO_LIMIT) throw failure('limit');
     let raw;
     try {
       for (const item of next) if (JSON.stringify(item)?.length > RECORD_SIZE) throw failure('size');
-      raw = JSON.stringify({ schema_version: SCHEMA_VERSION, scenarios: next });
+      raw = JSON.stringify({ ...envelope, schema_version: SCHEMA_VERSION, scenarios: next });
     } catch (error) { throw error?.code === 'size' ? error : failure('invalid'); }
     if (raw.length > KEY_SIZE) throw failure('size');
     if (!next.every(validateScenario) || new Set(next.map(item => item.id)).size !== next.length) throw failure('invalid');
@@ -195,7 +195,7 @@ export function clearDamagedScenarios(expectedRaw) {
     const currentRaw = storedRaw();
     if (typeof expectedRaw !== 'string' || currentRaw !== expectedRaw) throw failure('conflict');
     let damaged = false;
-    try { parseRecords(currentRaw); }
+    try { parseEnvelope(currentRaw); }
     catch (error) {
       if (error.code !== 'invalid' && error.code !== 'unsupported') throw error;
       damaged = true;
