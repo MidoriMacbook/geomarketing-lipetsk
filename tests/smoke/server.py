@@ -32,7 +32,8 @@ def controlled_load_data(area, business, refresh):
     metadata = {kind: {'cached': True, 'fetched_at': fetched_at,
                        'stale': False, 'warning': None}
                 for kind in ('houses', 'competitors')}
-    return LoadedData(houses, competitors, 'cache', None, metadata)
+    return LoadedData(houses, competitors, 'cache', None, metadata,
+                      competitor_ids=('node:123', 'way:123'))
 
 
 if __name__ == '__main__':

@@ -1,9 +1,12 @@
 // Модуль не зависит от интерфейса: сохранённые снимки считаются недоверенным входом.
 export const SCENARIO_KEY = 'geomarketing.scenarios.v1';
 export const SCENARIO_LIMIT = 6;
+const SCHEMA_VERSION = 2;
 const RECORD_SIZE = 250000;
 const KEY_SIZE = 1250000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const OSM_ID = /^(?:node|way|relation):[1-9][0-9]{0,19}$/;
+const MANUAL_ID = /^[a-zA-Z0-9_-]{1,64}$/;
 const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value) && [Object.prototype, null].includes(Object.getPrototypeOf(value));
 const text = (value, max = 2000) => typeof value === 'string' && value.length <= max;
@@ -62,6 +65,32 @@ function validRecommendation(value, radius, rank) {
   return location(value) && value.rank === rank && number(value.score, 0, 1) && integer(value.residents_in_radius) && value.radius_m === radius && integer(value.competitors_in_radius) && distance(value.nearest_competitor_m) && (!own(value, 'explanation') || validExplanation(value.explanation));
 }
 
+function validCorrections(analysis) {
+  if (!own(analysis, 'correction_context')) return true;
+  const context = analysis.correction_context;
+  if (!object(context) || context.version !== 1 || analysis.source === 'demo') return false;
+  const { base_competitors: base, applied, counts } = context;
+  const osmId = id => text(id, 64) && OSM_ID.test(id);
+  if (!list(base, 10000, row => location(row) && row.source === 'osm' && (row.id === null || osmId(row.id)))) return false;
+  if (!object(applied) || !object(counts)) return false;
+  const { added, removed } = applied;
+  if (!list(added, 50, row => location(row) && text(row.id, 64) && MANUAL_ID.test(row.id)) || !list(removed, 50, osmId)) return false;
+  if (added.length + removed.length > 50 || counts.added !== added.length || counts.removed !== removed.length) return false;
+  const baseIds = base.flatMap(row => row.id === null ? [] : [row.id]);
+  const known = new Set(baseIds), excluded = new Set(removed);
+  if (known.size !== baseIds.length || excluded.size !== removed.length || !removed.every(id => known.has(id)) || new Set(added.map(row => row.id)).size !== added.length) return false;
+  const expected = [...base.filter(row => !excluded.has(row.id)), ...added.map(row => ({ ...row, source: 'manual' }))];
+  if (expected.length !== analysis.competitors.length || !expected.every((row, index) => {
+    const actual = analysis.competitors[index];
+    return actual.id === row.id && actual.source === row.source && actual.lat === row.lat && actual.lng === row.lng;
+  })) return false;
+  return analysis.recommendations.every(rec => {
+    const delta = rec.correction_delta;
+    return object(delta) && number(delta.baseline_score, 0, 1) && number(delta.score_delta, -1, 1) &&
+      Math.abs(rec.score - delta.baseline_score - delta.score_delta) <= 1e-8 && typeof delta.is_new_location === 'boolean';
+  });
+}
+
 function validAnalysis(value, selection, view) {
   if (!object(value) || value.status !== 'success' || !label(value.analysis_id, 128) || !label(value.district, 128) || !label(value.district_name, 512) || !label(value.business, 128) || !label(value.business_name, 512) || value.business !== selection.business || !source(value.source) || !validMetadata(value.data_meta) || !nullableText(value.warning) || !nullableText(value.notice)) return false;
   if (!object(value.parameters) || !number(value.parameters.radius_m, 1, 100000) || !number(value.parameters.alpha, Number.MIN_VALUE, 100000) || !point(value.center) || !integer(value.half_m, 500, 1500)) return false;
@@ -74,6 +103,7 @@ function validAnalysis(value, selection, view) {
   if (!list(value.houses, 10000, house => location(house) && integer(house.residents)) || !list(value.competitors, 10000, location) || !list(value.centroids, 3, center => location(center) && integer(center.residents))) return false;
   if (!object(value.stats) || !integer(value.stats.houses) || value.stats.houses !== value.houses.length || !integer(value.stats.competitors) || value.stats.competitors !== value.competitors.length || !integer(value.stats.residents) || value.stats.residents !== value.houses.reduce((sum, house) => sum + house.residents, 0)) return false;
   if (!Array.isArray(value.recommendations) || value.recommendations.length < 1 || value.recommendations.length > 3 || !value.recommendations.every((entry, index) => validRecommendation(entry, value.parameters.radius_m, index + 1) && entry.competitors_in_radius <= value.stats.competitors && entry.residents_in_radius <= value.stats.residents && (value.stats.competitors > 0 || entry.nearest_competitor_m === null)) || !equal(value.best, value.recommendations[0]) || !value.recommendations.some(entry => entry.rank === view.selected_rank)) return false;
+  if (!validCorrections(value)) return false;
   const grid = value.grid;
   if (!object(grid) || grid.n !== 60 || !lat(grid.lat_min) || !lat(grid.lat_max) || grid.lat_min >= grid.lat_max || !lng(grid.lng_min) || !lng(grid.lng_max) || grid.lng_min >= grid.lng_max || !Array.isArray(grid.scores) || grid.scores.length !== 3600 || !grid.scores.every(score => number(score, 0, 1))) return false;
   if (value.center[0] < grid.lat_min || value.center[0] > grid.lat_max || value.center[1] < grid.lng_min || value.center[1] > grid.lng_max) return false;
@@ -121,7 +151,7 @@ function parseEnvelope(raw) {
   try { envelope = JSON.parse(raw); }
   catch { throw failure('invalid', raw); }
   if (!object(envelope) || !own(envelope, 'schema_version')) throw failure('invalid', raw);
-  if (![1, 2].includes(envelope.schema_version)) throw failure('unsupported', raw);
+  if (![1, SCHEMA_VERSION].includes(envelope.schema_version)) throw failure('unsupported', raw);
   const records = envelope.scenarios;
   if (!Array.isArray(records) || records.length > SCENARIO_LIMIT || !records.every(validateScenario) || new Set(records.map(item => item.id)).size !== records.length) throw failure('invalid', raw);
   return envelope;
@@ -149,8 +179,7 @@ export function mutateScenarios(mutate) {
     let raw;
     try {
       for (const item of next) if (JSON.stringify(item)?.length > RECORD_SIZE) throw failure('size');
-      // При откате сохраняем версию архива и поля новых снимков для повторного обновления.
-      raw = JSON.stringify({ ...envelope, scenarios: next });
+      raw = JSON.stringify({ ...envelope, schema_version: SCHEMA_VERSION, scenarios: next });
     } catch (error) { throw error?.code === 'size' ? error : failure('invalid'); }
     if (raw.length > KEY_SIZE) throw failure('size');
     if (!next.every(validateScenario) || new Set(next.map(item => item.id)).size !== next.length) throw failure('invalid');

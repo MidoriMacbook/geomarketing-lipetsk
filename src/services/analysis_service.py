@@ -1,10 +1,13 @@
 """Загрузка пригодных данных, доступных демонаборов и подготовка результата расчёта."""
 import logging
+from dataclasses import replace
 from datetime import datetime, timezone
+from functools import lru_cache
 import numpy as np
 
 from src.config import MIN_HOUSES, DEMO_HALF_SIZE_M, LOW_DATA_RESIDENTS, CITY_DATA_URL
 from src.domain.businesses import BUSINESS_CATALOG
+from src.domain.corrections import Corrections, recommendation_deltas
 from src.domain.models import Area, LoadedData
 from src.domain.data_quality import assess_data_quality
 from src.domain.explanations import explain_recommendations
@@ -68,7 +71,8 @@ def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
         return LoadedData(houses, competitors, ('cache' if h_cached and c_cached else 'osm'),
                           ' '.join(warnings) or None, metadata,
                           {'mode': 'daily', 'status': 'unavailable', 'interval_hours': 24}
-                          if CITY_DATA_URL else None)
+                          if CITY_DATA_URL else None,
+                          competitor_ids=getattr(c_cached, 'competitor_ids', ()))
     except Exception as exc:  # noqa: BLE001
         if CITY_DATA_URL:
             raise UserError('Ежедневная выгрузка временно недоступна, а для этой области '
@@ -93,7 +97,33 @@ def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
                           'Пример показывает работу интерфейса и не подходит для выбора помещения.')
 
 
-def analyze(area: Area, business: str, refresh: bool = False) -> dict:
+@lru_cache(maxsize=16)
+def _cached_score(version, business, center, half, houses_bytes, competitors_bytes, corrections=None):
+    # Числовые входы входят в ключ вместе с датой и версией. Даже при
+    # неизменной дате источника другая версия массива даёт отдельный результат.
+    houses = np.frombuffer(houses_bytes, dtype=float).reshape(-1, 3)
+    competitors = np.frombuffer(competitors_bytes, dtype=float).reshape(-1, 2)
+    return score_locations(houses, competitors, center, half, BUSINESS_CATALOG[business])
+
+
+def _score_with_corrections(area, business, loaded, half, corrections):
+    effective, context = corrections.apply(loaded)
+    version = (
+        area['key'], (loaded.delivery or {}).get('version'),
+        *(loaded.metadata.get(kind, {}).get('fetched_at') for kind in ('houses', 'competitors')),
+    )
+    scoring_inputs = (version, business, area['center'], half, loaded.houses.tobytes())
+    baseline = _cached_score(*scoring_inputs, loaded.competitors.tobytes())
+    if corrections.added or corrections.removed:
+        adjusted = np.array([(row['lat'], row['lng']) for row in effective], dtype=float).reshape(-1, 2)
+        scored = _cached_score(*scoring_inputs, adjusted.tobytes(), corrections)
+        loaded = replace(loaded, competitors=adjusted)
+    else:
+        scored = baseline
+    return loaded, scored, baseline, effective, context
+
+
+def analyze(area: Area, business: str, refresh: bool = False, *, corrections: Corrections | None = None) -> dict:
     if business not in BUSINESS_CATALOG:
         raise UserError('Неизвестный тип бизнеса. Выберите тип из списка.')
     parameters = BUSINESS_CATALOG[business]
@@ -103,14 +133,28 @@ def analyze(area: Area, business: str, refresh: bool = False) -> dict:
     if loaded.source != 'demo' and loaded.houses[:, 2].sum() < LOW_DATA_RESIDENTS:
         notice = ('В OpenStreetMap для этого района мало размеченных жилых домов, '
                   'поэтому спрос может быть занижен, а результат неточен.')
-    scored = score_locations(loaded.houses, loaded.competitors, area['center'], half, parameters)
+    # Качество данных относится к OSM. Личные поправки не меняют сведения об источнике.
+    original_competitor_count = len(loaded.competitors)
+    if corrections is None:
+        scored = score_locations(loaded.houses, loaded.competitors, area['center'], half, parameters)
+    else:
+        if loaded.source == 'demo':
+            raise UserError('Поправки доступны для расчётов по данным OpenStreetMap.')
+        loaded, scored, baseline, effective, context = _score_with_corrections(
+            area, business, loaded, half, corrections)
     calculated_at = datetime.now(timezone.utc)
     explanations = explain_recommendations(loaded.houses, loaded.competitors, area['center'],
                                            half, parameters, scored.recommendations, scored.centroids)
     quality = assess_data_quality(
         source=loaded.source, metadata=loaded.metadata, house_count=len(loaded.houses),
-        residents=int(loaded.houses[:, 2].sum()), competitor_count=len(loaded.competitors),
+        residents=int(loaded.houses[:, 2].sum()), competitor_count=original_competitor_count,
         warning=loaded.warning, notice=notice, now=calculated_at)
-    return analysis_payload(area, business, parameters, loaded, scored, half, notice,
-                            calculated_at=quality['assessed_at'], quality=quality,
-                            explanations=explanations)
+    payload = analysis_payload(area, business, parameters, loaded, scored, half, notice,
+                               calculated_at=quality['assessed_at'], quality=quality,
+                               explanations=explanations)
+    if corrections is not None:
+        payload['competitors'] = effective
+        payload['correction_context'] = context
+        for row, delta in zip(payload['recommendations'], recommendation_deltas(baseline, scored), strict=True):
+            row['correction_delta'] = delta
+    return payload

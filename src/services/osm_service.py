@@ -6,6 +6,7 @@ import json
 import time
 from contextlib import contextmanager
 from contextvars import ContextVar
+from dataclasses import replace
 from urllib.parse import urlparse
 import numpy as np
 import requests
@@ -19,7 +20,7 @@ from src.config import (
 )
 from src.domain.businesses import BUSINESS_CATALOG
 from src.domain.models import CacheInfo
-from src.domain.provenance import make_rows, source_record
+from src.domain.provenance import make_rows, osm_ids, source_record
 from src.services.cache_service import _cached
 from src.utils.geo import _bbox, _footprint_m2
 from src.utils.validation import area_for, custom_area
@@ -253,6 +254,9 @@ def get_competitors(business, area, refresh=False, *, cached_only=False):
         return _load_competitors(business, area)
     data, cached = _cached(competitor_cache_name(business, area), load_rows,
                            refresh, allow_empty=True)
+    identities = osm_ids(data)
+    if identities:
+        cached = replace(cached, competitor_ids=identities)
     return np.array(data, dtype=float).reshape(-1, 2), cached
 
 

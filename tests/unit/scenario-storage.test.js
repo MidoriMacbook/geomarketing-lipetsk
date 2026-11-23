@@ -36,13 +36,66 @@ beforeEach(() => {
 });
 const code = expected => error => error.code === expected;
 
-test('откат читает архив версии 2 и сохраняет поправки при изменении заметки', async () => {
-  const record = fixture();
-  record.analysis.correction_context = {
-    version: 1, base_competitors: [],
-    applied: { added: [{ id: 'manual-a', lat: 52.6, lng: 39.501 }], removed: [] },
-    counts: { added: 1, removed: 0 },
-  };
+function corrected() {
+  const value = fixture(2), analysis = value.analysis;
+  const base = [{ id: 'node:123', source: 'osm', lat: 52.601, lng: 39.5 }, { id: null, source: 'osm', lat: 52.602, lng: 39.5 }];
+  const added = [{ id: 'manual-a', lat: 52.6, lng: 39.501 }];
+  analysis.correction_context = { version: 1, base_competitors: base, applied: { added, removed: ['node:123'] }, counts: { added: 1, removed: 1 } };
+  analysis.competitors = [clone(base[1]), { ...added[0], source: 'manual' }];
+  analysis.stats.competitors = 2;
+  analysis.recommendations[0].correction_delta = { baseline_score: 0.8, score_delta: 0.2, is_new_location: true };
+  analysis.best = clone(analysis.recommendations[0]);
+  return value;
+}
+
+test('версия 1 читается без перезаписи, первое изменение сохраняет снимки в версии 2', async () => {
+  const old = enriched(), next = corrected();
+  old.note = 'полевые заметки';
+  const raw = JSON.stringify({ schema_version: 1, scenarios: [old] });
+  records.set(SCENARIO_KEY, raw);
+  assert.deepEqual(readScenarios(), [old]);
+  assert.equal(records.get(SCENARIO_KEY), raw);
+  await mutateScenarios(latest => [...latest, next]);
+  assert.deepEqual(JSON.parse(records.get(SCENARIO_KEY)), { schema_version: 2, scenarios: [old, next] });
+  assert.deepEqual(readScenarios(), [old, next]);
+  assert.deepEqual(duplicateScenario(next).analysis, next.analysis);
+});
+
+test('отказ записи версии 2 сохраняет исходную версию 1 целиком', async () => {
+  const raw = JSON.stringify({ schema_version: 1, scenarios: [fixture()] });
+  records.set(SCENARIO_KEY, raw);
+  globalThis.localStorage.setItem = () => { throw new DOMException('quota', 'QuotaExceededError'); };
+  await assert.rejects(mutateScenarios(latest => [...latest, corrected()]), code('unavailable'));
+  assert.equal(records.get(SCENARIO_KEY), raw);
+});
+
+for (const [message, damage] of Object.entries({
+  'база без удалённого идентификатора': context => { context.base_competitors.shift(); },
+  'неверный счётчик': context => { context.counts.removed = 2; },
+  'более 50 поправок': context => { context.applied.added = Array.from({ length: 50 }, (_, i) => ({ id: `manual-${i}`, lat: 52.6, lng: 39.5 })); context.counts.added = 50; },
+  'повтор ручного идентификатора': context => { context.applied.added.push(clone(context.applied.added[0])); context.counts.added++; },
+  'невалидные координаты': context => { context.applied.added[0].lat = 96; },
+  'снимок с черновиком вместо применённой точки': context => { context.applied.added[0].lng += 0.001; },
+  'неверный идентификатор OSM': context => { context.applied.removed[0] = '123'; },
+})) test(`отклоняет повреждённые поправки • ${message}`, () => {
+  const value = corrected();
+  damage(value.analysis.correction_context);
+  assert.equal(validateScenario(value), false);
+});
+
+test('исследование с поправками проверяет происхождение конкурентов и дельту', () => {
+  const value = corrected();
+  assert.equal(validateScenario(value), true);
+  value.analysis.competitors[1].source = 'osm';
+  assert.equal(validateScenario(value), false);
+  value.analysis.competitors[1].source = 'manual';
+  value.analysis.recommendations[0].correction_delta.score_delta = 3;
+  value.analysis.best = clone(value.analysis.recommendations[0]);
+  assert.equal(validateScenario(value), false);
+});
+
+test('повторное обновление читает архив версии 2 и сохраняет поправки при изменении заметки', async () => {
+  const record = corrected();
   const raw = JSON.stringify({ schema_version: 2, scenarios: [record] });
   records.set(SCENARIO_KEY, raw);
   assert.deepEqual(readScenarios(), [record]);

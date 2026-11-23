@@ -1,13 +1,14 @@
 """Преобразование результатов и происхождения данных в публичный JSON."""
-from dataclasses import asdict
 from uuid import uuid4
 
 from src.domain.models import Area, CacheInfo, LoadedData, ScoringResult
 
 
 def cache_metadata(houses_info, competitors_info):
-    return {key: {name: item for name, item in asdict(value).items()
-                  if name != 'provenance' or item is not None} for key, value in (
+    return {key: {'cached': value.cached, 'fetched_at': value.fetched_at,
+                  'stale': value.stale, 'warning': value.warning,
+                  **({'provenance': value.provenance} if value.provenance is not None else {})}
+            for key, value in (
         ('houses', houses_info), ('competitors', competitors_info))
         if isinstance(value, CacheInfo)}
 

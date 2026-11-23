@@ -6,19 +6,52 @@ import { refreshMessage } from './data-delivery.js';
 import { clearKpiFocus } from './kpi-interactions.js';
 import { $, fmt, STORAGE_KEY, showError, storageStatus, initMotion, setAnalysisState, setRevealed, initDialogMotion, openDialog, closeDialog, cancelRevealsWithin, motionReduced } from './ui.js';
 import { configureSaved, loadSaved, renderSaved, updateSaveButtons } from './saved-places.js';
-import { exportCSV, printReport, updateReportAvailability } from './report.js';
-import { configureMap, initMap, clearAnalysisMap, clearPreview, updateCustomUI, drawPreview, drawMap, drawZones, fitArea, toggleLayer } from './map.js';
+import { exportCSV, printReport, updateReportAvailability, initCorrectionReportActions } from './report.js';
+import { configureMap, initMap, clearAnalysisMap, clearPreview, updateCustomUI, drawPreview, drawMap, drawZones, fitArea, toggleLayer, updateCorrectionMap, beginMapCorrections } from './map.js';
 import { selectPlace, showResult } from './recommendations.js';
 import { resetCounters, finishCounters } from './counters.js';
 import { configureScenarios, initScenarios, updateScenarioAvailability } from './scenarios.js';
 import { validateScenario } from './scenario-storage.js';
 import { cancelRequest, fetchCatalog, fetchCalculation, beginCatalogRequest, beginCalculationRequest, finishCatalogRequest, finishCalculationRequest } from './api.js';
+import { initCorrections } from './corrections.js';
 
 
 function bootstrap() {
   initMotion();
   import('./choices.js').then(({initChoiceMenus})=>initChoiceMenus()).catch(()=>{});
   initDialogMotion($('model-dialog'));
+  const formFields = ['district', 'business', 'radius'];
+  let priorForm = {};
+  const rememberForm = () => { priorForm = Object.fromEntries(formFields.map(id => [id, $(id).value])); };
+  const approveLeaveCorrections = () => !corrections.hasUnsaved
+    || window.confirm('Сменить расчёт? Несохранённые поправки будут сброшены. Чтобы оставить их, сохраните исследование.');
+  const acceptParameterChange = id => {
+    if ($(id).value === priorForm[id]) return false;
+    if (approveLeaveCorrections()) { rememberForm(); return true; }
+    $(id).value = priorForm[id];
+    $(id).dispatchEvent(new Event('input', { bubbles: true }));
+    return false;
+  };
+  const corrections = initCorrections({
+    isAvailable: () => Boolean(state.current && !state.activeRequest && $('map').classList.contains('leaflet-container')
+      && ($('district').value !== 'custom' || state.customPoint)
+      && requestParams().toString() === state.currentRequestKey),
+    fetchResult: (value, signal) => fetchCalculation(new URLSearchParams(state.currentRequestKey), signal, value),
+    onEnter: beginMapCorrections,
+    onMap: updateCorrectionMap,
+    onResult(data) {
+      const previous = state.current.recommendations.find(item => item.rank === state.selectedRank);
+      state.current = data;
+      state.openedScenarioId = null;
+      state.selectedRank = (previous && data.recommendations.find(item => item.lat === previous.lat && item.lng === previous.lng)?.rank)
+        || data.recommendations[0]?.rank || 1;
+      drawMap(data, { preserveViewport: true });
+      drawZones();
+      showResult(data, { preserveViewport: true });
+      setAnalysisState('success', data.recommendations.length ? 'Расчёт готов · выберите место на карте' : 'Расчёт готов · подходящих мест не найдено');
+      updateScenarioAvailability();
+    },
+  });
   function refreshFeedback(message = '', busy = false) {
     $('refresh-status').textContent = message;
     $('refresh-status').hidden = !message;
@@ -29,6 +62,7 @@ function bootstrap() {
     clearKpiFocus({immediate:true});
     cancelRequest();
     refreshFeedback();
+    corrections.setAnalysis(null);
     if(preserveResult&&state.current){
       document.querySelectorAll('.kpis,.area-details-grid,#recommendation-list').forEach(container=>{finishCounters(container);cancelRevealsWithin(container);});
       $('error').hidden=true;$('loading-hint').hidden=true;
@@ -94,6 +128,7 @@ function bootstrap() {
       || (selection.district==='custom'&&![...$('radius').options].some(o=>+o.value===selection.area_radius_m))) {
       throw new Error('Область или категория этого сценария недоступна в текущем каталоге. Снимок можно сравнить или выгрузить.');
     }
+    if (!approveLeaveCorrections()) return false;
     const item=structuredClone(record);
     resetSelection();
     $('district').value=item.selection.district;
@@ -101,11 +136,13 @@ function bootstrap() {
     state.customPoint=item.selection.custom_point;
     if(item.selection.district==='custom')$('radius').value=String(item.selection.area_radius_m);
     for(const id of ['district','business','radius'])$(id).dispatchEvent(new Event('input',{bubbles:true}));
+    rememberForm();
     $('thr').value=String(item.view.threshold);$('thr-out').textContent=`${item.view.threshold}%`;
     updateParams();updateCustomUI();clearPreview();
     state.current=item.analysis;state.selectedRank=item.view.selected_rank;
     state.currentRequestKey=requestParams().toString();state.openedScenarioId=item.id;
     drawMap(state.current);drawZones();
+    corrections.setAnalysis(state.current, { saved: true });
     for(const [key,enabled] of Object.entries(item.view.layers)){
       $('layer-'+key).checked=enabled;toggleLayer(key,enabled);
     }
@@ -136,6 +173,7 @@ function bootstrap() {
       $('business').disabled = false;
       $('run').disabled = false;
       $('catalog-status').hidden = true;
+      rememberForm();
       updateParams();
       updateCustomUI();
       run(false);
@@ -162,6 +200,7 @@ function bootstrap() {
     }
     const params = requestParams();
     const requestKey = params.toString(), preserveResult = !!state.current;
+    const currentCorrections = requestKey === state.currentRequestKey ? corrections.value : undefined;
     if (refresh) params.set('refresh', '1');
     if (preserveResult) {
       cancelRequest();
@@ -169,6 +208,8 @@ function bootstrap() {
     }
     else resetSelection();
     const version = state.requestVersion, request = beginCalculationRequest(), controller = request.controller;
+    corrections.suspend();
+    corrections.render();
     $('run').disabled = true;
     $('refresh-data').disabled = true;
     refreshFeedback(refresh ? (state.current?.data_delivery?.mode === 'daily'
@@ -183,7 +224,7 @@ function bootstrap() {
       $('result-empty').querySelector('p').textContent = 'Сопоставляем жителей и конкурентов в выбранной области.';
     }
     try {
-      const data = await fetchCalculation(params, controller.signal);
+      const data = await fetchCalculation(params, controller.signal, currentCorrections);
       if (version !== state.requestVersion) return;
       if (data.status !== 'success'||!Array.isArray(data.recommendations)||!data.analysis_id) throw new Error('Invalid calculation response');
       state.current = data;
@@ -192,6 +233,7 @@ function bootstrap() {
       state.selectedRank = data.recommendations[0]?.rank||1;
       clearPreview();
       drawMap(data);
+      corrections.setAnalysis(data, { keepMode: currentCorrections !== undefined });
       drawZones();
       showResult(data,{freshCalculation:true});
       fitArea(data);
@@ -215,6 +257,7 @@ function bootstrap() {
       finishCalculationRequest(request);
       if (version === state.requestVersion) {
         state.activeRequest = null;
+        corrections.render();
         $('run').disabled = false;
         $('refresh-data').disabled = false;
         $('run').textContent = 'Найти места';
@@ -227,16 +270,19 @@ function bootstrap() {
   $('run').addEventListener('click', () => run(false));
   $('retry-catalog').addEventListener('click', loadCatalog);
   $('district').addEventListener('change', () => {
+    if (!acceptParameterChange('district')) return;
     resetSelection({preserveResult:true});
-    updateCustomUI();
+    updateCustomUI({ chooseCenter: true });
     if ($('district').value !== 'custom') run(false);
     else $('map-context').textContent = 'Выберите центр своей области на карте';
   });
   $('business').addEventListener('change', () => {
+    if (!acceptParameterChange('business')) return;
     resetSelection({preserveResult:true});
     updateParams();
   });
   $('radius').addEventListener('change', () => {
+    if (!acceptParameterChange('radius')) return;
     resetSelection({preserveResult:true});
     drawPreview();
   });
@@ -251,6 +297,7 @@ function bootstrap() {
   });
   $('export-csv').addEventListener('click', exportCSV);
   $('print-report').addEventListener('click', printReport);
+  initCorrectionReportActions();
   $('model-button').addEventListener('click', () => openDialog($('model-dialog')));
   $('close-model').addEventListener('click', () => closeDialog($('model-dialog')));
   $('model-dialog').addEventListener('click', e => {
@@ -270,10 +317,19 @@ function bootstrap() {
     updateReportAvailability
   });
   configureScenarios({captureCurrent,restoreScenario});
+  document.addEventListener('gm:scenario-saved', event => {
+    const analysis = event.detail.analysis;
+    if (analysis.analysis_id === state.current?.analysis_id) corrections.markSaved(analysis.correction_context?.applied);
+  });
   initScenarios();
   configureMap({
-    resetSelection:()=>resetSelection({preserveResult:true}),
-    selectPlace
+    resetSelection: () => {
+      if (!approveLeaveCorrections()) return false;
+      resetSelection({ preserveResult: true });
+    },
+    selectPlace,
+    correctionTap: point => corrections.mapTap(point),
+    removeCompetitor: (point, colocated) => corrections.removePoint(point, colocated),
   });
   loadSaved();
   renderSaved();

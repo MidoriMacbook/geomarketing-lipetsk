@@ -107,4 +107,5 @@ def score_locations(houses, competitors, center, half, parameters) -> ScoringRes
               'lng_min': lng_min, 'lng_max': lng_max,
               'scores': np.round(score, 3).tolist()},
         centroids=centroids,
+        scores=score,
     )

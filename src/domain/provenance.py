@@ -145,3 +145,12 @@ def provenance_summary(rows):
             'duplicates_removed': metadata['duplicates_removed'],
             'possible_node_way_pairs': len(metadata['possible_node_way_pairs']),
             'same_geometry_groups': len(metadata.get('same_geometry_groups', []))}
+
+
+def osm_ids(rows):
+    """Сохраняем порядок числовых строк, в том числе записи с неизвестным ID."""
+    metadata = getattr(rows, 'provenance', None)
+    if metadata is None:
+        return ()
+    return tuple(f"{record['osm_type']}:{record['osm_id']}" if record['osm_id'] is not None else None
+                 for record in metadata['records'])
