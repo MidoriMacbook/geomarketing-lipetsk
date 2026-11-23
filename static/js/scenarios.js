@@ -4,6 +4,7 @@ import { $, node, button, fmt, coords, distance, openDialog, closeDialog, initDi
 import { SCENARIO_KEY, SCENARIO_LIMIT, readScenarios, mutateScenarios, clearDamagedScenarios, duplicateScenario } from './scenario-storage.js';
 import { qualityBlock, qualitySummary } from './data-quality.js';
 import { exportScenariosCSV, printScenarios } from './scenario-report.js';
+import { correctionSummary, exportCompetitorsCSV, printFieldChecklist } from './report.js';
 
 let callbacks = {}, pending = false, damagedRaw = null, storageProblem = false, editingId = null, draft = null, deletingId = null;
 export function configureScenarios(config) { callbacks = config; }
@@ -66,7 +67,7 @@ function editDialog(item = null) {
   }
   $('scenario-dialog-title').textContent = item ? 'Изменить исследование' : 'Сохранить исследование';
   const analysis = item?.analysis || draft.analysis;
-  $('scenario-form-context').textContent = `${analysis.district_name} · ${analysis.business_name}. Снимок включает карту, рекомендации и настройки.`;
+  $('scenario-form-context').textContent = [`${analysis.district_name} · ${analysis.business_name}. Снимок включает карту, рекомендации и настройки.`, correctionSummary(analysis)].filter(Boolean).join(' ');
   $('scenario-name').value = item?.name || `${analysis.district_name} · ${analysis.business_name} · ${new Date().toLocaleDateString('ru-RU')}`.slice(0, 80);
   $('scenario-note').value = item?.note || '';
   $('scenario-form-error').hidden = true;
@@ -137,6 +138,9 @@ function renderComparison() {
     ['Ограничения данных', item => qualitySummary(item.analysis).reasons.join(' ')],
     ['Заметка', item => item.note || 'Не указана']
   ];
+  if (items.some(item => item.analysis.correction_context)) {
+    rows.push(['Мои поправки', item => correctionSummary(item.analysis) || 'Без поправок']);
+  }
   rows.forEach(([title, value]) => { const row = node('tr'), label = node('th', '', title); label.scope = 'row'; row.append(label); items.forEach(item => row.append(node('td', '', value(item)))); body.append(row); });
   table.append(body); scroll.append(table); container.append(scroll);
 }
@@ -155,6 +159,8 @@ function render() {
     card.dataset.testid = 'scenario-card'; card.dataset.scenarioId = item.id;
     card.tabIndex = -1;
     card.append(node('h3', '', item.name), node('p', 'scenario-context', `${a.district_name} · ${a.business_name}`), node('p', '', `Расчёт: ${timestamp(a.calculated_at)} · Сохранён: ${timestamp(item.saved_at)}`), qualityBlock(a, true), node('p', '', `Выбрано ${recText(a.recommendations.find(rec => rec.rank === item.view.selected_rank))}`), node('p', 'scenario-note', item.note || 'Заметка не добавлена'));
+    const corrections = correctionSummary(a);
+    if (corrections) card.append(node('p', 'scenario-context', corrections));
     const actions = node('div', 'scenario-actions');
     const add = (label, testid, action, mutation = false) => {
       const control = button(label, 'button secondary', action); control.dataset.testid = testid;
@@ -174,6 +180,10 @@ function render() {
     const compare = add('Сравнить', 'scenario-compare', () => toggleCompare(item));
     compare.setAttribute('aria-pressed', String(state.scenarioComparison.has(item.id)));
     add('Удалить', 'scenario-delete', () => { deletingId = item.id; $('scenario-delete-name').textContent = item.name; openDialog($('scenario-delete-dialog')); $('scenario-delete-cancel').focus(); }, true);
+    if (corrections) {
+      if (a.competitors.length) add('CSV конкурентов', 'scenario-competitors-export', () => exportCompetitorsCSV(a));
+      add('Печать чек-листа', 'scenario-field-checklist', () => printFieldChecklist(a, a.recommendations.find(rec => rec.rank === item.view.selected_rank)));
+    }
     card.append(actions); $('scenario-list').append(card); reveal(card, 'scenario');
   });
   renderComparison(); updateScenarioAvailability();
