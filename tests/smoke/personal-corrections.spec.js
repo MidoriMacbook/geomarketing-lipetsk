@@ -28,16 +28,6 @@ async function add(page, x = .72, y = .51) {
 test('поправки карты, отмена, архив и печатный чек-лист', async ({ page, baseURL }) => {
   await ready(page, baseURL);
   const original = await current(page);
-  await page.locator('#layer-centroids').evaluate(input => {
-    input.checked = false;
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-  });
-  await mapBox(page);
-  await page.locator('[data-competitor-id="node:123"]').tap();
-  const existing = page.locator('.competitor-card');
-  await expect(existing.getByText('OSM ID: node:123')).toBeVisible();
-  await expect(page.locator('#correction-count')).toContainText('Добавлено вручную: 0');
-  await existing.getByRole('button', { name: 'Закрыть карточку' }).tap();
   const accepted = page.waitForResponse(post);
   await add(page);
   await expect(page.locator('#correction-count')).toContainText('Добавлено вручную: 1');
@@ -93,6 +83,23 @@ test('поправки карты, отмена, архив и печатный 
   await card.getByTestId('scenario-field-checklist').click();
   await expect(page.locator('#print-report-content')).toContainText('Чек-лист проверки на месте');
   await expect(page.locator('#print-report-content')).toContainText('Подтверждено');
+});
+
+test('тап по учтённому конкуренту в режиме добавления открывает карточку без поправки', async ({ page, baseURL }) => {
+  await ready(page, baseURL);
+  await page.locator('#layer-centroids').evaluate(input => {
+    input.checked = false;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await mapBox(page);
+  const marker = page.locator('[data-competitor-id="node:123"]');
+  await marker.tap();
+  const card = page.locator('.competitor-card');
+  await expect(card.getByText('OSM ID: node:123')).toBeVisible();
+  await expect(page.locator('#correction-count')).toContainText('Добавлено вручную: 0');
+  await expect(page.locator('.map-inspection')).toHaveCount(0);
+  await card.getByRole('button', { name: 'Закрыть карточку' }).tap();
+  await expect(marker).toBeFocused();
 });
 
 test('панорамирование и щипок не добавляют конкурента', async ({ page, baseURL, browserName }) => {
