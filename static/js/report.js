@@ -33,8 +33,8 @@ function competitorSource(competitor, analysis) {
 export function exportCompetitorsCSV(analysis) {
   if (!analysis?.competitors.length) return;
   downloadCSV([
-    ['Широта', 'Долгота', 'Идентификатор', 'Источник'],
-    ...analysis.competitors.map(row => [row.lat, row.lng, row.id, competitorSource(row, analysis)])
+    ['Широта', 'Долгота', 'Идентификатор', 'Источник', 'Название', 'Адрес'],
+    ...analysis.competitors.map(row => [row.lat, row.lng, row.id, competitorSource(row, analysis), row.name, row.address])
   ], 'geomarketing-competitors');
 }
 

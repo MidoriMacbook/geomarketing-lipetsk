@@ -52,14 +52,10 @@ class Corrections:
         return cls(tuple((key, *points[key]) for key in sorted(points)), tuple(sorted(removed)))
 
     def apply(self, loaded: LoadedData):
-        ids = loaded.competitor_ids or (None,) * len(loaded.competitors)
-        if set(self.removed) - set(ids):
+        if set(self.removed) - set(loaded.competitor_ids):
             raise UserError('Некоторые конкуренты для удаления отсутствуют в исходных данных расчёта.')
 
-        base = [
-            {'id': key, 'lat': float(lat), 'lng': float(lng), 'source': 'osm'}
-            for key, (lat, lng) in zip(ids, loaded.competitors, strict=True)
-        ]
+        base = loaded.describe_competitors()
         added = [{'id': key, 'lat': lat, 'lng': lng} for key, lat, lng in self.added]
         removed = set(self.removed)
         effective = [row for row in base if row['id'] not in removed]

@@ -106,6 +106,36 @@ test('повторное обновление читает архив верси
   });
 });
 
+test('архив версии 2 сохраняет поля учтённых объектов по типизированному ID', async () => {
+  const record = corrected();
+  const { analysis } = record;
+  const survivor = { ...analysis.correction_context.base_competitors[0], id: 'way:123', address: 'Балмочных, 11' };
+  analysis.correction_context.base_competitors.splice(1, 0, survivor);
+  analysis.competitors.unshift(clone(survivor));
+  analysis.stats.competitors += 1;
+  await mutateScenarios(() => [record]);
+  assert.equal(JSON.parse(records.get(SCENARIO_KEY)).schema_version, 2);
+  assert.deepEqual(readScenarios(), [record]);
+  analysis.competitors[0].address = 'Другой адрес';
+  assert.equal(validateScenario(record), false);
+});
+
+test('архив проверяет тип метаданных и их принадлежность записи OSM', () => {
+  const record = fixture();
+  record.analysis.stats.competitors = 1;
+  const competitor = { lat: 52.601, lng: 39.5, source: 'osm', id: 'relation:321', name: 'Кофе «У сада»' };
+  record.analysis.competitors = [competitor];
+  assert.equal(validateScenario(record), true);
+  competitor.name = { text: 'Кофе' };
+  assert.equal(validateScenario(record), false);
+  competitor.name = 'Кофе';
+  competitor.id = 'relation:0';
+  assert.equal(validateScenario(record), false);
+  competitor.id = 'relation:321';
+  record.analysis.source = 'demo';
+  assert.equal(validateScenario(record), false);
+});
+
 test('roundtrip and latest-read edit/delete do not alter separate saved places', async () => {
   assert.equal(SCENARIO_KEY, 'geomarketing.scenarios.v1');
   assert.equal(SCENARIO_LIMIT, 6);

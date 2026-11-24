@@ -28,6 +28,44 @@ def house(ident):
 
 
 class ProvenanceTests(unittest.TestCase):
+    def test_display_metadata_uses_own_tags_and_keeps_typed_identity(self):
+        node = {**competitor('node', 1), 'tags': {
+            'name:ru': ' Кофейня "У дома" ', 'name': 'Kofe', 'addr:full': ' Липецк, Пушкина, 10 ',
+            'addr:street': 'Другая улица', 'addr:housenumber': '21', 'website': 'https://example.org',
+        }}
+        way = {**competitor('way', 1), 'tags': {
+            'name:ru': ' \ufeff ', 'name': ' \ufeff= Кофейня ', 'addr:full': '\ufeff ', 'addr:place': 'посёлок Дачный',
+            'addr:housename': 'Старый дом',
+        }}
+        relation = {**competitor('relation', 1), 'tags': {'name': ' ', 'addr:street': 'ул. Садовая'}}
+        rows = osm.parse_competitors([node, {**node, 'tags': {'name': 'Другое имя'}}, way, relation],
+                                     fetched_at=100)
+        self.assertEqual(rows, [[52.5935, 39.48]] * 3)
+        self.assertEqual(rows.provenance['duplicates_removed'], 1)
+        self.assertEqual(rows.provenance['records'], [
+            {'osm_type': 'node', 'osm_id': 1, 'fetched_at': 100,
+             'name': 'Кофейня "У дома"', 'address': 'Липецк, Пушкина, 10'},
+            {'osm_type': 'way', 'osm_id': 1, 'fetched_at': 100,
+             'name': '= Кофейня', 'address': 'посёлок Дачный, Старый дом'},
+            {'osm_type': 'relation', 'osm_id': 1, 'fetched_at': 100},
+        ])
+
+    def test_metadata_is_optional_and_length_is_bounded_in_code_points(self):
+        name, street = 'я😀' * 70, 'Садовая'
+        rows = osm.parse_competitors([
+            {**competitor('node', 1), 'tags': {'name': name}},
+            {**competitor('way', 1), 'tags': {'addr:street': street, 'addr:housenumber': ' 15 '}},
+            {**competitor('relation', 1), 'tags': {'addr:full': 'ъ' * 200}},
+            {'type': 'node', 'lat': 52.59, 'lon': 39.48, 'tags': {'name': 'Без ID'}},
+        ])
+        records = rows.provenance['records']
+        self.assertEqual(records[0]['name'], name[:120])
+        self.assertNotIn('address', records[0])
+        self.assertNotIn('name', records[1])
+        self.assertEqual(records[1]['address'], f'{street}, 15')
+        self.assertEqual(records[2]['address'], 'ъ' * 180)
+        self.assertNotIn('name', records[3])
+
     def test_same_identity_is_removed_but_nearby_distinct_objects_survive(self):
         elements = [competitor('node', 1), competitor('node', 1),
                     competitor('node', 2, lng=39.48001), competitor('way', 1)]
@@ -71,7 +109,8 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(len(city_data.select_area(legacy, area_for('eleytsky'), 'cafe')[1]), 1)
 
     def test_cache_round_trip_retains_provenance_without_changing_numeric_rows(self):
-        rows = osm.parse_competitors([competitor('node', 1), competitor('way', 1)])
+        rows = osm.parse_competitors([{**competitor('node', 1), 'tags': {'name': 'Роза'}},
+                                      {**competitor('way', 1), 'tags': {'addr:full': 'Новая, 11'}}])
         with tempfile.TemporaryDirectory(dir=Path(__file__).parent, prefix='tmp-') as folder:
             from unittest.mock import patch
             target = Path(folder) / 'comp.json'
@@ -81,6 +120,20 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(restored, rows)
         self.assertEqual(saved, 100)
         self.assertEqual(restored.provenance, rows.provenance)
+        self.assertEqual(restored.provenance['records'][0]['name'], 'Роза')
+        self.assertEqual(restored.provenance['records'][1]['address'], 'Новая, 11')
+
+    def test_invalid_display_fields_in_city_bundle_are_rejected(self):
+        rows = osm.parse_competitors([competitor('node', 1)])
+        bundle = city_data.make_bundle(city_rows(), {key: rows for key in BUSINESS_CATALOG}, time.time())
+        for invalid in ({'name': ['не текст']}, {'name': 'п' * 121}, {'address': ' '}, {'address': '\ufeff'},
+                        {'address': ' а' * 181}, {'osm_id': None, 'osm_type': None, 'name': 'Без ID'}):
+            with self.subTest(invalid=invalid):
+                changed = copy.deepcopy(bundle)
+                changed['provenance']['competitors']['cafe']['records'][0].update(invalid)
+                changed['version'] = city_data.digest(changed)
+                with self.assertRaises(ValueError):
+                    city_data.validate_bundle(changed)
 
     def test_live_daily_and_snapshot_keep_the_same_distinct_competitors(self):
         from unittest.mock import patch

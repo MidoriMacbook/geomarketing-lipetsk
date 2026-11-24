@@ -19,18 +19,34 @@ const analysis = {
   recommendations: [{ rank: 1, lat: 52.6, lng: 39.5, score: 0.88 }],
   correction_context: { counts: { added: 1, removed: 2 } },
   competitors: [
-    { id: 'node:123', source: 'osm', lat: 52.602, lng: 39.5 },
+    { id: 'node:123', source: 'osm', lat: 52.602, lng: 39.5, name: 'Кофе "У сада"; зал', address: '=42' },
     { id: 'manual-b', source: 'manual', lat: 52.601, lng: 39.5 }
   ]
 };
 
-test('CSV конкурентов разделяет источники OSM и вручную и сохраняет координаты', async () => {
+test('CSV конкурентов сохраняет порядок и экранирует названия и адреса OSM', async () => {
   let url;
   const link = { click() { url = this.href; }, remove() {} };
   globalThis.document = { createElement: () => link, body: { append() {} } };
   exportCompetitorsCSV(analysis);
   const csv = await (await fetch(url)).text();
-  assert.equal(csv, '"Широта";"Долгота";"Идентификатор";"Источник"\r\n"52.602";"39.5";"node:123";"OSM"\r\n"52.601";"39.5";"manual-b";"вручную"');
+  assert.equal(csv, [
+    '"Широта";"Долгота";"Идентификатор";"Источник";"Название";"Адрес"',
+    '"52.602";"39.5";"node:123";"OSM";"Кофе ""У сада""; зал";"\'=42"',
+    '"52.601";"39.5";"manual-b";"вручную";"";""'
+  ].join('\r\n'));
+});
+
+test('CSV оставляет необязательные поля демо и старого снимка пустыми', async () => {
+  let url;
+  const link = { click() { url = this.href; }, remove() {} };
+  globalThis.document = { createElement: () => link, body: { append() {} } };
+  const competitors = [{ lat: 52.6, lng: 39.5 }];
+  for (const [source, expected] of [['demo', 'демо'], ['cache', 'OSM']]) {
+    exportCompetitorsCSV({ source, competitors });
+    const csv = await (await fetch(url)).text();
+    assert.equal(csv.split('\r\n')[1], `"52.6";"39.5";"";"${expected}";"";""`);
+  }
 });
 
 test('чек-лист печатает выбранное место, ближайших конкурентов, поправки и поля проверки', () => {

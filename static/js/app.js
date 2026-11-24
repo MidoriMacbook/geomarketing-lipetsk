@@ -329,7 +329,7 @@ function bootstrap() {
     },
     selectPlace,
     correctionTap: point => corrections.mapTap(point),
-    removeCompetitor: (point, colocated) => corrections.removePoint(point, colocated),
+    removeCompetitor: (point, colocated, opener) => corrections.removePoint(point, colocated, opener),
   });
   loadSaved();
   renderSaved();

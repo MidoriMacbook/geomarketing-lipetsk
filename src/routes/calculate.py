@@ -49,4 +49,4 @@ def run_calculation():
     if request.method == 'POST' and 'corrections' in payload:
         corrections = Corrections.parse(payload['corrections'], area['center'], area['radius'])
         return jsonify(analyze(area, business, refresh, corrections=corrections))
-    return jsonify(analyze(area, business, refresh))
+    return jsonify(analyze(area, business, refresh, competitor_details=params.get('competitor_details') == '1'))

@@ -20,6 +20,7 @@ class CacheInfo:
     warning: str | None = None
     provenance: dict | None = None
     competitor_ids: tuple[str | None, ...] = ()
+    competitor_details: dict[str, dict[str, str]] = field(default_factory=dict)
 
     def __bool__(self):
         return self.cached
@@ -34,6 +35,16 @@ class LoadedData:
     metadata: dict = field(default_factory=dict)
     delivery: dict | None = None
     competitor_ids: tuple[str | None, ...] = ()
+    competitor_details: dict[str, dict[str, str]] = field(default_factory=dict)
+
+    def describe_competitors(self):
+        source = 'demo' if self.source == 'demo' else 'osm'
+        ids = self.competitor_ids or (None,) * len(self.competitors)
+        return [
+            {'id': key, 'lat': float(lat), 'lng': float(lng), 'source': source,
+             **(self.competitor_details.get(key, {}) if key is not None else {})}
+            for key, (lat, lng) in zip(ids, self.competitors, strict=True)
+        ]
 
 
 @dataclass(frozen=True)

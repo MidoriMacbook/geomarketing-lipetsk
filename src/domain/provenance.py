@@ -1,7 +1,13 @@
 """Необязательное происхождение числовых строк OSM без изменения прежнего формата."""
 import copy
 import math
+import re
 import time
+
+
+# Пределы отображаемых полей в кодовых точках Unicode после удаления крайних пробелов.
+COMPETITOR_TEXT_LIMITS = {'name': 120, 'address': 180}
+_TEXT_PADDING = re.compile(r'^[\s\ufeff]+|[\s\ufeff]+\Z')
 
 
 class ProvenancedRows(list):
@@ -26,6 +32,30 @@ def source_record(element, fetched_at, population=None):
     if population is not None:
         record['population'] = population
     return record
+
+
+def competitor_details(tags):
+    """Берём два поля только из тегов самого объекта."""
+    if not isinstance(tags, dict):
+        return {}
+
+    def tag(key):
+        value = tags.get(key)
+        return _TEXT_PADDING.sub('', value) if isinstance(value, str) else ''
+
+    name = tag('name:ru') or tag('name')
+    address = tag('addr:full')
+    if not address:
+        place = tag('addr:street') or tag('addr:place')
+        building = tag('addr:housenumber') or tag('addr:housename')
+        if place and building:
+            # Оставляем место для номера или названия дома при длинном названии улицы.
+            limit = COMPETITOR_TEXT_LIMITS['address']
+            building = _TEXT_PADDING.sub('', building[:limit - 3])
+            place = _TEXT_PADDING.sub('', place[:limit - len(building) - 2])
+            address = f'{place}, {building}'
+    return {key: _TEXT_PADDING.sub('', value[:COMPETITOR_TEXT_LIMITS[key]])
+            for key, value in (('name', name), ('address', address)) if value}
 
 
 def possible_node_way_pairs(rows, records):
@@ -100,6 +130,13 @@ def validate_provenance(metadata, rows, columns):
             if (kind, ident) in seen:
                 raise ValueError('Повтор исходного объекта OSM')
             seen.add((kind, ident))
+        if columns == 2:
+            for key, limit in COMPETITOR_TEXT_LIMITS.items():
+                if key in record:
+                    value = record[key]
+                    if (ident is None or not isinstance(value, str)
+                            or not 0 < len(value) <= limit or _TEXT_PADDING.search(value)):
+                        raise ValueError('Некорректное название или адрес объекта OSM')
         try:
             valid_date = (type(saved) in (int, float) and math.isfinite(saved)
                           and 0 < saved <= time.time() + 300)
@@ -154,3 +191,16 @@ def osm_ids(rows):
         return ()
     return tuple(f"{record['osm_type']}:{record['osm_id']}" if record['osm_id'] is not None else None
                  for record in metadata['records'])
+
+
+def osm_competitor_details(rows):
+    """Индексируем пригодные поля по тому же ID, который используется для поправок."""
+    metadata = getattr(rows, 'provenance', None)
+    if metadata is None:
+        return {}
+    result = {}
+    for identity, record in zip(osm_ids(rows), metadata['records'], strict=True):
+        details = {key: record[key] for key in COMPETITOR_TEXT_LIMITS if key in record}
+        if identity is not None and details:
+            result[identity] = details
+    return result
