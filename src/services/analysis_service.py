@@ -72,7 +72,8 @@ def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
                           ' '.join(warnings) or None, metadata,
                           {'mode': 'daily', 'status': 'unavailable', 'interval_hours': 24}
                           if CITY_DATA_URL else None,
-                          competitor_ids=getattr(c_cached, 'competitor_ids', ()))
+                          competitor_ids=getattr(c_cached, 'competitor_ids', ()),
+                          competitor_details=getattr(c_cached, 'competitor_details', {}))
     except Exception as exc:  # noqa: BLE001
         if CITY_DATA_URL:
             raise UserError('Ежедневная выгрузка временно недоступна, а для этой области '
@@ -123,7 +124,8 @@ def _score_with_corrections(area, business, loaded, half, corrections):
     return loaded, scored, baseline, effective, context
 
 
-def analyze(area: Area, business: str, refresh: bool = False, *, corrections: Corrections | None = None) -> dict:
+def analyze(area: Area, business: str, refresh: bool = False, *, corrections: Corrections | None = None,
+            competitor_details: bool = False) -> dict:
     if business not in BUSINESS_CATALOG:
         raise UserError('Неизвестный тип бизнеса. Выберите тип из списка.')
     parameters = BUSINESS_CATALOG[business]
@@ -157,4 +159,6 @@ def analyze(area: Area, business: str, refresh: bool = False, *, corrections: Co
         payload['correction_context'] = context
         for row, delta in zip(payload['recommendations'], recommendation_deltas(baseline, scored), strict=True):
             row['correction_delta'] = delta
+    elif competitor_details:
+        payload['competitors'] = loaded.describe_competitors()
     return payload

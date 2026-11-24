@@ -4,7 +4,19 @@ import { state } from './state.js';
 import { $, fmt, coords, distance, LIMITATIONS, node, dateText, sourceText, dataDate } from './ui.js';
 import { comparisonRows } from './saved-places.js';
 import { qualitySummary, qualityBlock, explanationBlock } from './data-quality.js';
+import { describeCompetitor } from './competitor-card.js';
 
+const OSM_COPYRIGHT = 'https://www.openstreetmap.org/copyright';
+const usesOpenStreetMap = source => source === 'osm' || source === 'cache';
+
+export function appendPrintAttribution(report, sources) {
+  if (!sources.some(usesOpenStreetMap)) return;
+  const footer = node('footer', 'print-osm-attribution', '© участники OpenStreetMap. Данные доступны по лицензии ODbL. ');
+  const link = node('a', '', OSM_COPYRIGHT);
+  link.href = OSM_COPYRIGHT;
+  footer.append(link);
+  report.append(footer);
+}
 
 export function csvCell(value) {
   let text = value === null || value === undefined ? '' : String(value);
@@ -33,8 +45,8 @@ function competitorSource(competitor, analysis) {
 export function exportCompetitorsCSV(analysis) {
   if (!analysis?.competitors.length) return;
   downloadCSV([
-    ['Широта', 'Долгота', 'Идентификатор', 'Источник'],
-    ...analysis.competitors.map(row => [row.lat, row.lng, row.id, competitorSource(row, analysis)])
+    ['Широта', 'Долгота', 'Идентификатор', 'Источник', 'Название', 'Адрес'],
+    ...analysis.competitors.map(row => [row.lat, row.lng, row.id, competitorSource(row, analysis), row.name, row.address])
   ], 'geomarketing-competitors');
 }
 
@@ -80,16 +92,23 @@ export function printFieldChecklist(analysis, place) {
   report.replaceChildren(
     node('h1', 'field-checklist-heading', 'Чек-лист проверки на месте'),
     node('p', '', `${analysis.district_name} · ${analysis.business_name} · ${placeLabel(place)}`),
-    node('p', '', `Адрес: ${address}`),
+    node('p', 'field-checklist-place-address', `Адрес: ${address}`),
     node('p', '', `Координаты: ${coords(place)}. Относительная оценка внутри расчёта: ${scoreText(place.score)}.`)
   );
   const corrections = correctionSummary(analysis);
   if (corrections) report.append(node('p', '', corrections));
   report.append(node('h2', '', 'Ближайшие конкуренты по прямой'));
   if (closest.length) {
-    const list = node('ol');
+    const list = node('ol', 'field-checklist-competitors');
     for (const { competitor, meters } of closest) {
-      list.append(node('li', '', `${distance(meters)} · ${coords(competitor)} · ${competitorSource(competitor, analysis)}`));
+      const details = describeCompetitor(competitor, analysis.source);
+      const facts = [distance(meters), coords(competitor), competitorSource(competitor, analysis)];
+      if (details.id) facts.push(details.id);
+      const item = node('li');
+      item.append(node('strong', '', details.title));
+      if (details.address) item.append(node('p', 'field-checklist-competitor-address', details.address));
+      item.append(node('p', '', facts.join(' · ')));
+      list.append(item);
     }
     report.append(list);
   } else {
@@ -103,6 +122,7 @@ export function printFieldChecklist(analysis, place) {
     node('p', '', '________________________________________________'),
     node('p', '', '________________________________________________')
   );
+  appendPrintAttribution(report, [analysis.source]);
   window.print();
 }
 
@@ -159,5 +179,6 @@ export function printReport() {
     items.forEach(i => report.append(reportPlace(i.recommendation, i)));
   }
   report.append(node('h2', '', 'Ограничения и интерпретация'), node('p', '', LIMITATIONS), node('p', '', 'Перед открытием бизнеса проверьте место на местности. Карта в печатный отчёт не включена.'));
+  appendPrintAttribution(report, [state.current?.source, ...items.map(item => item.source)]);
   window.print();
 }

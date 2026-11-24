@@ -1,0 +1,542 @@
+{
+  "after": {
+    "code": {
+      "collector_diff_sha256": "65f5ad71817631fc0e54ec83cc326e53b5c337bc94103f49055dd93f53d3aac3",
+      "collector_worktree_changed": true,
+      "commit": "2c7419dfc6aa1f862fc67974f34d89ee3e3fa317",
+      "source": "working tree"
+    },
+    "hours_utc_fixed": "2026-11-24T14:00:29.245828+00:00",
+    "input": {
+      "competitor_response_sha256": "d32ecdef0d3e024839cf6651ab5514bf957b5167b55369152e77c8579f0615e2",
+      "competitor_tag_provenance": {
+        "cutoff_utc": "2026-11-24T14:00:29.245828+00:00",
+        "max_node_offset_deg": 4.999999987376214e-07,
+        "network_bytes_total": 63885,
+        "network_seconds_total": 3.801742,
+        "published_categories": {
+          "bakery": 32,
+          "beauty": 160,
+          "cafe": 166,
+          "dentist": 43,
+          "fast_food": 106,
+          "fitness": 18,
+          "florist": 56,
+          "grocery": 417,
+          "pet": 18,
+          "pharmacy": 199
+        },
+        "receipts": [
+          {
+            "batch": 1,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/nodes.json",
+            "ids": 380,
+            "kind": "node",
+            "received_utc": "2026-11-24T17:23:05.132053+00:00",
+            "response": "osm-raw-nodes-1.json",
+            "response_sha256": "0ac98642212a40a0e16dd681daba2e04a2827b39164ddb500929b19261ad9fa2",
+            "seconds": 0.962389,
+            "status": 200,
+            "transferred_bytes": 19927
+          },
+          {
+            "batch": 2,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/nodes.json",
+            "ids": 380,
+            "kind": "node",
+            "received_utc": "2026-11-24T17:23:05.899381+00:00",
+            "response": "osm-raw-nodes-2.json",
+            "response_sha256": "94275c240f53e3a007237cbb32fea0585b6cf468fe6ffd8ef1a3020b4181cdc9",
+            "seconds": 0.726376,
+            "status": 200,
+            "transferred_bytes": 19824
+          },
+          {
+            "batch": 3,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/nodes.json",
+            "ids": 325,
+            "kind": "node",
+            "received_utc": "2026-11-24T17:23:06.269765+00:00",
+            "response": "osm-raw-nodes-3.json",
+            "response_sha256": "cf664a69a2934bacf1d5a30693ce47048be242db5377f9be50f824486eede6d8",
+            "seconds": 0.337101,
+            "status": 200,
+            "transferred_bytes": 11885
+          },
+          {
+            "batch": 1,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/relations.json",
+            "ids": 1,
+            "kind": "relation",
+            "received_utc": "2026-11-24T17:23:07.609164+00:00",
+            "response": "osm-raw-relations-1.json",
+            "response_sha256": "65c71087faf09164a485e84856c3c47c6fea35f5870b13ecdf4062c4a54e6adb",
+            "seconds": 1.308111,
+            "status": 200,
+            "transferred_bytes": 536
+          },
+          {
+            "batch": 1,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/ways.json",
+            "ids": 129,
+            "kind": "way",
+            "received_utc": "2026-11-24T17:23:08.108379+00:00",
+            "response": "osm-raw-ways-1.json",
+            "response_sha256": "b12875c06b7648bd37cf80e49e40cf62f685a6dde216646b079bf6455bce4a82",
+            "seconds": 0.467765,
+            "status": 200,
+            "transferred_bytes": 11713
+          }
+        ],
+        "source": "OpenStreetMap object API multi-fetch by typed ID",
+        "tags_receipt_sha256": "60b6337b1d19ad3af414cb782281d7b5c1421f5afc17f8e91fc90279e0307d53",
+        "unique_ids": 1215
+      },
+      "house_geometry_parsing_timed": false,
+      "house_replay": "all published rows and original provenance at the return boundary of parse_houses",
+      "kind": "full_published_set_replay",
+      "network_wait_timed": false,
+      "way_relation_centers": "published coordinates; API center unavailable"
+    },
+    "milliseconds": {
+      "build": {
+        "median": 2104.032,
+        "samples": [
+          1787.412,
+          2418.761,
+          2244.332,
+          2104.032,
+          2139.297,
+          1861.218,
+          2007.432
+        ]
+      },
+      "pack_and_write": {
+        "median": 160.92,
+        "samples": [
+          214.442,
+          160.92,
+          152.944,
+          173.153,
+          133.606,
+          151.556,
+          174.11
+        ]
+      },
+      "total": {
+        "median": 2272.903,
+        "samples": [
+          2001.855,
+          2579.681,
+          2397.276,
+          2277.185,
+          2272.903,
+          2012.775,
+          2181.542
+        ]
+      }
+    },
+    "output": {
+      "by_category": {
+        "bakery": {
+          "address": 3,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 19,
+          "operator": 0,
+          "total": 32
+        },
+        "beauty": {
+          "address": 13,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 101,
+          "operator": 4,
+          "total": 160
+        },
+        "cafe": {
+          "address": 26,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 136,
+          "operator": 7,
+          "total": 166
+        },
+        "dentist": {
+          "address": 7,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 26,
+          "operator": 1,
+          "total": 43
+        },
+        "fast_food": {
+          "address": 11,
+          "brand": 29,
+          "brand:wikidata": 28,
+          "name": 74,
+          "operator": 4,
+          "total": 106
+        },
+        "fitness": {
+          "address": 3,
+          "brand": 1,
+          "brand:wikidata": 1,
+          "name": 15,
+          "operator": 0,
+          "total": 18
+        },
+        "florist": {
+          "address": 4,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 17,
+          "operator": 0,
+          "total": 56
+        },
+        "grocery": {
+          "address": 97,
+          "brand": 219,
+          "brand:wikidata": 219,
+          "name": 339,
+          "operator": 167,
+          "total": 417
+        },
+        "pet": {
+          "address": 2,
+          "brand": 2,
+          "brand:wikidata": 2,
+          "name": 13,
+          "operator": 2,
+          "total": 18
+        },
+        "pharmacy": {
+          "address": 14,
+          "brand": 49,
+          "brand:wikidata": 34,
+          "name": 150,
+          "operator": 13,
+          "total": 199
+        }
+      },
+      "bytes": {
+        "production_json": 10891133,
+        "production_json_gzip6": 1525809,
+        "utf8_json": 10821221,
+        "utf8_json_gzip6": 1525633
+      },
+      "count_competitors": 1215,
+      "count_houses": 23415,
+      "sha256": "a3ab94e10b64697d5d2edbb69700feabb323a64a281bba9209028566982f1ec0",
+      "version": "748c60187882b3c457f7c66884613789474fbb9fd30de9eedd8fbcd08fff8e69",
+      "wire_requests_replayed_locally": 3
+    },
+    "published_previous_ref": "ae79e8a90bcc0b84bc098d1f20c8f999c08cd601",
+    "published_previous_version": "9eb56bd533610832491e68c26e61a814be7fc0efc53d95979b3a263e52ed620b",
+    "runtime": {
+      "cpu": "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.14.7",
+      "samples": 7,
+      "warmups": 1
+    }
+  },
+  "before": {
+    "code": {
+      "commit": "2c7419dfc6aa1f862fc67974f34d89ee3e3fa317",
+      "source": "git archive"
+    },
+    "hours_utc_fixed": "2026-11-24T14:00:29.245828+00:00",
+    "input": {
+      "competitor_response_sha256": "d32ecdef0d3e024839cf6651ab5514bf957b5167b55369152e77c8579f0615e2",
+      "competitor_tag_provenance": {
+        "cutoff_utc": "2026-11-24T14:00:29.245828+00:00",
+        "max_node_offset_deg": 4.999999987376214e-07,
+        "network_bytes_total": 63885,
+        "network_seconds_total": 3.801742,
+        "published_categories": {
+          "bakery": 32,
+          "beauty": 160,
+          "cafe": 166,
+          "dentist": 43,
+          "fast_food": 106,
+          "fitness": 18,
+          "florist": 56,
+          "grocery": 417,
+          "pet": 18,
+          "pharmacy": 199
+        },
+        "receipts": [
+          {
+            "batch": 1,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/nodes.json",
+            "ids": 380,
+            "kind": "node",
+            "received_utc": "2026-11-24T17:23:05.132053+00:00",
+            "response": "osm-raw-nodes-1.json",
+            "response_sha256": "0ac98642212a40a0e16dd681daba2e04a2827b39164ddb500929b19261ad9fa2",
+            "seconds": 0.962389,
+            "status": 200,
+            "transferred_bytes": 19927
+          },
+          {
+            "batch": 2,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/nodes.json",
+            "ids": 380,
+            "kind": "node",
+            "received_utc": "2026-11-24T17:23:05.899381+00:00",
+            "response": "osm-raw-nodes-2.json",
+            "response_sha256": "94275c240f53e3a007237cbb32fea0585b6cf468fe6ffd8ef1a3020b4181cdc9",
+            "seconds": 0.726376,
+            "status": 200,
+            "transferred_bytes": 19824
+          },
+          {
+            "batch": 3,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/nodes.json",
+            "ids": 325,
+            "kind": "node",
+            "received_utc": "2026-11-24T17:23:06.269765+00:00",
+            "response": "osm-raw-nodes-3.json",
+            "response_sha256": "cf664a69a2934bacf1d5a30693ce47048be242db5377f9be50f824486eede6d8",
+            "seconds": 0.337101,
+            "status": 200,
+            "transferred_bytes": 11885
+          },
+          {
+            "batch": 1,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/relations.json",
+            "ids": 1,
+            "kind": "relation",
+            "received_utc": "2026-11-24T17:23:07.609164+00:00",
+            "response": "osm-raw-relations-1.json",
+            "response_sha256": "65c71087faf09164a485e84856c3c47c6fea35f5870b13ecdf4062c4a54e6adb",
+            "seconds": 1.308111,
+            "status": 200,
+            "transferred_bytes": 536
+          },
+          {
+            "batch": 1,
+            "endpoint": "https://api.openstreetmap.org/api/0.6/ways.json",
+            "ids": 129,
+            "kind": "way",
+            "received_utc": "2026-11-24T17:23:08.108379+00:00",
+            "response": "osm-raw-ways-1.json",
+            "response_sha256": "b12875c06b7648bd37cf80e49e40cf62f685a6dde216646b079bf6455bce4a82",
+            "seconds": 0.467765,
+            "status": 200,
+            "transferred_bytes": 11713
+          }
+        ],
+        "source": "OpenStreetMap object API multi-fetch by typed ID",
+        "tags_receipt_sha256": "60b6337b1d19ad3af414cb782281d7b5c1421f5afc17f8e91fc90279e0307d53",
+        "unique_ids": 1215
+      },
+      "house_geometry_parsing_timed": false,
+      "house_replay": "all published rows and original provenance at the return boundary of parse_houses",
+      "kind": "full_published_set_replay",
+      "network_wait_timed": false,
+      "way_relation_centers": "published coordinates; API center unavailable"
+    },
+    "milliseconds": {
+      "build": {
+        "median": 1977.521,
+        "samples": [
+          1609.932,
+          1775.111,
+          2127.566,
+          1930.315,
+          2125.001,
+          1977.521,
+          2314.631
+        ]
+      },
+      "pack_and_write": {
+        "median": 176.0,
+        "samples": [
+          135.435,
+          172.39,
+          185.4,
+          171.04,
+          201.813,
+          176.0,
+          218.496
+        ]
+      },
+      "total": {
+        "median": 2153.521,
+        "samples": [
+          1745.368,
+          1947.502,
+          2312.966,
+          2101.355,
+          2326.814,
+          2153.521,
+          2533.128
+        ]
+      }
+    },
+    "output": {
+      "by_category": {
+        "bakery": {
+          "address": 3,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 19,
+          "operator": 0,
+          "total": 32
+        },
+        "beauty": {
+          "address": 13,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 101,
+          "operator": 0,
+          "total": 160
+        },
+        "cafe": {
+          "address": 26,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 136,
+          "operator": 0,
+          "total": 166
+        },
+        "dentist": {
+          "address": 7,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 26,
+          "operator": 0,
+          "total": 43
+        },
+        "fast_food": {
+          "address": 11,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 74,
+          "operator": 0,
+          "total": 106
+        },
+        "fitness": {
+          "address": 3,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 15,
+          "operator": 0,
+          "total": 18
+        },
+        "florist": {
+          "address": 4,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 17,
+          "operator": 0,
+          "total": 56
+        },
+        "grocery": {
+          "address": 97,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 339,
+          "operator": 0,
+          "total": 417
+        },
+        "pet": {
+          "address": 2,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 13,
+          "operator": 0,
+          "total": 18
+        },
+        "pharmacy": {
+          "address": 14,
+          "brand": 0,
+          "brand:wikidata": 0,
+          "name": 150,
+          "operator": 0,
+          "total": 199
+        }
+      },
+      "bytes": {
+        "production_json": 10846842,
+        "production_json_gzip6": 1524222,
+        "utf8_json": 10796376,
+        "utf8_json_gzip6": 1524392
+      },
+      "count_competitors": 1215,
+      "count_houses": 23415,
+      "sha256": "2d3d9c90da948805589e1d3f819545abd792ed434b3521b1288d68d8e84ae34b",
+      "version": "a2e6b29804ad608cdc50be2930735912fc1829947e201be2e34d4ee27fa3dad8",
+      "wire_requests_replayed_locally": 3
+    },
+    "published_previous_ref": "ae79e8a90bcc0b84bc098d1f20c8f999c08cd601",
+    "published_previous_version": "9eb56bd533610832491e68c26e61a814be7fc0efc53d95979b3a263e52ed620b",
+    "runtime": {
+      "cpu": "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.14.7",
+      "samples": 7,
+      "warmups": 1
+    }
+  },
+  "compatibility": {
+    "baseline": {
+      "all_three_full_bundles_validated": true,
+      "output": "['9eb56bd533610832491e68c26e61a814be7fc0efc53d95979b3a263e52ed620b', 'a2e6b29804ad608cdc50be2930735912fc1829947e201be2e34d4ee27fa3dad8', '748c60187882b3c457f7c66884613789474fbb9fd30de9eedd8fbcd08fff8e69']"
+    },
+    "candidate": {
+      "all_three_full_bundles_validated": true,
+      "output": "['9eb56bd533610832491e68c26e61a814be7fc0efc53d95979b3a263e52ed620b', 'a2e6b29804ad608cdc50be2930735912fc1829947e201be2e34d4ee27fa3dad8', '748c60187882b3c457f7c66884613789474fbb9fd30de9eedd8fbcd08fff8e69']"
+    }
+  },
+  "numeric_identity_and_other_existing_values_equal": true,
+  "schema": 1,
+  "size_bytes": {
+    "production_json": {
+      "after": 10891133,
+      "before": 10846842,
+      "delta": 44291,
+      "delta_percent": 0.4083
+    },
+    "production_json_gzip6": {
+      "after": 1525809,
+      "before": 1524222,
+      "delta": 1587,
+      "delta_percent": 0.1041
+    },
+    "utf8_json": {
+      "after": 10821221,
+      "before": 10796376,
+      "delta": 24845,
+      "delta_percent": 0.2301
+    },
+    "utf8_json_gzip6": {
+      "after": 1525633,
+      "before": 1524392,
+      "delta": 1241,
+      "delta_percent": 0.0814
+    }
+  },
+  "timing_median_ms": {
+    "build": {
+      "after": 2104.032,
+      "before": 1977.521,
+      "delta": 126.511,
+      "delta_percent": 6.3975
+    },
+    "pack_and_write": {
+      "after": 160.92,
+      "before": 176.0,
+      "delta": -15.08,
+      "delta_percent": -8.5682
+    },
+    "total": {
+      "after": 2272.903,
+      "before": 2153.521,
+      "delta": 119.382,
+      "delta_percent": 5.5436
+    }
+  }
+}

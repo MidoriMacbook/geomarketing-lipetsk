@@ -11,7 +11,7 @@ import requests
 from src.config import CACHE_DIR, CACHE_TTL, CITY_DATA_URL, HEADERS
 from src.domain.city_data import select_area, validate_bundle
 from src.domain.models import CacheInfo, LoadedData
-from src.domain.provenance import osm_ids, provenance_summary
+from src.domain.provenance import osm_competitor_details, osm_ids, provenance_summary
 from src.utils.formatting import cache_metadata
 from src.utils.validation import UserError, validate_data
 
@@ -134,4 +134,5 @@ def load(area, business, refresh=False):
                       'cache' if cached else 'osm', warning, cache_metadata(house_info, competitor_info),
                       {'mode': 'daily', 'status': status, 'version': bundle['version'],
                        'fetched_at': bundle['fetched_at'], 'checked_at': _last_check,
-                       'interval_hours': 24}, competitor_ids=osm_ids(competitors))
+                       'interval_hours': 24}, competitor_ids=osm_ids(competitors),
+                      competitor_details=osm_competitor_details(competitors))

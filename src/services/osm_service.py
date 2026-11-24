@@ -20,7 +20,7 @@ from src.config import (
 )
 from src.domain.businesses import BUSINESS_CATALOG
 from src.domain.models import CacheInfo
-from src.domain.provenance import make_rows, osm_ids, source_record
+from src.domain.provenance import competitor_details, make_rows, osm_competitor_details, osm_ids, source_record
 from src.services.cache_service import _cached
 from src.utils.geo import _bbox, _footprint_m2
 from src.utils.validation import area_for, custom_area
@@ -220,6 +220,7 @@ def parse_competitors(elements, deduplicate=True, *, fetched_at=None):
     больше не применяется ни при одном его значении.
     """
     rows, records, seen, duplicates = [], [], {}, 0
+    details = []
     fetched_at = time.time() if fetched_at is None else fetched_at
     for el in elements:
         if el['type'] == 'node':
@@ -230,8 +231,13 @@ def parse_competitors(elements, deduplicate=True, *, fetched_at=None):
             continue
         row = [round(lat, 6), round(lng, 6)]
         record = source_record(el, fetched_at)
-        if not _append_source(rows, records, seen, row, record):
+        if _append_source(rows, records, seen, row, record):
+            details.append(competitor_details(el.get('tags')) if record['osm_id'] is not None else {})
+        else:
             duplicates += 1
+    # Отображаемые теги не участвуют в выборе или проверке дубликатов.
+    for record, fields in zip(records, details, strict=True):
+        record.update(fields)
     return make_rows(rows, records, duplicates)
 
 
@@ -256,7 +262,7 @@ def get_competitors(business, area, refresh=False, *, cached_only=False):
                            refresh, allow_empty=True)
     identities = osm_ids(data)
     if identities:
-        cached = replace(cached, competitor_ids=identities)
+        cached = replace(cached, competitor_ids=identities, competitor_details=osm_competitor_details(data))
     return np.array(data, dtype=float).reshape(-1, 2), cached
 
 

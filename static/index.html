@@ -173,6 +173,7 @@
     <h2 id="data-title">Источники и ограничения</h2>
     <p>Карта помогает выбрать места для проверки. Население оценочное, расстояния — по прямой; помещения, аренду и поток людей проверьте на месте.</p>
     <p id="source">Источник — OpenStreetMap. Даты появятся после расчёта.</p>
+    <p id="osm-data-attribution" class="hint">Данные © <a href="https://www.openstreetmap.org/copyright">участники OpenStreetMap</a> · <a href="https://opendatacommons.org/licenses/odbl/1-0/">ODbL 1.0</a> · <a href="https://github.com/MidoriMacbook/geomarketing-lipetsk/blob/osm-data/city.json">Городская выгрузка</a></p>
     <details id="data-details"><summary id="data-summary">Даты и качество данных</summary><div class="disclosure-body">
       <div id="data-quality"></div><p id="data-warning" class="notice" hidden></p>
       <p>Модель учитывает жилую застройку, радиус доступности и конкурентов выбранной категории. Данные могут быть неполными или устаревшими. Оценка сравнивает места только внутри одного расчёта и не прогнозирует выручку.</p>
@@ -191,10 +192,12 @@
 <dialog id="correction-remove-dialog" aria-labelledby="correction-remove-title">
   <h2 id="correction-remove-title">Убрать конкурента?</h2>
   <p>Метка <span id="correction-remove-point"></span> будет убрана только из вашего расчёта.</p>
-  <label id="correction-remove-choice-label" hidden>
-    В этих координатах несколько меток
-    <select id="correction-remove-choice"></select>
-  </label>
+  <div id="correction-remove-summary" hidden></div>
+  <fieldset id="correction-remove-choice-label" hidden>
+    <legend>В этих координатах несколько меток</legend>
+    <div id="correction-remove-choices"></div>
+  </fieldset>
+  <div id="correction-remove-source" hidden></div>
   <div class="correction-actions">
     <button id="correction-remove-cancel" class="button secondary" type="button">Отмена</button>
     <button id="correction-remove-confirm" class="button secondary" type="button">Убрать</button>

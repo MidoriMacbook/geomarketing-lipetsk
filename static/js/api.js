@@ -47,8 +47,10 @@ export async function fetchCatalog(signal) {
 }
 
 export async function fetchCalculation(params, signal, corrections) {
+  const query = new URLSearchParams(params);
+  query.set('competitor_details', '1');
   const response = corrections === undefined
-    ? await fetch(`/api/calculate?${params}`, { signal })
+    ? await fetch(`/api/calculate?${query}`, { signal })
     : await fetch('/api/calculate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

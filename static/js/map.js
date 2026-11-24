@@ -2,6 +2,7 @@ import { state } from './state.js';
 import {createMapInspector} from './map-inspector.js';
 import {createSelectionLayer} from './map-selection.js';
 import {createMapComparison} from './map-comparison.js';
+import {createCompetitorPopup, describeCompetitor} from './competitor-card.js';
 import { $, fmt, node, animateUI, cancelUI, setRevealed, motionReduced, reveal } from './ui.js';
 
 let map = null, tiles = null, tileTimer = null, tileFailures = 0;
@@ -10,6 +11,7 @@ let accessPalette=null,focusDuration=400;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
 let emphasized = new Set(), previewRank = null, houseData = [];
 let viewportRank=null, viewportTimer=null,inspector=null,selection=null,comparison=null,choosingCenter=false;
+let competitorPopup = null, competitorIcon = null;
 let manualViewport=false;
 const layers = {}, markers = new Map();
 let correctionView = { mode: null, draft: { added: [], removed: [] }, pending: false };
@@ -86,8 +88,9 @@ export function initMap() {
   map.getPane('points').style.zIndex = token('--z-points');
   ['houses','competitors','centroids'].forEach((key,index)=>{
     map.createPane(key);map.getPane(key).style.zIndex=String(parseInt(token('--z-points'),10)+index+1);
-    dataRenderers[key]=L.canvas({pane:key,padding:.5});
   });
+  dataRenderers.houses = L.canvas({ pane: 'houses', padding: .5 });
+  competitorIcon = L.divIcon({ className: 'competitor-marker', iconSize: [24, 24] });
   map.createPane('corrections').style.zIndex = '620';
   ['houses','competitors','centroids','zones','recommendations'].forEach(key=>{
     const pane=map.getPane(key==='recommendations'?'markerPane':key);
@@ -136,20 +139,10 @@ export function initMap() {
   }));
   selection=createSelectionLayer(map);
   inspector=createMapInspector(map,{selectPoint:rec=>{if(comparison?.isOpen())comparison.clear();drawAccessCircle(rec);selection.select(rec);},selectRecommendation:rec=>selectPlace(rec.rank,false)});
-  comparison=createMapComparison(map,{onOpen:()=>{clearTimeout(viewportTimer);inspector.close();selection.select(null);layers.accessibility.clearLayers();},onClose:()=>drawAccessRadius(state.selectedRank)});
+  competitorPopup = createCompetitorPopup(map);
+  comparison=createMapComparison(map,{onOpen:()=>{clearTimeout(viewportTimer);inspector.close();competitorPopup.close();selection.select(null);layers.accessibility.clearLayers();},onClose:()=>drawAccessRadius(state.selectedRank)});
   document.addEventListener('gm:choose-center',()=>{choosingCenter=true;});
-  map.on('click', e => {
-    const selectCenter = $('district').value === 'custom' && (choosingCenter || !state.current);
-    if (!selectCenter) {
-      if (!correctionTap(e.latlng)) inspector.inspect(e.latlng);
-      return;
-    }
-    if (resetSelection() === false) { choosingCenter = false; return; }
-    state.customPoint = [e.latlng.lat, e.latlng.lng];
-    $('custom-hint').textContent = `Центр выбран: ${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}. Нажмите «Найти места».`;
-    reveal($('custom-hint'), 'notice');
-    drawPreview();
-  });
+  map.on('click', handleMapClick);
   let resizeFrame = null, lastWidth = 0, lastHeight = 0;
   const resizeMap = () => {
     if(document.documentElement.dataset.sheetGesture==='true')return;
@@ -173,6 +166,22 @@ export function initMap() {
     if (event.matches) { map.stop(); syncMapLayers(false); }
   });
   animateUI($('map'), [{ opacity: 0 }, { opacity: 1 }], 'map-reveal', { duration: 'slow' });
+}
+
+function choosingCustomCenter() {
+  return $('district').value === 'custom' && (choosingCenter || !state.current);
+}
+
+function handleMapClick({ latlng }) {
+  if (!choosingCustomCenter()) {
+    if (!correctionTap(latlng)) inspector.inspect(latlng);
+    return;
+  }
+  if (resetSelection() === false) { choosingCenter = false; return; }
+  state.customPoint = [latlng.lat, latlng.lng];
+  $('custom-hint').textContent = `Центр выбран: ${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}. Нажмите «Найти места».`;
+  reveal($('custom-hint'), 'notice');
+  drawPreview();
 }
 
 export function updateCustomUI({ chooseCenter = false } = {}) {
@@ -226,7 +235,7 @@ export function drawMap(data, { preserveViewport = false } = {}) {
     viewportRank = null;
     clearTimeout(viewportTimer);
   }
-  choosingCenter=false;inspector.setData(data);selection.setData(data);comparison.setData(data);
+  choosingCenter=false;inspector.setData(data);competitorPopup.close();selection.setData(data);comparison.setData(data);
   Object.entries(layers).forEach(([key, layer]) => {
     if (key !== 'preview')layer.clearLayers();
   });
@@ -295,6 +304,7 @@ export function updateCorrectionMap(view) {
 
 export function beginMapCorrections() {
   inspector?.close();
+  competitorPopup?.close();
   comparison?.clear();
   if (map && state.current && !map.getBounds().contains(state.current.center)) {
     fitCalculationArea(state.current);
@@ -304,7 +314,36 @@ export function beginMapCorrections() {
   document.dispatchEvent(new CustomEvent('gm:map-focus'));
 }
 
-function correctionMarker(point, { removable = false, pending = false, colocated = [] } = {}) {
+function bindCompetitorMarker(marker, label, open, id, removable = false) {
+  marker.on('click', open);
+  marker.on('add', () => {
+    const element = marker.getElement();
+    element.setAttribute('role', 'button');
+    element.setAttribute('aria-label', label);
+    element.setAttribute(removable ? 'aria-haspopup' : 'aria-expanded', removable ? 'dialog' : 'false');
+    if (id) element.dataset.competitorId = id;
+    element.addEventListener('keydown', event => {
+      if (event.key !== ' ' && event.key !== 'Enter') return;
+      event.preventDefault();
+      event.stopPropagation();
+      open();
+    });
+  });
+}
+
+function inspectCompetitor(marker, details, colocated, event) {
+  if (choosingCustomCenter()) {
+    handleMapClick(event ?? { latlng: marker.getLatLng() });
+    return;
+  }
+  manualViewport = true;
+  clearTimeout(viewportTimer);
+  inspector.close();
+  const related = colocated.filter(entry => entry.details !== details).map(entry => entry.details);
+  competitorPopup.open(marker, details, related);
+}
+
+function correctionMarker(point, details, { removable = false, pending = false, colocated = [], related = [] } = {}) {
   const manual = point.source === 'manual';
   const icon = L.divIcon({
     className: `correction-marker${!manual ? ' is-removable' : ''}${pending ? ' is-pending' : ''}`,
@@ -314,62 +353,75 @@ function correctionMarker(point, { removable = false, pending = false, colocated
   });
   const label = manual ? (removable ? 'Убрать конкурента · добавлен вручную' : 'Конкурент · добавлен вручную')
     : colocated.length > 1 ? `Выбрать конкурента OpenStreetMap · меток: ${colocated.length}` : 'Убрать конкурента OpenStreetMap';
-  const marker = L.marker([point.lat, point.lng], { pane: 'corrections', icon, alt: label })
-    .bindTooltip(label).addTo(layers.corrections);
-  const element = marker.getElement();
-  element.setAttribute('aria-label', label);
-  element.dataset.competitorId = point.id;
-  const open = () => {
-    if (removable) { marker.closeTooltip(); removeCompetitor(point, colocated); }
-    else marker.openTooltip();
+  const marker = L.marker([point.lat, point.lng], { pane: 'corrections', icon, alt: label });
+  const open = event => {
+    if (removable) { competitorPopup.close(); removeCompetitor(point, colocated, marker.getElement()); }
+    else inspectCompetitor(marker, details, related, event);
   };
-  marker.on('click', open);
-  element.addEventListener('keydown', event => {
-    if (event.key !== ' ' && event.key !== 'Enter') return;
-    event.preventDefault();
-    event.stopPropagation();
-    open();
-  });
+  bindCompetitorMarker(marker, label, open, point.id, removable);
+  marker.addTo(layers.corrections);
 }
 
 function drawCompetitors(data) {
   const { mode, draft, pending } = correctionView;
+  competitorPopup.close();
   layers.competitors.clearLayers();
   layers.corrections.clearLayers();
   layers.corrections.addTo(map);
-  const palette = readPalette(['competitor', 'competitor-outline']);
   const context = data.correction_context;
   const editPoints = Boolean(context && mode);
   const removed = new Set(editPoints ? draft.removed : []);
   const points = editPoints ? context.base_competitors : data.competitors;
   const candidates = new Map();
+  const inspectable = new Map();
+  const additions = editPoints ? draft.added : context?.applied.added || data.competitors.filter(point => point.source === 'manual');
+  const appliedIds = new Set(context?.applied.added.map(point => point.id));
+  const positionKey = point => `${point.lat}:${point.lng}`;
   for (const point of points) {
     if (point.source === 'manual' || removed.has(point.id)) continue;
-    if (mode === 'remove' && point.id) {
-      const key = `${point.lat}:${point.lng}`;
+    const details = describeCompetitor(point, data.source);
+    if (mode === 'remove' && details.id) {
+      const key = positionKey(point);
       const group = candidates.get(key) || [];
       group.push(point);
       candidates.set(key, group);
       continue;
     }
-    L.circleMarker([point.lat, point.lng], {
-      renderer: dataRenderers.competitors,
-      radius: 5,
-      color: palette['competitor-outline'],
-      weight: 2,
-      fillColor: palette.competitor,
-      fillOpacity: 1,
-    }).bindTooltip('Конкурент').on('click', event => {
-      if (mode) L.DomEvent.stopPropagation(event);
-    }).addTo(layers.competitors);
+    const key = positionKey(point);
+    const group = inspectable.get(key) || [];
+    group.push({ point, details });
+    inspectable.set(key, group);
   }
-  for (const group of candidates.values()) correctionMarker(group[0], { removable: true, colocated: group });
-  const additions = editPoints ? draft.added : context?.applied.added || [];
-  const appliedIds = new Set(context?.applied.added.map(point => point.id));
-  for (const point of additions) correctionMarker({ ...point, source: 'manual' }, {
-    removable: mode === 'remove',
-    pending: pending && !appliedIds.has(point.id),
-  });
+  if (mode !== 'remove') {
+    for (const point of additions) {
+      const manual = { ...point, source: 'manual' };
+      const key = positionKey(point);
+      const group = inspectable.get(key) || [];
+      group.push({ point: manual, details: describeCompetitor(manual, data.source) });
+      inspectable.set(key, group);
+    }
+  }
+  for (const group of inspectable.values()) {
+    for (const { point, details } of group) {
+      if (point.source === 'manual') {
+        correctionMarker(point, details, { pending: pending && !appliedIds.has(point.id), related: group });
+        continue;
+      }
+      const marker = L.marker([point.lat, point.lng], { pane: 'competitors', icon: competitorIcon });
+      const label = details.id ? `${details.title}, ${details.id}` : [details.title, details.note].filter(Boolean).join(', ');
+      bindCompetitorMarker(marker, label, event => inspectCompetitor(marker, details, group, event), details.id);
+      marker.addTo(layers.competitors);
+    }
+  }
+  for (const group of candidates.values()) correctionMarker(group[0], null, { removable: true, colocated: group });
+  if (mode === 'remove') {
+    for (const point of additions) {
+      correctionMarker({ ...point, source: 'manual' }, null, {
+        removable: true,
+        pending: pending && !appliedIds.has(point.id),
+      });
+    }
+  }
   syncCorrectionLayer();
 }
 
@@ -498,6 +550,7 @@ function schedulePlaceFrame(){
 
 export function clearAnalysisMap() {
   inspector?.setData(null);
+  competitorPopup?.close();
   selection?.setData(null);
   comparison?.setData(null);
   emphasized=new Set();previewRank=null;houseData=[];
@@ -545,7 +598,10 @@ export function hoverPlace(rank, active) {
 
 export function toggleLayer(key, enabled) {
   preferences[key]=enabled;
-  if (map && key === 'competitors') syncCorrectionLayer();
+  if (map && key === 'competitors') {
+    if (!enabled) competitorPopup.close();
+    syncCorrectionLayer();
+  }
   syncMapLayers();
 }
 

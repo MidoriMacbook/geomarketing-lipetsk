@@ -90,13 +90,21 @@ class ImporterTests(unittest.TestCase):
             source=Path(folder)/'source.osm'
             source.write_text('''<osm><bounds minlat="52.57" minlon="39.44" maxlat="52.62" maxlon="39.52"/>
               <node id="1" lat="52.593" lon="39.48"/><node id="2" lat="52.594" lon="39.482"/>
-              <node id="3" lat="52.5935" lon="39.481"><tag k="shop" v="beauty"/></node>
-              <way id="10"><nd ref="1"/><nd ref="2"/><tag k="shop" v="hairdresser"/></way>
-              <relation id="20"><member type="way" ref="10"/><tag k="shop" v="beauty"/></relation>
+              <node id="3" lat="52.5935" lon="39.481"><tag k="shop" v="beauty"/><tag k="name:ru" v="Точка"/></node>
+              <way id="10"><nd ref="1"/><nd ref="2"/><tag k="shop" v="hairdresser"/>
+                <tag k="name" v="Вывеска"/><tag k="addr:full" v="Улица, 8"/></way>
+              <relation id="20"><member type="way" ref="10"/><tag k="shop" v="beauty"/>
+                <tag k="addr:street" v="Садовая"/><tag k="addr:housenumber" v="5"/></relation>
             </osm>''',encoding='utf-8')
             rows = extract_competitors(source, 'beauty', area)
             self.assertEqual(rows, [[52.5935, 39.481]] * 3)
             self.assertEqual(len(rows.provenance['possible_node_way_pairs']), 2)
+            node, way, relation = rows.provenance['records']
+            self.assertEqual(node['name'], 'Точка')
+            self.assertNotIn('address', node)
+            self.assertEqual((way['name'], way['address']), ('Вывеска', 'Улица, 8'))
+            self.assertEqual(relation['address'], 'Садовая, 5')
+            self.assertNotIn('name', relation)
 
 
 if __name__ == '__main__':

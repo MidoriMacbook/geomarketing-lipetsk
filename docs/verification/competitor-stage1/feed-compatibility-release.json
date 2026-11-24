@@ -1,0 +1,17 @@
+{
+  "implementation": "90cc006",
+  "previous_version": "4140bc58bd5b74b5e879b569034ee58183ab4224cb415a02eaf49191eddcb532",
+  "accepted_version": "748c60187882b3c457f7c66884613789474fbb9fd30de9eedd8fbcd08fff8e69",
+  "accepted_sha256": "a3ab94e10b64697d5d2edbb69700feabb323a64a281bba9209028566982f1ec0",
+  "first_read_previous_status": "current",
+  "refresh_status": "updated",
+  "cache_reload_status": "current",
+  "offline_refresh_status": "unavailable",
+  "last_complete_payload_preserved": true,
+  "plain_get_preserved": true,
+  "opt_in_center_grocery_counts": {
+    "brand": 0,
+    "brand:wikidata": 0,
+    "operator": 0
+  }
+}

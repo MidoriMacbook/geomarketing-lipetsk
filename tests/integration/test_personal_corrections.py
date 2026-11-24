@@ -107,6 +107,38 @@ class PersonalCorrectionsTests(unittest.TestCase):
         self.assertEqual(self.client.get(URL).get_json(), old)
         self.assertEqual(self.post(EMPTY).get_json(), baseline)
 
+    def test_opt_in_details_survive_removal_and_reset_at_same_coordinates(self):
+        area = area_for('eleytsky')
+        lat, lng = area['center']
+        source = osm.parse_competitors([
+            {'type': 'node', 'id': 14, 'lat': lat, 'lon': lng, 'tags': {'name': 'Роза'}},
+            {'type': 'way', 'id': 14, 'center': {'lat': lat, 'lon': lng},
+             'tags': {'addr:full': 'Новая, 11'}},
+            {'type': 'relation', 'id': 14, 'center': {'lat': lat, 'lon': lng}},
+        ])
+        cache_path = cache_service.CACHE_DIR / (osm.competitor_cache_name('cafe', area) + '.json')
+        cache_service._write_cache(cache_path, source, FROZEN_DATE.timestamp())
+        coords = {'lat': lat, 'lng': lng}
+        expected = [
+            {**coords, 'id': 'node:14', 'source': 'osm', 'name': 'Роза'},
+            {**coords, 'id': 'way:14', 'source': 'osm', 'address': 'Новая, 11'},
+            {**coords, 'id': 'relation:14', 'source': 'osm'},
+        ]
+        plain = self.client.get(URL).get_json()
+        opt_in = self.client.get(URL, query_string={'competitor_details': '1'}).get_json()
+        self.assertEqual(plain['competitors'], [coords] * 3)
+        self.assertEqual(opt_in['competitors'], expected)
+        self.assertEqual({**opt_in, 'competitors': plain['competitors']}, plain)
+
+        manual = {**coords, 'id': 'local-1'}
+        edited = self.post({'added': [manual], 'removed': ['node:14']}).get_json()
+        self.assertEqual(edited['correction_context']['base_competitors'], expected)
+        self.assertEqual(edited['competitors'], [*expected[1:], {**manual, 'source': 'manual'}])
+        reset = self.post(EMPTY).get_json()
+        self.assertEqual(reset['competitors'], expected)
+        self.assertEqual(reset['correction_context']['base_competitors'], expected)
+        self.assertEqual(reset['grid'], plain['grid'])
+
     def test_warm_scoring_cache_canonicalizes_additions_and_reuses_baseline(self):
         lat, lng = area_for('eleytsky')['center']
         edits = [{'id': 'b', 'lat': lat, 'lng': lng},
@@ -168,6 +200,8 @@ class PersonalCorrectionsTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.get_json()['competitors'])
         self.assertTrue(all(row['id'] is None for row in response.get_json()['competitors']))
+        opt_in = self.client.get(URL, query_string={'competitor_details': '1'}).get_json()
+        self.assertEqual(opt_in['competitors'], response.get_json()['competitors'])
         self.assertEqual(self.post({'removed': ['node:1']}).status_code, 400)
         lat, lng = area_for('eleytsky')['center']
         rows = [{'id': str(i), 'lat': lat, 'lng': lng} for i in range(50)]
@@ -181,29 +215,41 @@ class PersonalCorrectionsTests(unittest.TestCase):
         houses_path = cache_service.SNAPSHOT_DIR / f'houses_{osm.cache_key(area)}.json'
         houses = json.loads(houses_path.read_bytes())['data']
         competitors = osm.parse_competitors([
-            {'type': 'node', 'id': 41, 'lat': lat + 0.03, 'lon': lng},
-            {'type': 'node', 'id': 42, 'lat': lat, 'lon': lng},
-            {'type': 'node', 'id': 43, 'lat': lat + 0.001, 'lon': lng},
+            {'type': 'node', 'id': 41, 'lat': lat + 0.03, 'lon': lng, 'tags': {'name': 'За пределами'}},
+            {'type': 'node', 'id': 42, 'lat': lat, 'lon': lng, 'tags': {'name': 'Первая'}},
+            {'type': 'node', 'id': 43, 'lat': lat + 0.001, 'lon': lng, 'tags': {
+                'addr:full': 'Новая, 11', 'brand': 'Вишня', 'brand:wikidata': 'Q42', 'operator': 'ООО Вишня',
+            }},
         ])
         bundle = {'houses': houses, 'competitors': {'cafe': competitors}, 'version': 'daily-fixture',
                   'fetched_at': FROZEN_DATE.timestamp(),
                   'provenance': {'competitors': {'cafe': competitors.provenance}}}
         with patch.object(analysis_service, 'CITY_DATA_URL', 'daily-fixture'), \
              patch.object(city_feed_service, '_get_bundle', return_value=(bundle, 'current', True, None)):
+            plain = self.client.get(URL).get_json()
+            self.assertEqual(plain['competitors'], [{'lat': lat, 'lng': lng},
+                                                   {'lat': round(lat + 0.001, 6), 'lng': lng}])
+            detailed = self.client.get(URL, query_string={'competitor_details': '1'}).get_json()
+            self.assertEqual(detailed['competitors'][1]['brand:wikidata'], 'Q42')
             response = self.post({'removed': ['node:42']})
             self.assertEqual(response.status_code, 200)
             data = response.get_json()
             self.assertEqual(data['correction_context']['base_competitors'], [
-                {'id': 'node:42', 'source': 'osm', 'lat': lat, 'lng': lng},
-                {'id': 'node:43', 'source': 'osm', 'lat': round(lat + 0.001, 6), 'lng': lng},
+                {'id': 'node:42', 'source': 'osm', 'lat': lat, 'lng': lng, 'name': 'Первая'},
+                {'id': 'node:43', 'source': 'osm', 'lat': round(lat + 0.001, 6), 'lng': lng,
+                 'address': 'Новая, 11', 'brand': 'Вишня', 'brand:wikidata': 'Q42', 'operator': 'ООО Вишня'},
             ])
-            self.assertEqual([row['id'] for row in data['competitors']], ['node:43'])
+            self.assertEqual(data['competitors'], data['correction_context']['base_competitors'][1:])
             self.assertEqual(self.post({'removed': ['node:41']}).status_code, 400)
 
     def test_edits_do_not_treat_demo_competitors_as_osm(self):
         with patch.object(osm, 'get_houses', side_effect=RuntimeError('offline')):
             original = self.client.get(URL)
+            opt_in = self.client.get(URL, query_string={'competitor_details': '1'})
             response = self.post(EMPTY)
         self.assertEqual(original.get_json()['source'], 'demo')
+        self.assertEqual(opt_in.get_json()['competitors'],
+                         [{**row, 'source': 'demo', 'id': None}
+                          for row in original.get_json()['competitors']])
         self.assertEqual(response.status_code, 400)
         self.assertIn('OpenStreetMap', response.get_json()['message'])

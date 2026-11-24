@@ -79,7 +79,7 @@ def extract_competitors(source, business, area, *, fetched_at=None):
         lng = (min(p['lon'] for p in points) + max(p['lon'] for p in points)) / 2
         if not (south <= lat <= north and west <= lng <= east):
             continue
-        parsed.append({'type': element.tag, 'id': int(element.attrib['id']),
+        parsed.append({'type': element.tag, 'id': int(element.attrib['id']), 'tags': tags,
                        **({'lat': lat, 'lon': lng} if element.tag == 'node' else
                           {'center': {'lat': lat, 'lon': lng}})})
     rows = osm.parse_competitors(parsed, fetched_at=fetched_at)

@@ -6,6 +6,7 @@ const RECORD_SIZE = 250000;
 const KEY_SIZE = 1250000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const OSM_ID = /^(?:node|way|relation):[1-9][0-9]{0,19}$/;
+const COMPETITOR_TEXT_LIMITS = Object.entries({ name: 120, address: 180, brand: 255, 'brand:wikidata': 255, operator: 255 });
 const MANUAL_ID = /^[a-zA-Z0-9_-]{1,64}$/;
 const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value) && [Object.prototype, null].includes(Object.getPrototypeOf(value));
@@ -65,13 +66,21 @@ function validRecommendation(value, radius, rank) {
   return location(value) && value.rank === rank && number(value.score, 0, 1) && integer(value.residents_in_radius) && value.radius_m === radius && integer(value.competitors_in_radius) && distance(value.nearest_competitor_m) && (!own(value, 'explanation') || validExplanation(value.explanation));
 }
 
+function validCompetitor(row, analysisSource) {
+  if (!location(row)) return false;
+  const fields = COMPETITOR_TEXT_LIMITS.filter(([key]) => own(row, key));
+  if (!fields.length) return true;
+  return analysisSource !== 'demo' && row.source === 'osm' && text(row.id, 64) && OSM_ID.test(row.id) &&
+    fields.every(([key, limit]) => label(row[key], limit * 2) && Array.from(row[key]).length <= limit);
+}
+
 function validCorrections(analysis) {
   if (!own(analysis, 'correction_context')) return true;
   const context = analysis.correction_context;
   if (!object(context) || context.version !== 1 || analysis.source === 'demo') return false;
   const { base_competitors: base, applied, counts } = context;
   const osmId = id => text(id, 64) && OSM_ID.test(id);
-  if (!list(base, 10000, row => location(row) && row.source === 'osm' && (row.id === null || osmId(row.id)))) return false;
+  if (!list(base, 10000, row => validCompetitor(row, analysis.source) && row.source === 'osm' && (row.id === null || osmId(row.id)))) return false;
   if (!object(applied) || !object(counts)) return false;
   const { added, removed } = applied;
   if (!list(added, 50, row => location(row) && text(row.id, 64) && MANUAL_ID.test(row.id)) || !list(removed, 50, osmId)) return false;
@@ -82,7 +91,8 @@ function validCorrections(analysis) {
   const expected = [...base.filter(row => !excluded.has(row.id)), ...added.map(row => ({ ...row, source: 'manual' }))];
   if (expected.length !== analysis.competitors.length || !expected.every((row, index) => {
     const actual = analysis.competitors[index];
-    return actual.id === row.id && actual.source === row.source && actual.lat === row.lat && actual.lng === row.lng;
+    return actual.id === row.id && actual.source === row.source && actual.lat === row.lat && actual.lng === row.lng &&
+      COMPETITOR_TEXT_LIMITS.every(([key]) => actual[key] === row[key]);
   })) return false;
   return analysis.recommendations.every(rec => {
     const delta = rec.correction_delta;
@@ -100,7 +110,7 @@ function validAnalysis(value, selection, view) {
     const encoded = `custom_${value.center[0].toFixed(4)}_${value.center[1].toFixed(4)}_${selection.area_radius_m}`;
     if (value.district !== 'custom' && (value.district !== encoded || !value.center.every(coordinate => coordinate === Number(coordinate.toFixed(4))))) return false;
   } else if (value.district !== selection.district) return false;
-  if (!list(value.houses, 10000, house => location(house) && integer(house.residents)) || !list(value.competitors, 10000, location) || !list(value.centroids, 3, center => location(center) && integer(center.residents))) return false;
+  if (!list(value.houses, 10000, house => location(house) && integer(house.residents)) || !list(value.competitors, 10000, row => validCompetitor(row, value.source)) || !list(value.centroids, 3, center => location(center) && integer(center.residents))) return false;
   if (!object(value.stats) || !integer(value.stats.houses) || value.stats.houses !== value.houses.length || !integer(value.stats.competitors) || value.stats.competitors !== value.competitors.length || !integer(value.stats.residents) || value.stats.residents !== value.houses.reduce((sum, house) => sum + house.residents, 0)) return false;
   if (!Array.isArray(value.recommendations) || value.recommendations.length < 1 || value.recommendations.length > 3 || !value.recommendations.every((entry, index) => validRecommendation(entry, value.parameters.radius_m, index + 1) && entry.competitors_in_radius <= value.stats.competitors && entry.residents_in_radius <= value.stats.residents && (value.stats.competitors > 0 || entry.nearest_competitor_m === null)) || !equal(value.best, value.recommendations[0]) || !value.recommendations.some(entry => entry.rank === view.selected_rank)) return false;
   if (!validCorrections(value)) return false;

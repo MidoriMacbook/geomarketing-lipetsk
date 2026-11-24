@@ -1,4 +1,5 @@
-import { $, closeDialog, initDialogMotion, openDialog } from './ui.js';
+import { $, closeDialog, coords, initDialogMotion, node, openDialog } from './ui.js';
+import { competitorFacts, competitorSourceLink, describeCompetitor } from './competitor-card.js';
 import { projectPoint } from './map-analysis.js';
 import { CORRECTION_LIMIT, createCorrectionDraft } from './corrections-state.js';
 
@@ -141,14 +142,20 @@ export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onE
   $('correction-remove-cancel').addEventListener('click', () => closeDialog(dialog));
   $('correction-remove-confirm').addEventListener('click', () => {
     const point = removal;
-    const id = $('correction-remove-choice').value || point?.id;
+    const id = $('correction-remove-choices').querySelector('input:checked')?.value || point?.id;
+    if (removal) removal.opener = null;
     closeDialog(dialog);
     if (point && (point.manual ? draft.removeAdded(id) : draft.remove(id))) {
       $('correction-remove').focus({ preventScroll: true });
       afterEdit();
     }
   });
-  dialog.addEventListener('close', () => { removal = null; });
+  dialog.addEventListener('close', () => {
+    if (dialog.open) return;
+    const opener = removal?.opener;
+    removal = null;
+    if (opener?.isConnected) opener.focus({ preventScroll: true });
+  });
 
   return {
     setAnalysis(next, { saved = false, keepMode = false } = {}) {
@@ -184,19 +191,41 @@ export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onE
       }
       return true;
     },
-    removePoint(point, colocated) {
+    removePoint(point, colocated, opener) {
       if (mode !== 'remove' || !point.id || !isAvailable() || dialog.open) return;
       const manual = point.source === 'manual';
       if (!manual && !roomForCorrection()) return;
-      removal = { id: point.id, manual };
-      const choice = $('correction-remove-choice');
-      const kinds = { node: 'Узел OSM', way: 'Контур OSM', relation: 'Связь OSM' };
-      choice.replaceChildren(...colocated.map(candidate => {
-        const [type, id] = candidate.id.split(':');
-        return new Option(`${kinds[type]} №${id}`, candidate.id);
-      }));
-      $('correction-remove-choice-label').hidden = colocated.length < 2;
-      $('correction-remove-point').textContent = `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
+      removal = { id: point.id, manual, opener };
+      const choice = colocated.length > 1;
+      const sourceLink = $('correction-remove-source');
+      const showSource = details => {
+        const link = competitorSourceLink(details, 'correction-competitor-link');
+        sourceLink.replaceChildren(...(link ? [link] : []));
+        sourceLink.hidden = !link;
+      };
+      $('correction-remove-choice-label').hidden = !choice;
+      $('correction-remove-summary').hidden = choice;
+      const describe = details => {
+        const description = node('span', 'correction-competitor-description');
+        description.append(node('strong', '', details.title), competitorFacts(details));
+        return description;
+      };
+      const details = describeCompetitor(point, data.source);
+      showSource(details);
+      $('correction-remove-choices').replaceChildren(...(choice ? colocated.map((candidate, index) => {
+        const candidateDetails = describeCompetitor(candidate, data.source);
+        const option = node('label', 'correction-competitor-option');
+        const input = node('input');
+        input.type = 'radio';
+        input.name = 'correction-remove-choice';
+        input.value = candidate.id;
+        input.checked = index === 0;
+        input.addEventListener('change', () => showSource(candidateDetails));
+        option.append(input, describe(candidateDetails));
+        return option;
+      }) : []));
+      $('correction-remove-summary').replaceChildren(...(choice ? [] : [describe(details)]));
+      $('correction-remove-point').textContent = coords(point);
       openDialog(dialog);
       $('correction-remove-cancel').focus();
     },
