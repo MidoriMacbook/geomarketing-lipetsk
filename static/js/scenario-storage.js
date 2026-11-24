@@ -6,6 +6,7 @@ const RECORD_SIZE = 250000;
 const KEY_SIZE = 1250000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const OSM_ID = /^(?:node|way|relation):[1-9][0-9]{0,19}$/;
+const COMPETITOR_TEXT_LIMITS = Object.entries({ name: 120, address: 180, brand: 255, 'brand:wikidata': 255, operator: 255 });
 const MANUAL_ID = /^[a-zA-Z0-9_-]{1,64}$/;
 const own = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value) && [Object.prototype, null].includes(Object.getPrototypeOf(value));
@@ -67,10 +68,10 @@ function validRecommendation(value, radius, rank) {
 
 function validCompetitor(row, analysisSource) {
   if (!location(row)) return false;
-  if (!own(row, 'name') && !own(row, 'address')) return true;
+  const fields = COMPETITOR_TEXT_LIMITS.filter(([key]) => own(row, key));
+  if (!fields.length) return true;
   return analysisSource !== 'demo' && row.source === 'osm' && text(row.id, 64) && OSM_ID.test(row.id) &&
-    (!own(row, 'name') || (label(row.name, 240) && Array.from(row.name).length <= 120)) &&
-    (!own(row, 'address') || (label(row.address, 360) && Array.from(row.address).length <= 180));
+    fields.every(([key, limit]) => label(row[key], limit * 2) && Array.from(row[key]).length <= limit);
 }
 
 function validCorrections(analysis) {
@@ -91,7 +92,7 @@ function validCorrections(analysis) {
   if (expected.length !== analysis.competitors.length || !expected.every((row, index) => {
     const actual = analysis.competitors[index];
     return actual.id === row.id && actual.source === row.source && actual.lat === row.lat && actual.lng === row.lng &&
-      actual.name === row.name && actual.address === row.address;
+      COMPETITOR_TEXT_LIMITS.every(([key]) => actual[key] === row[key]);
   })) return false;
   return analysis.recommendations.every(rec => {
     const delta = rec.correction_delta;

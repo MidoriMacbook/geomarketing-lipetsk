@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 import { gestureDriver } from './gesture-driver.js';
 
 test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, reducedMotion: 'reduce' });
@@ -26,7 +27,16 @@ async function add(page, x = .72, y = .51) {
 }
 
 test('поправки карты, отмена, архив и печатный чек-лист', async ({ page, baseURL }) => {
-  await ready(page, baseURL);
+  const competitorName = 'Кофе «У сада» <em>зал</em>';
+  const competitorAddress = `ул. ${'Длинноеназвание'.repeat(10)}, 15`;
+  await ready(page, baseURL, () => page.route('**/api/calculate', async route => {
+    const response = await route.fetch();
+    const data = await response.json();
+    for (const row of [...data.competitors, ...data.correction_context.base_competitors]) {
+      if (row.id === 'node:123') Object.assign(row, { name: competitorName, address: competitorAddress });
+    }
+    await route.fulfill({ response, json: data });
+  }));
   const original = await current(page);
   const accepted = page.waitForResponse(post);
   await add(page);
@@ -79,10 +89,24 @@ test('поправки карты, отмена, архив и печатный 
   await card.getByTestId('scenario-open').click();
   await expect(page.locator('#correction-count')).toContainText('Добавлено вручную: 1');
   await expect(page.locator('.correction-marker[aria-label*="добавлен вручную"]')).toHaveCount(1);
-  await page.evaluate(() => { window.print = () => {}; });
+  const downloaded = page.waitForEvent('download');
+  await card.getByTestId('scenario-competitors-export').click();
+  const csv = await readFile(await (await downloaded).path(), 'utf8');
+  expect(csv).toContain(`"node:123";"OSM";"${competitorName}";"${competitorAddress}"`);
+  await page.evaluate(() => { window.print = () => { window.printInvoked = true; }; });
   await card.getByTestId('scenario-field-checklist').click();
-  await expect(page.locator('#print-report-content')).toContainText('Чек-лист проверки на месте');
-  await expect(page.locator('#print-report-content')).toContainText('Подтверждено');
+  expect(await page.evaluate(() => window.printInvoked)).toBe(true);
+  await page.emulateMedia({ media: 'print' });
+  const checklist = page.locator('#print-report-content');
+  await expect(checklist).toContainText('Чек-лист проверки на месте');
+  await expect(checklist).toContainText('Подтверждено');
+  await expect(checklist.getByText(/^Адрес: _+/)).toBeVisible();
+  const competitor = checklist.locator('li').filter({ hasText: competitorName });
+  await expect(competitor).toContainText(competitorAddress);
+  await expect(competitor).toContainText(/\d+\sм.*\d+\.\d{5}, \d+\.\d{5}.*OSM.*node:123/s);
+  await expect(competitor.locator('em')).toHaveCount(0);
+  expect(await competitor.evaluate(row => row.scrollWidth <= row.clientWidth)).toBe(true);
+  await expect(checklist.locator('footer')).toContainText('https://www.openstreetmap.org/copyright');
 });
 
 test('тап по учтённому конкуренту в режиме добавления открывает карточку без поправки', async ({ page, baseURL }) => {
@@ -100,6 +124,29 @@ test('тап по учтённому конкуренту в режиме доб
   await expect(page.locator('.map-inspection')).toHaveCount(0);
   await card.getByRole('button', { name: 'Закрыть карточку' }).tap();
   await expect(marker).toBeFocused();
+});
+
+test('печатное сравнение исследований содержит атрибуцию OSM один раз', async ({ page, baseURL }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.route('**/*', route => new URL(route.request().url()).origin === baseURL ? route.continue() : route.abort());
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-analysis-state', 'success');
+  await page.locator('#scenario-save').click();
+  await page.locator('#scenario-name').fill('Кофейня для сравнения');
+  await page.locator('#scenario-submit').click();
+  await page.getByTestId('scenario-duplicate').click();
+  await expect(page.getByTestId('scenario-card')).toHaveCount(2);
+  await page.getByTestId('scenario-compare').first().click();
+  await page.getByTestId('scenario-compare').last().click();
+  await page.evaluate(() => { window.print = () => {}; });
+  await page.locator('#scenario-print').click();
+  await page.emulateMedia({ media: 'print' });
+  const report = page.locator('#print-report-content');
+  await expect(report.locator('.scenario-print-context')).toHaveCount(2);
+  const attribution = report.locator('footer');
+  await expect(attribution).toHaveCount(1);
+  await expect(attribution).toContainText('© участники OpenStreetMap');
+  await expect(attribution.getByRole('link')).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright');
 });
 
 test('панорамирование и щипок не добавляют конкурента', async ({ page, baseURL, browserName }) => {
@@ -194,10 +241,10 @@ test('совпавшие координаты сохраняют выбор ко
   await marker.tap();
   const dialog = page.locator('#correction-remove-dialog');
   const node = dialog.getByRole('radio', { name: /Кофейня «Точка».*ул. Плеханова, 10.*node:123/ });
-  const way = dialog.getByRole('radio', { name: /Конкурент OpenStreetMap.*пер. Литейный, 3.*way:123/ });
+  const way = dialog.getByRole('radio', { name: /Без названия \(OSM way 123\).*пер. Литейный, 3.*way:123/ });
   await expect(node).toBeChecked();
   await expect(way).toBeVisible();
-  const link = dialog.getByRole('link', { name: 'Открыть в OpenStreetMap' });
+  const link = dialog.getByRole('link', { name: 'Открыть в OSM', exact: true });
   await expect(link).toHaveAttribute('href', 'https://www.openstreetmap.org/node/123');
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();

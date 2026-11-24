@@ -1,0 +1,28 @@
+[
+  {
+    "engine": "chromium",
+    "route": "rollback",
+    "counts": {
+      "added": 1,
+      "removed": 1
+    },
+    "preservedName": true,
+    "oldRecord": true,
+    "oldNoteEdit": true,
+    "csvUnchanged": true,
+    "print": true
+  },
+  {
+    "engine": "webkit",
+    "route": "rollback",
+    "counts": {
+      "added": 1,
+      "removed": 1
+    },
+    "preservedName": true,
+    "oldRecord": true,
+    "oldNoteEdit": true,
+    "csvUnchanged": true,
+    "print": true
+  }
+]

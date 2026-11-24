@@ -1,6 +1,6 @@
 import { scoreValue, localTimestamp } from './result-format.js';
 import { $, node, fmt, LIMITATIONS, dataDate } from './ui.js';
-import { correctionSummary, downloadCSV, reportPlace } from './report.js';
+import { appendPrintAttribution, correctionSummary, downloadCSV, reportPlace } from './report.js';
 import { qualitySummary, qualityBlock } from './data-quality.js';
 
 const missing = value => value ?? 'Не оценено';
@@ -30,5 +30,6 @@ export function printScenarios(records) {
     report.append(section);
   });
   report.append(node('h2', '', 'Ограничения модели'), node('p', '', LIMITATIONS), node('p', '', 'Карта в печатный отчёт не включена. Перед арендой проверьте место на местности.'));
+  appendPrintAttribution(report, records.map(item => item.analysis.source));
   window.print();
 }

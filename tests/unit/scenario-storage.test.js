@@ -109,13 +109,17 @@ test('повторное обновление читает архив верси
 test('архив версии 2 сохраняет поля учтённых объектов по типизированному ID', async () => {
   const record = corrected();
   const { analysis } = record;
-  const survivor = { ...analysis.correction_context.base_competitors[0], id: 'way:123', address: 'Балмочных, 11' };
+  const survivor = { ...analysis.correction_context.base_competitors[0], id: 'way:123', address: 'Балмочных, 11',
+    brand: 'Кофе', 'brand:wikidata': 'Q42', operator: 'Местный оператор' };
   analysis.correction_context.base_competitors.splice(1, 0, survivor);
   analysis.competitors.unshift(clone(survivor));
   analysis.stats.competitors += 1;
   await mutateScenarios(() => [record]);
   assert.equal(JSON.parse(records.get(SCENARIO_KEY)).schema_version, 2);
   assert.deepEqual(readScenarios(), [record]);
+  analysis.competitors[0].operator = 'Другой оператор';
+  assert.equal(validateScenario(record), false);
+  analysis.competitors[0].operator = survivor.operator;
   analysis.competitors[0].address = 'Другой адрес';
   assert.equal(validateScenario(record), false);
 });

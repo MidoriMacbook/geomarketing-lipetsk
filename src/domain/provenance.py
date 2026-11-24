@@ -5,8 +5,9 @@ import re
 import time
 
 
-# Пределы отображаемых полей в кодовых точках Unicode после удаления крайних пробелов.
-COMPETITOR_TEXT_LIMITS = {'name': 120, 'address': 180}
+# Пределы в кодовых точках Unicode после удаления крайних пробелов.
+_BRAND_FIELDS = ('brand', 'brand:wikidata', 'operator')
+COMPETITOR_TEXT_LIMITS = {'name': 120, 'address': 180, **dict.fromkeys(_BRAND_FIELDS, 255)}
 _TEXT_PADDING = re.compile(r'^[\s\ufeff]+|[\s\ufeff]+\Z')
 
 
@@ -35,7 +36,7 @@ def source_record(element, fetched_at, population=None):
 
 
 def competitor_details(tags):
-    """Берём два поля только из тегов самого объекта."""
+    """Берём сведения только из тегов самого объекта."""
     if not isinstance(tags, dict):
         return {}
 
@@ -54,8 +55,12 @@ def competitor_details(tags):
             building = _TEXT_PADDING.sub('', building[:limit - 3])
             place = _TEXT_PADDING.sub('', place[:limit - len(building) - 2])
             address = f'{place}, {building}'
-    return {key: _TEXT_PADDING.sub('', value[:COMPETITOR_TEXT_LIMITS[key]])
-            for key, value in (('name', name), ('address', address)) if value}
+    details = {key: _TEXT_PADDING.sub('', value[:COMPETITOR_TEXT_LIMITS[key]])
+               for key, value in (('name', name), ('address', address)) if value}
+    # Сохраняем целое значение, чтобы предел длины не менял бренд или QID.
+    details.update({key: value for key in _BRAND_FIELDS
+                    if (value := tag(key)) and len(value) <= COMPETITOR_TEXT_LIMITS[key]})
+    return details
 
 
 def possible_node_way_pairs(rows, records):
@@ -136,7 +141,7 @@ def validate_provenance(metadata, rows, columns):
                     value = record[key]
                     if (ident is None or not isinstance(value, str)
                             or not 0 < len(value) <= limit or _TEXT_PADDING.search(value)):
-                        raise ValueError('Некорректное название или адрес объекта OSM')
+                        raise ValueError('Некорректные сведения о конкуренте OSM')
         try:
             valid_date = (type(saved) in (int, float) and math.isfinite(saved)
                           and 0 < saved <= time.time() + 300)

@@ -217,20 +217,27 @@ class PersonalCorrectionsTests(unittest.TestCase):
         competitors = osm.parse_competitors([
             {'type': 'node', 'id': 41, 'lat': lat + 0.03, 'lon': lng, 'tags': {'name': 'За пределами'}},
             {'type': 'node', 'id': 42, 'lat': lat, 'lon': lng, 'tags': {'name': 'Первая'}},
-            {'type': 'node', 'id': 43, 'lat': lat + 0.001, 'lon': lng, 'tags': {'addr:full': 'Новая, 11'}},
+            {'type': 'node', 'id': 43, 'lat': lat + 0.001, 'lon': lng, 'tags': {
+                'addr:full': 'Новая, 11', 'brand': 'Вишня', 'brand:wikidata': 'Q42', 'operator': 'ООО Вишня',
+            }},
         ])
         bundle = {'houses': houses, 'competitors': {'cafe': competitors}, 'version': 'daily-fixture',
                   'fetched_at': FROZEN_DATE.timestamp(),
                   'provenance': {'competitors': {'cafe': competitors.provenance}}}
         with patch.object(analysis_service, 'CITY_DATA_URL', 'daily-fixture'), \
              patch.object(city_feed_service, '_get_bundle', return_value=(bundle, 'current', True, None)):
+            plain = self.client.get(URL).get_json()
+            self.assertEqual(plain['competitors'], [{'lat': lat, 'lng': lng},
+                                                   {'lat': round(lat + 0.001, 6), 'lng': lng}])
+            detailed = self.client.get(URL, query_string={'competitor_details': '1'}).get_json()
+            self.assertEqual(detailed['competitors'][1]['brand:wikidata'], 'Q42')
             response = self.post({'removed': ['node:42']})
             self.assertEqual(response.status_code, 200)
             data = response.get_json()
             self.assertEqual(data['correction_context']['base_competitors'], [
                 {'id': 'node:42', 'source': 'osm', 'lat': lat, 'lng': lng, 'name': 'Первая'},
                 {'id': 'node:43', 'source': 'osm', 'lat': round(lat + 0.001, 6), 'lng': lng,
-                 'address': 'Новая, 11'},
+                 'address': 'Новая, 11', 'brand': 'Вишня', 'brand:wikidata': 'Q42', 'operator': 'ООО Вишня'},
             ])
             self.assertEqual(data['competitors'], data['correction_context']['base_competitors'][1:])
             self.assertEqual(self.post({'removed': ['node:41']}).status_code, 400)

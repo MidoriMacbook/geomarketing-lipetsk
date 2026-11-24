@@ -10,9 +10,11 @@ export function describeCompetitor(point, source) {
 
   const match = typeof point.id === 'string' ? OSM_ID.exec(point.id) : null;
   const valid = match && match[0] === point.id;
+  const address = text(point.address);
   return {
-    title: text(point.name) || 'Конкурент OpenStreetMap',
-    note: text(point.address) || 'Адрес не указан в OSM',
+    title: text(point.name) || (valid ? `Без названия (OSM ${match[1]} ${match[2]})` : 'Конкурент OpenStreetMap'),
+    address,
+    note: address || 'Адрес не указан в OSM',
     id: valid ? point.id : null,
     href: valid ? `https://www.openstreetmap.org/${match[1]}/${match[2]}` : null,
   };
@@ -27,7 +29,7 @@ export function competitorFacts(details) {
 
 export function competitorSourceLink(details, className) {
   if (!details.href) return null;
-  const link = node('a', className, 'Открыть в OpenStreetMap');
+  const link = node('a', className, 'Открыть в OSM');
   link.href = details.href;
   link.tabIndex = 0;
   link.target = '_blank';

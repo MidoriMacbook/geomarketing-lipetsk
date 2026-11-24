@@ -23,7 +23,7 @@ for (const width of [320, 375, 390, 1440]) {
     test('показывает длинное название, адрес и ссылку на исходный объект', async ({ page, baseURL }) => {
       await ready(page, baseURL, data => {
         Object.assign(data.competitors[0], { id: 'node:123', source: 'osm', name: longName, address: longAddress });
-        Object.assign(data.competitors[1], { id: 'relation:123', source: 'osm', name: 'Кофейня «На углу»' });
+        Object.assign(data.competitors[1], { id: 'relation:123', source: 'osm', name: ' ' });
       });
       const marker = page.locator('[data-competitor-id="node:123"]');
       if (width < 601) {
@@ -33,7 +33,7 @@ for (const width of [320, 375, 390, 1440]) {
         await page.keyboard.press('Space');
       }
       const card = page.locator('.competitor-card');
-      const link = card.getByRole('link', { name: 'Открыть в OpenStreetMap' });
+      const link = card.getByRole('link', { name: 'Открыть в OSM', exact: true });
       const close = card.getByRole('button', { name: 'Закрыть карточку' });
       await expect(card.getByRole('heading')).toHaveText(longName);
       await expect(card.getByText(longAddress)).toBeVisible();
@@ -57,7 +57,7 @@ for (const width of [320, 375, 390, 1440]) {
 
       await page.locator('[data-competitor-id="relation:123"]').focus();
       await page.keyboard.press('Enter');
-      await expect(card.getByRole('heading')).toHaveText('Кофейня «На углу»');
+      await expect(card.getByRole('heading')).toHaveText('Без названия (OSM relation 123)');
       await expect(card.getByText('Адрес не указан в OSM')).toBeVisible();
       await expect(link).toHaveAttribute('href', 'https://www.openstreetmap.org/relation/123');
     });

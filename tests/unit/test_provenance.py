@@ -32,28 +32,33 @@ class ProvenanceTests(unittest.TestCase):
         node = {**competitor('node', 1), 'tags': {
             'name:ru': ' Кофейня "У дома" ', 'name': 'Kofe', 'addr:full': ' Липецк, Пушкина, 10 ',
             'addr:street': 'Другая улица', 'addr:housenumber': '21', 'website': 'https://example.org',
+            'brand': ' Роза ', 'brand:wikidata': ' Q123 ', 'operator': '  ООО Роза ',
         }}
         way = {**competitor('way', 1), 'tags': {
             'name:ru': ' \ufeff ', 'name': ' \ufeff= Кофейня ', 'addr:full': '\ufeff ', 'addr:place': 'посёлок Дачный',
             'addr:housename': 'Старый дом',
+            'brand': ' ', 'brand:wikidata': 'Q123;Q456',
         }}
-        relation = {**competitor('relation', 1), 'tags': {'name': ' ', 'addr:street': 'ул. Садовая'}}
+        relation = {**competitor('relation', 1), 'tags': {
+            'name': ' ', 'addr:street': 'ул. Садовая', 'operator': 'Местный оператор',
+        }}
         rows = osm.parse_competitors([node, {**node, 'tags': {'name': 'Другое имя'}}, way, relation],
                                      fetched_at=100)
         self.assertEqual(rows, [[52.5935, 39.48]] * 3)
         self.assertEqual(rows.provenance['duplicates_removed'], 1)
         self.assertEqual(rows.provenance['records'], [
             {'osm_type': 'node', 'osm_id': 1, 'fetched_at': 100,
-             'name': 'Кофейня "У дома"', 'address': 'Липецк, Пушкина, 10'},
+             'name': 'Кофейня "У дома"', 'address': 'Липецк, Пушкина, 10',
+             'brand': 'Роза', 'brand:wikidata': 'Q123', 'operator': 'ООО Роза'},
             {'osm_type': 'way', 'osm_id': 1, 'fetched_at': 100,
-             'name': '= Кофейня', 'address': 'посёлок Дачный, Старый дом'},
-            {'osm_type': 'relation', 'osm_id': 1, 'fetched_at': 100},
+             'name': '= Кофейня', 'address': 'посёлок Дачный, Старый дом', 'brand:wikidata': 'Q123;Q456'},
+            {'osm_type': 'relation', 'osm_id': 1, 'fetched_at': 100, 'operator': 'Местный оператор'},
         ])
 
     def test_metadata_is_optional_and_length_is_bounded_in_code_points(self):
         name, street = 'я😀' * 70, 'Садовая'
         rows = osm.parse_competitors([
-            {**competitor('node', 1), 'tags': {'name': name}},
+            {**competitor('node', 1), 'tags': {'name': name, 'brand': 'д' * 256, 'operator': '\ufeff'}},
             {**competitor('way', 1), 'tags': {'addr:street': street, 'addr:housenumber': ' 15 '}},
             {**competitor('relation', 1), 'tags': {'addr:full': 'ъ' * 200}},
             {'type': 'node', 'lat': 52.59, 'lon': 39.48, 'tags': {'name': 'Без ID'}},
@@ -61,6 +66,8 @@ class ProvenanceTests(unittest.TestCase):
         records = rows.provenance['records']
         self.assertEqual(records[0]['name'], name[:120])
         self.assertNotIn('address', records[0])
+        self.assertNotIn('brand', records[0])
+        self.assertNotIn('operator', records[0])
         self.assertNotIn('name', records[1])
         self.assertEqual(records[1]['address'], f'{street}, 15')
         self.assertEqual(records[2]['address'], 'ъ' * 180)
@@ -127,6 +134,7 @@ class ProvenanceTests(unittest.TestCase):
         rows = osm.parse_competitors([competitor('node', 1)])
         bundle = city_data.make_bundle(city_rows(), {key: rows for key in BUSINESS_CATALOG}, time.time())
         for invalid in ({'name': ['не текст']}, {'name': 'п' * 121}, {'address': ' '}, {'address': '\ufeff'},
+                        {'brand': 'п' * 256}, {'brand:wikidata': 42}, {'operator': ' ООО '},
                         {'address': ' а' * 181}, {'osm_id': None, 'osm_type': None, 'name': 'Без ID'}):
             with self.subTest(invalid=invalid):
                 changed = copy.deepcopy(bundle)

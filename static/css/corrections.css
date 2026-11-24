@@ -109,4 +109,14 @@
 
 @media print {
   #print-report-content .field-checklist-heading { font-size: 22pt; line-height: 1.2; margin-block-end: 10pt; }
+  .field-checklist-place-address, .field-checklist-competitors li, .print-osm-attribution { overflow-wrap: anywhere; }
+  .field-checklist-competitors li { break-inside: avoid; }
+  .field-checklist-competitors li + li { margin-block-start: var(--space-2); }
+  .print-osm-attribution {
+    break-inside: avoid;
+    margin-block-start: var(--space-4);
+    padding-block-start: var(--space-2);
+    border-block-start: var(--line) solid var(--color-line);
+    font-size: var(--text-xs);
+  }
 }
