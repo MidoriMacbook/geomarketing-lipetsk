@@ -94,6 +94,25 @@ test('исследование с поправками проверяет про
   assert.equal(validateScenario(value), false);
 });
 
+test('архив хранит сетевой вес и сверяет метки с исходными конкурентами', async () => {
+  const record = corrected();
+  const { analysis } = record;
+  analysis.correction_context.base_competitors[1].id = 'way:123';
+  analysis.correction_context.base_competitors[1].is_chain = true;
+  Object.assign(analysis.competitors[0], { id: 'way:123', is_chain: true });
+  analysis.network_competition = {
+    weight: 0.5, eligible: true, coverage: { total: 5, tagged: 1 }, marked: 1, total: 2,
+  };
+  assert.equal(validateScenario(record), true);
+  await mutateScenarios(() => [record]);
+  assert.deepEqual(readScenarios()[0], record);
+  analysis.network_competition.coverage.total = 6;
+  assert.equal(validateScenario(record), false);
+  analysis.network_competition.coverage.total = 5;
+  delete analysis.correction_context.base_competitors[1].is_chain;
+  assert.equal(validateScenario(record), false);
+});
+
 test('повторное обновление читает архив версии 2 и сохраняет поправки при изменении заметки', async () => {
   const record = corrected();
   const raw = JSON.stringify({ schema_version: 2, scenarios: [record] });

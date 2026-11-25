@@ -3,7 +3,7 @@ import { competitorFacts, competitorSourceLink, describeCompetitor } from './com
 import { projectPoint } from './map-analysis.js';
 import { CORRECTION_LIMIT, createCorrectionDraft } from './corrections-state.js';
 
-export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onEnter }) {
+export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onEnter, onPending }) {
   const panel = $('corrections-panel');
   const toggle = $('corrections-toggle');
   const dialog = $('correction-remove-dialog');
@@ -21,6 +21,7 @@ export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onE
     const canRemoveOsm = Boolean(context?.base_competitors.some(point => point.id && !draft.value.removed.includes(point.id)));
     const busy = phase === 'loading';
     const available = Boolean(data && isAvailable() && data.source !== 'demo');
+    onPending(busy || draft.pending || Boolean(mode && !context));
     toggle.disabled = !available;
     toggle.setAttribute('aria-expanded', String(Boolean(mode)));
     toggle.title = data?.source === 'demo' ? 'Поправки доступны для расчётов по данным OpenStreetMap' : '';

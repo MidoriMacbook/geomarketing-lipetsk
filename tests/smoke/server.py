@@ -33,7 +33,9 @@ def controlled_load_data(area, business, refresh):
                        'stale': False, 'warning': None}
                 for kind in ('houses', 'competitors')}
     return LoadedData(houses, competitors, 'cache', None, metadata,
-                      competitor_ids=('node:123', 'way:123'))
+                      competitor_ids=('node:123', 'way:123'),
+                      network_coverage={'total': 5, 'tagged': 1} if business == 'grocery' else None,
+                      network_ids=frozenset({'node:123'}) if business == 'grocery' else frozenset())
 
 
 if __name__ == '__main__':
