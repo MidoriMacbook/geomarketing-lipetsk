@@ -32,6 +32,7 @@ function bootstrap() {
     $(id).dispatchEvent(new Event('input', { bubbles: true }));
     return false;
   };
+  let correctionPending = false;
   const corrections = initCorrections({
     isAvailable: () => Boolean(state.current && !state.activeRequest && $('map').classList.contains('leaflet-container')
       && ($('district').value !== 'custom' || state.customPoint)
@@ -43,6 +44,10 @@ function bootstrap() {
     },
     onEnter: beginMapCorrections,
     onMap: updateCorrectionMap,
+    onPending(pending) {
+      correctionPending = pending;
+      updateNetworkAvailability();
+    },
     onResult(data) {
       const previous = state.current.recommendations.find(item => item.rank === state.selectedRank);
       state.current = data;
@@ -57,6 +62,9 @@ function bootstrap() {
       updateScenarioAvailability();
     },
   });
+  function updateNetworkAvailability() {
+    $('network-weight').disabled = $('network-setting').hidden || Boolean(state.activeRequest) || correctionPending;
+  }
   function renderNetworks() {
     const data = state.current;
     const active = data && ($('district').value !== 'custom' || state.customPoint) &&
@@ -65,7 +73,7 @@ function bootstrap() {
     $('network-panel').hidden = !active;
     $('network-count').hidden = !network?.coverage;
     $('network-setting').hidden = !network?.eligible;
-    $('network-weight').disabled = !network?.eligible || Boolean(state.activeRequest);
+    updateNetworkAvailability();
     $('network-weight').value = String(network?.weight ?? 1);
     if (network?.coverage) {
       $('network-count').querySelector('span').textContent = `Сетевых ${fmt(network.marked)} из ${fmt(network.total)}`;
@@ -238,7 +246,6 @@ function bootstrap() {
     const version = state.requestVersion, request = beginCalculationRequest(), controller = request.controller;
     corrections.suspend();
     corrections.render();
-    $('network-weight').disabled = true;
     $('run').disabled = true;
     $('refresh-data').disabled = true;
     refreshFeedback(refresh ? (state.current?.data_delivery?.mode === 'daily'
@@ -300,7 +307,9 @@ function bootstrap() {
     }
   }
   $('run').addEventListener('click', () => run(false));
-  $('network-weight').addEventListener('change', event => run(false, event.target.value));
+  $('network-weight').addEventListener('change', event => {
+    if (!event.target.disabled) run(false, event.target.value);
+  });
   $('retry-catalog').addEventListener('click', loadCatalog);
   $('district').addEventListener('change', () => {
     if (!acceptParameterChange('district')) return;

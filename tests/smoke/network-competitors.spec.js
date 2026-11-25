@@ -31,12 +31,19 @@ test('сетевой вес сохраняется вместе с поправ�
   }
   await page.locator('#corrections-toggle').tap();
   await expect(page.locator('#correction-add')).toBeEnabled();
+  await page.route('**/api/calculate', route => route.fulfill({
+    status: 503, json: { message: 'Нет ответа для пересчёта' },
+  }), { times: 1 });
   await page.locator('#map').evaluate(el => scrollTo({
     top: scrollY + el.getBoundingClientRect().top - 96, behavior: 'instant',
   }));
   const map = page.locator('#map');
   const box = await map.boundingBox();
   await map.tap({ position: { x: box.width * .72, y: box.height * .51 } });
+  await expect(weight(page)).toBeDisabled();
+  await expect(page.locator('#correction-retry')).toBeVisible();
+  await expect(weight(page)).toBeDisabled();
+  await page.locator('#correction-retry').tap();
   await expect.poll(async () => (await current(page)).correction_context?.counts.added).toBe(1);
   expect((await current(page)).network_competition.weight).toBe(0);
   await expect(page.locator('#network-count')).toHaveText('Сетевых 1 из 3');
