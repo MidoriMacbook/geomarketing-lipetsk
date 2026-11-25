@@ -16,6 +16,7 @@ export function describeCompetitor(point, source) {
     address,
     note: address || 'Адрес не указан в OSM',
     id: valid ? point.id : null,
+    isChain: Boolean(valid && point.is_chain === true),
     href: valid ? `https://www.openstreetmap.org/${match[1]}/${match[2]}` : null,
   };
 }
@@ -23,6 +24,7 @@ export function describeCompetitor(point, source) {
 export function competitorFacts(details) {
   const facts = node('span', 'competitor-facts');
   if (details.note) facts.append(node('span', 'competitor-note', details.note));
+  if (details.isChain) facts.append(node('span', 'competitor-id', 'Отмечен как сетевой'));
   if (details.id) facts.append(node('span', 'competitor-id', `OSM ID: ${details.id}`));
   return facts;
 }

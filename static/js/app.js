@@ -36,7 +36,11 @@ function bootstrap() {
     isAvailable: () => Boolean(state.current && !state.activeRequest && $('map').classList.contains('leaflet-container')
       && ($('district').value !== 'custom' || state.customPoint)
       && requestParams().toString() === state.currentRequestKey),
-    fetchResult: (value, signal) => fetchCalculation(new URLSearchParams(state.currentRequestKey), signal, value),
+    fetchResult: (value, signal) => {
+      const params = new URLSearchParams(state.currentRequestKey);
+      params.set('network_weight', String(state.current.network_competition?.weight ?? 1));
+      return fetchCalculation(params, signal, value);
+    },
     onEnter: beginMapCorrections,
     onMap: updateCorrectionMap,
     onResult(data) {
@@ -48,10 +52,28 @@ function bootstrap() {
       drawMap(data, { preserveViewport: true });
       drawZones();
       showResult(data, { preserveViewport: true });
+      renderNetworks();
       setAnalysisState('success', data.recommendations.length ? 'Расчёт готов · выберите место на карте' : 'Расчёт готов · подходящих мест не найдено');
       updateScenarioAvailability();
     },
   });
+  function renderNetworks() {
+    const data = state.current;
+    const active = data && ($('district').value !== 'custom' || state.customPoint) &&
+      requestParams().toString() === state.currentRequestKey;
+    const network = active ? data.network_competition : null;
+    $('network-panel').hidden = !active;
+    $('network-count').hidden = !network?.coverage;
+    $('network-setting').hidden = !network?.eligible;
+    $('network-weight').disabled = !network?.eligible || Boolean(state.activeRequest);
+    $('network-weight').value = String(network?.weight ?? 1);
+    if (network?.coverage) {
+      $('network-count').querySelector('span').textContent = `Сетевых ${fmt(network.marked)} из ${fmt(network.total)}`;
+      $('network-note').textContent = 'В выборке расчёта, включая окрестности. В OSM отмечено как сеть. Отсутствие отметки не означает, что сети нет.';
+    } else {
+      $('network-note').textContent = 'В этом расчёте нет сведений о брендах. Конкуренты учитываются полностью.';
+    }
+  }
   function refreshFeedback(message = '', busy = false) {
     $('refresh-status').textContent = message;
     $('refresh-status').hidden = !message;
@@ -64,6 +86,7 @@ function bootstrap() {
     refreshFeedback();
     corrections.setAnalysis(null);
     if(preserveResult&&state.current){
+      renderNetworks();
       document.querySelectorAll('.kpis,.area-details-grid,#recommendation-list').forEach(container=>{finishCounters(container);cancelRevealsWithin(container);});
       $('error').hidden=true;$('loading-hint').hidden=true;
       $('run').disabled=!state.catalog;$('refresh-data').disabled=false;$('run').textContent='Найти места';
@@ -74,6 +97,7 @@ function bootstrap() {
     state.current = null;
     state.currentRequestKey = null;
     state.openedScenarioId = null;
+    renderNetworks();
     clearAnalysisMap();
     cancelRevealsWithin($('result'));
     resetCounters($('recommendation-list'));
@@ -141,6 +165,7 @@ function bootstrap() {
     updateParams();updateCustomUI();clearPreview();
     state.current=item.analysis;state.selectedRank=item.view.selected_rank;
     state.currentRequestKey=requestParams().toString();state.openedScenarioId=item.id;
+    renderNetworks();
     drawMap(state.current);drawZones();
     corrections.setAnalysis(state.current, { saved: true });
     for(const [key,enabled] of Object.entries(item.view.layers)){
@@ -187,7 +212,7 @@ function bootstrap() {
       finishCatalogRequest(controller);
     }
   }
-  async function run(refresh = false) {
+  async function run(refresh = false, networkWeight = null) {
     if (!state.catalog) {
       if (refresh) refreshFeedback('Сначала дождитесь загрузки настроек. При ошибке повторите их загрузку в панели анализа.');
       return;
@@ -200,7 +225,10 @@ function bootstrap() {
     }
     const params = requestParams();
     const requestKey = params.toString(), preserveResult = !!state.current;
-    const currentCorrections = requestKey === state.currentRequestKey ? corrections.value : undefined;
+    const sameAnalysis = requestKey === state.currentRequestKey;
+    const currentCorrections = sameAnalysis ? corrections.value : undefined;
+    const previous = networkWeight !== null ? state.current?.recommendations.find(item => item.rank === state.selectedRank) : null;
+    params.set('network_weight', networkWeight ?? String(sameAnalysis ? state.current?.network_competition?.weight ?? 1 : 1));
     if (refresh) params.set('refresh', '1');
     if (preserveResult) {
       cancelRequest();
@@ -210,6 +238,7 @@ function bootstrap() {
     const version = state.requestVersion, request = beginCalculationRequest(), controller = request.controller;
     corrections.suspend();
     corrections.render();
+    $('network-weight').disabled = true;
     $('run').disabled = true;
     $('refresh-data').disabled = true;
     refreshFeedback(refresh ? (state.current?.data_delivery?.mode === 'daily'
@@ -230,13 +259,15 @@ function bootstrap() {
       state.current = data;
       state.openedScenarioId = null;
       state.currentRequestKey = requestKey;
-      state.selectedRank = data.recommendations[0]?.rank||1;
+      state.selectedRank = (previous && data.recommendations.find(item => item.lat === previous.lat && item.lng === previous.lng)?.rank)
+        || data.recommendations[0]?.rank || 1;
       clearPreview();
-      drawMap(data);
+      const preserveViewport = networkWeight !== null;
+      drawMap(data, { preserveViewport });
       corrections.setAnalysis(data, { keepMode: currentCorrections !== undefined });
       drawZones();
-      showResult(data,{freshCalculation:true});
-      fitArea(data);
+      showResult(data, { freshCalculation: !preserveViewport, preserveViewport });
+      if (!preserveViewport) fitArea(data);
       setAnalysisState('success', data.recommendations.length ? 'Расчёт готов · выберите место на карте' : 'Расчёт готов · подходящих мест не найдено');
       if (refresh) {
         refreshFeedback(refreshMessage(data));
@@ -258,6 +289,7 @@ function bootstrap() {
       if (version === state.requestVersion) {
         state.activeRequest = null;
         corrections.render();
+        renderNetworks();
         $('run').disabled = false;
         $('refresh-data').disabled = false;
         $('run').textContent = 'Найти места';
@@ -268,6 +300,7 @@ function bootstrap() {
     }
   }
   $('run').addEventListener('click', () => run(false));
+  $('network-weight').addEventListener('change', event => run(false, event.target.value));
   $('retry-catalog').addEventListener('click', loadCatalog);
   $('district').addEventListener('change', () => {
     if (!acceptParameterChange('district')) return;

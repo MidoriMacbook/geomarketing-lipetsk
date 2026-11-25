@@ -9,6 +9,7 @@ from src.config import MIN_HOUSES, DEMO_HALF_SIZE_M, LOW_DATA_RESIDENTS, CITY_DA
 from src.domain.businesses import BUSINESS_CATALOG
 from src.domain.corrections import Corrections, recommendation_deltas
 from src.domain.models import Area, LoadedData
+from src.domain.network_competitors import weight_available
 from src.domain.data_quality import assess_data_quality
 from src.domain.explanations import explain_recommendations
 from src.domain.scoring import score_locations
@@ -98,34 +99,46 @@ def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
                           'Пример показывает работу интерфейса и не подходит для выбора помещения.')
 
 
+def _weights(competitors, network_ids, network_weight):
+    if network_weight == 1:
+        return None
+    return np.array([network_weight if row['source'] == 'osm' and row['id'] in network_ids else 1
+                     for row in competitors], dtype=float)
+
+
 @lru_cache(maxsize=16)
-def _cached_score(version, business, center, half, houses_bytes, competitors_bytes, corrections=None):
+def _cached_score(version, business, center, half, houses_bytes, competitors_bytes, corrections=None, weights=None):
     # Числовые входы входят в ключ вместе с датой и версией. Даже при
     # неизменной дате источника другая версия массива даёт отдельный результат.
     houses = np.frombuffer(houses_bytes, dtype=float).reshape(-1, 3)
     competitors = np.frombuffer(competitors_bytes, dtype=float).reshape(-1, 2)
-    return score_locations(houses, competitors, center, half, BUSINESS_CATALOG[business])
+    options = {} if weights is None else {'competitor_weights': np.frombuffer(weights, dtype=float)}
+    return score_locations(houses, competitors, center, half, BUSINESS_CATALOG[business], **options)
 
 
-def _score_with_corrections(area, business, loaded, half, corrections):
+def _score_with_corrections(area, business, loaded, half, corrections, network_weight):
     effective, context = corrections.apply(loaded)
+    base_weights = _weights(context['base_competitors'], loaded.network_ids, network_weight)
+    effective_weights = _weights(effective, loaded.network_ids, network_weight)
     version = (
         area['key'], (loaded.delivery or {}).get('version'),
         *(loaded.metadata.get(kind, {}).get('fetched_at') for kind in ('houses', 'competitors')),
     )
     scoring_inputs = (version, business, area['center'], half, loaded.houses.tobytes())
-    baseline = _cached_score(*scoring_inputs, loaded.competitors.tobytes())
+    baseline = _cached_score(*scoring_inputs, loaded.competitors.tobytes(),
+                             weights=base_weights.tobytes() if base_weights is not None else None)
     if corrections.added or corrections.removed:
         adjusted = np.array([(row['lat'], row['lng']) for row in effective], dtype=float).reshape(-1, 2)
-        scored = _cached_score(*scoring_inputs, adjusted.tobytes(), corrections)
+        scored = _cached_score(*scoring_inputs, adjusted.tobytes(), corrections,
+                               weights=effective_weights.tobytes() if effective_weights is not None else None)
         loaded = replace(loaded, competitors=adjusted)
     else:
         scored = baseline
-    return loaded, scored, baseline, effective, context
+    return loaded, scored, baseline, effective, context, effective_weights
 
 
 def analyze(area: Area, business: str, refresh: bool = False, *, corrections: Corrections | None = None,
-            competitor_details: bool = False) -> dict:
+            competitor_details: bool = False, network_weight: float | None = None) -> dict:
     if business not in BUSINESS_CATALOG:
         raise UserError('Неизвестный тип бизнеса. Выберите тип из списка.')
     parameters = BUSINESS_CATALOG[business]
@@ -137,16 +150,22 @@ def analyze(area: Area, business: str, refresh: bool = False, *, corrections: Co
                   'поэтому спрос может быть занижен, а результат неточен.')
     # Качество данных относится к OSM. Личные поправки не меняют сведения об источнике.
     original_competitor_count = len(loaded.competitors)
+    eligible = weight_available(loaded.network_coverage)
+    applied_weight = network_weight if eligible and network_weight is not None else 1
     if corrections is None:
-        scored = score_locations(loaded.houses, loaded.competitors, area['center'], half, parameters)
+        effective = loaded.describe_competitors() if network_weight is not None or competitor_details else None
+        weights = _weights(effective, loaded.network_ids, applied_weight)
+        scored = score_locations(loaded.houses, loaded.competitors, area['center'], half, parameters,
+                                 competitor_weights=weights)
     else:
         if loaded.source == 'demo':
             raise UserError('Поправки доступны для расчётов по данным OpenStreetMap.')
-        loaded, scored, baseline, effective, context = _score_with_corrections(
-            area, business, loaded, half, corrections)
+        loaded, scored, baseline, effective, context, weights = _score_with_corrections(
+            area, business, loaded, half, corrections, applied_weight)
     calculated_at = datetime.now(timezone.utc)
     explanations = explain_recommendations(loaded.houses, loaded.competitors, area['center'],
-                                           half, parameters, scored.recommendations, scored.centroids)
+                                           half, parameters, scored.recommendations, scored.centroids,
+                                           competitor_weights=weights)
     quality = assess_data_quality(
         source=loaded.source, metadata=loaded.metadata, house_count=len(loaded.houses),
         residents=int(loaded.houses[:, 2].sum()), competitor_count=original_competitor_count,
@@ -159,6 +178,20 @@ def analyze(area: Area, business: str, refresh: bool = False, *, corrections: Co
         payload['correction_context'] = context
         for row, delta in zip(payload['recommendations'], recommendation_deltas(baseline, scored), strict=True):
             row['correction_delta'] = delta
-    elif competitor_details:
-        payload['competitors'] = loaded.describe_competitors()
+    elif effective is not None:
+        payload['competitors'] = effective
+    if network_weight is not None:
+        marked = 0
+        for row in effective:
+            if row['source'] == 'osm' and row['id'] in loaded.network_ids:
+                row['is_chain'] = True
+                marked += 1
+        if corrections is not None:
+            for row in context['base_competitors']:
+                if row['id'] in loaded.network_ids:
+                    row['is_chain'] = True
+        payload['network_competition'] = {
+            'weight': applied_weight, 'eligible': eligible, 'coverage': loaded.network_coverage,
+            'marked': marked, 'total': len(effective),
+        }
     return payload

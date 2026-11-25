@@ -10,6 +10,7 @@ import requests
 
 from src.config import CACHE_DIR, CACHE_TTL, CITY_DATA_URL, HEADERS
 from src.domain.city_data import select_area, validate_bundle
+from src.domain.network_competitors import city_networks
 from src.domain.models import CacheInfo, LoadedData
 from src.domain.provenance import osm_competitor_details, osm_ids, provenance_summary
 from src.utils.formatting import cache_metadata
@@ -130,9 +131,13 @@ def load(area, business, refresh=False):
                     default=bundle['fetched_at']) if provenance else bundle['fetched_at']
         return CacheInfo(cached, saved, time.time() - saved > CACHE_TTL, warning, provenance_summary(rows))
     house_info, competitor_info = source_info(houses), source_info(competitors)
+    coverage, network_ids = city_networks(bundle)
+    brand_data_available = any(category['tagged'] for category in coverage.values())
     return LoadedData(house_rows, competitor_rows,
                       'cache' if cached else 'osm', warning, cache_metadata(house_info, competitor_info),
                       {'mode': 'daily', 'status': status, 'version': bundle['version'],
                        'fetched_at': bundle['fetched_at'], 'checked_at': _last_check,
                        'interval_hours': 24}, competitor_ids=osm_ids(competitors),
-                      competitor_details=osm_competitor_details(competitors))
+                      competitor_details=osm_competitor_details(competitors),
+                      network_coverage=coverage[business] if brand_data_available else None,
+                      network_ids=frozenset(network_ids))

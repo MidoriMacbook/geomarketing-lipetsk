@@ -11,7 +11,7 @@ let accessPalette=null,focusDuration=400;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
 let emphasized = new Set(), previewRank = null, houseData = [];
 let viewportRank=null, viewportTimer=null,inspector=null,selection=null,comparison=null,choosingCenter=false;
-let competitorPopup = null, competitorIcon = null;
+let competitorPopup = null, competitorIcon = null, chainCompetitorIcon = null;
 let manualViewport=false;
 const layers = {}, markers = new Map();
 let correctionView = { mode: null, draft: { added: [], removed: [] }, pending: false };
@@ -91,6 +91,7 @@ export function initMap() {
   });
   dataRenderers.houses = L.canvas({ pane: 'houses', padding: .5 });
   competitorIcon = L.divIcon({ className: 'competitor-marker', iconSize: [24, 24] });
+  chainCompetitorIcon = L.divIcon({ className: 'competitor-marker is-chain', iconSize: [24, 24] });
   map.createPane('corrections').style.zIndex = '620';
   ['houses','competitors','centroids','zones','recommendations'].forEach(key=>{
     const pane=map.getPane(key==='recommendations'?'markerPane':key);
@@ -346,7 +347,7 @@ function inspectCompetitor(marker, details, colocated, event) {
 function correctionMarker(point, details, { removable = false, pending = false, colocated = [], related = [] } = {}) {
   const manual = point.source === 'manual';
   const icon = L.divIcon({
-    className: `correction-marker${!manual ? ' is-removable' : ''}${pending ? ' is-pending' : ''}`,
+    className: `correction-marker${!manual ? ' is-removable' : ''}${pending ? ' is-pending' : ''}${point.is_chain || colocated.some(row => row.is_chain) ? ' is-chain' : ''}`,
     html: node('span', '', colocated.length > 1 ? colocated.length : removable ? '−' : '+'),
     iconSize: [44, 44],
     iconAnchor: [22, 22],
@@ -407,8 +408,11 @@ function drawCompetitors(data) {
         correctionMarker(point, details, { pending: pending && !appliedIds.has(point.id), related: group });
         continue;
       }
-      const marker = L.marker([point.lat, point.lng], { pane: 'competitors', icon: competitorIcon });
-      const label = details.id ? `${details.title}, ${details.id}` : [details.title, details.note].filter(Boolean).join(', ');
+      const marker = L.marker([point.lat, point.lng], {
+        pane: 'competitors', icon: details.isChain ? chainCompetitorIcon : competitorIcon,
+      });
+      const label = [details.title, details.id || details.note,
+        details.isChain ? 'Отмечен как сетевой' : null].filter(Boolean).join(', ');
       bindCompetitorMarker(marker, label, event => inspectCompetitor(marker, details, group, event), details.id);
       marker.addTo(layers.competitors);
     }

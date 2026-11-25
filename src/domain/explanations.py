@@ -7,7 +7,7 @@ from src.utils.geo import to_meters
 
 
 def explain_recommendations(houses, competitors, center, half, parameters,
-                            recommendations, centroids):
+                            recommendations, centroids, *, competitor_weights=None):
     """Возвращаем объяснения в порядке рекомендаций, не меняя результаты модели.
 
     Входные данные уже проверены. ``half`` — радиус круга загруженной области;
@@ -24,7 +24,10 @@ def explain_recommendations(houses, competitors, center, half, parameters,
         house_distances = np.linalg.norm(h_xy - xy, axis=1)
         demand = float((houses[:, 2] * np.exp(-(house_distances / radius)**2)).sum())
         competitor_distances = np.linalg.norm(c_xy - xy, axis=1)
-        pressure = float(np.exp(-(competitor_distances / (0.8 * radius))**2).sum())
+        contributions = np.exp(-(competitor_distances / (0.8 * radius))**2)
+        if competitor_weights is not None:
+            contributions *= competitor_weights
+        pressure = float(contributions.sum())
         multiplier = 1 + alpha * pressure
         count = int((house_distances <= radius).sum())
         nearest = round(float(np.linalg.norm(centers_xy - xy, axis=1).min())) if len(centers_xy) else None
