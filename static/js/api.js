@@ -48,13 +48,14 @@ export async function fetchCatalog(signal) {
 
 export async function fetchCalculation(params, signal, corrections) {
   const query = new URLSearchParams(params);
+  query.set('data_reliability', '1');
   query.set('competitor_details', '1');
   const response = corrections === undefined
     ? await fetch(`/api/calculate?${query}`, { signal })
     : await fetch('/api/calculate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...Object.fromEntries(params), corrections }),
+      body: JSON.stringify({ ...Object.fromEntries(params), data_reliability: '1', corrections }),
       signal,
     });
   if (!response.ok) {

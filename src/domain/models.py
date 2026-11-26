@@ -36,6 +36,7 @@ class LoadedData:
     delivery: dict | None = None
     competitor_ids: tuple[str | None, ...] = ()
     competitor_details: dict[str, dict[str, str]] = field(default_factory=dict)
+    data_reliability: dict | None = None
 
     def describe_competitors(self):
         source = 'demo' if self.source == 'demo' else 'osm'

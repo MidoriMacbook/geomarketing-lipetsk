@@ -10,6 +10,7 @@ import requests
 
 from src.config import CACHE_DIR, CACHE_TTL, CITY_DATA_URL, HEADERS
 from src.domain.city_data import select_area, validate_bundle
+from src.domain.data_reliability import assess_data_reliability
 from src.domain.models import CacheInfo, LoadedData
 from src.domain.provenance import osm_competitor_details, osm_ids, provenance_summary
 from src.utils.formatting import cache_metadata
@@ -112,7 +113,7 @@ def _get_bundle(refresh):
         _lock.release()
 
 
-def load(area, business, refresh=False):
+def load(area, business, refresh=False, *, data_reliability=False):
     bundle, status, cached, warning = _get_bundle(refresh)
     houses, competitors = select_area(bundle, area, business)
     if len(houses) < 5:
@@ -135,4 +136,5 @@ def load(area, business, refresh=False):
                       {'mode': 'daily', 'status': status, 'version': bundle['version'],
                        'fetched_at': bundle['fetched_at'], 'checked_at': _last_check,
                        'interval_hours': 24}, competitor_ids=osm_ids(competitors),
-                      competitor_details=osm_competitor_details(competitors))
+                      competitor_details=osm_competitor_details(competitors),
+                      data_reliability=assess_data_reliability(bundle, area, business) if data_reliability else None)

@@ -10,6 +10,49 @@
 .button { min-height:var(--size-target); padding:var(--space-3) var(--space-4); border-radius:var(--radius-control); border:var(--line) solid var(--color-border); display:inline-flex; align-items:center; justify-content:center; gap:var(--space-2); font-size:var(--text-sm); font-weight:600; line-height:1.4; text-decoration:none; }
 .primary { background:var(--color-primary); color:var(--color-on-primary); border-color:var(--color-primary); }
 .secondary { background:transparent; }
+.data-reliability {
+  --reliability-accent:var(--palette-ink-muted);
+  color:var(--palette-ink);
+  font-size:var(--text-sm);
+  line-height:1.45;
+  overflow-wrap:break-word;
+}
+.data-reliability[data-level=low] { --reliability-accent:var(--palette-rosewood-deep); }
+.data-reliability[data-level=high] { --reliability-accent:var(--palette-sage-deep); }
+.data-reliability[data-level=medium] { --reliability-accent:var(--palette-ink); }
+.data-reliability > p { margin:0; }
+.data-reliability strong { color:var(--reliability-accent); }
+.data-reliability-action {
+  justify-self:start;
+  min-inline-size:var(--size-target);
+  min-block-size:var(--size-target);
+  padding:var(--space-1) var(--space-2);
+  border:0;
+  border-radius:var(--radius-control);
+  color:var(--palette-rosewood-deep);
+  background:transparent;
+  font-weight:650;
+  text-align:start;
+  text-decoration:underline;
+  text-underline-offset:.2em;
+  touch-action:manipulation;
+  cursor:pointer;
+}
+.data-reliability-action:focus-visible { outline-color:var(--palette-rosewood-deep); }
+#calculation-reliability {
+  display:grid;
+  align-items:center;
+  flex:none;
+  gap:var(--space-1);
+  margin:0 var(--space-2) var(--space-3);
+  padding:var(--space-2) var(--space-3);
+  border-inline-start:var(--line-strong) solid var(--reliability-accent);
+  border-radius:var(--radius-control);
+  background:var(--palette-cream);
+}
+@media (min-width:601px) {
+  #calculation-reliability { grid-template-columns:minmax(0,1fr) auto; margin-inline:0; gap:var(--space-2); }
+}
 .settings-group { margin-top:var(--space-5); }
 .group-heading { font-size:var(--text-sm); font-weight:650; color:var(--color-ink); border-bottom:var(--line) solid var(--color-line); padding-bottom:var(--space-2); }
 .field-label { display:block; font-size:var(--text-sm); font-weight:500; margin:var(--space-3) 0 var(--space-2); }

@@ -10,6 +10,7 @@ from src.domain.businesses import BUSINESS_CATALOG
 from src.domain.corrections import Corrections, recommendation_deltas
 from src.domain.models import Area, LoadedData
 from src.domain.data_quality import assess_data_quality
+from src.domain.data_reliability import unavailable_data_reliability
 from src.domain.explanations import explain_recommendations
 from src.domain.scoring import score_locations
 from src.services import osm_service as osm
@@ -46,12 +47,12 @@ DEMO_COMPETITORS = {
     },
 }
 
-def load_data(area: Area, business: str, refresh: bool) -> LoadedData:
+def load_data(area: Area, business: str, refresh: bool, *, data_reliability: bool = False) -> LoadedData:
     """Возвращаем пригодные строки, источник, предупреждения и происхождение кэша."""
     feed_warning = None
     if CITY_DATA_URL:
         try:
-            return city_feed.load(area, business, refresh)
+            return city_feed.load(area, business, refresh, data_reliability=data_reliability)
         except city_feed.FeedUnavailable as exc:
             feed_warning = str(exc)
     try:
@@ -125,11 +126,12 @@ def _score_with_corrections(area, business, loaded, half, corrections):
 
 
 def analyze(area: Area, business: str, refresh: bool = False, *, corrections: Corrections | None = None,
-            competitor_details: bool = False) -> dict:
+            competitor_details: bool = False, data_reliability: bool = False) -> dict:
     if business not in BUSINESS_CATALOG:
         raise UserError('Неизвестный тип бизнеса. Выберите тип из списка.')
     parameters = BUSINESS_CATALOG[business]
-    loaded = load_data(area, business, refresh)
+    load_options = {'data_reliability': True} if data_reliability else {}
+    loaded = load_data(area, business, refresh, **load_options)
     half = DEMO_HALF_SIZE_M if loaded.source == 'demo' else area['radius']
     notice = None
     if loaded.source != 'demo' and loaded.houses[:, 2].sum() < LOW_DATA_RESIDENTS:
@@ -161,4 +163,6 @@ def analyze(area: Area, business: str, refresh: bool = False, *, corrections: Co
             row['correction_delta'] = delta
     elif competitor_details:
         payload['competitors'] = loaded.describe_competitors()
+    if data_reliability:
+        payload['data_reliability'] = loaded.data_reliability or unavailable_data_reliability()
     return payload

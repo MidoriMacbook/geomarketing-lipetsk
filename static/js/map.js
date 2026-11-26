@@ -302,11 +302,12 @@ export function updateCorrectionMap(view) {
   if (state.current) drawCompetitors(state.current);
 }
 
-export function beginMapCorrections() {
+export function beginMapCorrections({ preserveViewport = false } = {}) {
+  if (preserveViewport) map?.stop();
   inspector?.close();
   competitorPopup?.close();
   comparison?.clear();
-  if (map && state.current && !map.getBounds().contains(state.current.center)) {
+  if (!preserveViewport && map && state.current && !map.getBounds().contains(state.current.center)) {
     fitCalculationArea(state.current);
   }
   manualViewport = true;

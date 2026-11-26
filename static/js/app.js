@@ -39,10 +39,10 @@ function bootstrap() {
     fetchResult: (value, signal) => fetchCalculation(new URLSearchParams(state.currentRequestKey), signal, value),
     onEnter: beginMapCorrections,
     onMap: updateCorrectionMap,
-    onResult(data) {
+    onResult(data, { applyingCorrections }) {
       const previous = state.current.recommendations.find(item => item.rank === state.selectedRank);
       state.current = data;
-      state.openedScenarioId = null;
+      if (applyingCorrections) state.openedScenarioId = null;
       state.selectedRank = (previous && data.recommendations.find(item => item.lat === previous.lat && item.lng === previous.lng)?.rank)
         || data.recommendations[0]?.rank || 1;
       drawMap(data, { preserveViewport: true });
@@ -83,6 +83,7 @@ function bootstrap() {
     $('data-section').hidden = false;
     $('source').textContent = 'Данные выбранной области ещё не оценены. Источник и даты появятся после расчёта.';
     $('data-quality')?.replaceChildren();
+    $('calculation-reliability')?.remove();
     $('data-warning').hidden = true;
     if ($('trust-summary')) delete $('trust-summary').dataset.resultSummary;
     $('error').hidden = true;
