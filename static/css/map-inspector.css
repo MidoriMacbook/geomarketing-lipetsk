@@ -65,7 +65,7 @@
  .map-inspection-compact h3,.map-inspection-compact .map-inspection-desktop-facts,.map-inspection-save-long { display:none; }
  .map-inspection-compact .map-inspection-score { margin:0; font-size:clamp(16px,5vw,20px); }
  .map-inspection-compact .map-inspection-mobile-summary { display:block; font-size:12px; margin:0; padding-right:0; }
- .map-inspection-compact .data-reliability { margin-block-start:var(--space-1); }
+ .map-inspection-compact .data-reliability > p { margin-block:var(--space-1) 0; }
  .map-inspection-weak { display:inline-block; font-size:11px; vertical-align:middle; background:var(--palette-pink); color:var(--palette-ink); border-radius:8px; padding:2px 4px; }
  .map-inspection-compact .map-inspection-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
  .map-inspection-compact .button { width:100%; margin-top:4px; padding:4px 8px; }

@@ -31,8 +31,9 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   if(compact) {
    const available = bottom - top;
    const standardHeight = Math.max(112, Math.floor((available + 24) * .45));
-   const height = compact.querySelector('.data-reliability')
-    ? Math.max(standardHeight, Math.min(compact.scrollHeight, Math.floor(available - 100)))
+   const reliability = compact.querySelector('.data-reliability');
+   const height = reliability
+    ? Math.max(standardHeight, Math.min(compact.scrollHeight, Math.floor(available - 116)))
     : standardHeight;
    element.style.setProperty('--inspection-max-height',height+'px');
    element.style.setProperty('--inspection-top',Math.max(0,top-rect.top)+'px');
@@ -43,7 +44,7 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
    const overlay=element.getBoundingClientRect();
    const points=[anchor,...(data?.recommendations||[]).map(rec=>[rec.lat,rec.lng])];
    const paddingTop=Math.max(32,overlay.bottom-rect.top+28);
-   const paddingBottom=Math.max(58,rect.bottom-bottom+24);
+   const paddingBottom=Math.max(58,rect.bottom-bottom+(reliability ? 32 : 24));
    if(rect.height-paddingTop-paddingBottom>=48){
     map.fitBounds(points,{paddingTopLeft:[32,paddingTop],paddingBottomRight:[64,paddingBottom],maxZoom:map.getZoom(),animate:false});
    }
@@ -62,6 +63,8 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
  }
  function card(title){
   const box=node('section','map-inspection');box.setAttribute('aria-label',title);box.setAttribute('role','region');
+  // Быстрое нажатие на выноску после метки не должно масштабировать карту.
+  box.addEventListener('click',event=>event.stopPropagation());
   const heading=node('div','map-inspection-heading'),h=node('h3','',title),x=button('×','map-inspection-close',()=>{close();map.getContainer().focus({preventScroll:true});});
   x.setAttribute('aria-label','Закрыть выноску');heading.append(h,x);box.append(heading);return box;
  }
