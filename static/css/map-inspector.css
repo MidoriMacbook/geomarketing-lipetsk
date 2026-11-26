@@ -11,6 +11,8 @@
 .map-inspection h3 { font:600 16px/1.25 'Golos Text',sans-serif; margin:0; }
 .map-inspection-close { flex:none; width:44px; height:44px; border:0; border-radius:50%; background:transparent; font-size:24px; color:var(--palette-rosewood-deep); cursor:pointer; }
 .map-inspection p { margin:6px 0; }
+.map-inspection .data-reliability { border-block-start:var(--line) solid var(--palette-line); }
+.map-inspection .data-reliability-action { margin-inline-start:calc(-1 * var(--space-2)); }
 .map-inspection-score { font-size:20px; font-weight:600; font-variant-numeric:tabular-nums; }
 .map-inspection .button { width:100%; min-height:44px; margin-top:8px; padding:8px 12px; font-size:13px; }
 .map-inspection-note,.map-inspection-difference,.map-inspection-feedback { font-size:12px; color:var(--palette-ink-muted); }
@@ -63,6 +65,7 @@
  .map-inspection-compact h3,.map-inspection-compact .map-inspection-desktop-facts,.map-inspection-save-long { display:none; }
  .map-inspection-compact .map-inspection-score { margin:0; font-size:clamp(16px,5vw,20px); }
  .map-inspection-compact .map-inspection-mobile-summary { display:block; font-size:12px; margin:0; padding-right:0; }
+ .map-inspection-compact .data-reliability { margin-block-start:var(--space-1); }
  .map-inspection-weak { display:inline-block; font-size:11px; vertical-align:middle; background:var(--palette-pink); color:var(--palette-ink); border-radius:8px; padding:2px 4px; }
  .map-inspection-compact .map-inspection-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
  .map-inspection-compact .button { width:100%; margin-top:4px; padding:4px 8px; }

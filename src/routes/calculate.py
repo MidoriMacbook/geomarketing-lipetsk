@@ -46,7 +46,10 @@ def run_calculation():
     area = resolve_area(params)
     business = params.get('type', 'cafe')
     refresh = params.get('refresh') == '1'
+    data_reliability = params.get('data_reliability') == '1'
     if request.method == 'POST' and 'corrections' in payload:
         corrections = Corrections.parse(payload['corrections'], area['center'], area['radius'])
-        return jsonify(analyze(area, business, refresh, corrections=corrections))
-    return jsonify(analyze(area, business, refresh, competitor_details=params.get('competitor_details') == '1'))
+        return jsonify(analyze(area, business, refresh, corrections=corrections,
+                               data_reliability=data_reliability))
+    return jsonify(analyze(area, business, refresh, competitor_details=params.get('competitor_details') == '1',
+                           data_reliability=data_reliability))

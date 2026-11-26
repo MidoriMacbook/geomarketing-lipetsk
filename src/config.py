@@ -49,6 +49,16 @@ CLUSTER_RANDOM_STATE = 42
 # Зоны с большинством общих жителей меньшего радиуса не считаем независимыми.
 MAX_SHARED_RESIDENTS_FRACTION = 0.5
 LOW_DATA_RESIDENTS = 3000  # меньше жителей в районе — предупреждаем о неполных данных
+# Порог городской выборки согласован. Остальные пороги полноты предварительные.
+OSM_RELIABILITY_MIN_CITY_OBJECTS = 30
+OSM_RELIABILITY_THRESHOLDS = {
+    'low_missing_both_share': 0.50,
+    'low_grocery_density': 0.35,
+    'medium_min_area_objects': 5,
+    'medium_missing_names_share': 0.30,
+    'medium_missing_addresses_share': 0.50,
+    'medium_grocery_density': 0.75,
+}
 MIN_HOUSES = 5          # меньше — считаем, что в OSM для района мало данных
 DEMO_HALF_SIZE_M = 600  # размер области анализа для демо-данных
 MIN_RECOMMENDATION_DISTANCE_M = 250

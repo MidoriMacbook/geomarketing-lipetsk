@@ -7,6 +7,7 @@ import { selectMarker, hoverPlace } from './map.js';
 import { updateReportAvailability } from './report.js';
 import { countTo, counterValue, resetCounters } from './counters.js';
 import { qualityBlock, qualitySummary, explanationBlock } from './data-quality.js';
+import { dataReliabilityBlock } from './data-reliability.js';
 import { recommendationBrief, recommendationDecision } from './recommendation-brief.js';
 import { offerSavedComparison, openSavedComparison } from './comparison-guide.js';
 
@@ -148,6 +149,11 @@ export function showResult(data, { freshCalculation=false, preserveViewport=fals
   $('recommendations-context').textContent = `${data.district_name} · ${data.business_name}`;
   $('recommendations-context').setAttribute('aria-label',`Параметры расчёта: ${data.district_name}, ${data.business_name}. Изменить параметры`);
   $('recommendations-context').append(node('span','context-action','Изменить параметры'));
+  const reliability = dataReliabilityBlock(data);
+  reliability.id = 'calculation-reliability';
+  const previousReliability = $(reliability.id);
+  if (previousReliability) previousReliability.replaceWith(reliability);
+  else $('recommendations-context').closest('.recommendations-context-row').after(reliability);
   setRevealed($('result-empty'), !data.recommendations.length, 'empty');
   $('result').hidden = !data.recommendations.length;
   if (!data.recommendations.length) {

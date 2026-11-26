@@ -3,6 +3,7 @@ import {state} from './state.js';
 import {node,button,fmt,distance,motionReduced} from './ui.js';
 import {savePlace} from './saved-places.js';
 import {scoreText} from './result-format.js';
+import {dataReliabilityBlock} from './data-reliability.js';
 
 // Этот слой читает готовый расчёт. Он не меняет рекомендации или сетку сервера.
 export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=()=>{}}={}){
@@ -28,7 +29,12 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   const top=Math.max(rect.top,header.bottom)+12,left=Math.max(0,rect.left)+12,right=Math.min(innerWidth,rect.right)-12;
   const compact=mobile.matches&&element.querySelector('.map-inspection-compact');
   if(compact) {
-   element.style.setProperty('--inspection-max-height',Math.max(112,Math.floor((bottom-top+24)*.45))+'px');
+   const available = bottom - top;
+   const standardHeight = Math.max(112, Math.floor((available + 24) * .45));
+   const height = compact.querySelector('.data-reliability')
+    ? Math.max(standardHeight, Math.min(compact.scrollHeight, Math.floor(available - 100)))
+    : standardHeight;
+   element.style.setProperty('--inspection-max-height',height+'px');
    element.style.setProperty('--inspection-top',Math.max(0,top-rect.top)+'px');
    if(docked)return;
    docked=true;
@@ -132,6 +138,7 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
  }
  function openPlace(rec){
   close();const box=card(`Место ${rec.rank} · оценка`);facts(box,rec);
+  box.append(dataReliabilityBlock(data));
   relativeNote(box);
   saveAction(box,rec,'Сохранить',()=>{
    close();document.dispatchEvent(new CustomEvent('gm:place-details',{detail:{rank:rec.rank}}));
