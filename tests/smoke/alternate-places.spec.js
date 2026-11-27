@@ -7,6 +7,64 @@ const current = page => page.evaluate(async () => {
     places: data.recommendations.map(({ rank, role, lat, lng }) => ({ rank, role, lat, lng })) };
 });
 
+test('подготовка поправок сохраняет выдачу исследования до появления запасных мест', async ({ page, baseURL }) => {
+  await page.route('**/*', route => new URL(route.request().url()).origin === baseURL ? route.continue() : route.abort());
+  await page.route('**/api/calculate**', async route => {
+    const response = await route.fetch();
+    const data = await response.json();
+    data.data_delivery = { mode: 'daily', version: 'legacy-study-feed' };
+    await route.fulfill({ response, json: data });
+  });
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-analysis-state', 'success');
+  await page.locator('#business').evaluate(field => {
+    field.value = 'fitness';
+    field.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await page.locator('#run').evaluate(button => button.click());
+  await expect.poll(async () => (await current(page))?.business).toBe('fitness');
+  expect((await current(page)).places.some(place => place.role === 'alternative')).toBe(true);
+  await page.locator('#scenario-save').click();
+  await page.locator('#scenario-name').fill('Исследование до запасных мест');
+  await page.locator('#scenario-submit').click();
+  await expect(page.locator('#scenario-dialog')).toBeHidden();
+  const archive = await page.evaluate(() => {
+    const key = 'geomarketing.scenarios.v1';
+    const saved = JSON.parse(localStorage.getItem(key));
+    const { analysis } = Object.values(saved).find(Array.isArray)[0];
+    delete analysis.alternatives_requested;
+    analysis.recommendations = analysis.recommendations.filter(place => place.role !== 'alternative');
+    const raw = JSON.stringify(saved);
+    localStorage.setItem(key, raw);
+    return raw;
+  });
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-analysis-state', 'success');
+  const item = page.getByTestId('scenario-card').filter({ hasText: 'Исследование до запасных мест' });
+  await item.getByTestId('scenario-open').click();
+  await expect(page.locator('#scenario-snapshot-notice')).toBeVisible();
+  const before = await current(page);
+  expect(before.places).toHaveLength(2);
+  await page.locator('#corrections-toggle').click();
+  await expect(page.locator('#correction-add')).toBeEnabled();
+  expect(await current(page)).toEqual(before);
+  await expect(page.locator('#scenario-snapshot-notice')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('geomarketing.scenarios.v1'))).toBe(archive);
+  await page.locator('#correction-remove').click();
+  const competitor = page.locator('#map [data-competitor-id="node:123"]');
+  await competitor.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#correction-remove-dialog')).toBeVisible();
+  const [request] = await Promise.all([
+    page.waitForRequest(req => req.method() === 'POST' && req.url().endsWith('/api/calculate')
+      && req.postDataJSON().corrections.removed.length === 1),
+    page.locator('#correction-remove-confirm').click(),
+  ]);
+  expect(request.postDataJSON().include_alternatives).toBe('1');
+  await expect(page.locator('#correction-status')).toHaveText('Расчёт обновлён.');
+  expect(await page.evaluate(() => localStorage.getItem('geomarketing.scenarios.v1'))).toBe(archive);
+});
+
 for (const [width, height] of [[375, 667], [1440, 900]]) {
   test(`запасное место в карте, сравнении и архиве · ${width}`, async ({ page, baseURL }) => {
     const mobile = width < 600;

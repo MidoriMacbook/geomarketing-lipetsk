@@ -46,11 +46,11 @@ export async function fetchCatalog(signal) {
   return response.json();
 }
 
-export async function fetchCalculation(params, signal, corrections) {
+export async function fetchCalculation(params, signal, corrections, { includeAlternatives = true } = {}) {
   const query = new URLSearchParams(params);
   query.set('data_reliability', '1');
   query.set('competitor_details', '1');
-  query.set('include_alternatives', '1');
+  if (includeAlternatives) query.set('include_alternatives', '1');
   const response = corrections === undefined
     ? await fetch(`/api/calculate?${query}`, { signal })
     : await fetch('/api/calculate', {
@@ -72,5 +72,5 @@ export async function fetchCalculation(params, signal, corrections) {
   }
   const data = await response.json();
   // Снимок с нулём запасных отличается от архива до появления этой настройки.
-  return { ...data, alternatives_requested: true };
+  return includeAlternatives ? { ...data, alternatives_requested: true } : data;
 }

@@ -14,6 +14,7 @@ import { configureScenarios, initScenarios, updateScenarioAvailability } from '.
 import { validateScenario } from './scenario-storage.js';
 import { cancelRequest, fetchCatalog, fetchCalculation, beginCatalogRequest, beginCalculationRequest, finishCatalogRequest, finishCalculationRequest } from './api.js';
 import { initCorrections } from './corrections.js';
+import { isAlternative } from './place-role.js';
 
 
 function bootstrap() {
@@ -40,7 +41,11 @@ function bootstrap() {
     fetchResult: (value, signal) => {
       const params = new URLSearchParams(state.currentRequestKey);
       params.set('network_weight', String(state.current.network_competition?.weight ?? 1));
-      return fetchCalculation(params, signal, value);
+      const visible = state.current;
+      // Подготовка редактора сохраняет выдачу старого снимка до первой поправки.
+      const includeAlternatives = !state.openedScenarioId || Boolean(visible.correction_context)
+        || visible.alternatives_requested === true || visible.recommendations.some(isAlternative);
+      return fetchCalculation(params, signal, value, { includeAlternatives });
     },
     onEnter: beginMapCorrections,
     onMap: updateCorrectionMap,

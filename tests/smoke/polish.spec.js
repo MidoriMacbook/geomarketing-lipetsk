@@ -87,10 +87,22 @@ test('закрытие панели не скрывает содержимое �
  await page.goto('/');await expect(page.locator('html')).toHaveAttribute('data-analysis-state','success');
  await page.locator('#map-card').scrollIntoViewIfNeeded();await page.locator('.sheet-handle').click();
  await expect(page.locator('#recommendations')).not.toHaveAttribute('data-moving','true');
- const map=await page.locator('#map').boundingBox(),result=await page.locator('#result').boundingBox();
- await page.locator('.sheet-close').evaluate(el=>el.click());
- await page.waitForTimeout(100);
- expect(await page.locator('#result').evaluate(el=>getComputedStyle(el).visibility)).toBe('visible');
- expect((await page.locator('#result').boundingBox()).height).toBeCloseTo(result.height,0);
- expect((await page.locator('#map').boundingBox()).height).toBeCloseTo(map.height,0);
+ const { before, moving } = await page.locator('#recommendations').evaluate(async sheet => {
+  const map = document.getElementById('map'), result = document.getElementById('result');
+  const read = () => ({ map: map.getBoundingClientRect().height, result: result.getBoundingClientRect().height,
+   visibility: getComputedStyle(result).visibility });
+  const before = read(), moving = [];
+  sheet.querySelector('.sheet-close').click();
+  while (sheet.dataset.closing === 'true') {
+   moving.push(read());
+   await new Promise(requestAnimationFrame);
+  }
+  return { before, moving };
+ });
+ expect(moving.length).toBeGreaterThan(1);
+ for (const frame of moving) {
+  expect(frame.visibility).toBe('visible');
+  expect(frame.result).toBeCloseTo(before.result, 0);
+  expect(frame.map).toBeCloseTo(before.map, 0);
+ }
 });
