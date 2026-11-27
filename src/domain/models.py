@@ -36,6 +36,9 @@ class LoadedData:
     delivery: dict | None = None
     competitor_ids: tuple[str | None, ...] = ()
     competitor_details: dict[str, dict[str, str]] = field(default_factory=dict)
+    network_coverage: dict[str, int] | None = None
+    network_ids: frozenset[str] = frozenset()
+    data_reliability: dict | None = None
 
     def describe_competitors(self):
         source = 'demo' if self.source == 'demo' else 'osm'
@@ -53,3 +56,4 @@ class ScoringResult:
     grid: dict
     centroids: list[dict]
     scores: np.ndarray = field(repr=False, compare=False)
+    alternatives: list[dict] = field(default_factory=list)

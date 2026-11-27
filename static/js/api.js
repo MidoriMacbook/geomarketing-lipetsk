@@ -46,15 +46,17 @@ export async function fetchCatalog(signal) {
   return response.json();
 }
 
-export async function fetchCalculation(params, signal, corrections) {
+export async function fetchCalculation(params, signal, corrections, { includeAlternatives = true } = {}) {
   const query = new URLSearchParams(params);
+  query.set('data_reliability', '1');
   query.set('competitor_details', '1');
+  if (includeAlternatives) query.set('include_alternatives', '1');
   const response = corrections === undefined
     ? await fetch(`/api/calculate?${query}`, { signal })
     : await fetch('/api/calculate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...Object.fromEntries(params), corrections }),
+      body: JSON.stringify({ ...Object.fromEntries(query), corrections }),
       signal,
     });
   if (!response.ok) {
@@ -68,5 +70,7 @@ export async function fetchCalculation(params, signal, corrections) {
     error.user = [400, 503].includes(response.status);
     throw error;
   }
-  return response.json();
+  const data = await response.json();
+  // Снимок с нулём запасных отличается от архива до появления этой настройки.
+  return includeAlternatives ? { ...data, alternatives_requested: true } : data;
 }

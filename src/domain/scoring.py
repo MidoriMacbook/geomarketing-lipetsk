@@ -7,12 +7,14 @@ from src.config import (
     GRID_SIZE, N_CLUSTERS, MIN_RECOMMENDATION_DISTANCE_M, MAX_RECOMMENDATIONS,
     CLUSTER_RANDOM_STATE, MAX_SHARED_RESIDENTS_FRACTION,
 )
+from src.domain.alternative_places import select_alternative_places
 from src.domain.models import ScoringResult
 from src.utils.geo import to_meters, to_latlng
 from src.utils.validation import UserError
 
 
-def score_locations(houses, competitors, center, half, parameters) -> ScoringResult:
+def score_locations(houses, competitors, center, half, parameters, *, competitor_weights=None,
+                    include_alternatives=False) -> ScoringResult:
     lat0, lng0 = center
     p = parameters
     h_xy = to_meters(houses[:, :2], lat0, lng0)
@@ -38,7 +40,10 @@ def score_locations(houses, competitors, center, half, parameters) -> ScoringRes
 
     demand = (pop[None, :] * np.exp(-(cdist(grid, h_xy) / p['R']) ** 2)).sum(axis=1)
     if len(c_xy):
-        competition = np.exp(-(cdist(grid, c_xy) / (p['R'] * 0.8)) ** 2).sum(axis=1)
+        contributions = np.exp(-(cdist(grid, c_xy) / (p['R'] * 0.8)) ** 2)
+        if competitor_weights is not None:
+            contributions *= competitor_weights
+        competition = contributions.sum(axis=1)
     else:
         competition = np.zeros(len(grid))
     raw = demand / (1 + p['alpha'] * competition)
@@ -73,21 +78,19 @@ def score_locations(houses, competitors, center, half, parameters) -> ScoringRes
         memberships.append(membership)
         if len(selected) == MAX_RECOMMENDATIONS:
             break
-    recommendations = []
-    for rank, idx in enumerate(selected, 1):
+    def recommendation(idx, rank, membership, selection_method):
         xy = grid[idx]
         lat, lng = coordinates(xy)
         competitor_distances = np.linalg.norm(c_xy - xy, axis=1)
-        membership = memberships[rank - 1]
         shared = membership & memberships[0]
         residents = float(pop[membership].sum())
-        recommendations.append({
+        return {
             'rank': rank, 'lat': lat, 'lng': lng, 'score': float(score[idx]),
             'residents_in_radius': int(residents),
             'radius_m': p['R'],
             'competitors_in_radius': int((competitor_distances <= p['R']).sum()),
             'nearest_competitor_m': round(float(competitor_distances.min())) if len(c_xy) else None,
-            'selection_method': 'cluster_maxima_v1',
+            'selection_method': selection_method,
             'cluster_id': int(cluster_labels[idx]) + 1,
             'independent_zones': len(selected),
             'comparison_to_best': None if rank == 1 else {
@@ -97,7 +100,18 @@ def score_locations(houses, competitors, center, half, parameters) -> ScoringRes
                 # Доля жителей ЭТОГО места, также входящих в радиус лучшего.
                 'shared_residents_fraction': float(pop[shared].sum() / residents) if residents else None,
             },
-        })
+        }
+
+    recommendations = [recommendation(idx, rank, membership, 'cluster_maxima_v1')
+                       for rank, (idx, membership) in enumerate(zip(selected, memberships, strict=True), 1)]
+    alternatives = []
+    if include_alternatives:
+        reserves = select_alternative_places(grid, score, useful, h_xy, pop, p['R'], selected, memberships)
+        alternatives = [
+            {**recommendation(idx, rank, membership, 'grid_alternatives_v1'),
+             'role': 'alternative', 'alternative_comparison': comparison}
+            for rank, (idx, membership, comparison) in enumerate(reserves, len(selected) + 1)
+        ]
 
     lat_min, lng_min = coordinates(np.array([-half, -half]))
     lat_max, lng_max = coordinates(np.array([half, half]))
@@ -108,4 +122,5 @@ def score_locations(houses, competitors, center, half, parameters) -> ScoringRes
               'scores': np.round(score, 3).tolist()},
         centroids=centroids,
         scores=score,
+        alternatives=alternatives,
     )

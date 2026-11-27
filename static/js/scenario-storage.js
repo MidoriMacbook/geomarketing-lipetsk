@@ -1,4 +1,6 @@
 // Модуль не зависит от интерфейса: сохранённые снимки считаются недоверенным входом.
+import { isAlternative, validPlaceRole } from './place-role.js';
+
 export const SCENARIO_KEY = 'geomarketing.scenarios.v1';
 export const SCENARIO_LIMIT = 6;
 const SCHEMA_VERSION = 2;
@@ -63,13 +65,14 @@ function validMetadata(value) {
 }
 
 function validRecommendation(value, radius, rank) {
-  return location(value) && value.rank === rank && number(value.score, 0, 1) && integer(value.residents_in_radius) && value.radius_m === radius && integer(value.competitors_in_radius) && distance(value.nearest_competitor_m) && (!own(value, 'explanation') || validExplanation(value.explanation));
+  return location(value) && value.rank === rank && number(value.score, 0, 1) && integer(value.residents_in_radius) && value.radius_m === radius && integer(value.competitors_in_radius) && distance(value.nearest_competitor_m) && validPlaceRole(value) && (!own(value, 'explanation') || validExplanation(value.explanation));
 }
 
 function validCompetitor(row, analysisSource) {
   if (!location(row)) return false;
   const fields = COMPETITOR_TEXT_LIMITS.filter(([key]) => own(row, key));
-  if (!fields.length) return true;
+  if (own(row, 'is_chain') && row.is_chain !== true) return false;
+  if (!fields.length && !row.is_chain) return true;
   return analysisSource !== 'demo' && row.source === 'osm' && text(row.id, 64) && OSM_ID.test(row.id) &&
     fields.every(([key, limit]) => label(row[key], limit * 2) && Array.from(row[key]).length <= limit);
 }
@@ -92,13 +95,26 @@ function validCorrections(analysis) {
   if (expected.length !== analysis.competitors.length || !expected.every((row, index) => {
     const actual = analysis.competitors[index];
     return actual.id === row.id && actual.source === row.source && actual.lat === row.lat && actual.lng === row.lng &&
-      COMPETITOR_TEXT_LIMITS.every(([key]) => actual[key] === row[key]);
+      COMPETITOR_TEXT_LIMITS.every(([key]) => actual[key] === row[key]) && actual.is_chain === row.is_chain;
   })) return false;
   return analysis.recommendations.every(rec => {
     const delta = rec.correction_delta;
     return object(delta) && number(delta.baseline_score, 0, 1) && number(delta.score_delta, -1, 1) &&
       Math.abs(rec.score - delta.baseline_score - delta.score_delta) <= 1e-8 && typeof delta.is_new_location === 'boolean';
   });
+}
+
+function validNetworks(analysis) {
+  const marked = analysis.competitors.filter(row => row.is_chain === true).length;
+  if (!own(analysis, 'network_competition')) return marked === 0;
+  const value = analysis.network_competition;
+  if (!object(value) || ![0, 0.5, 1].includes(value.weight) || value.marked !== marked ||
+      value.total !== analysis.competitors.length || typeof value.eligible !== 'boolean' ||
+      (!value.eligible && value.weight !== 1)) return false;
+  if (value.coverage === null) return !value.eligible && marked === 0;
+  const { coverage } = value;
+  return object(coverage) && integer(coverage.total) && integer(coverage.tagged, 0, coverage.total) &&
+    value.eligible === (coverage.total > 0 && coverage.tagged * 5 >= coverage.total);
 }
 
 function validAnalysis(value, selection, view) {
@@ -113,7 +129,7 @@ function validAnalysis(value, selection, view) {
   if (!list(value.houses, 10000, house => location(house) && integer(house.residents)) || !list(value.competitors, 10000, row => validCompetitor(row, value.source)) || !list(value.centroids, 3, center => location(center) && integer(center.residents))) return false;
   if (!object(value.stats) || !integer(value.stats.houses) || value.stats.houses !== value.houses.length || !integer(value.stats.competitors) || value.stats.competitors !== value.competitors.length || !integer(value.stats.residents) || value.stats.residents !== value.houses.reduce((sum, house) => sum + house.residents, 0)) return false;
   if (!Array.isArray(value.recommendations) || value.recommendations.length < 1 || value.recommendations.length > 3 || !value.recommendations.every((entry, index) => validRecommendation(entry, value.parameters.radius_m, index + 1) && entry.competitors_in_radius <= value.stats.competitors && entry.residents_in_radius <= value.stats.residents && (value.stats.competitors > 0 || entry.nearest_competitor_m === null)) || !equal(value.best, value.recommendations[0]) || !value.recommendations.some(entry => entry.rank === view.selected_rank)) return false;
-  if (!validCorrections(value)) return false;
+  if (!validCorrections(value) || !validNetworks(value)) return false;
   const grid = value.grid;
   if (!object(grid) || grid.n !== 60 || !lat(grid.lat_min) || !lat(grid.lat_max) || grid.lat_min >= grid.lat_max || !lng(grid.lng_min) || !lng(grid.lng_max) || grid.lng_min >= grid.lng_max || !Array.isArray(grid.scores) || grid.scores.length !== 3600 || !grid.scores.every(score => number(score, 0, 1))) return false;
   if (value.center[0] < grid.lat_min || value.center[0] > grid.lat_max || value.center[1] < grid.lng_min || value.center[1] > grid.lng_max) return false;
@@ -123,6 +139,8 @@ function validAnalysis(value, selection, view) {
     const context = value.analysis_context;
     if (!object(context) || typeof context.custom !== 'boolean' || context.custom !== (selection.district === 'custom') || context.requested_radius_m !== selection.area_radius_m || !equal(context.center, value.center)) return false;
   }
+  const firstAlternative = value.recommendations.findIndex(isAlternative);
+  if (firstAlternative !== -1 && !value.recommendations.slice(firstAlternative).every(isAlternative)) return false;
   if (value.source !== 'demo' && value.half_m !== selection.area_radius_m) return false;
   return selection.district !== 'custom' || equal(selection.custom_point, value.center);
 }

@@ -18,6 +18,7 @@ on:
       - 'src/domain/__init__.py'
       - 'src/domain/businesses.py'
       - 'src/domain/models.py'
+      - 'src/domain/network_competitors.py'
       - 'src/domain/provenance.py'
       - 'src/services/__init__.py'
       - 'src/services/cache_service.py'
@@ -42,7 +43,7 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - name: Validate collector and geometry
-        run: python -m unittest tests.unit.test_osm tests.unit.test_overpass_transport tests.unit.test_city_data tests.unit.test_city_feed -q
+        run: python -m unittest tests.unit.test_osm tests.unit.test_overpass_transport tests.unit.test_city_data tests.unit.test_city_feed tests.unit.test_network_competitors -q
       - name: Collect complete city data
         run: python scripts/collect_city_data.py --output "$RUNNER_TEMP/city.json"
       - name: Publish to independent data branch

@@ -3,6 +3,8 @@ import {state} from './state.js';
 import {node,button,fmt,distance,motionReduced} from './ui.js';
 import {savePlace} from './saved-places.js';
 import {scoreText} from './result-format.js';
+import {dataReliabilityBlock} from './data-reliability.js';
+import {isAlternative,recommendationLabel,alternativeExplanation} from './place-role.js';
 
 // Этот слой читает готовый расчёт. Он не меняет рекомендации или сетку сервера.
 export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=()=>{}}={}){
@@ -28,7 +30,13 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   const top=Math.max(rect.top,header.bottom)+12,left=Math.max(0,rect.left)+12,right=Math.min(innerWidth,rect.right)-12;
   const compact=mobile.matches&&element.querySelector('.map-inspection-compact');
   if(compact) {
-   element.style.setProperty('--inspection-max-height',Math.max(112,Math.floor((bottom-top+24)*.45))+'px');
+   const available = bottom - top;
+   const standardHeight = Math.max(112, Math.floor((available + 24) * .45));
+   const reliability = compact.querySelector('.data-reliability');
+   const height = reliability
+    ? Math.max(standardHeight, Math.min(compact.scrollHeight, Math.floor(available - 116)))
+    : standardHeight;
+   element.style.setProperty('--inspection-max-height',height+'px');
    element.style.setProperty('--inspection-top',Math.max(0,top-rect.top)+'px');
    if(docked)return;
    docked=true;
@@ -37,7 +45,7 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
    const overlay=element.getBoundingClientRect();
    const points=[anchor,...(data?.recommendations||[]).map(rec=>[rec.lat,rec.lng])];
    const paddingTop=Math.max(32,overlay.bottom-rect.top+28);
-   const paddingBottom=Math.max(58,rect.bottom-bottom+24);
+   const paddingBottom=Math.max(58,rect.bottom-bottom+(reliability ? 32 : 24));
    if(rect.height-paddingTop-paddingBottom>=48){
     map.fitBounds(points,{paddingTopLeft:[32,paddingTop],paddingBottomRight:[64,paddingBottom],maxZoom:map.getZoom(),animate:false});
    }
@@ -56,6 +64,8 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
  }
  function card(title){
   const box=node('section','map-inspection');box.setAttribute('aria-label',title);box.setAttribute('role','region');
+  // Быстрое нажатие на выноску после метки не должно масштабировать карту.
+  box.addEventListener('click',event=>event.stopPropagation());
   const heading=node('div','map-inspection-heading'),h=node('h3','',title),x=button('×','map-inspection-close',()=>{close();map.getContainer().focus({preventScroll:true});});
   x.setAttribute('aria-label','Закрыть выноску');heading.append(h,x);box.append(heading);return box;
  }
@@ -63,14 +73,14 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   box.classList.add('map-inspection-compact');
   const score=node('p','map-inspection-score',scoreText(rec.score));
   const reading=node('div','map-inspection-reading');
-  reading.append(node('span','map-inspection-place-label',rec.origin==='manual'?'Ваша точка':`Место ${rec.rank}`),score);box.append(reading);
+  reading.append(node('span','map-inspection-place-label',rec.origin==='manual'?'Ваша точка':recommendationLabel(rec)),score);box.append(reading);
   const summary=node('p','map-inspection-mobile-summary');
   const residents=count(rec.residents_in_radius,{one:'житель',few:'жителя',many:'жителей',other:'жителей'});
   const rivals=count(rec.competitors_in_radius,{one:'конкурент',few:'конкурента',many:'конкурентов',other:'конкурентов'});
   summary.textContent=`В ${fmt(rec.radius_m)} м: ≈ ${residents} · ${rivals} по данным карты`;
   box.append(summary,node('p','map-inspection-desktop-facts',`≈ ${residents} в ${fmt(rec.radius_m)} м · ${rivals}`),
    node('p','map-inspection-desktop-facts',`Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`));
-  if(Math.round(rec.score*100)<40)reading.append(node('span','map-inspection-weak','слабое место'));
+  if(!isAlternative(rec)&&Math.round(rec.score*100)<40)reading.append(node('span','map-inspection-weak','слабое место'));
  }
  function saveAction(box,rec,label,showDetails){
   const actions=node('div','map-inspection-actions');
@@ -131,17 +141,22 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   show(point,box);
  }
  function openPlace(rec){
-  close();const box=card(`Место ${rec.rank} · оценка`);facts(box,rec);
+  close();const box=card(`${recommendationLabel(rec)} · оценка`);facts(box,rec);
+  if (isAlternative(rec)) box.dataset.placeRole = 'alternative';
+  box.append(dataReliabilityBlock(data));
   relativeNote(box);
   saveAction(box,rec,'Сохранить',()=>{
    close();document.dispatchEvent(new CustomEvent('gm:place-details',{detail:{rank:rec.rank}}));
    if(!matchMedia('(max-width:600px)').matches){const card=document.querySelector(`#recommendation-list [data-rank="${rec.rank}"]`);card?.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'nearest'});}
-  });show(rec,box);
+  });
+  const explanation = alternativeExplanation(rec, data.recommendations);
+  if (explanation) box.append(node('p', 'map-inspection-difference', explanation));
+  show(rec,box);
  }
  function openDemand(center,index){
   close();const box=card('Центр спроса');box.append(node('p','',`≈ ${fmt(center.residents)} жителей в кластере`));
   const related=data.recommendations.filter(rec=>rec.cluster_id===index+1);
-  if(related.length){box.append(node('p','map-inspection-note','Связанные места для проверки:'));for(const rec of related)box.append(button(`Место ${rec.rank} · ${scoreText(rec.score)}`,'button secondary',()=>{selectRecommendation(rec);openPlace(rec);}));}
+  if(related.length){box.append(node('p','map-inspection-note','Связанные места для проверки:'));for(const rec of related)box.append(button(`${recommendationLabel(rec)} · ${scoreText(rec.score)}`,'button secondary',()=>{selectRecommendation(rec);openPlace(rec);}));}
   else box.append(node('p','map-inspection-note','В этом кластере нет отдельной рекомендации.'));
   show(center,box);
  }

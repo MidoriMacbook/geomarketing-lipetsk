@@ -1,4 +1,6 @@
 // Клиентская проверка существующей поверхности. Формулу балла здесь не повторяем.
+import { isAlternative, recommendationLabel } from './place-role.js';
+
 const finite=Number.isFinite;
 export const projectPoint=(point,center)=>[(point.lng-center[1])*111000*Math.cos(center[0]*Math.PI/180),(point.lat-center[0])*111000];
 const distance2=(a,b)=>(a[0]-b[0])**2+(a[1]-b[1])**2;
@@ -43,4 +45,11 @@ export function createMapAnalysis(data){
  return {houses,competitors,centroids,coverage,sample,overlap};
 }
 export function manualPlaceId(analysisId,rec){return `${analysisId}:manual:${rec.lat.toFixed(7)}:${rec.lng.toFixed(7)}`;}
-export const placeLabel=rec=>rec.origin==='manual'?'выбрано вручную':`место ${rec.rank}`;
+export const placeLabel=rec=>rec.origin==='manual'?'выбрано вручную':isAlternative(rec)?recommendationLabel(rec):`место ${rec.rank}`;
+
+export function findSavedRecommendation(analysis, item) {
+  if (analysis?.analysis_id !== item.analysis_id) return undefined;
+  const { recommendation } = item;
+  return analysis.recommendations.find(rec => rec.rank === recommendation.rank && rec.role === recommendation.role
+    && rec.lat === recommendation.lat && rec.lng === recommendation.lng);
+}

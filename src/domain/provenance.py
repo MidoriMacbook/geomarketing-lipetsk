@@ -136,6 +136,8 @@ def validate_provenance(metadata, rows, columns):
                 raise ValueError('Повтор исходного объекта OSM')
             seen.add((kind, ident))
         if columns == 2:
+            if 'is_chain' in record and (ident is None or record['is_chain'] is not True):
+                raise ValueError('Некорректный сетевой признак конкурента OSM')
             for key, limit in COMPETITOR_TEXT_LIMITS.items():
                 if key in record:
                     value = record[key]

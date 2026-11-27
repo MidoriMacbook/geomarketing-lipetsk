@@ -1,5 +1,6 @@
 import {motionReduced,node} from './ui.js';
 import {scoreText} from './result-format.js';
+import {isAlternative,recommendationLabel} from './place-role.js';
 import {state} from './state.js';
 import {selectPlace} from './recommendations.js';
 
@@ -56,6 +57,8 @@ function setSnap(next){
  sheet.setAttribute('role',expanded?'dialog':'region');
  if(expanded)sheet.setAttribute('aria-modal','true');else sheet.removeAttribute('aria-modal');
  handle.setAttribute('aria-expanded',String(expanded));closeButton.hidden=!expanded;rail.inert=expanded;
+ if(expanded)handle.setAttribute('aria-label','Свернуть результаты');
+ else handle.removeAttribute('aria-label');
  sheet.style.setProperty('--sheet-offset',`${snap==='peek'?offset():0}px`);
  sheet.style.setProperty('--sheet-visible',`${snap==='peek'?peekHeight():sheet.getBoundingClientRect().height}px`);
  syncReserve();
@@ -78,7 +81,7 @@ function expand(rank){
  setSnap('expanded');
  closeButton.focus({preventScroll:true});
  if(rank){
-  const card=sheet.querySelector(`[data-rank="${rank}"]`),list=document.getElementById('result');
+  const list=document.getElementById('result'),card=list.querySelector(`article[data-rank="${rank}"]`);
   if(card)requestAnimationFrame(()=>{list.scrollTop+=card.getBoundingClientRect().top-list.getBoundingClientRect().top;});
  }
 }
@@ -87,11 +90,20 @@ function syncRail(){
 }
 function renderRail(data){
  const places=data.recommendations||[];rail.replaceChildren();lastTapped=null;
- controls.querySelector('.sheet-summary').textContent=places.length?`${places.length} ${places.length===1?'место':'места'} для проверки`:'Мест нет';
+ const summary = controls.querySelector('.sheet-summary');
+ const alternativeCount = places.filter(isAlternative).length;
+ summary.classList.toggle('sheet-summary-counts', alternativeCount > 0);
+ if (alternativeCount) {
+  summary.replaceChildren(node('span', '', `Основных: ${places.length - alternativeCount}`), node('span', '', `Запасных: ${alternativeCount}`));
+ } else {
+  summary.textContent = places.length ? `${places.length} ${places.length === 1 ? 'место' : 'места'} для проверки` : 'Мест нет';
+ }
  for(const rec of places){
   const card=node('button','sheet-place');card.type='button';card.dataset.rank=rec.rank;
-  card.setAttribute('aria-label',`Место ${rec.rank}, оценка ${scoreText(rec.score)}`);
-  card.append(node('strong','',`Место ${rec.rank}`),node('span','',scoreText(rec.score)));
+  const alternative = isAlternative(rec), label = recommendationLabel(rec);
+  if (alternative) card.dataset.placeRole = 'alternative';
+  card.setAttribute('aria-label',`${label}, оценка ${scoreText(rec.score)}`);
+  card.append(node('strong', '', alternative ? `Запасной ${rec.rank}` : label), node('span', '', scoreText(rec.score)));
   card.addEventListener('click',()=>{
    const repeat=lastTapped===rec.rank&&state.selectedRank===rec.rank;lastTapped=rec.rank;selectPlace(rec.rank,false,true);
    if(repeat)expand(rec.rank);else document.dispatchEvent(new CustomEvent('gm:show-place',{detail:{rank:rec.rank}}));

@@ -2,8 +2,9 @@ import { $, closeDialog, coords, initDialogMotion, node, openDialog } from './ui
 import { competitorFacts, competitorSourceLink, describeCompetitor } from './competitor-card.js';
 import { projectPoint } from './map-analysis.js';
 import { CORRECTION_LIMIT, createCorrectionDraft } from './corrections-state.js';
+import { updateReliabilityActions } from './data-reliability.js';
 
-export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onEnter }) {
+export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onEnter, onPending }) {
   const panel = $('corrections-panel');
   const toggle = $('corrections-toggle');
   const dialog = $('correction-remove-dialog');
@@ -21,7 +22,9 @@ export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onE
     const canRemoveOsm = Boolean(context?.base_competitors.some(point => point.id && !draft.value.removed.includes(point.id)));
     const busy = phase === 'loading';
     const available = Boolean(data && isAvailable() && data.source !== 'demo');
+    onPending(busy || draft.pending || Boolean(mode && !context));
     toggle.disabled = !available;
+    updateReliabilityActions(available);
     toggle.setAttribute('aria-expanded', String(Boolean(mode)));
     toggle.title = data?.source === 'demo' ? 'Поправки доступны для расчётов по данным OpenStreetMap' : '';
     panel.hidden = !mode && !message && !draft.count && !draft.pending;
@@ -71,6 +74,27 @@ export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onE
         throw new Error('Ответ не содержит применённых поправок');
       }
       const wasEditing = Boolean(data.correction_context);
+      const version = data.data_delivery?.version;
+      const matchesOriginal = version || wasEditing || (
+        response.recommendations.length === data.recommendations.length
+        && data.recommendations.every(({ lat, lng, score }, index) => {
+          const result = response.recommendations[index];
+          return result.lat === lat && result.lng === lng && result.score === score;
+        })
+      );
+      if (response.data_delivery?.version !== version || !matchesOriginal) {
+        const error = new Error('Исходные данные изменились. Проверьте обновления данных перед повторным расчётом.');
+        error.user = true;
+        throw error;
+      }
+      // Поправки пересчитывают места, сохраняя оценку разметки открытого расчёта.
+      if (Object.hasOwn(data, 'data_reliability')) response.data_reliability = data.data_reliability;
+      else delete response.data_reliability;
+      if (!wasEditing) {
+        response.analysis_id = data.analysis_id;
+        if (Object.hasOwn(data, 'calculated_at')) response.calculated_at = data.calculated_at;
+        else delete response.calculated_at;
+      }
       data = response;
       draft.apply(response.correction_context.applied);
       phase = 'idle';
@@ -79,7 +103,7 @@ export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onE
         && !response.correction_context.base_competitors.some(p => p.id && !draft.value.removed.includes(p.id))) {
         mode = 'add';
       }
-      onResult(response);
+      onResult(response, { applyingCorrections: wasEditing });
       render({ redraw: true });
     } catch (error) {
       if (currentRevision !== revision) return;
@@ -103,21 +127,24 @@ export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onE
     if (draft.pending) timer = setTimeout(calculate, 500);
   }
 
-  function setMode(value) {
+  function setMode(value, { fromReliability = false } = {}) {
     if (!isAvailable()) return;
     const entering = value && !mode;
     mode = value;
     if (!mode && phase === 'idle' && !draft.pending) message = '';
-    if (entering) onEnter();
+    if (entering || fromReliability) onEnter({ preserveViewport: fromReliability });
     render({ redraw: true });
-    if (entering && matchMedia('(max-width: 600px)').matches) {
+    if ((entering || fromReliability) && matchMedia('(max-width: 600px)').matches) {
       const header = $('site-header').getBoundingClientRect().bottom;
       const top = panel.getBoundingClientRect().top;
-      if (top > header + 80) {
+      if (top > header + 80 || (fromReliability && top < header + 12)) {
         window.scrollBy({ top: top - header - 12, behavior: 'instant' });
         panel.focus({ preventScroll: true });
       }
+    } else if (fromReliability) {
+      panel.scrollIntoView({ block: 'nearest', behavior: 'instant' });
     }
+    if (fromReliability) panel.focus({ preventScroll: true });
     if (mode && !data.correction_context && phase !== 'loading') calculate();
   }
 
@@ -130,6 +157,9 @@ export function initCorrections({ fetchResult, onResult, onMap, isAvailable, onE
 
   initDialogMotion(dialog);
   toggle.addEventListener('click', () => setMode(mode ? null : 'add'));
+  toggle.addEventListener('gm:open-corrections', () => {
+    if (!toggle.disabled) setMode(mode || 'add', { fromReliability: true });
+  });
   $('correction-add').addEventListener('click', () => setMode('add'));
   $('correction-remove').addEventListener('click', () => setMode('remove'));
   $('correction-done').addEventListener('click', () => {

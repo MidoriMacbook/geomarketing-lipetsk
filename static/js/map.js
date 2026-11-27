@@ -1,4 +1,5 @@
 import { state } from './state.js';
+import { isAlternative, recommendationLabel } from './place-role.js';
 import {createMapInspector} from './map-inspector.js';
 import {createSelectionLayer} from './map-selection.js';
 import {createMapComparison} from './map-comparison.js';
@@ -11,7 +12,7 @@ let accessPalette=null,focusDuration=400;
 const dataRenderers = {}, preferences = {}, layerTimers = {}, layerRevisions = {};
 let emphasized = new Set(), previewRank = null, houseData = [];
 let viewportRank=null, viewportTimer=null,inspector=null,selection=null,comparison=null,choosingCenter=false;
-let competitorPopup = null, competitorIcon = null;
+let competitorPopup = null, competitorIcon = null, chainCompetitorIcon = null;
 let manualViewport=false;
 const layers = {}, markers = new Map();
 let correctionView = { mode: null, draft: { added: [], removed: [] }, pending: false };
@@ -91,6 +92,7 @@ export function initMap() {
   });
   dataRenderers.houses = L.canvas({ pane: 'houses', padding: .5 });
   competitorIcon = L.divIcon({ className: 'competitor-marker', iconSize: [24, 24] });
+  chainCompetitorIcon = L.divIcon({ className: 'competitor-marker is-chain', iconSize: [24, 24] });
   map.createPane('corrections').style.zIndex = '620';
   ['houses','competitors','centroids','zones','recommendations'].forEach(key=>{
     const pane=map.getPane(key==='recommendations'?'markerPane':key);
@@ -140,7 +142,13 @@ export function initMap() {
   selection=createSelectionLayer(map);
   inspector=createMapInspector(map,{selectPoint:rec=>{if(comparison?.isOpen())comparison.clear();drawAccessCircle(rec);selection.select(rec);},selectRecommendation:rec=>selectPlace(rec.rank,false)});
   competitorPopup = createCompetitorPopup(map);
-  comparison=createMapComparison(map,{onOpen:()=>{clearTimeout(viewportTimer);inspector.close();competitorPopup.close();selection.select(null);layers.accessibility.clearLayers();},onClose:()=>drawAccessRadius(state.selectedRank)});
+  comparison=createMapComparison(map,{
+    onOpen:()=>{clearTimeout(viewportTimer);inspector.close();competitorPopup.close();selection.select(null);layers.accessibility.clearLayers();},
+    onClose:()=>selectMarker(state.selectedRank, false),
+    onOpenSaved:()=>selectMarker(null, false),
+    onSelectSaved:rec=>selectPlace(rec.rank, true),
+    savedAlternativeIcon:rec=>iconFor(rec.rank, true, rec.role)
+  });
   document.addEventListener('gm:choose-center',()=>{choosingCenter=true;});
   map.on('click', handleMapClick);
   let resizeFrame = null, lastWidth = 0, lastHeight = 0;
@@ -216,9 +224,10 @@ export function drawPreview() {
   }).addTo(layers.preview);
 }
 
-export function iconFor(rank, selected) {
+export function iconFor(rank, selected, role) {
   const markerSize = size('marker');
   const pin = node('span', `recommendation-pin${selected?' is-selected':''}`, rank);
+  pin.classList.toggle('is-alternative', role === 'alternative');
   pin.dataset.testid = 'recommendation-marker';
   return L.divIcon({
     className: '',
@@ -262,13 +271,15 @@ export function drawMap(data, { preserveViewport = false } = {}) {
     element.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();open();}});
   });
   data.recommendations.forEach(r => {
+    const label = recommendationLabel(r), alternative = isAlternative(r);
+    const selected = r.rank === state.selectedRank;
+    const accessibleLabel = `${label}, оценка ${Math.round(r.score * 100)} из 100`;
     const marker = L.marker([r.lat, r.lng], {
-      icon: iconFor(r.rank,
-      r.rank === state.selectedRank),
-      zIndexOffset:r.rank===state.selectedRank?1000:0,
-      title: `Рекомендация ${r.rank}`,
-      alt: `Место ${r.rank}, оценка ${Math.round(r.score*100)} из 100`
-    }).bindTooltip(`Место ${r.rank}`, {
+      icon: iconFor(r.rank, selected, r.role),
+      zIndexOffset: selected ? 1000 : 0,
+      title: alternative ? label : `Рекомендация ${r.rank}`,
+      alt: accessibleLabel
+    }).bindTooltip(label, {
       direction: 'top',
       offset: [0,
       -12]
@@ -280,7 +291,10 @@ export function drawMap(data, { preserveViewport = false } = {}) {
       inspector.openPlace(r);
     });
     markers.set(r.rank, marker);
-    const element=marker.getElement();element.setAttribute('role','button');element.setAttribute('aria-label',`Место ${r.rank}, оценка ${Math.round(r.score*100)} из 100`);
+    const element = marker.getElement();
+    element.setAttribute('role', 'button');
+    element.setAttribute('aria-label', accessibleLabel);
+    element.setAttribute('aria-pressed', String(selected));
     const preview=active=>{
       hoverPlace(r.rank,active);
       document.querySelector(`#recommendation-list [data-rank="${r.rank}"]`)?.classList.toggle('is-preview',active);
@@ -302,11 +316,12 @@ export function updateCorrectionMap(view) {
   if (state.current) drawCompetitors(state.current);
 }
 
-export function beginMapCorrections() {
+export function beginMapCorrections({ preserveViewport = false } = {}) {
+  if (preserveViewport) map?.stop();
   inspector?.close();
   competitorPopup?.close();
   comparison?.clear();
-  if (map && state.current && !map.getBounds().contains(state.current.center)) {
+  if (!preserveViewport && map && state.current && !map.getBounds().contains(state.current.center)) {
     fitCalculationArea(state.current);
   }
   manualViewport = true;
@@ -346,7 +361,7 @@ function inspectCompetitor(marker, details, colocated, event) {
 function correctionMarker(point, details, { removable = false, pending = false, colocated = [], related = [] } = {}) {
   const manual = point.source === 'manual';
   const icon = L.divIcon({
-    className: `correction-marker${!manual ? ' is-removable' : ''}${pending ? ' is-pending' : ''}`,
+    className: `correction-marker${!manual ? ' is-removable' : ''}${pending ? ' is-pending' : ''}${point.is_chain || colocated.some(row => row.is_chain) ? ' is-chain' : ''}`,
     html: node('span', '', colocated.length > 1 ? colocated.length : removable ? '−' : '+'),
     iconSize: [44, 44],
     iconAnchor: [22, 22],
@@ -407,8 +422,11 @@ function drawCompetitors(data) {
         correctionMarker(point, details, { pending: pending && !appliedIds.has(point.id), related: group });
         continue;
       }
-      const marker = L.marker([point.lat, point.lng], { pane: 'competitors', icon: competitorIcon });
-      const label = details.id ? `${details.title}, ${details.id}` : [details.title, details.note].filter(Boolean).join(', ');
+      const marker = L.marker([point.lat, point.lng], {
+        pane: 'competitors', icon: details.isChain ? chainCompetitorIcon : competitorIcon,
+      });
+      const label = [details.title, details.id || details.note,
+        details.isChain ? 'Отмечен как сетевой' : null].filter(Boolean).join(', ');
       bindCompetitorMarker(marker, label, event => inspectCompetitor(marker, details, group, event), details.id);
       marker.addTo(layers.competitors);
     }
@@ -569,8 +587,10 @@ export function clearPreview() {
 export function selectMarker(rank, pan, changed = false) {
   previewRank=null;
   markers.forEach((marker, r) => {
-    const pin = marker.getElement()?.querySelector('.recommendation-pin');
+    const element = marker.getElement();
+    const pin = element?.querySelector('.recommendation-pin');
     marker.setZIndexOffset(r===rank?1000:0);
+    element?.setAttribute('aria-pressed', String(r === rank));
     pin?.classList.toggle('is-selected', r === rank);
     pin?.classList.remove('is-preview');
     if (r !== rank) cancelUI(pin);

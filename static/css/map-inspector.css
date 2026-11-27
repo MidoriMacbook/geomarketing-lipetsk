@@ -11,6 +11,8 @@
 .map-inspection h3 { font:600 16px/1.25 'Golos Text',sans-serif; margin:0; }
 .map-inspection-close { flex:none; width:44px; height:44px; border:0; border-radius:50%; background:transparent; font-size:24px; color:var(--palette-rosewood-deep); cursor:pointer; }
 .map-inspection p { margin:6px 0; }
+.map-inspection .data-reliability { border-block-start:var(--line) solid var(--palette-line); }
+.map-inspection .data-reliability-action { margin-inline-start:calc(-1 * var(--space-2)); }
 .map-inspection-score { font-size:20px; font-weight:600; font-variant-numeric:tabular-nums; }
 .map-inspection .button { width:100%; min-height:44px; margin-top:8px; padding:8px 12px; font-size:13px; }
 .map-inspection-note,.map-inspection-difference,.map-inspection-feedback { font-size:12px; color:var(--palette-ink-muted); }
@@ -40,6 +42,7 @@
 .map-probe-target { border:2px dashed var(--palette-rosewood-deep); background:var(--palette-cream); color:var(--palette-rosewood-deep); }
 .map-probe-target::after { content:'+'; font:700 14px/1 sans-serif; }
 .map-pin-key-number { background:var(--palette-ink); color:var(--palette-cream); font-size:12px; }
+.map-pin-key-alternative { border:var(--line) dashed var(--palette-ink); border-radius:4px; background:var(--palette-sky-soft); color:var(--palette-ink); }
 .map-pin-key { position:relative; color:var(--palette-ink); }
 .map-pin-key summary { display:grid; place-items:center; width:44px; height:44px; cursor:pointer; border-radius:50%; border:1px solid var(--palette-border); }
 .map-pin-key summary::-webkit-details-marker { display:none; }
@@ -59,10 +62,12 @@
  .map-inspection-compact .map-inspection-heading { display:contents; }
  .map-inspection-compact .map-inspection-close { grid-row:1; grid-column:3; }
  .map-inspection-compact .map-inspection-reading { grid-column:1; grid-row:1; display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; min-height:44px; }
+ .map-inspection-compact[data-place-role=alternative] .map-inspection-reading { align-content:center; gap:0 var(--space-2); }
  .map-inspection-compact .map-inspection-info { grid-column:2; grid-row:1; margin-top:8px; }
  .map-inspection-compact h3,.map-inspection-compact .map-inspection-desktop-facts,.map-inspection-save-long { display:none; }
  .map-inspection-compact .map-inspection-score { margin:0; font-size:clamp(16px,5vw,20px); }
  .map-inspection-compact .map-inspection-mobile-summary { display:block; font-size:12px; margin:0; padding-right:0; }
+ .map-inspection-compact .data-reliability > p { margin-block:var(--space-1) 0; }
  .map-inspection-weak { display:inline-block; font-size:11px; vertical-align:middle; background:var(--palette-pink); color:var(--palette-ink); border-radius:8px; padding:2px 4px; }
  .map-inspection-compact .map-inspection-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
  .map-inspection-compact .button { width:100%; margin-top:4px; padding:4px 8px; }

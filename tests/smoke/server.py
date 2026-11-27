@@ -17,7 +17,7 @@ from src.services import analysis_service
 from src.utils.geo import to_latlng
 
 
-def controlled_load_data(area, business, refresh):
+def controlled_load_data(area, business, refresh, *, data_reliability=False):
     """Строит одинаковые исходные данные относительно выбранного центра."""
     lat, lng = area['center']
     # Три реальные зоны спроса вместо шести домов в одном общем радиусе.
@@ -33,7 +33,9 @@ def controlled_load_data(area, business, refresh):
                        'stale': False, 'warning': None}
                 for kind in ('houses', 'competitors')}
     return LoadedData(houses, competitors, 'cache', None, metadata,
-                      competitor_ids=('node:123', 'way:123'))
+                      competitor_ids=('node:123', 'way:123'),
+                      network_coverage={'total': 5, 'tagged': 1} if business == 'grocery' else None,
+                      network_ids=frozenset({'node:123'}) if business == 'grocery' else frozenset())
 
 
 if __name__ == '__main__':

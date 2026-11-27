@@ -6,6 +6,7 @@ import time
 
 from src.config import DISTRICTS, LIPETSK_BOUNDS, COMPETITOR_MARGIN_M
 from src.domain.businesses import BUSINESS_CATALOG
+from src.domain.network_competitors import store_network_flags
 from src.domain.provenance import ProvenancedRows, filter_rows, validate_provenance
 from src.utils.geo import _bbox
 
@@ -30,6 +31,7 @@ def make_bundle(houses, competitors, fetched_at):
     competitor_provenance = {key: getattr(rows, 'provenance', None) for key, rows in competitors.items()}
     if house_provenance is not None or any(value is not None for value in competitor_provenance.values()):
         bundle['provenance'] = {'schema': 1, 'houses': house_provenance, 'competitors': competitor_provenance}
+        store_network_flags(bundle)
     bundle['version'] = digest(bundle)
     return validate_bundle(bundle)
 
