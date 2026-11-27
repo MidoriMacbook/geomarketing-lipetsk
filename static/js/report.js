@@ -1,4 +1,5 @@
 import { placeLabel, projectPoint } from './map-analysis.js';
+import { isAlternative } from './place-role.js';
 import { scoreText, scoreValue } from './result-format.js';
 import { state } from './state.js';
 import { $, fmt, coords, distance, LIMITATIONS, node, dateText, sourceText, dataDate } from './ui.js';
@@ -59,7 +60,7 @@ export function exportCSV() {
   const rows = [['Категория', 'Район', 'Место', 'Широта', 'Долгота', 'Жителей (оценка)', 'Радиус, м', 'Конкурентов в радиусе', 'Ближайший конкурент, м', 'Относительная оценка (только внутри расчёта) — из 100', 'ID расчёта', 'Коэффициент конкуренции', 'Дата данных', 'Дата сохранения', 'Источник', 'Предупреждения', 'Ограничения модели', 'Свежесть данных', 'Пригодность данных', 'Причины ограничений'], ...state.saved.map(i => {
     const r = i.recommendation;
     const quality=qualitySummary(i);
-    return [i.business_name, i.district_name, r.origin==='manual'?'выбрано вручную':r.rank, r.lat, r.lng, r.residents_in_radius, r.radius_m, r.competitors_in_radius, r.nearest_competitor_m, scoreValue(r.score), i.analysis_id, i.parameters.alpha, i.data_date || 'Не указана', i.saved_at, sourceText(i.source), i.warning, LIMITATIONS,quality.freshness,quality.completeness,quality.reasons.join(' | ')];
+    return [i.business_name, i.district_name, r.origin==='manual'||isAlternative(r)?placeLabel(r):r.rank, r.lat, r.lng, r.residents_in_radius, r.radius_m, r.competitors_in_radius, r.nearest_competitor_m, scoreValue(r.score), i.analysis_id, i.parameters.alpha, i.data_date || 'Не указана', i.saved_at, sourceText(i.source), i.warning, LIMITATIONS,quality.freshness,quality.completeness,quality.reasons.join(' | ')];
   })];
   downloadCSV(rows, 'geomarketing-lipetsk');
 }

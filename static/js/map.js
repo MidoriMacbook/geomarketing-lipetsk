@@ -1,4 +1,5 @@
 import { state } from './state.js';
+import { isAlternative, recommendationLabel } from './place-role.js';
 import {createMapInspector} from './map-inspector.js';
 import {createSelectionLayer} from './map-selection.js';
 import {createMapComparison} from './map-comparison.js';
@@ -141,7 +142,13 @@ export function initMap() {
   selection=createSelectionLayer(map);
   inspector=createMapInspector(map,{selectPoint:rec=>{if(comparison?.isOpen())comparison.clear();drawAccessCircle(rec);selection.select(rec);},selectRecommendation:rec=>selectPlace(rec.rank,false)});
   competitorPopup = createCompetitorPopup(map);
-  comparison=createMapComparison(map,{onOpen:()=>{clearTimeout(viewportTimer);inspector.close();competitorPopup.close();selection.select(null);layers.accessibility.clearLayers();},onClose:()=>drawAccessRadius(state.selectedRank)});
+  comparison=createMapComparison(map,{
+    onOpen:()=>{clearTimeout(viewportTimer);inspector.close();competitorPopup.close();selection.select(null);layers.accessibility.clearLayers();},
+    onClose:()=>selectMarker(state.selectedRank, false),
+    onOpenSaved:()=>selectMarker(null, false),
+    onSelectSaved:rec=>selectPlace(rec.rank, true),
+    savedAlternativeIcon:rec=>iconFor(rec.rank, true, rec.role)
+  });
   document.addEventListener('gm:choose-center',()=>{choosingCenter=true;});
   map.on('click', handleMapClick);
   let resizeFrame = null, lastWidth = 0, lastHeight = 0;
@@ -217,9 +224,10 @@ export function drawPreview() {
   }).addTo(layers.preview);
 }
 
-export function iconFor(rank, selected) {
+export function iconFor(rank, selected, role) {
   const markerSize = size('marker');
   const pin = node('span', `recommendation-pin${selected?' is-selected':''}`, rank);
+  pin.classList.toggle('is-alternative', role === 'alternative');
   pin.dataset.testid = 'recommendation-marker';
   return L.divIcon({
     className: '',
@@ -263,13 +271,15 @@ export function drawMap(data, { preserveViewport = false } = {}) {
     element.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();open();}});
   });
   data.recommendations.forEach(r => {
+    const label = recommendationLabel(r), alternative = isAlternative(r);
+    const selected = r.rank === state.selectedRank;
+    const accessibleLabel = `${label}, оценка ${Math.round(r.score * 100)} из 100`;
     const marker = L.marker([r.lat, r.lng], {
-      icon: iconFor(r.rank,
-      r.rank === state.selectedRank),
-      zIndexOffset:r.rank===state.selectedRank?1000:0,
-      title: `Рекомендация ${r.rank}`,
-      alt: `Место ${r.rank}, оценка ${Math.round(r.score*100)} из 100`
-    }).bindTooltip(`Место ${r.rank}`, {
+      icon: iconFor(r.rank, selected, r.role),
+      zIndexOffset: selected ? 1000 : 0,
+      title: alternative ? label : `Рекомендация ${r.rank}`,
+      alt: accessibleLabel
+    }).bindTooltip(label, {
       direction: 'top',
       offset: [0,
       -12]
@@ -281,7 +291,10 @@ export function drawMap(data, { preserveViewport = false } = {}) {
       inspector.openPlace(r);
     });
     markers.set(r.rank, marker);
-    const element=marker.getElement();element.setAttribute('role','button');element.setAttribute('aria-label',`Место ${r.rank}, оценка ${Math.round(r.score*100)} из 100`);
+    const element = marker.getElement();
+    element.setAttribute('role', 'button');
+    element.setAttribute('aria-label', accessibleLabel);
+    element.setAttribute('aria-pressed', String(selected));
     const preview=active=>{
       hoverPlace(r.rank,active);
       document.querySelector(`#recommendation-list [data-rank="${r.rank}"]`)?.classList.toggle('is-preview',active);
@@ -574,8 +587,10 @@ export function clearPreview() {
 export function selectMarker(rank, pan, changed = false) {
   previewRank=null;
   markers.forEach((marker, r) => {
-    const pin = marker.getElement()?.querySelector('.recommendation-pin');
+    const element = marker.getElement();
+    const pin = element?.querySelector('.recommendation-pin');
     marker.setZIndexOffset(r===rank?1000:0);
+    element?.setAttribute('aria-pressed', String(r === rank));
     pin?.classList.toggle('is-selected', r === rank);
     pin?.classList.remove('is-preview');
     if (r !== rank) cancelUI(pin);

@@ -1,4 +1,7 @@
+import {isAlternative} from './place-role.js';
+
 const demand = { higher: 'Выше среднего среди точек расчёта', similar: 'Близок к среднему среди точек расчёта', lower: 'Ниже среднего среди точек расчёта', unknown: 'Не оценен' };
+const alternativeDemand = { higher: 'Выше среднего по основным местам', similar: 'Близок к среднему по основным местам', lower: 'Ниже среднего по основным местам', unknown: 'Не оценён' };
 const competition = { low: 'Слабое влияние на оценку', moderate: 'Умеренное влияние на оценку', high: 'Сильное влияние на оценку' };
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const strings = value => Array.isArray(value) && value.length <= 64 && value.every(text => typeof text === 'string' && text.length <= 2000);
@@ -18,7 +21,7 @@ export function recommendationBrief(rec) {
   const explanation = assessed(rec?.explanation) ? rec.explanation : null;
   const nearest = rec?.nearest_competitor_m;
   return {
-    demand: explanation ? demand[explanation.demand_level] : 'Не оценен',
+    demand: explanation ? (isAlternative(rec) ? alternativeDemand : demand)[explanation.demand_level] : 'Не оценен',
     competition: explanation ? competition[explanation.competition_level]+(rec?.competitors_in_radius===0?' — учитываются и конкуренты за радиусом':'') : 'Не оценена',
     nearest: nearest === null ? 'Не найдены в данных области' : Number.isFinite(nearest) && nearest >= 0 ? `${Math.round(nearest).toLocaleString('ru-RU')} м` : 'Не оценено',
     check: explanation?.field_checks.find(text => text.trim() && !/конкурент.*OSM/i.test(text)) || 'Проверьте помещение, доступ и поток посетителей.'
@@ -31,7 +34,7 @@ export function recommendationDecision(rec) {
   const facts=[],format=value=>Math.round(value).toLocaleString('ru-RU');
   const metrics=explanation?.metrics;
   if(Number.isSafeInteger(count)&&count>=0)facts.push(count===0
-    ? explanation?.demand_level==='higher'?'Спрос выше среди точек расчёта; нет учтённых конкурентов':'Нет учтённых конкурентов в радиусе'
+    ? !isAlternative(rec) && explanation?.demand_level==='higher'?'Спрос выше среди точек расчёта; нет учтённых конкурентов':'Нет учтённых конкурентов в радиусе'
     :`Учтено конкурентов в радиусе: ${format(count)}`);
   if(Number.isFinite(rec?.residents_in_radius)&&rec.residents_in_radius>=0)facts.push(`≈ ${format(rec.residents_in_radius)} жителей в радиусе`);
   if(Number.isFinite(metrics?.nearest_demand_center_m)&&metrics.nearest_demand_center_m>=0)facts.push(`Центр спроса в ${format(metrics.nearest_demand_center_m)} м`);

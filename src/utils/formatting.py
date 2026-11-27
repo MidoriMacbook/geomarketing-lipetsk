@@ -19,7 +19,8 @@ def analysis_payload(area: Area, business: str, parameters: dict,
                      quality: dict, explanations: list[dict]) -> dict:
     houses, competitors = loaded.houses, loaded.competitors
     recommendations = [{**item, 'explanation': explanation}
-                       for item, explanation in zip(scored.recommendations, explanations, strict=True)]
+                       for item, explanation in zip(scored.recommendations + scored.alternatives,
+                                                    explanations, strict=True)]
     return {
         'status': 'success',
         'district': area['key'],
