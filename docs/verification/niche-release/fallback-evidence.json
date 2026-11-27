@@ -1,0 +1,107 @@
+{
+  "candidate": {
+    "code": {
+      "sha": "6a51da3d34b55f75406a69e4fbea95046be3a80e",
+      "tree": "6e979538856fa6e4b08a7c148681d73fe4f5ca26"
+    },
+    "data": {
+      "cacheSha256": "195ec93afa7bf4a82f42237c3521b2f1e18dbb3a9dd15943bf49d9ea3e9b4ec6",
+      "commit": "c9b25b12dc08fcc7800544d3792c02004dcd9ad0",
+      "coverage": {
+        "east": 39.839999999999996,
+        "north": 52.745,
+        "south": 52.475,
+        "west": 39.31
+      },
+      "fetchedAt": 1795783841.621912,
+      "generatedAt": "2026-11-27T15:50:41.621912+03:00",
+      "sourceUrl": "https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/c9b25b12dc08fcc7800544d3792c02004dcd9ad0/city.json",
+      "version": "43bb81c25b090e6b18127c344d36a3aeb5a0a5e1629179bc53f051f236638404"
+    },
+    "variant": "candidate-fallback"
+  },
+  "rollback": {
+    "code": {
+      "sha": "48814bd5cad27a5362f7d674f11f8e7234ff1d77",
+      "tree": "bd8d6caa9ae9006bf004ae2cf5d4674dedd60865"
+    },
+    "data": {
+      "cacheSha256": "195ec93afa7bf4a82f42237c3521b2f1e18dbb3a9dd15943bf49d9ea3e9b4ec6",
+      "commit": "c9b25b12dc08fcc7800544d3792c02004dcd9ad0",
+      "coverage": {
+        "east": 39.839999999999996,
+        "north": 52.745,
+        "south": 52.475,
+        "west": 39.31
+      },
+      "fetchedAt": 1795783841.621912,
+      "generatedAt": "2026-11-27T15:50:41.621912+03:00",
+      "sourceUrl": "https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/c9b25b12dc08fcc7800544d3792c02004dcd9ad0/city.json",
+      "version": "43bb81c25b090e6b18127c344d36a3aeb5a0a5e1629179bc53f051f236638404"
+    },
+    "variant": "rollback"
+  },
+  "query": "district=center&type=cafe&include_alternatives=1&data_reliability=1&network_weight=0.5",
+  "upstreamHttpStatusDuringColdStart": 503,
+  "warm": {
+    "delivery": {
+      "mode": "daily",
+      "status": "current",
+      "version": "43bb81c25b090e6b18127c344d36a3aeb5a0a5e1629179bc53f051f236638404",
+      "fetched_at": 1795783841.621912
+    },
+    "status": "success",
+    "source": "cache",
+    "warning": null,
+    "recommendations": [
+      {
+        "role": "primary",
+        "score": 1.0
+      },
+      {
+        "role": "alternative",
+        "score": 0.7369547357954972
+      },
+      {
+        "role": "alternative",
+        "score": 0.6561578789723079
+      }
+    ],
+    "reliabilityLevel": "medium"
+  },
+  "coldWithDiskCache": {
+    "delivery": {
+      "mode": "daily",
+      "status": "unavailable",
+      "version": "43bb81c25b090e6b18127c344d36a3aeb5a0a5e1629179bc53f051f236638404",
+      "fetched_at": 1795783841.621912
+    },
+    "status": "success",
+    "source": "cache",
+    "warning": "Не удалось проверить ежедневную выгрузку. Показана последняя доступная копия с прежней датой.",
+    "recommendations": [
+      {
+        "role": "primary",
+        "score": 1.0
+      },
+      {
+        "role": "alternative",
+        "score": 0.7369547357954972
+      },
+      {
+        "role": "alternative",
+        "score": 0.6561578789723079
+      }
+    ],
+    "reliabilityLevel": "medium"
+  },
+  "sameGrid": true,
+  "sameRecommendations": true,
+  "sameDataReliability": true,
+  "rollbackReadsPublishedCopy": {
+    "mode": "daily",
+    "status": "current",
+    "version": "43bb81c25b090e6b18127c344d36a3aeb5a0a5e1629179bc53f051f236638404",
+    "fetched_at": 1795783841.621912
+  }
+}

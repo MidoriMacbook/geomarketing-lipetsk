@@ -1,0 +1,393 @@
+{
+  "tag": "webkit-390",
+  "secureContext": true,
+  "receipt": {
+    "code": {
+      "sha": "6a51da3d34b55f75406a69e4fbea95046be3a80e",
+      "tree": "6e979538856fa6e4b08a7c148681d73fe4f5ca26"
+    },
+    "data": {
+      "cacheSha256": "195ec93afa7bf4a82f42237c3521b2f1e18dbb3a9dd15943bf49d9ea3e9b4ec6",
+      "commit": "c9b25b12dc08fcc7800544d3792c02004dcd9ad0",
+      "coverage": {
+        "east": 39.839999999999996,
+        "north": 52.745,
+        "south": 52.475,
+        "west": 39.31
+      },
+      "fetchedAt": 1795783841.621912,
+      "generatedAt": "2026-11-27T15:50:41.621912+03:00",
+      "sourceUrl": "https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/c9b25b12dc08fcc7800544d3792c02004dcd9ad0/city.json",
+      "version": "43bb81c25b090e6b18127c344d36a3aeb5a0a5e1629179bc53f051f236638404"
+    },
+    "variant": "candidate"
+  },
+  "checkpoints": [
+    "полный вес и обычный API",
+    "веса 1, 0,5 и 0 и сохранение маркеров",
+    "из выноски в поправки, выбранное место и положение карты сохранены",
+    "одна ручная поправка, пересчёт и выход",
+    "запасной пин, два сохранённых места, сравнение и возврат",
+    "снимок, заметка и состояние восстановлены после перезагрузки"
+  ],
+  "networkScenario": [
+    "center",
+    "grocery"
+  ],
+  "weights": [
+    {
+      "weight": 1,
+      "pins": 36,
+      "meta": {
+        "coverage": {
+          "tagged": 219,
+          "total": 417
+        },
+        "eligible": true,
+        "marked": 36,
+        "total": 68,
+        "weight": 1
+      },
+      "pressureAtFullWeightBest": {
+        "networks": 0.364891301144271,
+        "other": 0.1145657488065222
+      },
+      "changedCellsFromFull": 0,
+      "places": [
+        {
+          "rank": 1,
+          "role": "primary",
+          "score": 1,
+          "lat": 52.611131134524356,
+          "lng": 39.58354558601603
+        },
+        {
+          "rank": 2,
+          "role": "alternative",
+          "score": 0.9287716396040454,
+          "lat": 52.61082574438846,
+          "lng": 39.58857501257581
+        },
+        {
+          "rank": 3,
+          "role": "alternative",
+          "score": 0.6558754633939995,
+          "lat": 52.613574255611546,
+          "lng": 39.580527930080166
+        }
+      ]
+    },
+    {
+      "weight": 0.5,
+      "pins": 36,
+      "meta": {
+        "coverage": {
+          "tagged": 219,
+          "total": 417
+        },
+        "eligible": true,
+        "marked": 36,
+        "total": 68,
+        "weight": 0.5
+      },
+      "pressureAtFullWeightBest": {
+        "networks": 0.1824456505721355,
+        "other": 0.1145657488065222
+      },
+      "changedCellsFromFull": 2670,
+      "places": [
+        {
+          "rank": 1,
+          "role": "primary",
+          "score": 1,
+          "lat": 52.611131134524356,
+          "lng": 39.58404852867201
+        },
+        {
+          "rank": 2,
+          "role": "alternative",
+          "score": 0.953072433122116,
+          "lat": 52.611131134524356,
+          "lng": 39.58907795523179
+        },
+        {
+          "rank": 3,
+          "role": "alternative",
+          "score": 0.6690701263625254,
+          "lat": 52.613268865475646,
+          "lng": 39.580527930080166
+        }
+      ]
+    },
+    {
+      "weight": 0,
+      "pins": 36,
+      "meta": {
+        "coverage": {
+          "tagged": 219,
+          "total": 417
+        },
+        "eligible": true,
+        "marked": 36,
+        "total": 68,
+        "weight": 0
+      },
+      "pressureAtFullWeightBest": {
+        "networks": 0,
+        "other": 0.1145657488065222
+      },
+      "changedCellsFromFull": 2700,
+      "places": [
+        {
+          "rank": 1,
+          "role": "primary",
+          "score": 1,
+          "lat": 52.611436524660256,
+          "lng": 39.587569127263855
+        },
+        {
+          "rank": 2,
+          "role": "alternative",
+          "score": 0.8388190564975468,
+          "lat": 52.61052035425256,
+          "lng": 39.58304264336005
+        },
+        {
+          "rank": 3,
+          "role": "alternative",
+          "score": 0.6418516945185364,
+          "lat": 52.613268865475646,
+          "lng": 39.58153381539212
+        }
+      ]
+    }
+  ],
+  "correctionAndArchiveScenario": [
+    "center",
+    "grocery"
+  ],
+  "reliability": {
+    "code": "missing_addresses",
+    "level": "medium",
+    "metrics": {
+      "area_objects": 25,
+      "city_objects": 417,
+      "counts_basis": {
+        "area_objects": "osm_type_id",
+        "city_objects": "osm_type_id",
+        "grocery_stores": "osm_type_id"
+      },
+      "estimated_residents": 53659,
+      "grocery_per_1000": 0.46590506718351066,
+      "grocery_stores": 25,
+      "missing_addresses": {
+        "count": 23,
+        "share": 0.92
+      },
+      "missing_both": {
+        "count": 6,
+        "share": 0.24
+      },
+      "missing_names": {
+        "count": 6,
+        "share": 0.24
+      }
+    },
+    "reason": "Не менее чем у 50 % объектов нет полного адреса."
+  },
+  "viewportBeforeCorrections": [
+    52.63327125862278,
+    39.590263366699226,
+    12
+  ],
+  "viewportAtCorrection": [
+    52.6122,
+    39.5843,
+    14
+  ],
+  "viewportPreparation": "после проверки входа подготовлен кадр круга на масштабе 14 через Leaflet, затем выполнен тап",
+  "correction": {
+    "added": [
+      {
+        "id": "ce640be5-24ca-4408-b678-387a61b44a1f",
+        "lat": 52.61225979502197,
+        "lng": 39.5859718322754
+      }
+    ],
+    "removed": []
+  },
+  "places": [
+    {
+      "cluster_id": 1,
+      "comparison_to_best": null,
+      "competitors_in_radius": 2,
+      "correction_delta": {
+        "baseline_score": 0.8614319935608977,
+        "is_new_location": true,
+        "score_delta": 0.13856800643910228
+      },
+      "explanation": {
+        "competition_level": "moderate",
+        "demand_level": "similar",
+        "field_checks": [
+          "Проверьте конкурентов, которые могли отсутствовать в OSM",
+          "Проверьте фактический поток людей, входы и пешеходную доступность",
+          "Уточните наличие помещения, условия аренды и ограничения для выбранного бизнеса"
+        ],
+        "metrics": {
+          "competition_multiplier": 2.6289585833091356,
+          "competition_pressure": 0.8144792916545678,
+          "houses_in_radius": 72,
+          "houses_per_km2": 143.2394487827058,
+          "model_demand": 8515.429317646842,
+          "nearest_demand_center_m": 276
+        },
+        "risks": [
+          "Оценка жителей зависит от полноты добровольной разметки домов в OSM; плотность относится только к учтённым домам"
+        ],
+        "strengths": [
+          "В радиусе 400 м учтено домов: 72",
+          "Ближайший учтённый центр спроса находится в 276 м"
+        ],
+        "version": 1
+      },
+      "independent_zones": 2,
+      "lat": 52.611131134524356,
+      "lng": 39.591089725855696,
+      "nearest_competitor_m": 341,
+      "radius_m": 400,
+      "rank": 1,
+      "residents_in_radius": 8805,
+      "score": 1,
+      "selection_method": "cluster_maxima_v1"
+    },
+    {
+      "cluster_id": 2,
+      "comparison_to_best": {
+        "distance_m": 625,
+        "shared_houses": 17,
+        "shared_residents": 1606,
+        "shared_residents_fraction": 0.23268617791944363
+      },
+      "competitors_in_radius": 1,
+      "correction_delta": {
+        "baseline_score": 0.7967748208366754,
+        "is_new_location": true,
+        "score_delta": 0.11831213936366003
+      },
+      "explanation": {
+        "competition_level": "moderate",
+        "demand_level": "similar",
+        "field_checks": [
+          "Проверьте конкурентов, которые могли отсутствовать в OSM",
+          "Проверьте фактический поток людей, входы и пешеходную доступность",
+          "Уточните наличие помещения, условия аренды и ограничения для выбранного бизнеса"
+        ],
+        "metrics": {
+          "competition_multiplier": 2.434177655123133,
+          "competition_pressure": 0.7170888275615666,
+          "houses_in_radius": 80,
+          "houses_per_km2": 159.15494309189532,
+          "model_demand": 7215.018390095776,
+          "nearest_demand_center_m": 404
+        },
+        "risks": [
+          "Оценка жителей зависит от полноты добровольной разметки домов в OSM; плотность относится только к учтённым домам"
+        ],
+        "strengths": [
+          "В радиусе 400 м учтено домов: 80",
+          "Ближайший учтённый центр спроса находится в 404 м"
+        ],
+        "version": 1
+      },
+      "independent_zones": 2,
+      "lat": 52.609909573980765,
+      "lng": 39.5820367580481,
+      "nearest_competitor_m": 372,
+      "radius_m": 400,
+      "rank": 2,
+      "residents_in_radius": 6902,
+      "score": 0.9150869602003354,
+      "selection_method": "cluster_maxima_v1"
+    },
+    {
+      "alternative_comparison": {
+        "distance_m": 321.58755866119117,
+        "rank": 2,
+        "shared_residents_fraction": 0.565510272819131
+      },
+      "cluster_id": 3,
+      "comparison_to_best": {
+        "distance_m": 732,
+        "shared_houses": 3,
+        "shared_residents": 1564,
+        "shared_residents_fraction": 0.2633883462445268
+      },
+      "competitors_in_radius": 2,
+      "correction_delta": {
+        "baseline_score": 0.6984614674614167,
+        "is_new_location": true,
+        "score_delta": 0.11487980097756545
+      },
+      "explanation": {
+        "competition_level": "moderate",
+        "demand_level": "lower",
+        "field_checks": [
+          "Проверьте конкурентов, которые могли отсутствовать в OSM",
+          "Проверьте фактический поток людей, входы и пешеходную доступность",
+          "Уточните наличие помещения, условия аренды и ограничения для выбранного бизнеса"
+        ],
+        "metrics": {
+          "competition_multiplier": 2.612335641382314,
+          "competition_pressure": 0.8061678206911571,
+          "houses_in_radius": 45,
+          "houses_per_km2": 89.52465548919112,
+          "model_demand": 6882.157203184544,
+          "nearest_demand_center_m": 402
+        },
+        "risks": [
+          "Оценка жителей зависит от полноты добровольной разметки домов в OSM; плотность относится только к учтённым домам"
+        ],
+        "strengths": [
+          "В радиусе 400 м учтено домов: 45",
+          "Ближайший учтённый центр спроса находится в 402 м"
+        ],
+        "version": 1
+      },
+      "independent_zones": 2,
+      "lat": 52.61265808520385,
+      "lng": 39.580527930080166,
+      "nearest_competitor_m": 370,
+      "radius_m": 400,
+      "rank": 3,
+      "residents_in_radius": 5938,
+      "role": "alternative",
+      "score": 0.8133412684389821,
+      "selection_method": "grid_alternatives_v1"
+    }
+  ],
+  "pairs": [
+    {
+      "ranks": [
+        1,
+        3
+      ],
+      "distance_m": 731.7638354210305,
+      "sharedResidents": 1564,
+      "denominator": 5938,
+      "overlap": 0.2633883462445268
+    },
+    {
+      "ranks": [
+        2,
+        3
+      ],
+      "distance_m": 321.5875586605962,
+      "sharedResidents": 3358,
+      "denominator": 5938,
+      "overlap": 0.565510272819131
+    }
+  ],
+  "selectedRank": 3,
+  "note": "Проверить вход и вывеску рядом с запасной точкой."
+}

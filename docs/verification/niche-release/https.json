@@ -1,0 +1,84 @@
+{
+  "fresh_preview": {
+    "code": {
+      "sha": "6a51da3d34b55f75406a69e4fbea95046be3a80e",
+      "tree": "6e979538856fa6e4b08a7c148681d73fe4f5ca26"
+    },
+    "data": {
+      "cacheSha256": "195ec93afa7bf4a82f42237c3521b2f1e18dbb3a9dd15943bf49d9ea3e9b4ec6",
+      "commit": "c9b25b12dc08fcc7800544d3792c02004dcd9ad0",
+      "coverage": {
+        "east": 39.839999999999996,
+        "north": 52.745,
+        "south": 52.475,
+        "west": 39.31
+      },
+      "fetchedAt": 1795783841.621912,
+      "generatedAt": "2026-11-27T15:50:41.621912+03:00",
+      "sourceUrl": "https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/c9b25b12dc08fcc7800544d3792c02004dcd9ad0/city.json",
+      "version": "43bb81c25b090e6b18127c344d36a3aeb5a0a5e1629179bc53f051f236638404"
+    },
+    "variant": "candidate"
+  },
+  "pinned_preview": {
+    "code": {
+      "sha": "6a51da3d34b55f75406a69e4fbea95046be3a80e",
+      "tree": "6e979538856fa6e4b08a7c148681d73fe4f5ca26"
+    },
+    "data": {
+      "cacheSha256": "e43c84090839e3da9bf2dce6229fdc597bdda8fffc8d5dab4c49aca4b3d1d903",
+      "commit": "f0ca354905fef8b4dc405624591460b3133b3e58",
+      "coverage": {
+        "east": 39.839999999999996,
+        "north": 52.745,
+        "south": 52.475,
+        "west": 39.31
+      },
+      "fetchedAt": 1795548100.829394,
+      "generatedAt": "2026-11-24T22:21:40.829394+03:00",
+      "sourceUrl": "https://raw.githubusercontent.com/MidoriMacbook/geomarketing-lipetsk/f0ca354905fef8b4dc405624591460b3133b3e58/city.json",
+      "version": "7782fe7b1fdf8bd716c30e535b8c5c0f374cebdeb7865ed72d2c7ead2a652122"
+    },
+    "variant": "candidate-pinned"
+  },
+  "cases": [
+    {
+      "district": "center",
+      "primary": [
+        {
+          "rank": 1,
+          "lat": 52.61235269506795,
+          "lng": 39.587569127263855,
+          "score": 1.0
+        }
+      ],
+      "level": "medium",
+      "source_version": "7782fe7b1fdf8bd716c30e535b8c5c0f374cebdeb7865ed72d2c7ead2a652122",
+      "serialized_grid_equal": true,
+      "plain_equals_opt_in_primary": true,
+      "alternatives": 2
+    },
+    {
+      "district": "eleytsky",
+      "primary": [
+        {
+          "rank": 1,
+          "lat": 52.596095816155135,
+          "lng": 39.48728955574016,
+          "score": 1.0
+        },
+        {
+          "rank": 2,
+          "lat": 52.587239502214075,
+          "lng": 39.474721356188155,
+          "score": 0.25995740294848574
+        }
+      ],
+      "level": "medium",
+      "source_version": "7782fe7b1fdf8bd716c30e535b8c5c0f374cebdeb7865ed72d2c7ead2a652122",
+      "serialized_grid_equal": true,
+      "plain_equals_opt_in_primary": true,
+      "alternatives": 1
+    }
+  ]
+}

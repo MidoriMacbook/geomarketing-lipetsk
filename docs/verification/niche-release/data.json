@@ -1,0 +1,212 @@
+{
+  "pinned": {
+    "version": "7782fe7b1fdf8bd716c30e535b8c5c0f374cebdeb7865ed72d2c7ead2a652122",
+    "file_sha256": "e43c84090839e3da9bf2dce6229fdc597bdda8fffc8d5dab4c49aca4b3d1d903",
+    "fetched_at": "2026-11-24T19:21:40.829394+00:00",
+    "cases": {
+      "center": {
+        "ordinary_sha256": "9fd2ce932e536ddaf16ec0a4f752bc62db8cde3cd1b772c5821d65b458cf4296",
+        "grid_sha256": "bab2ff89cad44d1f08f24432e34f1b2110e8d949a7a8fd0631821587bd6976b0",
+        "primary": [
+          {
+            "rank": 1,
+            "lat": 52.61235269506795,
+            "lng": 39.587569127263855,
+            "score": 1.0
+          }
+        ]
+      },
+      "eleytsky": {
+        "ordinary_sha256": "5c470f78023df326cb643a7adbca3b7c0cd0285d4c31cb14051935e2cb3f1628",
+        "grid_sha256": "40d27693a2807494db32b69ea3a469f4de4049ef655831c40baf6540146e84b6",
+        "primary": [
+          {
+            "rank": 1,
+            "lat": 52.596095816155135,
+            "lng": 39.48728955574016,
+            "score": 1.0
+          },
+          {
+            "rank": 2,
+            "lat": 52.587239502214075,
+            "lng": 39.474721356188155,
+            "score": 0.25995740294848574
+          }
+        ]
+      }
+    },
+    "network_pressure": {
+      "coordinate": [
+        52.611131134524356,
+        39.58354558601603
+      ],
+      "weights": [
+        1,
+        0.5,
+        0
+      ],
+      "at_fixed_coordinate": [
+        0.47945704995079275,
+        0.2970113993786574,
+        0.11456574880652205
+      ],
+      "network_markers": 36,
+      "results": [
+        [
+          {
+            "role": "primary",
+            "score": 1.0
+          },
+          {
+            "role": "alternative",
+            "score": 0.9287716396040454
+          },
+          {
+            "role": "alternative",
+            "score": 0.6558754633939995
+          }
+        ],
+        [
+          {
+            "role": "primary",
+            "score": 1.0
+          },
+          {
+            "role": "alternative",
+            "score": 0.953072433122116
+          },
+          {
+            "role": "alternative",
+            "score": 0.6690701263625254
+          }
+        ],
+        [
+          {
+            "role": "primary",
+            "score": 1.0
+          },
+          {
+            "role": "alternative",
+            "score": 0.8388190564975468
+          },
+          {
+            "role": "alternative",
+            "score": 0.6418516945185364
+          }
+        ]
+      ]
+    },
+    "fallback": {
+      "version": "7782fe7b1fdf8bd716c30e535b8c5c0f374cebdeb7865ed72d2c7ead2a652122",
+      "status": "unavailable",
+      "recovered_after_restart": true,
+      "warning": "\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u0435\u0436\u0435\u0434\u043d\u0435\u0432\u043d\u0443\u044e \u0432\u044b\u0433\u0440\u0443\u0437\u043a\u0443. \u041f\u043e\u043a\u0430\u0437\u0430\u043d\u0430 \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u044f\u044f \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430\u044f \u043a\u043e\u043f\u0438\u044f \u0441 \u043f\u0440\u0435\u0436\u043d\u0435\u0439 \u0434\u0430\u0442\u043e\u0439. \u0412\u044b\u0433\u0440\u0443\u0437\u043a\u0430 \u043d\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u044f\u043b\u0430\u0441\u044c \u0431\u043e\u043b\u044c\u0448\u0435 \u0434\u0432\u0443\u0445 \u0441\u0443\u0442\u043e\u043a. \u041f\u0440\u043e\u0432\u0435\u0440\u044c\u0442\u0435 \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u043d\u0430 \u043c\u0435\u0441\u0442\u043d\u043e\u0441\u0442\u0438."
+    }
+  },
+  "base_matches": true,
+  "fresh": {
+    "version": "43bb81c25b090e6b18127c344d36a3aeb5a0a5e1629179bc53f051f236638404",
+    "file_sha256": "195ec93afa7bf4a82f42237c3521b2f1e18dbb3a9dd15943bf49d9ea3e9b4ec6",
+    "fetched_at": "2026-11-27T12:50:41.621912+00:00",
+    "cases": {
+      "center": {
+        "ordinary_sha256": "d8e0b1914aba9b01d17c11f4d5b2bd54c5be90c9c8d4f2667c18c5fa8492530e",
+        "grid_sha256": "bab2ff89cad44d1f08f24432e34f1b2110e8d949a7a8fd0631821587bd6976b0",
+        "primary": [
+          {
+            "rank": 1,
+            "lat": 52.61235269506795,
+            "lng": 39.587569127263855,
+            "score": 1.0
+          }
+        ]
+      },
+      "eleytsky": {
+        "ordinary_sha256": "2add09f0c181d06ea780054aa22dda7d9fdf8530359493efff5d8fe48f32d229",
+        "grid_sha256": "40d27693a2807494db32b69ea3a469f4de4049ef655831c40baf6540146e84b6",
+        "primary": [
+          {
+            "rank": 1,
+            "lat": 52.596095816155135,
+            "lng": 39.48728955574016,
+            "score": 1.0
+          },
+          {
+            "rank": 2,
+            "lat": 52.587239502214075,
+            "lng": 39.474721356188155,
+            "score": 0.25995740294848574
+          }
+        ]
+      }
+    },
+    "network_pressure": {
+      "coordinate": [
+        52.611131134524356,
+        39.58354558601603
+      ],
+      "weights": [
+        1,
+        0.5,
+        0
+      ],
+      "at_fixed_coordinate": [
+        0.47945704995079275,
+        0.2970113993786574,
+        0.11456574880652205
+      ],
+      "network_markers": 36,
+      "results": [
+        [
+          {
+            "role": "primary",
+            "score": 1.0
+          },
+          {
+            "role": "alternative",
+            "score": 0.9287716396040454
+          },
+          {
+            "role": "alternative",
+            "score": 0.6558754633939995
+          }
+        ],
+        [
+          {
+            "role": "primary",
+            "score": 1.0
+          },
+          {
+            "role": "alternative",
+            "score": 0.953072433122116
+          },
+          {
+            "role": "alternative",
+            "score": 0.6690701263625254
+          }
+        ],
+        [
+          {
+            "role": "primary",
+            "score": 1.0
+          },
+          {
+            "role": "alternative",
+            "score": 0.8388190564975468
+          },
+          {
+            "role": "alternative",
+            "score": 0.6418516945185364
+          }
+        ]
+      ]
+    },
+    "fallback": {
+      "version": "43bb81c25b090e6b18127c344d36a3aeb5a0a5e1629179bc53f051f236638404",
+      "status": "unavailable",
+      "recovered_after_restart": true,
+      "warning": "\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u0435\u0436\u0435\u0434\u043d\u0435\u0432\u043d\u0443\u044e \u0432\u044b\u0433\u0440\u0443\u0437\u043a\u0443. \u041f\u043e\u043a\u0430\u0437\u0430\u043d\u0430 \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u044f\u044f \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430\u044f \u043a\u043e\u043f\u0438\u044f \u0441 \u043f\u0440\u0435\u0436\u043d\u0435\u0439 \u0434\u0430\u0442\u043e\u0439. \u0412\u044b\u0433\u0440\u0443\u0437\u043a\u0430 \u043d\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u044f\u043b\u0430\u0441\u044c \u0431\u043e\u043b\u044c\u0448\u0435 \u0434\u0432\u0443\u0445 \u0441\u0443\u0442\u043e\u043a. \u041f\u0440\u043e\u0432\u0435\u0440\u044c\u0442\u0435 \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u043d\u0430 \u043c\u0435\u0441\u0442\u043d\u043e\u0441\u0442\u0438."
+    }
+  },
+  "fresh_base_matches": true
+}
