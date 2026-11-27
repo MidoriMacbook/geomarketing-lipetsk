@@ -105,6 +105,10 @@ test.describe('мобильные карточки и карта', () => {
     }).toBe(true);
     await popup.getByRole('button', { name: 'Закрыть выноску' }).tap();
     await expect(popup).toHaveCount(0);
+    await expect(sheet.locator('.recommendations-context-row')).toBeHidden();
+    await sheet.locator('.sheet-handle').tap();
+    await expect(sheet.getByRole('button', { name: 'Свернуть результаты' })).toBeVisible();
+    await expect(sheet.locator('.recommendations-context-row')).toBeVisible();
     expect(await sheet.evaluate(el => {
       const ids = [...el.querySelectorAll('[id]')].map(node => node.id);
       return document.documentElement.scrollWidth <= innerWidth && ids.length === new Set(ids).size;

@@ -57,6 +57,8 @@ function setSnap(next){
  sheet.setAttribute('role',expanded?'dialog':'region');
  if(expanded)sheet.setAttribute('aria-modal','true');else sheet.removeAttribute('aria-modal');
  handle.setAttribute('aria-expanded',String(expanded));closeButton.hidden=!expanded;rail.inert=expanded;
+ if(expanded)handle.setAttribute('aria-label','Свернуть результаты');
+ else handle.removeAttribute('aria-label');
  sheet.style.setProperty('--sheet-offset',`${snap==='peek'?offset():0}px`);
  sheet.style.setProperty('--sheet-visible',`${snap==='peek'?peekHeight():sheet.getBoundingClientRect().height}px`);
  syncReserve();

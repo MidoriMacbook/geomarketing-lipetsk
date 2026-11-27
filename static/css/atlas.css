@@ -364,6 +364,7 @@ html[data-page-visible=false] *,html[data-page-visible=false] *::after { animati
  .sheet-summary { display:block; font-size:13px; line-height:20px; color:var(--color-ink); font-variant-numeric:tabular-nums; }
  .sheet-summary-counts { display:grid; text-align:left; line-height:18px; }
  #recommendations[data-snap=expanded] .sheet-summary-counts { visibility:hidden; }
+ #recommendations[data-sheet-active=true][data-snap=peek]:not([data-moving]):not([data-dragging]):has(.sheet-summary-counts)>:not(.sheet-controls) { visibility:hidden; }
  #recommendations .sheet-place[data-place-role=alternative] { border-style:dashed; background:var(--palette-sky-soft); padding-inline:var(--space-1); }
  #recommendations .sheet-place[data-place-role=alternative][aria-pressed=true] { border-color:var(--palette-ink); background:var(--palette-sky); box-shadow:inset 0 0 0 1px var(--palette-ink); }
  #recommendations:not([data-sheet-layout=false]) { position:fixed; z-index:800; left:0; bottom:0; width:100%; height:88dvh; max-height:none; border-radius:var(--radius-xxl) var(--radius-xxl) 0 0; box-shadow:var(--shadow-dialog); padding:4px 16px max(16px,env(safe-area-inset-bottom)); transform:translateY(100%); opacity:0; pointer-events:none; transition:transform 450ms cubic-bezier(.2,.8,.2,1),opacity 450ms ease-out; }
