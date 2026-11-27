@@ -1,5 +1,6 @@
 import { scoreText } from './result-format.js';
 import { manualPlaceId, placeLabel } from './map-analysis.js';
+import { isAlternative, recommendationLabel, validPlaceRole } from './place-role.js';
 import { state } from './state.js';
 import { $, fmt, coords, distance, STORAGE_KEY, node, button, dateText, sourceText, storageStatus, dataDate, reveal, animateUI, exitSnapshot, setRevealed } from './ui.js';
 import { checkedQuality, checkedExplanation } from './data-quality.js';
@@ -29,6 +30,10 @@ export function readSaved() {
       const clean={...item,recommendation:{...item.recommendation}};
       if ('data_quality' in clean&&!checkedQuality(clean.data_quality))delete clean.data_quality;
       if ('explanation' in clean.recommendation&&!checkedExplanation(clean.recommendation.explanation))delete clean.recommendation.explanation;
+      if (!validPlaceRole(clean.recommendation)) {
+        delete clean.recommendation.role;
+        delete clean.recommendation.alternative_comparison;
+      }
       return clean;
     });
   }
@@ -147,7 +152,9 @@ export function updateSaveButtons(feedback = false) {
       b.replaceChildren(node('span', 'save-label', label));
       if (exists) { const check = node('span', 'save-check', ' ✓'); check.setAttribute('aria-hidden', 'true'); b.append(check); }
     }
-    b.setAttribute('aria-label', `${label} — место ${b.dataset.rank}${exists&&state.comparison.size>=3&&!selected?' — выбор сравнения заполнен':''}`);
+    const rec = state.current?.recommendations.find(place => place.rank === Number(b.dataset.rank));
+    const place = isAlternative(rec) ? recommendationLabel(rec) : `место ${b.dataset.rank}`;
+    b.setAttribute('aria-label', `${label} — ${place}${exists&&state.comparison.size>=3&&!selected?' — выбор сравнения заполнен':''}`);
     if (feedback && newlySaved) reveal(b, 'save-feedback', { duration: 'fast' });
   });
 }
@@ -203,6 +210,14 @@ export function renderSaved() {
     }), false, item.id));
     remove.setAttribute('aria-label', `Удалить ${item.business_name}, ${placeLabel(rec)}`);
     actions.append(label, remove);
+    if (isAlternative(rec)) {
+      const open = button('Открыть на карте', 'button secondary', () => {
+        document.dispatchEvent(new CustomEvent('gm:saved-place-open', { detail: { item } }));
+      });
+      open.dataset.testid = 'saved-place-open';
+      open.setAttribute('aria-label', `Открыть на карте: ${item.business_name}, ${placeLabel(rec)}`);
+      actions.prepend(open);
+    }
     card.append(actions);
     card.append(fieldChecksBlock(item.id, { readSaved }));
     $('saved-list').append(card);

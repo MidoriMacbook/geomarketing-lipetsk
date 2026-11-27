@@ -3,6 +3,7 @@ import {state} from './state.js';
 import {node,button,fmt,distance,motionReduced} from './ui.js';
 import {savePlace} from './saved-places.js';
 import {scoreText} from './result-format.js';
+import {isAlternative,recommendationLabel,alternativeExplanation} from './place-role.js';
 
 // Этот слой читает готовый расчёт. Он не меняет рекомендации или сетку сервера.
 export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=()=>{}}={}){
@@ -63,14 +64,14 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   box.classList.add('map-inspection-compact');
   const score=node('p','map-inspection-score',scoreText(rec.score));
   const reading=node('div','map-inspection-reading');
-  reading.append(node('span','map-inspection-place-label',rec.origin==='manual'?'Ваша точка':`Место ${rec.rank}`),score);box.append(reading);
+  reading.append(node('span','map-inspection-place-label',rec.origin==='manual'?'Ваша точка':recommendationLabel(rec)),score);box.append(reading);
   const summary=node('p','map-inspection-mobile-summary');
   const residents=count(rec.residents_in_radius,{one:'житель',few:'жителя',many:'жителей',other:'жителей'});
   const rivals=count(rec.competitors_in_radius,{one:'конкурент',few:'конкурента',many:'конкурентов',other:'конкурентов'});
   summary.textContent=`В ${fmt(rec.radius_m)} м: ≈ ${residents} · ${rivals} по данным карты`;
   box.append(summary,node('p','map-inspection-desktop-facts',`≈ ${residents} в ${fmt(rec.radius_m)} м · ${rivals}`),
    node('p','map-inspection-desktop-facts',`Ближайший конкурент: ${distance(rec.nearest_competitor_m)}`));
-  if(Math.round(rec.score*100)<40)reading.append(node('span','map-inspection-weak','слабое место'));
+  if(!isAlternative(rec)&&Math.round(rec.score*100)<40)reading.append(node('span','map-inspection-weak','слабое место'));
  }
  function saveAction(box,rec,label,showDetails){
   const actions=node('div','map-inspection-actions');
@@ -131,17 +132,21 @@ export function createMapInspector(map,{selectPoint=()=>{},selectRecommendation=
   show(point,box);
  }
  function openPlace(rec){
-  close();const box=card(`Место ${rec.rank} · оценка`);facts(box,rec);
+  close();const box=card(`${recommendationLabel(rec)} · оценка`);facts(box,rec);
+  if (isAlternative(rec)) box.dataset.placeRole = 'alternative';
   relativeNote(box);
   saveAction(box,rec,'Сохранить',()=>{
    close();document.dispatchEvent(new CustomEvent('gm:place-details',{detail:{rank:rec.rank}}));
    if(!matchMedia('(max-width:600px)').matches){const card=document.querySelector(`#recommendation-list [data-rank="${rec.rank}"]`);card?.scrollIntoView({behavior:motionReduced()?'instant':'smooth',block:'nearest'});}
-  });show(rec,box);
+  });
+  const explanation = alternativeExplanation(rec, data.recommendations);
+  if (explanation) box.append(node('p', 'map-inspection-difference', explanation));
+  show(rec,box);
  }
  function openDemand(center,index){
   close();const box=card('Центр спроса');box.append(node('p','',`≈ ${fmt(center.residents)} жителей в кластере`));
   const related=data.recommendations.filter(rec=>rec.cluster_id===index+1);
-  if(related.length){box.append(node('p','map-inspection-note','Связанные места для проверки:'));for(const rec of related)box.append(button(`Место ${rec.rank} · ${scoreText(rec.score)}`,'button secondary',()=>{selectRecommendation(rec);openPlace(rec);}));}
+  if(related.length){box.append(node('p','map-inspection-note','Связанные места для проверки:'));for(const rec of related)box.append(button(`${recommendationLabel(rec)} · ${scoreText(rec.score)}`,'button secondary',()=>{selectRecommendation(rec);openPlace(rec);}));}
   else box.append(node('p','map-inspection-note','В этом кластере нет отдельной рекомендации.'));
   show(center,box);
  }

@@ -74,13 +74,15 @@ def recommendation_deltas(baseline: ScoringResult, updated: ScoringResult):
     grid = baseline.grid
     n = grid['n']
     previous = {(row['lat'], row['lng']) for row in baseline.recommendations}
-    for row in updated.recommendations:
+    previous_with_alternatives = previous | {(row['lat'], row['lng']) for row in baseline.alternatives}
+    for row in updated.recommendations + updated.alternatives:
         lat, lng = row['lat'], row['lng']
+        previous_locations = previous_with_alternatives if row.get('role') == 'alternative' else previous
         x = round((lng - grid['lng_min']) * (n - 1) / (grid['lng_max'] - grid['lng_min']))
         y = round((lat - grid['lat_min']) * (n - 1) / (grid['lat_max'] - grid['lat_min']))
         baseline_score = float(baseline.scores[y * n + x])
         yield {
             'baseline_score': baseline_score,
             'score_delta': row['score'] - baseline_score,
-            'is_new_location': (lat, lng) not in previous,
+            'is_new_location': (lat, lng) not in previous_locations,
         }
