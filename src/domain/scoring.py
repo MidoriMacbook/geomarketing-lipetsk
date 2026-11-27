@@ -12,7 +12,7 @@ from src.utils.geo import to_meters, to_latlng
 from src.utils.validation import UserError
 
 
-def score_locations(houses, competitors, center, half, parameters) -> ScoringResult:
+def score_locations(houses, competitors, center, half, parameters, *, competitor_weights=None) -> ScoringResult:
     lat0, lng0 = center
     p = parameters
     h_xy = to_meters(houses[:, :2], lat0, lng0)
@@ -38,7 +38,10 @@ def score_locations(houses, competitors, center, half, parameters) -> ScoringRes
 
     demand = (pop[None, :] * np.exp(-(cdist(grid, h_xy) / p['R']) ** 2)).sum(axis=1)
     if len(c_xy):
-        competition = np.exp(-(cdist(grid, c_xy) / (p['R'] * 0.8)) ** 2).sum(axis=1)
+        contributions = np.exp(-(cdist(grid, c_xy) / (p['R'] * 0.8)) ** 2)
+        if competitor_weights is not None:
+            contributions *= competitor_weights
+        competition = contributions.sum(axis=1)
     else:
         competition = np.zeros(len(grid))
     raw = demand / (1 + p['alpha'] * competition)

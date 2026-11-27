@@ -127,6 +127,20 @@
     </aside>
     <section id="map-card" class="card map-card" aria-labelledby="map-title"><div class="map-heading"><div><h2 id="map-title">Карта возможностей</h2><p id="map-context">Выберите область для анализа</p></div><button id="corrections-toggle" class="button secondary" type="button" aria-expanded="false" aria-controls="corrections-panel" disabled>Мои поправки</button>
 <span class="map-badge"><i aria-hidden="true"></i> OpenStreetMap</span><div id="trust-status" class="trust-status" role="status"><button id="trust-summary" type="button" aria-haspopup="dialog" aria-controls="source-dialog">OpenStreetMap · дата неизвестна</button><a id="trust-details-link" href="#data-section">Проверить детали</a></div></div><div class="analysis-bar"><span class="status-dot" aria-hidden="true"></span><p id="analysis-status" role="status" aria-live="polite">Город на карте. Следующий шаг — выбрать область.</p></div><div id="analysis-progress" hidden><md-linear-progress indeterminate aria-label="Выполняется анализ"></md-linear-progress><div class="progress-fallback" role="progressbar" aria-label="Расчёт выполняется"></div></div>
+<section id="network-panel" class="network-panel" aria-label="Сетевые конкуренты" hidden>
+  <div class="network-description">
+    <strong id="network-count" hidden><i class="network-symbol" aria-hidden="true"></i><span aria-live="polite"></span></strong>
+    <p id="network-note"></p>
+  </div>
+  <div id="network-setting" hidden>
+    <label for="network-weight">Учитывать сети</label>
+    <select id="network-weight" aria-describedby="network-note" disabled>
+      <option value="1">Полностью</option>
+      <option value="0.5">Вес 0,5</option>
+      <option value="0">Не учитывать</option>
+    </select>
+  </div>
+</section>
 <div id="corrections-panel" class="corrections-panel" tabindex="-1" role="region" aria-label="Мои поправки" hidden>
   <div id="corrections-controls" hidden>
     <div class="correction-mode" role="group" aria-label="Действие на карте">

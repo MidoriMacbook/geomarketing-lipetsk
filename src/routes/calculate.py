@@ -46,7 +46,13 @@ def run_calculation():
     area = resolve_area(params)
     business = params.get('type', 'cafe')
     refresh = params.get('refresh') == '1'
+    weights = {'0': 0, '0.0': 0, '0.5': 0.5, '1': 1, '1.0': 1}
+    requested_weight = params.get('network_weight')
+    if requested_weight is not None and requested_weight not in weights:
+        raise UserError('Выберите полный, половинный или нулевой вес сетевых конкурентов.')
+    network_weight = weights.get(requested_weight)
     if request.method == 'POST' and 'corrections' in payload:
         corrections = Corrections.parse(payload['corrections'], area['center'], area['radius'])
-        return jsonify(analyze(area, business, refresh, corrections=corrections))
-    return jsonify(analyze(area, business, refresh, competitor_details=params.get('competitor_details') == '1'))
+        return jsonify(analyze(area, business, refresh, corrections=corrections, network_weight=network_weight))
+    return jsonify(analyze(area, business, refresh, competitor_details=params.get('competitor_details') == '1',
+                           network_weight=network_weight))
