@@ -7,7 +7,7 @@ from src.utils.geo import to_meters
 
 
 def explain_recommendations(houses, competitors, center, half, parameters,
-                            recommendations, centroids):
+                            recommendations, centroids, *, demand_reference=None):
     """Возвращаем объяснения в порядке рекомендаций, не меняя результаты модели.
 
     Входные данные уже проверены. ``half`` — радиус круга загруженной области;
@@ -60,6 +60,8 @@ def explain_recommendations(houses, competitors, center, half, parameters,
             'strengths': strengths, 'risks': risks, 'field_checks': field_checks,
         })
     mean_demand = sum(item['metrics']['model_demand'] for item in facts) / len(facts) if facts else 0
+    if demand_reference is not None:
+        mean_demand = demand_reference
     for item in facts:
         demand = item['metrics']['model_demand']
         item['demand_level'] = ('unknown' if mean_demand == 0 else

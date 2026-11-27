@@ -1,15 +1,18 @@
 import { scoreValue, localTimestamp } from './result-format.js';
+import { isAlternative, recommendationLabel } from './place-role.js';
 import { $, node, fmt, LIMITATIONS, dataDate } from './ui.js';
 import { appendPrintAttribution, correctionSummary, downloadCSV, reportPlace } from './report.js';
 import { qualitySummary, qualityBlock } from './data-quality.js';
 
 const missing = value => value ?? 'Не оценено';
+const placeRank = rec => isAlternative(rec) ? recommendationLabel(rec) : rec.rank;
 export function exportScenariosCSV(records) {
   if (!records.length) return;
   const rows = [['scenario_id', 'Название', 'Заметка', 'Дата сохранения', 'Дата изменения', 'ID расчёта', 'Дата расчёта', 'Область', 'Категория', 'Центр области', 'Радиус области, м', 'Радиус модели, м', 'Коэффициент конкуренции', 'Порог зон, %', 'Выбранное место', 'Место', 'Широта', 'Долгота', 'Жителей в радиусе (оценка)', 'Конкурентов в радиусе', 'Ближайший конкурент, м', 'Жителей в выборке (оценка)', 'Домов в выборке', 'Конкурентов в выборке, включая соседние территории', 'Источник', 'Свежесть', 'Полнота', 'Дата домов', 'Дата конкурентов', 'Ограничения данных', 'Объяснение', 'Проверить на месте', 'Ограничения модели', 'Балл из 100 (только внутри своего расчёта)']];
   records.forEach(item => {
     const a = item.analysis, q = qualitySummary(a);
-    a.recommendations.forEach(r => rows.push([item.id, item.name, item.note, item.saved_at, item.updated_at, a.analysis_id, missing(a.calculated_at), a.district_name, a.business_name, (item.selection.custom_point || a.analysis_context?.center || a.center).join(', '), item.selection.area_radius_m, a.parameters.radius_m, a.parameters.alpha, item.view.threshold, item.view.selected_rank, r.rank, r.lat, r.lng, r.residents_in_radius, r.competitors_in_radius, r.nearest_competitor_m, a.stats.residents, a.stats.houses, a.stats.competitors, q.source, q.freshness, q.completeness, q.dates[0], q.dates[1], q.reasons.join(' '), r.explanation ? [...r.explanation.strengths, ...r.explanation.risks].join(' ') : 'Не оценено', r.explanation?.field_checks.join(' ') || 'Не оценено', LIMITATIONS, scoreValue(r.score)]));
+    const selected = a.recommendations.find(rec => rec.rank === item.view.selected_rank);
+    a.recommendations.forEach(r => rows.push([item.id, item.name, item.note, item.saved_at, item.updated_at, a.analysis_id, missing(a.calculated_at), a.district_name, a.business_name, (item.selection.custom_point || a.analysis_context?.center || a.center).join(', '), item.selection.area_radius_m, a.parameters.radius_m, a.parameters.alpha, item.view.threshold, placeRank(selected), placeRank(r), r.lat, r.lng, r.residents_in_radius, r.competitors_in_radius, r.nearest_competitor_m, a.stats.residents, a.stats.houses, a.stats.competitors, q.source, q.freshness, q.completeness, q.dates[0], q.dates[1], q.reasons.join(' '), r.explanation ? [...r.explanation.strengths, ...r.explanation.risks].join(' ') : 'Не оценено', r.explanation?.field_checks.join(' ') || 'Не оценено', LIMITATIONS, scoreValue(r.score)]));
   });
   downloadCSV(rows, 'geomarketing-scenarios');
 }
@@ -20,7 +23,9 @@ export function printScenarios(records) {
   report.replaceChildren(node('h1', '', 'ГеоМаркетинг · Сравнение исследований'), node('p', '', `Отчёт сформирован ${new Date().toLocaleString('ru-RU')}`), node('p', '', 'Сопоставляйте абсолютные показатели с учётом категории, радиуса и дат. Общего рейтинга исследований нет. Конкуренты в выборке включают соседние территории.'));
   records.forEach(item => {
     const a = item.analysis, section = node('section', 'scenario-print-context');
-    section.append(node('h2', '', item.name), node('p', '', `${a.district_name} · ${a.business_name}. Центр: ${(item.selection.custom_point || a.analysis_context?.center || a.center).join(', ')}. Радиус области: ${fmt(item.selection.area_radius_m)} м. Радиус модели: ${fmt(a.parameters.radius_m)} м; коэффициент: ${a.parameters.alpha.toLocaleString('ru-RU')}. Порог зон: ${item.view.threshold}%.`), node('p', '', `Расчёт: ${localTimestamp(a.calculated_at)}. Сохранено: ${localTimestamp(item.saved_at)}. Выбрано место ${item.view.selected_rank}.`), node('p', '', `В выборке: ≈ ${fmt(a.stats.residents)} жителей, ${fmt(a.stats.houses)} домов, ${fmt(a.stats.competitors)} конкурентов, включая соседние территории.`), node('p', '', `Заметка: ${item.note || 'Не указана'}`), qualityBlock(a));
+    const selected = a.recommendations.find(rec => rec.rank === item.view.selected_rank);
+    const selection = isAlternative(selected) ? `Выбрано: ${recommendationLabel(selected)}` : `Выбрано место ${item.view.selected_rank}`;
+    section.append(node('h2', '', item.name), node('p', '', `${a.district_name} · ${a.business_name}. Центр: ${(item.selection.custom_point || a.analysis_context?.center || a.center).join(', ')}. Радиус области: ${fmt(item.selection.area_radius_m)} м. Радиус модели: ${fmt(a.parameters.radius_m)} м; коэффициент: ${a.parameters.alpha.toLocaleString('ru-RU')}. Порог зон: ${item.view.threshold} %.`), node('p', '', `Расчёт: ${localTimestamp(a.calculated_at)}. Сохранено: ${localTimestamp(item.saved_at)}. ${selection}.`), node('p', '', `В выборке: ≈ ${fmt(a.stats.residents)} жителей, ${fmt(a.stats.houses)} домов, ${fmt(a.stats.competitors)} конкурентов, включая соседние территории.`), node('p', '', `Заметка: ${item.note || 'Не указана'}`), qualityBlock(a));
     const corrections = correctionSummary(a);
     if (corrections) section.append(node('p', '', corrections));
     a.recommendations.forEach(rec => {

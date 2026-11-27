@@ -53,3 +53,4 @@ class ScoringResult:
     grid: dict
     centroids: list[dict]
     scores: np.ndarray = field(repr=False, compare=False)
+    alternatives: list[dict] = field(default_factory=list)

@@ -1,4 +1,5 @@
 import { scoreText } from './result-format.js';
+import { isAlternative, recommendationLabel } from './place-role.js';
 import { state } from './state.js';
 import { $, node, button, fmt, coords, distance, openDialog, closeDialog, initDialogMotion, reveal, cancelRevealsWithin } from './ui.js';
 import { SCENARIO_KEY, SCENARIO_LIMIT, readScenarios, mutateScenarios, clearDamagedScenarios, duplicateScenario } from './scenario-storage.js';
@@ -12,7 +13,7 @@ const writable = () => !!navigator.locks?.request && !storageProblem;
 const selected = () => state.scenarios.filter(item => state.scenarioComparison.has(item.id));
 const status = text => { $('scenario-status').textContent = text; $('scenario-status').hidden = !text; };
 const timestamp = value => value ? new Date(value).toLocaleString('ru-RU') : 'Не указана';
-const recText = rec => rec ? `Место ${rec.rank}: ${scoreText(rec.score)} только внутри своего расчёта; ${coords(rec)}; ≈ ${fmt(rec.residents_in_radius)} жителей в ${fmt(rec.radius_m)} м; ${fmt(rec.competitors_in_radius)} конкурентов; ближайший: ${distance(rec.nearest_competitor_m)}` : 'Не оценено';
+const recText = rec => rec ? `${recommendationLabel(rec)}: ${scoreText(rec.score)} только внутри своего расчёта; ${coords(rec)}; ≈ ${fmt(rec.residents_in_radius)} жителей в ${fmt(rec.radius_m)} м; ${fmt(rec.competitors_in_radius)} конкурентов; ближайший: ${distance(rec.nearest_competitor_m)}` : 'Не оценено';
 
 function explainError(error) {
   return ({ invalid: 'Сохранённые исследования повреждены. Исходные данные сохранены; скачайте JSON перед очисткой.', unsupported: 'Версия сохранённых исследований не поддерживается. Исходные данные сохранены; доступна выгрузка JSON.', unavailable: 'Хранилище браузера недоступно или переполнено. Предыдущие исследования сохранены. Освободите место либо скачайте CSV.', no_locks: 'Этот браузер не поддерживает безопасную запись исследований. Чтение и экспорт доступны; для изменений используйте браузер с Web Locks.', limit: `Можно сохранить до ${SCENARIO_LIMIT} исследований. Удалите ненужный или скачайте CSV.`, size: 'Снимок превышает допустимый размер. Сохраните нужные сведения в CSV или выберите меньшую область.', conflict: 'Исследования изменились в другой вкладке. Список обновлён; повторите действие.' })[error.code] || 'Не удалось сохранить изменение. Предыдущие исследования сохранены.';
@@ -159,9 +160,11 @@ function render() {
   $('scenario-repair').hidden = damagedRaw === null;
   state.scenarios.forEach(item => {
     const card = node('article', `scenario-card${state.scenarioComparison.has(item.id) ? ' is-compared' : ''}`), a = item.analysis;
+    const place = a.recommendations.find(rec => rec.rank === item.view.selected_rank);
+    const selectedPlace = `${isAlternative(place) ? 'Выбрано: ' : 'Выбрано '}${recText(place)}`;
     card.dataset.testid = 'scenario-card'; card.dataset.scenarioId = item.id;
     card.tabIndex = -1;
-    card.append(node('h3', '', item.name), node('p', 'scenario-context', `${a.district_name} · ${a.business_name}`), node('p', '', `Расчёт: ${timestamp(a.calculated_at)} · Сохранён: ${timestamp(item.saved_at)}`), qualityBlock(a, true), node('p', '', `Выбрано ${recText(a.recommendations.find(rec => rec.rank === item.view.selected_rank))}`), node('p', 'scenario-note', item.note || 'Заметка не добавлена'));
+    card.append(node('h3', '', item.name), node('p', 'scenario-context', `${a.district_name} · ${a.business_name}`), node('p', '', `Расчёт: ${timestamp(a.calculated_at)} · Сохранён: ${timestamp(item.saved_at)}`), qualityBlock(a, true), node('p', '', selectedPlace), node('p', 'scenario-note', item.note || 'Заметка не добавлена'));
     const corrections = correctionSummary(a);
     if (corrections) card.append(node('p', 'scenario-context', corrections));
     const actions = node('div', 'scenario-actions');

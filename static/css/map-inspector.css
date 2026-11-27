@@ -40,6 +40,7 @@
 .map-probe-target { border:2px dashed var(--palette-rosewood-deep); background:var(--palette-cream); color:var(--palette-rosewood-deep); }
 .map-probe-target::after { content:'+'; font:700 14px/1 sans-serif; }
 .map-pin-key-number { background:var(--palette-ink); color:var(--palette-cream); font-size:12px; }
+.map-pin-key-alternative { border:var(--line) dashed var(--palette-ink); border-radius:4px; background:var(--palette-sky-soft); color:var(--palette-ink); }
 .map-pin-key { position:relative; color:var(--palette-ink); }
 .map-pin-key summary { display:grid; place-items:center; width:44px; height:44px; cursor:pointer; border-radius:50%; border:1px solid var(--palette-border); }
 .map-pin-key summary::-webkit-details-marker { display:none; }
@@ -59,6 +60,7 @@
  .map-inspection-compact .map-inspection-heading { display:contents; }
  .map-inspection-compact .map-inspection-close { grid-row:1; grid-column:3; }
  .map-inspection-compact .map-inspection-reading { grid-column:1; grid-row:1; display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; min-height:44px; }
+ .map-inspection-compact[data-place-role=alternative] .map-inspection-reading { align-content:center; gap:0 var(--space-2); }
  .map-inspection-compact .map-inspection-info { grid-column:2; grid-row:1; margin-top:8px; }
  .map-inspection-compact h3,.map-inspection-compact .map-inspection-desktop-facts,.map-inspection-save-long { display:none; }
  .map-inspection-compact .map-inspection-score { margin:0; font-size:clamp(16px,5vw,20px); }

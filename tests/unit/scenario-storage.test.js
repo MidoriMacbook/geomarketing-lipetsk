@@ -2,6 +2,7 @@ import test, { beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { SCENARIO_KEY, SCENARIO_LIMIT, validateScenario, readScenarios, mutateScenarios, clearDamagedScenarios, duplicateScenario } from '../../static/js/scenario-storage.js';
+import * as mapAnalysis from '../../static/js/map-analysis.js';
 
 const clone = value => structuredClone(value);
 const iso = '2026-10-18T10:00:00Z';
@@ -47,6 +48,53 @@ function corrected() {
   analysis.best = clone(analysis.recommendations[0]);
   return value;
 }
+
+function withAlternative(record = fixture()) {
+  const first = record.analysis.recommendations[0];
+  record.analysis.recommendations.push({
+    ...clone(first), rank: 2, score: 0.7, lat: 52.604, role: 'alternative',
+    alternative_comparison: { rank: 1, distance_m: 444.001, shared_residents_fraction: null },
+    ...(first.correction_delta ? { correction_delta: { ...first.correction_delta, baseline_score: 0.5 } } : {}),
+  });
+  record.view.selected_rank = 2;
+  return record;
+}
+
+test('старый архив обновляется вместе со снимком запасного места и его исходными показателями', async () => {
+  const old = fixture(3), record = withAlternative(corrected());
+  records.set(SCENARIO_KEY, JSON.stringify({ schema_version: 1, scenarios: [old] }));
+  await mutateScenarios(items => [...items, record]);
+  await mutateScenarios(items => items.map(item => item.id === record.id ? { ...item, note: 'Проверить на месте' } : item));
+  const [oldCopy, saved] = readScenarios();
+  assert.deepEqual(oldCopy, old);
+  assert.equal(saved.view.selected_rank, 2);
+  assert.deepEqual(saved.analysis.recommendations[1], record.analysis.recommendations[1]);
+  assert.deepEqual(duplicateScenario(saved).analysis, record.analysis);
+});
+
+for (const [message, damage] of Object.entries({
+  'неизвестная роль': recommendations => { recommendations[1].role = 'other'; },
+  'место ссылается само на себя': recommendations => { recommendations[1].alternative_comparison.rank = 2; },
+  'доля не является дробью': recommendations => { recommendations[1].alternative_comparison.shared_residents_fraction = 60; },
+  'основное место после запасного': recommendations => { recommendations.push({ ...recommendations[0], rank: 3 }); },
+})) test(`отклоняет повреждённую роль в снимке • ${message}`, () => {
+  const record = withAlternative();
+  damage(record.analysis.recommendations);
+  assert.equal(validateScenario(record), false);
+});
+
+test('сохранённый запасной вариант выбирается только в совпадающем расчёте и по точным координатам', () => {
+  const { analysis } = withAlternative();
+  const recommendation = clone(analysis.recommendations[1]);
+  const saved = { analysis_id: analysis.analysis_id, recommendation };
+  assert.equal(mapAnalysis.findSavedRecommendation(analysis, saved), analysis.recommendations[1]);
+  assert.equal(mapAnalysis.findSavedRecommendation({ ...analysis, analysis_id: 'different' }, saved), undefined);
+  recommendation.lat += 0.001;
+  assert.equal(mapAnalysis.findSavedRecommendation(analysis, saved), undefined);
+  recommendation.lat = analysis.recommendations[1].lat;
+  delete recommendation.role;
+  assert.equal(mapAnalysis.findSavedRecommendation(analysis, saved), undefined);
+});
 
 test('версия 1 читается без перезаписи, первое изменение сохраняет снимки в версии 2', async () => {
   const old = enriched(), next = corrected();

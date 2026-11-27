@@ -1,4 +1,6 @@
 // Модуль не зависит от интерфейса: сохранённые снимки считаются недоверенным входом.
+import { isAlternative, validPlaceRole } from './place-role.js';
+
 export const SCENARIO_KEY = 'geomarketing.scenarios.v1';
 export const SCENARIO_LIMIT = 6;
 const SCHEMA_VERSION = 2;
@@ -63,7 +65,7 @@ function validMetadata(value) {
 }
 
 function validRecommendation(value, radius, rank) {
-  return location(value) && value.rank === rank && number(value.score, 0, 1) && integer(value.residents_in_radius) && value.radius_m === radius && integer(value.competitors_in_radius) && distance(value.nearest_competitor_m) && (!own(value, 'explanation') || validExplanation(value.explanation));
+  return location(value) && value.rank === rank && number(value.score, 0, 1) && integer(value.residents_in_radius) && value.radius_m === radius && integer(value.competitors_in_radius) && distance(value.nearest_competitor_m) && validPlaceRole(value) && (!own(value, 'explanation') || validExplanation(value.explanation));
 }
 
 function validCompetitor(row, analysisSource) {
@@ -123,6 +125,8 @@ function validAnalysis(value, selection, view) {
     const context = value.analysis_context;
     if (!object(context) || typeof context.custom !== 'boolean' || context.custom !== (selection.district === 'custom') || context.requested_radius_m !== selection.area_radius_m || !equal(context.center, value.center)) return false;
   }
+  const firstAlternative = value.recommendations.findIndex(isAlternative);
+  if (firstAlternative !== -1 && !value.recommendations.slice(firstAlternative).every(isAlternative)) return false;
   if (value.source !== 'demo' && value.half_m !== selection.area_radius_m) return false;
   return selection.district !== 'custom' || equal(selection.custom_point, value.center);
 }
