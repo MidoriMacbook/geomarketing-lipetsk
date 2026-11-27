@@ -17,7 +17,7 @@ from src.services import analysis_service
 from src.utils.geo import to_latlng
 
 
-def controlled_load_data(area, business, refresh):
+def controlled_load_data(area, business, refresh, *, data_reliability=False):
     """Строит одинаковые исходные данные относительно выбранного центра."""
     lat, lng = area['center']
     # Три реальные зоны спроса вместо шести домов в одном общем радиусе.

@@ -38,6 +38,7 @@ class LoadedData:
     competitor_details: dict[str, dict[str, str]] = field(default_factory=dict)
     network_coverage: dict[str, int] | None = None
     network_ids: frozenset[str] = frozenset()
+    data_reliability: dict | None = None
 
     def describe_competitors(self):
         source = 'demo' if self.source == 'demo' else 'osm'

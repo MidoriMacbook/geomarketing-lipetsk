@@ -10,8 +10,9 @@ import requests
 
 from src.config import CACHE_DIR, CACHE_TTL, CITY_DATA_URL, HEADERS
 from src.domain.city_data import select_area, validate_bundle
-from src.domain.network_competitors import city_networks
+from src.domain.data_reliability import assess_data_reliability
 from src.domain.models import CacheInfo, LoadedData
+from src.domain.network_competitors import city_networks
 from src.domain.provenance import osm_competitor_details, osm_ids, provenance_summary
 from src.utils.formatting import cache_metadata
 from src.utils.validation import UserError, validate_data
@@ -113,7 +114,7 @@ def _get_bundle(refresh):
         _lock.release()
 
 
-def load(area, business, refresh=False):
+def load(area, business, refresh=False, *, data_reliability=False):
     bundle, status, cached, warning = _get_bundle(refresh)
     houses, competitors = select_area(bundle, area, business)
     if len(houses) < 5:
@@ -140,4 +141,5 @@ def load(area, business, refresh=False):
                        'interval_hours': 24}, competitor_ids=osm_ids(competitors),
                       competitor_details=osm_competitor_details(competitors),
                       network_coverage=coverage[business] if brand_data_available else None,
-                      network_ids=frozenset(network_ids))
+                      network_ids=frozenset(network_ids),
+                      data_reliability=assess_data_reliability(bundle, area, business) if data_reliability else None)
